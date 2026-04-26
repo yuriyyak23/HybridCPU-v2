@@ -82,7 +82,7 @@ MachineState =
 
 The tuple is intentionally explicit about backend state:
 
-- `ArchitecturalState` covers visible registers, PC, memory, trap, and retire publication state.
+- `ArchitecturalState` covers the visible integer register file, PC, memory, trap, and retire publication state.
 - `FrontendState` covers fetch/decode inputs, canonical decoded-bundle transport, derived issue-plan state, and `BundleLegalityDescriptor`.
 - `SchedulerState` covers nominations, class capacity, Stage A/Stage B admission, `LegalityDecision`, and issue-packet candidates.
 - `PipelineState` covers IF/ID/EX/MEM/WB latches and cycle/stall control.
@@ -91,6 +91,14 @@ The tuple is intentionally explicit about backend state:
 - `EvidenceState` covers trace/timeline output, contour certificates, legality telemetry, replay evidence, and exported profiles.
 
 The current runtime is therefore not renaming-free. Typed-slot legality constrains admission and publication; it does not erase backend ownership machinery.
+
+## Architectural Register File
+
+The ISA-visible integer architectural register file is deliberately small and conventional: each virtual thread exposes `32 x 64-bit` integer architectural registers, `x0..x31`. Four-way SMT gives separate per-VT contexts; it does not make 128 integer registers visible to one architectural thread.
+
+Do not read the backend `PhysicalRegisterFile` as an expanded architectural register file. The current backend has a shared 128-entry physical register substrate plus `RenameMap`, `CommitMap`, and `FreeList`, but those structures are internal machinery for execution, rollback, and retire publication. They do not give the ISA a hidden wide general-purpose register file.
+
+The streaming/vector side also should not be described as a vector-register machine. Stream-oriented fields in the VLIW carrier name memory addresses, lengths, strides, masks, and policy bits. When those forms execute, decode/runtime materializes memory-oriented micro-ops and selected scalar/predicate results; it does not expose a separate code-backed vector register file as ISA-visible state.
 
 ## Cycle Relation
 
@@ -145,6 +153,8 @@ Lane 7 is intentionally aliased between branch/control and system-singleton work
 
 "8-wide issue" therefore means 8 heterogeneous physical lanes with class-aware constraints. It does not mean 8 interchangeable scalar issue positions.
 
+`W=8` is the physical typed-lane topology of the carrier and scheduler. It is not a promise of eight independent useful retiring IPC slots, and it is not a global peak-throughput theorem.
+
 ```mermaid
 flowchart LR
     ALU["SlotClass.AluClass"] --> L0["Lane 0: ALU"]
@@ -169,6 +179,8 @@ The runtime is best modeled as a compound architecture:
 The scalar layer owns conventional control, CSR/system behavior, and retire-visible scalar work. The VLIW layer exposes explicit bundle structure. The vector side uses stream-oriented transport fields such as `VectorDataLength`, `Stride`, `StreamLength`, and `RowStride`.
 
 The binary carrier contains streaming fields, but the runtime still distinguishes "container can carry stream parameters" from "every possible stream-control contour is wired as a live execution surface." Unsupported stream-control and VMX materialization paths are explicitly guarded.
+
+Memory-to-memory here means memory-oriented execution, not a bypass around the lane model. A stream/vector form is decomposed by decode/runtime into micro-ops and carrier work that still consumes typed resources. ALU-class compute consumes `AluClass` lanes. Load/store movement, DMA/stream movement, assists, and control/system work consume their corresponding `LsuClass`, `DmaStreamClass`, carrier, or aliased lane-7 resources when that contour is active in the current model.
 
 ```mermaid
 flowchart TB
@@ -198,7 +210,7 @@ The live path from bytes to retire-visible effects is:
 
 1. Fetch a native 256-byte VLIW bundle, or reuse cached decoded slots through loop-buffer replay.
 2. Decode raw slots into canonical instruction and bundle descriptors.
-3. Build legality descriptors and typed-slot structural facts.
+3. Build legality descriptors, typed-slot structural facts, and memory-oriented micro-op carriers where the opcode contour requires decomposition.
 4. Derive a foreground issue plan, optionally through intra-core SMT densification.
 5. Admit candidates by class and runtime legality.
 6. Materialize admitted candidates into physical lanes.
@@ -843,14 +855,19 @@ dotnet run --project .\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj 
 
 The documented harness matrix tracks IPC, retired count, cycles, last reject kind, legality authority, slack reclaim ratio, and replay success for representative modes. Treat those values as runtime-drift evidence, not as a universal performance claim.
 
+Throughput wording in this repository should therefore stay bounded: harness IPC and effective surface measurements are diagnostic-envelope evidence for named workloads, not a global peak theorem for every program shape or lane mix.
+
 ## Current Strong Claims
 
 The following claims are safe repository-facing statements for the current codebase:
 
 - native VLIW is the active frontend;
+- the ISA-visible integer register file is `32 x 64-bit` architectural registers per virtual thread;
 - VLIW bundles are fixed 8-slot, 256-byte carriers;
 - the typed lane map is fixed and heterogeneous;
+- memory-memory forms are runtime/decode-decomposed through typed micro-op machinery rather than a hidden large register surface;
 - class admission happens before lane materialization on the typed-slot path;
+- ALU-class micro-ops consume `AluClass` lane capacity, and data movement/control work consumes the corresponding typed resources;
 - runtime legality is consumed through explicit `LegalityDecision` values;
 - guard-plane checks precede replay/certificate reuse;
 - certificate structural identity is the replay/template compatibility seam;
@@ -875,6 +892,10 @@ Do not read the live repository as claiming:
 - all historical opcode contours accepted by canonical decode;
 - production hardware-rooted attestation;
 - renaming-free execution;
+- a hidden wide architectural integer register file;
+- a hidden vector register file as a mainline ISA-visible state claim;
+- `W=8` or "8-wide issue" as an `IPC=8` theorem;
+- independent branch and system physical lanes;
 - full cross-core shared-bundle issue as the mainline SMT model.
 
 ## Current Limitations
