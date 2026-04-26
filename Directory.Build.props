@@ -1,0 +1,9 @@
+<Project>
+
+  <PropertyGroup>
+    <DefineTestSupport Condition="'$(DefineTestSupport)' == '' and '$(Configuration)' == 'Debug'">true</DefineTestSupport>
+    <HybridCpuIseProjectReferenceProperties>DefineTestSupport=$(DefineTestSupport)</HybridCpuIseProjectReferenceProperties>
+    <HybridCpuIseProjectReferenceProperties Condition="'$(DefineTestSupport)' == 'true'">DefineTestSupport=$(DefineTestSupport);BaseIntermediateOutputPath=obj\testsupport\;MSBuildProjectExtensionsPath=obj\;OutputPath=bin\$(Configuration)\testsupport\</HybridCpuIseProjectReferenceProperties>
+  </PropertyGroup>
+
+</Project>

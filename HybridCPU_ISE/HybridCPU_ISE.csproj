@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<EnableInternalTestHooks Condition="'$(EnableInternalTestHooks)' == ''">$(DefineTestSupport)</EnableInternalTestHooks>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(EnableInternalTestHooks)' == 'true'">
+		<DefineConstants>$(DefineConstants);TESTING</DefineConstants>
+		<OutputPath>bin\$(Configuration)\testsupport\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(EnableInternalTestHooks)' == 'true'">
+		<Compile Remove="obj\$(Configuration)\**\*.cs" />
+		<Compile Remove="$(BaseIntermediateOutputPath)**\*.cs" />
+		<EmbeddedResource Remove="obj\$(Configuration)\**\*" />
+		<EmbeddedResource Remove="$(BaseIntermediateOutputPath)**\*" />
+		<None Remove="obj\$(Configuration)\**\*" />
+		<None Remove="$(BaseIntermediateOutputPath)**\*" />
+	</ItemGroup>
+
+	<Target Name="RejectReleaseBuildWithInternalTestHooks" BeforeTargets="CoreCompile">
+		<Error
+			Condition="'$(Configuration)' == 'Release' and '$(EnableInternalTestHooks)' == 'true'"
+			Text="Release build cannot enable internal test hooks. Build Debug testsupport artifacts instead or disable EnableInternalTestHooks/DefineTestSupport." />
+	</Target>
+
+</Project>

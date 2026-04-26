@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HybridCPU_Compiler\HybridCPU_Compiler.csproj">
+      <AdditionalProperties>DefineTestSupport=$(DefineTestSupport)</AdditionalProperties>
+    </ProjectReference>
+    <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj">
+      <BuildReference>true</BuildReference>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <AdditionalProperties>$(HybridCpuIseProjectReferenceProperties)</AdditionalProperties>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

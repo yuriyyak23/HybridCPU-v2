@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RestoreUseStaticGraphEvaluation>false</RestoreUseStaticGraphEvaluation>
+    <DefineTestSupport>true</DefineTestSupport>
+    <!-- Tests legitimately exercise legacy ICpuState shims (ReadIntRegister / GetInstructionPointer) -->
+    <NoWarn>$(NoWarn);CS0612;CS0618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HybridCPU_Compiler\HybridCPU_Compiler.csproj">
+      <AdditionalProperties>DefineTestSupport=$(DefineTestSupport)</AdditionalProperties>
+    </ProjectReference>
+    <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj">
+      <BuildReference>true</BuildReference>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <AdditionalProperties>$(HybridCpuIseProjectReferenceProperties)</AdditionalProperties>
+    </ProjectReference>
+    <ProjectReference Include="..\CpuInterfaceBridge\HybridCpu_InterfaceBridge.csproj">
+      <AdditionalProperties>DefineTestSupport=$(DefineTestSupport)</AdditionalProperties>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="obj_r6fresh\**\*.cs" />
+    <EmbeddedResource Remove="obj_r6fresh\**\*" />
+    <None Remove="obj_r6fresh\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SafetyAndVerification\Phase1Backlog\" />
+  </ItemGroup>
+
+</Project>
