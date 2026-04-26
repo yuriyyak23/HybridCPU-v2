@@ -37,7 +37,7 @@
 
 \begin{document}
 
-% --- МАГИЧЕСКИЙ БЛОК ДЛЯ РАСТЯГИВАНИЯ ШАПКИ НА 2 КОЛОНКИ ---
+% --- two column block  ---
 \twocolumn[
   \begin{@twocolumnfalse}
 
@@ -55,7 +55,7 @@ A staged-materialization model for SMT-VLIW execution with runtime-owned legalit
 HybridCPU ISE studies a bounded bundle-first execution model for typed SMT/VLIW-style packing over a live PRF/rename-backed backend substrate. The model exposes a canonical decoded bundle at ingress, maps execution to a fixed typed \texttt{W=8} lane substrate, and keeps final admissibility at runtime rather than assigning correctness authority to compiler-emitted packet facts. Its central contour separates class-level admission from concrete lane materialization: runtime legality first decides whether a candidate may consume residual typed capacity under boundary, owner/domain, replay, witness, and pressure state; a later materialization step selects a placement-feasible lane inside the admitted class envelope. The same legality world governs a bounded assist plane whose admission/rejection policy is exercised by targeted diagnostics; post-admission discard and non-retirement are treated as code-backed properties with explicit test-local lifecycle evidence rather than as a complete production-retire proof. Replay reuse is likewise bounded: phase keys, structural identity, bundle metadata, boundary state, class templates, invalidation reasons, and replay tokens define reuse and rollback surfaces without claiming global hidden-state determinism or backend-global rewind. The implementation-backed evidence is therefore intentionally scoped: it supports analyzable typed-bundle composition, legality provenance, assist admission governance, replay-template reuse with invalidation and live-witness fallback, and bounded retire publication, but not timing, area, PPA superiority, official SPEC CPU equivalence, or a complete precise-exception theorem. The paper should therefore be read as an implementation-backed architecture report, not as a silicon, PPA, benchmark-superiority, or security-proof paper.
     \end{abstract}
 
-    \vspace{2em} % Небольшой отступ перед началом основного текста
+    \vspace{2em} %  small space between abstract and main text
   \end{@twocolumnfalse}
 ]
 % -----------------------------------------------------------
@@ -1281,7 +1281,7 @@ A.~Baumann, M.~Peinado, and G.~Hunt,
 
 
 % ---  Section 7: The Complexity Wall, Power Wall and Security Limits ---
-% Обоснование, почему мы уходим от OoO: энергопотребление и уязвимости.
+
 \bibitem{esmaeilzadeh2011dark}
 H.~Esmaeilzadeh, E.~Blem, R.~St.~Amant, K.~Sankaralingam, and D.~Burger,
 ``Dark silicon and the end of multicore scaling,''
@@ -1344,7 +1344,7 @@ J.~Reineke, I.~Liu, H.~D.~Patel, S.~Kim, and E.~A.~Lee,
 \emph{Proceedings of the 7th IEEE/ACM international conference on Hardware/software codesign and system synthesis (CODES+ISSS)}, pp. 99--108, 2011.
 
 % ---  Section 11: Decoupled Access-Execute and Modern DMA ---
-% Идеологическая база вашего StreamEngine (отделение вычислений от выборок).
+% Идеологическая база StreamEngine (отделение вычислений от выборок).
 \bibitem{smith1984decoupled}
 J.~E.~Smith,
 ``Decoupled access/execute computer architectures,''
