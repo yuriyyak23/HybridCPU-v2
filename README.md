@@ -1,4 +1,4 @@
-# HybridCPU ISE
+# HybridCPU v2 ISE
 
 **Replay-stable SMT-VLIW instruction-set emulator/runtime with streaming-vector transport, typed-slot scheduling, runtime-owned legality, replay evidence, and compiler/runtime structural agreement.**
 
