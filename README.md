@@ -194,9 +194,12 @@ flowchart LR
     ALU --> L3["Lane 3: ALU"]
     LSU["SlotClass.LsuClass"] --> L4["Lane 4: LSU"]
     LSU --> L5["Lane 5: LSU"]
-    DMA["SlotClass.DmaStreamClass"] --> L6["Lane 6: DMA / stream"]
-    BR["SlotClass.BranchControl"] --> L7["Lane 7: branch / system alias"]
+    DMA["SlotClass.DmaStreamClass"] --> L6["Lane 6: DMA / stream physical lane"]
+    DSC["Lane6 DmaStreamCompute: descriptor carrier; Execute fail-closed"] --> DMA
+    ASSIST6["Lane6 assist / SRF ingress: non-retiring helper"] --> DMA
+    BR["SlotClass.BranchControl"] --> L7["Lane 7: shared physical lane"]
     SYS["SlotClass.SystemSingleton"] --> L7
+    L7SDC["L7-SDC ACCEL_*: SystemSingleton carrier; Execute fail-closed; WritesRegister=false"] --> SYS
 ```
 
 ## Scalar, VLIW, and Streaming-Vector Layers
@@ -225,6 +228,9 @@ flowchart TB
     PLACE --> LANES["ALU lane class 0..3"]
     TRANS["VectorTransfer / segment carriers"] --> STREAM["BurstIO / memory subsystem / stream carriers"]
     CFG["VConfigMicroOp"] --> SYS["SystemSingleton lane 7, serializing"]
+    L7SDC["L7-SDC ACCEL_* carriers"] --> SYS
+    L7SDC --> L7CLOSED["fail-closed direct Execute; no current rd writeback"]
+    DSC["Lane6 DmaStreamCompute descriptor carrier"] --> DCLS["fail-closed direct Execute; helper/token model separate"]
     GPR["32 architectural integer registers per VT"] --> BACK["PRF / Rename / Commit substrate"]
     NOVRF["No code-backed separate vector-register-file mainline claim"] -. boundary .-> V
 ```
@@ -273,6 +279,10 @@ For Stream WhiteBook contours, it also prevents three common overclaims:
 flowchart LR
     N["Native VLIW Bundle"] --> DEC["VliwDecoderV4 / DecodedInstructionBundle"]
     DEC --> DES["BundleLegalityAnalyzer -> BundleLegalityDescriptor"]
+    DEC --> DSCDEC["Lane6 DSC sideband/projector"]
+    DSCDEC --> DSCCLOSED["DmaStreamCompute carrier; Execute fail-closed"]
+    DEC --> L7DEC["Lane7 L7-SDC ACCEL_* sideband/projector"]
+    L7DEC --> L7CLOSED["SystemSingleton carrier; Execute fail-closed; WritesRegister=false"]
     DES --> FACTS["DecodedBundleTypedSlotFacts + DecodedSlotLegality"]
     FACTS --> EVID["Decoded legality evidence"]
     LIVE["Current bundle resources + owner/domain state"] --> PREP["PrepareSmt: certificate + metadata + boundary guard"]
@@ -369,8 +379,8 @@ Diagram caveat: the compact carrier flow below is explanatory evidence for place
 flowchart LR
     INTENT["Explicit accelerator intent"] --> SIDE["ACCEL_* slot + sideband descriptor"]
     SIDE --> DEC["VliwDecoderV4 / projector validation"]
-    DEC --> L7["SystemSingleton carrier hard-pinned lane 7"]
-    L7 --> CLOSED["Direct Execute throws fail-closed"]
+    DEC --> L7["L7-SDC SystemSingleton carrier hard-pinned lane 7"]
+    L7 --> CLOSED["ACCEL_* direct Execute throws fail-closed; WritesRegister=false"]
     SIDE -. "evidence only" .-> MODEL["Token/backend/commit model APIs"]
 ```
 
@@ -409,8 +419,10 @@ Diagram caveat: this compact transport diagram is sideband preservation evidence
 flowchart LR
     IR["Compiler DSC/L7 intent"] --> SIDE["Typed sideband descriptor"]
     SIDE --> DEC["Decoder/projector validates carrier"]
-    DEC --> CARR["Lane6 or lane7 carrier"]
-    CARR --> CLOSED["Current direct Execute fail-closed where DSC/L7 carrier applies"]
+    DEC --> DSC["Lane6 DSC carrier: Execute disabled"]
+    DEC --> L7["Lane7 L7-SDC ACCEL_* carrier: Execute fail-closed; WritesRegister=false"]
+    DSC --> CLOSED["No current pipeline execution; projection does not publish memory"]
+    L7 --> CLOSED
     SIDE -. "preservation only" .-> GATE["CompilerBackendLoweringContract gates production lowering"]
 ```
 
@@ -1164,4 +1176,3 @@ dotnet run --project .\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj 
 ```
 
 These commands are the current repository-facing entry points for smoke validation, evidence recount, and runtime harness sanity. They do not replace code review, full test execution, or architecture-specific proof inspection.
-
