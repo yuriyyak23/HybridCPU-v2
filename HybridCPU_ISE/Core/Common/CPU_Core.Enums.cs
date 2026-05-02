@@ -390,6 +390,32 @@
                 VT_BARRIER = 244,
 
                 // ═══════════════════════════════════════════════════
+                // ISA v4: Lane6 DMA/Stream Compute - descriptor-backed native path
+                // Enum slot 245.
+                // ═══════════════════════════════════════════════════
+
+                /// <summary>Descriptor-backed lane6 DMA/stream memory-memory compute.</summary>
+                DmaStreamCompute = 245,
+
+                // ═══════════════════════════════════════════════════
+                // L7-SDC: Lane7 System Device Command carriers.
+                // Enum slots 260–265. Phase 03 fail-closed native surface only.
+                // ═══════════════════════════════════════════════════
+
+                /// <summary>Query external accelerator capability metadata through the lane7 system-device command surface.</summary>
+                ACCEL_QUERY_CAPS = 260,
+                /// <summary>Submit an external accelerator command descriptor through the lane7 system-device command surface.</summary>
+                ACCEL_SUBMIT = 261,
+                /// <summary>Poll an external accelerator token/status through the lane7 system-device command surface.</summary>
+                ACCEL_POLL = 262,
+                /// <summary>Wait for an external accelerator token/status through the lane7 system-device command surface.</summary>
+                ACCEL_WAIT = 263,
+                /// <summary>Cancel an external accelerator command through the lane7 system-device command surface.</summary>
+                ACCEL_CANCEL = 264,
+                /// <summary>Fence external accelerator command visibility through the lane7 system-device command surface.</summary>
+                ACCEL_FENCE = 265,
+
+                // ═══════════════════════════════════════════════════
                 // ISA v4: VMX Instruction Plane — mandatory core
                 // Enum slots 250–257.
                 // ═══════════════════════════════════════════════════
@@ -663,6 +689,13 @@
                 public const ushort SEV = (ushort)InstructionsEnum.SEV;
                 public const ushort POD_BARRIER = (ushort)InstructionsEnum.POD_BARRIER;
                 public const ushort VT_BARRIER = (ushort)InstructionsEnum.VT_BARRIER;
+                public const ushort DmaStreamCompute = (ushort)InstructionsEnum.DmaStreamCompute;
+                public const ushort ACCEL_QUERY_CAPS = (ushort)InstructionsEnum.ACCEL_QUERY_CAPS;
+                public const ushort ACCEL_SUBMIT = (ushort)InstructionsEnum.ACCEL_SUBMIT;
+                public const ushort ACCEL_POLL = (ushort)InstructionsEnum.ACCEL_POLL;
+                public const ushort ACCEL_WAIT = (ushort)InstructionsEnum.ACCEL_WAIT;
+                public const ushort ACCEL_CANCEL = (ushort)InstructionsEnum.ACCEL_CANCEL;
+                public const ushort ACCEL_FENCE = (ushort)InstructionsEnum.ACCEL_FENCE;
 
                 public const ushort VMXON = (ushort)InstructionsEnum.VMXON;
                 public const ushort VMXOFF = (ushort)InstructionsEnum.VMXOFF;

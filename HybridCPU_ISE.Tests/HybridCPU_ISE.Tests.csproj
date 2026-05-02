@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <RestoreUseStaticGraphEvaluation>false</RestoreUseStaticGraphEvaluation>
     <DefineTestSupport>true</DefineTestSupport>
+    <HybridCpuIseProjectReferenceProperties>DefineTestSupport=$(DefineTestSupport);BaseIntermediateOutputPath=obj\testsupport\;MSBuildProjectExtensionsPath=obj\;OutputPath=bin\$(Configuration)\testsupport\</HybridCpuIseProjectReferenceProperties>
     <!-- Tests legitimately exercise legacy ICpuState shims (ReadIntRegister / GetInstructionPointer) -->
     <NoWarn>$(NoWarn);CS0612;CS0618</NoWarn>
   </PropertyGroup>
@@ -33,8 +33,6 @@
       <AdditionalProperties>DefineTestSupport=$(DefineTestSupport)</AdditionalProperties>
     </ProjectReference>
     <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj">
-      <BuildReference>true</BuildReference>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <AdditionalProperties>$(HybridCpuIseProjectReferenceProperties)</AdditionalProperties>
     </ProjectReference>
     <ProjectReference Include="..\CpuInterfaceBridge\HybridCpu_InterfaceBridge.csproj">

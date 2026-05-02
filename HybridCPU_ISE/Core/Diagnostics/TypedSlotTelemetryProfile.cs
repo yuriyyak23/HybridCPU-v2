@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Telemetry;
 
 namespace YAKSys_Hybrid_CPU.Core.Diagnostics;
 
@@ -218,6 +220,19 @@ public sealed record TypedSlotTelemetryProfile(
     /// Null for older profiles and runs without loop-phase sampling enabled.
     /// </summary>
     public IReadOnlyList<LoopPhaseClassProfile>? LoopPhaseProfiles { get; init; }
+
+    /// <summary>
+    /// Optional descriptor-backed lane6 DmaStreamCompute telemetry.
+    /// Observation only: exported values cannot authorize replay, execution, or commit.
+    /// </summary>
+    public DmaStreamComputeTelemetrySnapshot? DmaStreamComputeTelemetry { get; init; }
+
+    /// <summary>
+    /// Optional descriptor-backed lane7 L7-SDC accelerator telemetry.
+    /// Observation only: snapshots are not guard credentials and cannot authorize
+    /// descriptor, capability, submit, execution, commit, or exception publication.
+    /// </summary>
+    public AcceleratorTelemetrySnapshot? AcceleratorTelemetry { get; init; }
 
     // ── Post-phase-05: heterogeneous retired width breakdown ──────────────
 

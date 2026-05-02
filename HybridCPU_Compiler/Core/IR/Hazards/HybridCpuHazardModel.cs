@@ -40,6 +40,11 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static IrResourceClass ClassifyResource(InstructionsEnum opcode, OpcodeInfo? opcodeInfo)
         {
+            if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
+            {
+                return IrResourceClass.DmaStream;
+            }
+
             if (HybridCpuOpcodeSemantics.IsLoadStoreOpcode(opcode, opcodeInfo))
             {
                 return IrResourceClass.LoadStore;

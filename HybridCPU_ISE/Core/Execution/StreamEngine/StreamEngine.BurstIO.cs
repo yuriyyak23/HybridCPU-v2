@@ -18,7 +18,7 @@ namespace YAKSys_Hybrid_CPU.Execution
     ///
     /// Enhanced with DMA support (ref2.md):
     /// - Large transfers (> DMA_THRESHOLD) use DMA Controller
-    /// - Allows overlapped computation and I/O
+    /// - Current helper drives DMA cycles synchronously before returning
     /// - Reduces CPU memory bandwidth contention
     ///
     /// HLS Note: Each burst operation takes MEMORY_LATENCY cycles (4 cycles for L1 cache hit).
@@ -326,8 +326,8 @@ namespace YAKSys_Hybrid_CPU.Execution
 
         /// <summary>
         /// Read elements via DMA Controller for large transfers.
-        /// Offloads memory transfer from CPU, enabling overlapped computation and I/O.
-        /// Uses completion callbacks for async notification.
+        /// Current ISE helper drives completion synchronously by calling
+        /// DMAController.ExecuteCycle() before returning.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong BurstReadViaDMA(ulong baseAddr, Span<byte> buffer, ulong elementCount, int elementSize)
@@ -374,9 +374,8 @@ namespace YAKSys_Hybrid_CPU.Execution
             if (!dmaController.StartTransfer(0))
                 return 0; // Failed to start
 
-            // Execute DMA cycles until transfer completes
-            // In a real hardware implementation, CPU would continue other work
-            // For ISE simulation, we process cycles to move the transfer forward
+            // Execute DMA cycles synchronously until transfer completes.
+            // This helper does not define architectural CPU/DMA overlap.
             int maxCycles = 10000; // Safety limit
             int cycles = 0;
             while (!transferComplete && cycles < maxCycles)
@@ -517,8 +516,8 @@ namespace YAKSys_Hybrid_CPU.Execution
 
         /// <summary>
         /// Write elements via DMA Controller for large transfers.
-        /// Offloads memory transfer from CPU, enabling overlapped computation and I/O.
-        /// Uses completion callbacks for async notification.
+        /// Current ISE helper writes the destination surface first, then drives
+        /// DMA bookkeeping synchronously before returning.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong BurstWriteViaDMA(ulong baseAddr, ReadOnlySpan<byte> buffer, ulong elementCount, int elementSize)
@@ -576,8 +575,8 @@ namespace YAKSys_Hybrid_CPU.Execution
                 return elementCount; // Data already written
             }
 
-            // Execute DMA cycles until transfer completes
-            // In a real hardware implementation, CPU would continue other work
+            // Execute DMA cycles synchronously until transfer completes.
+            // This helper does not define architectural CPU/DMA overlap.
             int maxCycles = 10000; // Safety limit
             int cycles = 0;
             while (!transferComplete && cycles < maxCycles)

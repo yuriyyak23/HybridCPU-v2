@@ -21,7 +21,8 @@ namespace HybridCPU.Compiler.Core.IR
             byte[] programImage,
             int contractVersion,
             ulong? emissionBaseAddress = null,
-            IrAdmissibilityAgreement? admissibilityAgreement = null)
+            IrAdmissibilityAgreement? admissibilityAgreement = null,
+            IReadOnlyList<VliwBundleAnnotations>? loweredBundleAnnotations = null)
         {
             ArgumentNullException.ThrowIfNull(programSchedule);
             ArgumentNullException.ThrowIfNull(bundleLayout);
@@ -43,9 +44,15 @@ namespace HybridCPU.Compiler.Core.IR
                     nameof(admissibilityAgreement));
             }
 
+            IReadOnlyList<VliwBundleAnnotations> resolvedBundleAnnotations =
+                ResolveLoweredBundleAnnotations(
+                    loweredBundles.Count,
+                    loweredBundleAnnotations);
+
             ProgramSchedule = programSchedule;
             BundleLayout = bundleLayout;
             LoweredBundles = loweredBundles;
+            LoweredBundleAnnotations = resolvedBundleAnnotations;
             ProgramImage = programImage;
             AdmissibilityAgreement = resolvedAgreement;
             ContractVersion = contractVersion;
@@ -66,6 +73,12 @@ namespace HybridCPU.Compiler.Core.IR
         /// Gets the backend-facing lowered bundles in program order.
         /// </summary>
         public IReadOnlyList<VLIW_Bundle> LoweredBundles { get; }
+
+        /// <summary>
+        /// Gets per-lowered-bundle sideband annotations aligned by physical slot.
+        /// Descriptor sideband here is transport evidence only and is still revalidated by ISE decode/projector.
+        /// </summary>
+        public IReadOnlyList<VliwBundleAnnotations> LoweredBundleAnnotations { get; }
 
         /// <summary>
         /// Gets the compiled-program-level compiler/runtime agreement summary.
@@ -118,7 +131,39 @@ namespace HybridCPU.Compiler.Core.IR
                 ProgramImage,
                 ContractVersion,
                 emissionBaseAddress,
-                AdmissibilityAgreement);
+                AdmissibilityAgreement,
+                LoweredBundleAnnotations);
+        }
+
+        private static IReadOnlyList<VliwBundleAnnotations> ResolveLoweredBundleAnnotations(
+            int loweredBundleCount,
+            IReadOnlyList<VliwBundleAnnotations>? loweredBundleAnnotations)
+        {
+            if (loweredBundleAnnotations is null)
+            {
+                var emptyAnnotations = new VliwBundleAnnotations[loweredBundleCount];
+                for (int index = 0; index < emptyAnnotations.Length; index++)
+                {
+                    emptyAnnotations[index] = VliwBundleAnnotations.Empty;
+                }
+
+                return Array.AsReadOnly(emptyAnnotations);
+            }
+
+            if (loweredBundleAnnotations.Count != loweredBundleCount)
+            {
+                throw new ArgumentException(
+                    $"Lowered bundle annotations count ({loweredBundleAnnotations.Count}) must match lowered bundle count ({loweredBundleCount}).",
+                    nameof(loweredBundleAnnotations));
+            }
+
+            var copy = new VliwBundleAnnotations[loweredBundleAnnotations.Count];
+            for (int index = 0; index < copy.Length; index++)
+            {
+                copy[index] = loweredBundleAnnotations[index] ?? VliwBundleAnnotations.Empty;
+            }
+
+            return Array.AsReadOnly(copy);
         }
     }
 }

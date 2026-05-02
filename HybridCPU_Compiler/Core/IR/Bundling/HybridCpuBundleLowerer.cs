@@ -2,7 +2,9 @@ using HybridCPU_ISE.Arch;
 using System;
 using System.Collections.Generic;
 using YAKSys_Hybrid_CPU;
+using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
+using YAKSys_Hybrid_CPU.Core.Registers;
 
 namespace HybridCPU.Compiler.Core.IR
 {
@@ -25,6 +27,26 @@ namespace HybridCPU.Compiler.Core.IR
             }
 
             return loweredBundles;
+        }
+
+        /// <summary>
+        /// Emits per-physical-bundle sideband annotations aligned with lowered bundle slots.
+        /// </summary>
+        public IReadOnlyList<VliwBundleAnnotations> EmitAnnotationsForProgram(
+            IrProgramBundlingResult programBundlingResult)
+        {
+            ArgumentNullException.ThrowIfNull(programBundlingResult);
+
+            var annotations = new List<VliwBundleAnnotations>();
+            foreach (IrBasicBlockBundlingResult blockResult in programBundlingResult.BlockResults)
+            {
+                foreach (IrMaterializedBundle bundle in blockResult.Bundles)
+                {
+                    annotations.Add(EmitAnnotationsForBundle(bundle));
+                }
+            }
+
+            return annotations;
         }
 
         /// <summary>
@@ -74,6 +96,29 @@ namespace HybridCPU.Compiler.Core.IR
             return HybridCpuTypedSlotFactsEmitter.EmitFacts(bundle);
         }
 
+        public static VliwBundleAnnotations EmitAnnotationsForBundle(IrMaterializedBundle bundle)
+        {
+            ArgumentNullException.ThrowIfNull(bundle);
+
+            var slotMetadata = new InstructionSlotMetadata[YAKSys_Hybrid_CPU.Core.BundleMetadata.BundleSlotCount];
+            for (int slotIndex = 0; slotIndex < slotMetadata.Length; slotIndex++)
+            {
+                slotMetadata[slotIndex] = InstructionSlotMetadata.Default;
+            }
+
+            foreach (IrMaterializedBundleSlot slot in bundle.Slots)
+            {
+                if (slot.Instruction is not { } instruction)
+                {
+                    continue;
+                }
+
+                slotMetadata[slot.SlotIndex] = BuildInstructionSlotMetadata(instruction);
+            }
+
+            return new VliwBundleAnnotations(slotMetadata);
+        }
+
         private static VLIW_Instruction LowerInstruction(IrInstruction instruction)
         {
             // Preserve only the surviving legacy-compatible VT hint in word3.
@@ -89,7 +134,10 @@ namespace HybridCPU.Compiler.Core.IR
                 StreamLength = instruction.StreamLength,
                 Stride = instruction.Stride,
                 RowStride = instruction.RowStride,
-                VirtualThreadId = instruction.VirtualThreadId,
+                VirtualThreadId = instruction.Opcode == Processor.CPU_Core.InstructionsEnum.DmaStreamCompute ||
+                                  OpcodeRegistry.IsSystemDeviceCommandOpcode((uint)instruction.Opcode)
+                    ? (byte)0
+                    : instruction.VirtualThreadId,
                 Indexed = instruction.Indexed,
                 Is2D = instruction.Is2D,
                 Reduction = instruction.Reduction,
@@ -98,6 +146,68 @@ namespace HybridCPU.Compiler.Core.IR
             };
 
             return loweredInstruction;
+        }
+
+        private static InstructionSlotMetadata BuildInstructionSlotMetadata(
+            IrInstruction instruction)
+        {
+            SlotMetadata slotMetadata = BuildSlotMetadata(instruction);
+            var metadata = new InstructionSlotMetadata(
+                VtId.Create(instruction.VirtualThreadId),
+                slotMetadata)
+            {
+                DmaStreamComputeDescriptor = instruction.DmaStreamComputeDescriptor,
+                AcceleratorCommandDescriptor = instruction.AcceleratorCommandDescriptor
+            };
+
+            return metadata;
+        }
+
+        private static SlotMetadata BuildSlotMetadata(IrInstruction instruction)
+        {
+            SlotPinningKind runtimePinning =
+                IrSlotClassMapping.ToRuntimePinningKind(instruction.Annotation.BindingKind);
+            var placement = new SlotPlacementMetadata
+            {
+                RequiredSlotClass = instruction.Annotation.RequiredSlotClass,
+                PinningKind = runtimePinning,
+                PinnedLaneId = ResolvePinnedLaneId(
+                    instruction.Annotation.RequiredSlotClass,
+                    runtimePinning),
+                DomainTag = instruction.Annotation.DomainTag
+            };
+
+            StealabilityPolicy stealabilityPolicy = instruction.Annotation.StealabilityHint
+                ? StealabilityPolicy.Stealable
+                : StealabilityPolicy.NotStealable;
+
+            return new SlotMetadata
+            {
+                StealabilityPolicy = stealabilityPolicy,
+                AdmissionMetadata = MicroOpAdmissionMetadata.Default with
+                {
+                    IsStealable = instruction.Annotation.StealabilityHint,
+                    DomainTag = instruction.Annotation.DomainTag,
+                    Placement = placement
+                }
+            };
+        }
+
+        private static byte ResolvePinnedLaneId(
+            SlotClass requiredSlotClass,
+            SlotPinningKind pinningKind)
+        {
+            if (pinningKind != SlotPinningKind.HardPinned)
+            {
+                return 0;
+            }
+
+            return requiredSlotClass switch
+            {
+                SlotClass.BranchControl => 7,
+                SlotClass.SystemSingleton => 7,
+                _ => 0
+            };
         }
 
         private static ulong GetDestSrc1Pointer(IrInstruction instruction)
@@ -188,4 +298,3 @@ namespace HybridCPU.Compiler.Core.IR
         }
     }
 }
-

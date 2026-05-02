@@ -144,7 +144,7 @@ namespace YAKSys_Hybrid_CPU.Core.Memory
                 List<(int CoreId, int VirtualThreadId)> staleReservations = new();
                 foreach (KeyValuePair<(int CoreId, int VirtualThreadId), Reservation> entry in Reservations)
                 {
-                    if (RangesOverlap(
+                    if (MemoryRangeOverlap.RangesOverlap(
                         address,
                         length,
                         entry.Value.Address,
@@ -161,20 +161,6 @@ namespace YAKSys_Hybrid_CPU.Core.Memory
             }
         }
 
-        private static bool RangesOverlap(
-            ulong leftAddress,
-            ulong leftLength,
-            ulong rightAddress,
-            ulong rightLength)
-        {
-            if (leftLength == 0 || rightLength == 0)
-            {
-                return false;
-            }
-
-            return leftAddress < rightAddress + rightLength &&
-                rightAddress < leftAddress + leftLength;
-        }
     }
 
     public sealed class MainMemoryAtomicMemoryUnit : IAtomicMemoryUnit

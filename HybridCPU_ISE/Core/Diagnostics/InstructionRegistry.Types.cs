@@ -65,7 +65,8 @@ namespace YAKSys_Hybrid_CPU.Core
     }
 
     /// <summary>
-    /// Resource footprint for accelerator operations (Phase 4)
+    /// Resource footprint for retained custom-accelerator descriptor fixtures (Phase 4).
+    /// This is compatibility metadata only; it is not current typed-slot authority.
     /// </summary>
     public struct AcceleratorResourceFootprint
     {
@@ -75,14 +76,15 @@ namespace YAKSys_Hybrid_CPU.Core
     }
 
     /// <summary>
-    /// Interface for HLS-generated custom accelerators (Phase 4).
-    /// Allows integration of C# HLS output (e.g., Microsoft KiWi) into HybridCPU ISE.
+    /// Interface for retained custom-accelerator descriptor fixtures (Phase 4).
+    /// Registration through this interface records legacy opcode families for tests and
+    /// fail-closed diagnostics. It does not publish canonical decode, DMA, replay, retire,
+    /// or scheduler authority.
     ///
-    /// Design philosophy:
-    /// - Hardware-agnostic: suitable for HLS synthesis
-    /// - Deterministic: predictable timing and behavior
-    /// - Safe: integrates with FSP scheduler and SafetyVerifier
-    /// - Efficient: supports pipelining and data-dependent latency
+    /// Fixture philosophy:
+    /// - keep legacy registration surfaces available for negative controls;
+    /// - report shape, latency, and resource metadata without enabling runtime success;
+    /// - fail closed at runtime until a truthful carrier contract exists.
     /// </summary>
     public interface ICustomAccelerator
     {
@@ -90,11 +92,12 @@ namespace YAKSys_Hybrid_CPU.Core
         /// </summary>
         string Name { get; }
 
-        /// Supported opcodes handled by this accelerator
+        /// Supported legacy opcode family recorded for fail-closed checks.
         /// </summary>
         IReadOnlyList<uint> SupportedOpcodes { get; }
 
-        /// Execute operation with given operands
+        /// Execute the local descriptor-fixture model with given operands.
+        /// This method is not canonical runtime publication authority.
         /// </summary>
         /// <param name="opcode">Operation code</param>
         /// <param name="operands">Input operands</param>
@@ -110,7 +113,7 @@ namespace YAKSys_Hybrid_CPU.Core
         int GetLatency(uint opcode, ulong[] operands);
 
         /// <summary>
-        /// Get resource requirements (for FSP scheduling)
+        /// Get retained resource metadata for compatibility tests.
         /// </summary>
         /// <param name="opcode">Operation code</param>
         /// <returns>Resource footprint (memory, registers, etc.)</returns>
@@ -122,7 +125,7 @@ namespace YAKSys_Hybrid_CPU.Core
         bool IsPipelined(uint opcode);
 
         /// <summary>
-        /// Reset accelerator state (for deterministic execution)
+        /// Reset descriptor-fixture state.
         /// </summary>
         void Reset();
     }

@@ -6,12 +6,12 @@ namespace YAKSys_Hybrid_CPU.Execution
     internal static class AcceleratorRuntimeFailClosed
     {
         private const string RegistrationMessage =
-            "Custom accelerator DMA registration is not implemented in the current runtime. " +
-            "The contour must fail closed instead of silently accepting the device.";
+            "Retained custom-accelerator DMA registration is not implemented in the current runtime. " +
+            "The legacy contour must fail closed instead of silently accepting the device as authority.";
 
         private const string TransferMessage =
-            "Custom accelerator DMA transfers are not implemented in the current runtime. " +
-            "The contour must fail closed instead of returning a completed transfer token.";
+            "Retained custom-accelerator DMA transfers are not implemented in the current runtime. " +
+            "The legacy contour must fail closed instead of returning a completed transfer token.";
 
         [DoesNotReturn]
         public static void ThrowRegistrationNotSupported() =>

@@ -238,24 +238,7 @@ namespace YAKSys_Hybrid_CPU.Core
         /// </summary>
         private bool HasRangeOverlap(
             IReadOnlyList<(ulong Address, ulong Length)> ranges1,
-            IReadOnlyList<(ulong Address, ulong Length)> ranges2)
-        {
-            foreach (var range1 in ranges1)
-            {
-                ulong start1 = range1.Address;
-                ulong end1 = range1.Address + range1.Length;
-
-                foreach (var range2 in ranges2)
-                {
-                    ulong start2 = range2.Address;
-                    ulong end2 = range2.Address + range2.Length;
-
-                    if (start1 < end2 && start2 < end1)
-                        return true;
-                }
-            }
-
-            return false;
-        }
+            IReadOnlyList<(ulong Address, ulong Length)> ranges2) =>
+            HasAnyMemoryRangeOverlap(ranges1, ranges2);
     }
 }

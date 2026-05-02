@@ -40,6 +40,22 @@ namespace YAKSys_Hybrid_CPU.Arch
                 : $"0x{opCode:X}";
 
         /// <summary>
+        /// Returns <see langword="true"/> for canonical native L7-SDC lane7
+        /// system-device command carriers.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsSystemDeviceCommandOpcode(uint opCode)
+        {
+            return opCode is
+                Processor.CPU_Core.IsaOpcodeValues.ACCEL_QUERY_CAPS or
+                Processor.CPU_Core.IsaOpcodeValues.ACCEL_SUBMIT or
+                Processor.CPU_Core.IsaOpcodeValues.ACCEL_POLL or
+                Processor.CPU_Core.IsaOpcodeValues.ACCEL_WAIT or
+                Processor.CPU_Core.IsaOpcodeValues.ACCEL_CANCEL or
+                Processor.CPU_Core.IsaOpcodeValues.ACCEL_FENCE;
+        }
+
+        /// <summary>
         /// Resolve canonical runtime semantics for a published opcode contour.
         /// Returns false when the opcode is not published by <see cref="Opcodes"/>.
         /// </summary>

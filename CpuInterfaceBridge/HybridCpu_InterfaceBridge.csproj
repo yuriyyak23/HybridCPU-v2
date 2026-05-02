@@ -6,13 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <HybridCpuIseProjectReferenceProperties>DefineTestSupport=$(DefineTestSupport)</HybridCpuIseProjectReferenceProperties>
+    <HybridCpuIseProjectReferenceProperties Condition="'$(DefineTestSupport)' == 'true'">DefineTestSupport=$(DefineTestSupport);BaseIntermediateOutputPath=obj\testsupport\;MSBuildProjectExtensionsPath=obj\;OutputPath=bin\$(Configuration)\testsupport\</HybridCpuIseProjectReferenceProperties>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\HybridCPU_Compiler\HybridCPU_Compiler.csproj">
       <AdditionalProperties>DefineTestSupport=$(DefineTestSupport)</AdditionalProperties>
     </ProjectReference>
     <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj">
-      <BuildReference>true</BuildReference>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <AdditionalProperties>$(HybridCpuIseProjectReferenceProperties)</AdditionalProperties>
     </ProjectReference>
   </ItemGroup>

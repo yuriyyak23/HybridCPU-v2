@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using YAKSys_Hybrid_CPU.Core.Memory;
 
 namespace YAKSys_Hybrid_CPU.Memory
 {
@@ -382,11 +383,22 @@ namespace YAKSys_Hybrid_CPU.Memory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void InvalidateOverlappingRange(ulong address, uint byteCount)
         {
+            _ = InvalidateOverlappingRangeAndCount(address, byteCount);
+        }
+
+        /// <summary>
+        /// Invalidate any SRF window that overlaps the written address range and
+        /// return the number of windows invalidated.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int InvalidateOverlappingRangeAndCount(ulong address, ulong byteCount)
+        {
             if (byteCount == 0)
             {
-                return;
+                return 0;
             }
 
+            int invalidated = 0;
             for (int i = 0; i < registerCount; i++)
             {
                 ref RegisterEntry reg = ref registers[i];
@@ -401,11 +413,18 @@ namespace YAKSys_Hybrid_CPU.Memory
                     continue;
                 }
 
-                if (RangesOverlap(address, byteCount, reg.SourceAddress, trackedBytes))
+                if (MemoryRangeOverlap.RangesOverlap(
+                        address,
+                        byteCount,
+                        reg.SourceAddress,
+                        trackedBytes))
                 {
                     InvalidateRegister(i);
+                    invalidated++;
                 }
             }
+
+            return invalidated;
         }
 
         /// <summary>
@@ -438,16 +457,5 @@ namespace YAKSys_Hybrid_CPU.Memory
                 : ComputeRequestedByteCount(reg.ElementSize, reg.ElementCount);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool RangesOverlap(
-            ulong addressA,
-            uint byteCountA,
-            ulong addressB,
-            uint byteCountB)
-        {
-            ulong endA = addressA + byteCountA;
-            ulong endB = addressB + byteCountB;
-            return addressA < endB && addressB < endA;
-        }
     }
 }

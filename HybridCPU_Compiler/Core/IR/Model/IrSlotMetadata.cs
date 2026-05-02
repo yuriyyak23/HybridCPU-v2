@@ -1,5 +1,7 @@
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Core;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
 
 namespace HybridCPU.Compiler.Core.IR
 {
@@ -37,7 +39,9 @@ namespace HybridCPU.Compiler.Core.IR
     public readonly record struct IrSlotMetadata(
         byte VirtualThreadId,
         bool StealabilityHint = false,
-        IrTypedSlotAdmissionDescriptor? AdmissionDescriptor = null)
+        IrTypedSlotAdmissionDescriptor? AdmissionDescriptor = null,
+        DmaStreamComputeDescriptor? DmaStreamComputeDescriptor = null,
+        AcceleratorCommandDescriptor? AcceleratorCommandDescriptor = null)
     {
         public static IrSlotMetadata DefaultForVirtualThread(byte virtualThreadId) =>
             new(virtualThreadId);
@@ -45,9 +49,17 @@ namespace HybridCPU.Compiler.Core.IR
         public static IrSlotMetadata FromInstructionMetadata(InstructionSlotMetadata metadata) =>
             new(
                 metadata.VirtualThreadId.Value,
-                metadata.SlotMetadata.StealabilityPolicy == StealabilityPolicy.Stealable);
+                metadata.SlotMetadata.StealabilityPolicy == StealabilityPolicy.Stealable,
+                DmaStreamComputeDescriptor: metadata.DmaStreamComputeDescriptor,
+                AcceleratorCommandDescriptor: metadata.AcceleratorCommandDescriptor);
 
         public IrSlotMetadata WithAdmissionDescriptor(IrOpcodeExecutionProfile profile) =>
             this with { AdmissionDescriptor = IrTypedSlotAdmissionDescriptor.FromExecutionProfile(profile) };
+
+        public IrSlotMetadata WithAcceleratorDescriptor(AcceleratorCommandDescriptor descriptor)
+        {
+            System.ArgumentNullException.ThrowIfNull(descriptor);
+            return this with { AcceleratorCommandDescriptor = descriptor };
+        }
     }
 }

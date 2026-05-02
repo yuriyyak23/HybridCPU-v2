@@ -26,7 +26,8 @@ internal static class DiagnosticProfileCatalog
         GetRequired("replay"),
         GetRequired("safety"),
         GetRequired("replay-reuse"),
-        GetRequired("assistant")
+        GetRequired("assistant"),
+        GetRequired("stream-vector")
     ];
 
     public static IReadOnlyList<DiagnosticRunProfile> MatrixMemory { get; } =
@@ -47,7 +48,8 @@ internal static class DiagnosticProfileCatalog
         GetRequired("replay"),
         GetRequired("safety"),
         GetRequired("replay-reuse"),
-        GetRequired("assistant")
+        GetRequired("assistant"),
+        GetRequired("stream-vector")
     ];
 
     public static IReadOnlyList<DiagnosticRunProfile> MatrixSpec { get; } =
@@ -61,7 +63,8 @@ internal static class DiagnosticProfileCatalog
         GetRequired("replay"),
         GetRequired("safety"),
         GetRequired("replay-reuse"),
-        GetRequired("assistant")
+        GetRequired("assistant"),
+        GetRequired("stream-vector")
     ];
 
     public static IReadOnlyList<DiagnosticRunProfile> MatrixWide { get; } =
@@ -70,6 +73,20 @@ internal static class DiagnosticProfileCatalog
         GetRequired("lk-long"),
         GetRequired("bnmcz-long"),
         GetRequired("replay")
+    ];
+
+    public static IReadOnlyList<DiagnosticRunProfile> WhiteBookSmoke { get; } =
+    [
+        GetRequired("whitebook-contract")
+    ];
+
+    public static IReadOnlyList<DiagnosticRunProfile> WhiteBookFull { get; } =
+    [
+        GetRequired("whitebook-contract"),
+        GetRequired("safety"),
+        GetRequired("replay-reuse"),
+        GetRequired("assistant"),
+        GetRequired("stream-vector")
     ];
 
     public static DiagnosticRunProfile Resolve(string arg)
@@ -83,7 +100,7 @@ internal static class DiagnosticProfileCatalog
         if (!AliasToProfileId.TryGetValue(normalized, out string? profileId))
         {
             throw new ArgumentException(
-                "Expected one of: showcase, showcase-long, full, native, vt, with-vt, vt-fsp, spec-rate, novt, no-vt, without-vt, single-thread-vector, spec-vector, alu, scalar-baseline, spec-int, max, max-ipc, throughput-max, spec-mix, lk, bank-pressure-lh, lk-long, spec-mem-lh, bnmcz, bank-pressure-bnmcz, bnmcz-long, spec-mem-bank, replay, replay-phase, replay-pair.",
+                "Expected one of: showcase, showcase-long, full, native, vt, with-vt, vt-fsp, spec-rate, novt, no-vt, without-vt, single-thread-vector, spec-vector, alu, scalar-baseline, spec-int, max, max-ipc, throughput-max, spec-mix, lk, bank-pressure-lh, lk-long, spec-mem-lh, bnmcz, bank-pressure-bnmcz, bnmcz-long, spec-mem-bank, replay, replay-phase, replay-pair, safety, replay-reuse, assistant, stream-vector, spec-stream-vector, whitebook-contract.",
                 nameof(arg));
         }
 
@@ -124,7 +141,9 @@ internal static class DiagnosticProfileCatalog
             ["replay"] = DiagnosticRunProfile.CreateReplayPair(displayName: "Replay Phase Pair (SPEC-like scheduler certificate slice)"),
             ["safety"] = DiagnosticRunProfile.CreateArchitectural("safety", "SafetyVerifier Negative Controls", DiagnosticWorkloadKind.SafetyVerifierNegativeControls),
             ["replay-reuse"] = DiagnosticRunProfile.CreateArchitectural("replay-reuse", "Replay Template Reuse Diagnostics", DiagnosticWorkloadKind.ReplayReuseDiagnostics),
-            ["assistant"] = DiagnosticRunProfile.CreateArchitectural("assistant", "Assistant Decision Matrix", DiagnosticWorkloadKind.AssistantDecisionMatrix)
+            ["assistant"] = DiagnosticRunProfile.CreateArchitectural("assistant", "Assistant Decision Matrix", DiagnosticWorkloadKind.AssistantDecisionMatrix),
+            ["stream-vector"] = DiagnosticRunProfile.CreateArchitectural("stream-vector", "Stream/Vector SPEC-like Suite (SGEMM/DSP/compress/crypto/stencil + lane6 token)", DiagnosticWorkloadKind.StreamVectorSpecSuite, wallClockTimeoutMs: 60000, workloadIterations: 250UL),
+            ["whitebook-contract"] = DiagnosticRunProfile.CreateArchitectural("whitebook-contract", "Stream WhiteBook Contract Diagnostics", DiagnosticWorkloadKind.WhiteBookContractDiagnostics, wallClockTimeoutMs: 20000, workloadIterations: 200UL)
         };
 
         return new ReadOnlyDictionary<string, DiagnosticRunProfile>(profiles);
@@ -181,7 +200,18 @@ internal static class DiagnosticProfileCatalog
             ["replay-templates"] = "replay-reuse",
             ["assistant"] = "assistant",
             ["assistant-matrix"] = "assistant",
-            ["assist-matrix"] = "assistant"
+            ["assist-matrix"] = "assistant",
+            ["stream-vector"] = "stream-vector",
+            ["stream-suite"] = "stream-vector",
+            ["vector-suite"] = "stream-vector",
+            ["spec-stream"] = "stream-vector",
+            ["spec-vector-suite"] = "stream-vector",
+            ["spec-stream-vector"] = "stream-vector",
+            ["whitebook-contract"] = "whitebook-contract",
+            ["whitebook"] = "whitebook-contract",
+            ["stream-whitebook"] = "whitebook-contract",
+            ["stream-whitebook-contract"] = "whitebook-contract",
+            ["whitebook-boundaries"] = "whitebook-contract"
         };
 
         return new ReadOnlyDictionary<string, string>(aliases);

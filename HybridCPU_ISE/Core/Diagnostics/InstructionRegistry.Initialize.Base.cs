@@ -1,4 +1,5 @@
 
+using System;
 using YAKSys_Hybrid_CPU.Arch;
 
 namespace YAKSys_Hybrid_CPU.Core
@@ -56,6 +57,36 @@ namespace YAKSys_Hybrid_CPU.Core
             RegisterTypedStoreOp((uint)Processor.CPU_Core.InstructionsEnum.SH);
             RegisterTypedStoreOp((uint)Processor.CPU_Core.InstructionsEnum.SW);
             RegisterTypedStoreOp((uint)Processor.CPU_Core.InstructionsEnum.SD);
+            RegisterSemanticFactory((uint)Processor.CPU_Core.InstructionsEnum.DmaStreamCompute, ctx =>
+                throw new DecodeProjectionFaultException(
+                    "DmaStreamCompute requires a guard-accepted descriptor sideband from native VLIW decode. " +
+                    "InstructionRegistry raw factory publication is not the canonical lane6 descriptor path."));
+            RegisterOpAttributes((uint)Processor.CPU_Core.InstructionsEnum.DmaStreamCompute, new MicroOpDescriptor
+            {
+                Latency = 8,
+                MemFootprintClass = 3,
+                IsMemoryOp = true,
+                WritesRegister = false,
+            });
+
+            RegisterSystemDeviceCommandOp(
+                (uint)Processor.CPU_Core.InstructionsEnum.ACCEL_QUERY_CAPS,
+                static () => new AcceleratorQueryCapsMicroOp());
+            RegisterSystemDeviceCommandOp(
+                (uint)Processor.CPU_Core.InstructionsEnum.ACCEL_SUBMIT,
+                static () => new AcceleratorSubmitMicroOp());
+            RegisterSystemDeviceCommandOp(
+                (uint)Processor.CPU_Core.InstructionsEnum.ACCEL_POLL,
+                static () => new AcceleratorPollMicroOp());
+            RegisterSystemDeviceCommandOp(
+                (uint)Processor.CPU_Core.InstructionsEnum.ACCEL_WAIT,
+                static () => new AcceleratorWaitMicroOp());
+            RegisterSystemDeviceCommandOp(
+                (uint)Processor.CPU_Core.InstructionsEnum.ACCEL_CANCEL,
+                static () => new AcceleratorCancelMicroOp());
+            RegisterSystemDeviceCommandOp(
+                (uint)Processor.CPU_Core.InstructionsEnum.ACCEL_FENCE,
+                static () => new AcceleratorFenceMicroOp());
 
             RegisterBranchOp((uint)Processor.CPU_Core.InstructionsEnum.JAL, isConditional: false);
             RegisterBranchOp((uint)Processor.CPU_Core.InstructionsEnum.JALR, isConditional: false);
@@ -285,6 +316,30 @@ namespace YAKSys_Hybrid_CPU.Core
             RegisterVmxOp((uint)Processor.CPU_Core.InstructionsEnum.VMWRITE);
             RegisterVmxOp((uint)Processor.CPU_Core.InstructionsEnum.VMCLEAR);
             RegisterVmxOp((uint)Processor.CPU_Core.InstructionsEnum.VMPTRLD);
+        }
+
+        private static void RegisterSystemDeviceCommandOp(
+            uint opCode,
+            Func<SystemDeviceCommandMicroOp> factory)
+        {
+            RegisterSemanticFactory(opCode, ctx =>
+            {
+                SystemDeviceCommandMicroOp microOp = factory();
+                if (microOp.OpCode != ctx.OpCode)
+                {
+                    throw new DecodeProjectionFaultException(
+                        $"L7-SDC factory opcode mismatch: expected 0x{ctx.OpCode:X}, created 0x{microOp.OpCode:X}.");
+                }
+
+                return microOp;
+            });
+
+            RegisterOpAttributes(
+                opCode,
+                CreatePublishedSystemLikeDescriptor(
+                    opCode,
+                    writesRegister: false,
+                    isMemoryOp: false));
         }
     }
 }

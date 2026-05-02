@@ -23,6 +23,7 @@ namespace HybridCPU.Compiler.Core.Threading
             ushort stride,
             StealabilityPolicy stealabilityPolicy)
         {
+            ValidateNoDirectSystemDeviceCommandEmission(opCode);
             ValidateInsertionIndex(instructionIndex, nameof(instructionIndex));
             EnsureInstructionCapacity();
             int oldInstructionCount = _instructionCount;

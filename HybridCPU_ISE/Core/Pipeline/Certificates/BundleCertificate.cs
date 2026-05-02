@@ -37,9 +37,8 @@ namespace YAKSys_Hybrid_CPU.Core
         public uint ThreadMask;
 
         /// <summary>
-        /// Cryptographic signature from Hardware Root of Trust (HRoT)
-        /// In real hardware, this would be computed by secure element
-        /// For ISE, this is simulated
+        /// Simulated signature bytes for the ISE proof fixture.
+        /// This is not a hardware root-of-trust claim.
         /// </summary>
         public byte[] Signature;
 
@@ -114,16 +113,12 @@ namespace YAKSys_Hybrid_CPU.Core
         }
 
         /// <summary>
-        /// Verify proof signature (simulated for ISE)
-        /// In real hardware, this would use hardware crypto accelerator
+        /// Verify proof-fixture signature bytes.
+        /// This is simulated for ISE and is not a hardware root-of-trust claim.
         /// </summary>
         public bool VerifySignature()
         {
-            // Simulated signature verification
-            // Real implementation would use:
-            // - ECDSA or RSA signature verification
-            // - Hardware Root of Trust (HRoT) public key
-            // - Secure boot chain verification
+            // Simulated signature verification only.
 
             if (Signature == null || Signature.Length == 0)
                 return false;

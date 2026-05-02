@@ -54,6 +54,14 @@ namespace YAKSys_Hybrid_CPU.Arch
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.FENCE, "FENCE", OpcodeCategory.System, 0, InstructionFlags.UsesImmediate, 1, 0, InstructionClass.System, SerializationClass.MemoryOrdered),
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.FENCE_I, "FENCE.I", OpcodeCategory.System, 0, InstructionFlags.None, 1, 0, InstructionClass.System, SerializationClass.FullSerial),
 
+            // ========== L7-SDC: Lane7 System Device Command fail-closed carriers ==========
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ACCEL_QUERY_CAPS, "ACCEL_QUERY_CAPS", OpcodeCategory.System, 0, InstructionFlags.None, 1, 0, InstructionClass.System, SerializationClass.CsrOrdered),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ACCEL_SUBMIT, "ACCEL_SUBMIT", OpcodeCategory.System, 0, InstructionFlags.None, 1, 0, InstructionClass.System, SerializationClass.MemoryOrdered),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ACCEL_POLL, "ACCEL_POLL", OpcodeCategory.System, 0, InstructionFlags.None, 1, 0, InstructionClass.System, SerializationClass.CsrOrdered),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ACCEL_WAIT, "ACCEL_WAIT", OpcodeCategory.System, 0, InstructionFlags.None, 1, 0, InstructionClass.System, SerializationClass.FullSerial),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ACCEL_CANCEL, "ACCEL_CANCEL", OpcodeCategory.System, 0, InstructionFlags.None, 1, 0, InstructionClass.System, SerializationClass.FullSerial),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ACCEL_FENCE, "ACCEL_FENCE", OpcodeCategory.System, 0, InstructionFlags.None, 1, 0, InstructionClass.System, SerializationClass.FullSerial),
+
             // ========== ISA v2: Trap / Privileged ==========
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ECALL, "ECALL", OpcodeCategory.Privileged, 0, InstructionFlags.Privileged, 1, 0),
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.EBREAK, "EBREAK", OpcodeCategory.Privileged, 0, InstructionFlags.Privileged, 1, 0),

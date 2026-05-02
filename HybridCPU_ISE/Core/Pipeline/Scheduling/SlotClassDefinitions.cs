@@ -22,7 +22,7 @@ namespace YAKSys_Hybrid_CPU.Core
         /// <summary>Lanes 4–5: load/store unit lanes.</summary>
         LsuClass = 1,
 
-        /// <summary>Lane 6: DMA/stream engine lane.</summary>
+        /// <summary>Lane 6: DMA/stream placement lane; operation semantics live on the MicroOp.</summary>
         DmaStreamClass = 2,
 
         /// <summary>Lane 7 (aliased): branch/control-flow lane.</summary>

@@ -134,6 +134,43 @@ namespace HybridCPU_ISE.Tests.tests
             Assert.DoesNotContain("Fine-grained Slot Pilfering", internalOp, StringComparison.OrdinalIgnoreCase);
         }
 
+        [Fact]
+        public void T9_08s_Phase11CustomAcceleratorLegacySurfaces_AreQuarantinedAndFailClosed()
+        {
+            string matMul = ReadRepoFile("HybridCPU_ISE\\Core\\Accelerators\\MatMulAccelerator.cs");
+            string registryTypes = ReadRepoFile("HybridCPU_ISE\\Core\\Diagnostics\\InstructionRegistry.Types.cs");
+            string registryAccelerators = ReadRepoFile("HybridCPU_ISE\\Core\\Diagnostics\\InstructionRegistry.Accelerators.cs");
+            string failClosed = ReadRepoFile("HybridCPU_ISE\\Core\\Execution\\BurstIO\\AcceleratorRuntimeFailClosed.cs");
+            string microOps = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\MicroOps\\MicroOp.Misc.cs");
+            string bundleCertificate = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\Certificates\\BundleCertificate.cs");
+            string safetyVerifier = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\Safety\\SafetyVerifier.Verification.cs");
+
+            foreach (string text in new[] { matMul, registryTypes, registryAccelerators, failClosed, microOps })
+            {
+                Assert.Contains("fail", text, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("closed", text, StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.Contains("descriptor fixture", matMul, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("not an active DMA/stream execution path", matMul, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("not execution authority", registryAccelerators, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("not canonical runtime publication authority", registryTypes, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("not active execution authority", microOps, StringComparison.OrdinalIgnoreCase);
+
+            foreach (string text in new[] { matMul, registryTypes, registryAccelerators, microOps })
+            {
+                Assert.DoesNotContain("HLS-generated custom accelerators", text, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("Integrates with FSP scheduler", text, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("Deterministic execution with predictable timing", text, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (string text in new[] { bundleCertificate, safetyVerifier })
+            {
+                Assert.Contains("not a hardware root-of-trust claim", text, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("Hardware Root of Trust", text, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
         private static string ReadRepoFile(string relativePath)
         {
             string repoRoot = CompatFreezeScanner.FindRepoRoot();

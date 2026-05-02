@@ -47,6 +47,8 @@ internal sealed class DiagnosticRunController
         string safetyNegativeControlsPath = writer.GetPath("safety_verifier_negative_controls.json");
         string replayReusePath = writer.GetPath("replay_reuse_report.json");
         string assistantMatrixPath = writer.GetPath("assistant_matrix_report.json");
+        string streamVectorSpecPath = writer.GetPath("stream_vector_spec_report.json");
+        string whiteBookContractPath = writer.GetPath("whitebook_contract_report.json");
         string heartbeatPath = writer.GetPath("heartbeat.json");
         string heartbeatHistoryPath = writer.GetPath("heartbeat.ndjson");
         string heartbeatSummaryPath = writer.GetPath("heartbeat_summary.txt");
@@ -145,6 +147,8 @@ internal sealed class DiagnosticRunController
         RegisterGeneratedFile(generatedFiles, safetyNegativeControlsPath, "safety_verifier_negative_controls", "safety_verifier_negative_controls.json");
         RegisterGeneratedFile(generatedFiles, replayReusePath, "replay_reuse_report", "replay_reuse_report.json");
         RegisterGeneratedFile(generatedFiles, assistantMatrixPath, "assistant_matrix_report", "assistant_matrix_report.json");
+        RegisterGeneratedFile(generatedFiles, streamVectorSpecPath, "stream_vector_spec_report", "stream_vector_spec_report.json");
+        RegisterGeneratedFile(generatedFiles, whiteBookContractPath, "whitebook_contract_report", "whitebook_contract_report.json");
         RegisterGeneratedFile(generatedFiles, heartbeatPath, "heartbeat", "heartbeat.json");
         RegisterGeneratedFile(generatedFiles, heartbeatHistoryPath, "heartbeat_history", "heartbeat.ndjson");
         RegisterGeneratedFile(generatedFiles, heartbeatSummaryPath, "heartbeat_summary", "heartbeat_summary.txt");

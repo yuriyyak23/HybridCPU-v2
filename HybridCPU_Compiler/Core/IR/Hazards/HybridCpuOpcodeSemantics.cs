@@ -22,6 +22,11 @@ namespace HybridCPU.Compiler.Core.IR
 
         public static bool IsLoadStoreOpcode(InstructionsEnum opcode, OpcodeInfo? opcodeInfo = null)
         {
+            if (IsDmaStreamComputeOpcode(opcode))
+            {
+                return false;
+            }
+
             OpcodeInfo? resolvedOpcodeInfo = ResolveOpcodeInfo(opcode, opcodeInfo);
             if (resolvedOpcodeInfo.HasValue &&
                 resolvedOpcodeInfo.Value.InstructionClass is InstructionClass.Memory or InstructionClass.Atomic)
@@ -35,6 +40,11 @@ namespace HybridCPU.Compiler.Core.IR
 
         public static bool UsesLoadStoreReadPath(InstructionsEnum opcode, OpcodeInfo? opcodeInfo = null)
         {
+            if (IsDmaStreamComputeOpcode(opcode))
+            {
+                return false;
+            }
+
             OpcodeInfo? resolvedOpcodeInfo = ResolveOpcodeInfo(opcode, opcodeInfo);
             if (!IsLoadStoreOpcode(opcode, resolvedOpcodeInfo))
             {
@@ -70,6 +80,11 @@ namespace HybridCPU.Compiler.Core.IR
 
         public static bool UsesLoadStoreWritePath(InstructionsEnum opcode, OpcodeInfo? opcodeInfo = null)
         {
+            if (IsDmaStreamComputeOpcode(opcode))
+            {
+                return false;
+            }
+
             OpcodeInfo? resolvedOpcodeInfo = ResolveOpcodeInfo(opcode, opcodeInfo);
             if (!IsLoadStoreOpcode(opcode, resolvedOpcodeInfo))
             {
@@ -101,6 +116,9 @@ namespace HybridCPU.Compiler.Core.IR
         {
             return UsesLoadStoreReadPath(opcode, opcodeInfo) || UsesLoadStoreWritePath(opcode, opcodeInfo);
         }
+
+        public static bool IsDmaStreamComputeOpcode(InstructionsEnum opcode) =>
+            opcode == InstructionsEnum.DmaStreamCompute;
 
         public static bool IsVectorInstruction(InstructionsEnum opcode, OpcodeInfo? opcodeInfo = null)
         {

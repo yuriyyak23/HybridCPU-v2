@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Telemetry;
 
 namespace YAKSys_Hybrid_CPU.Core.Diagnostics;
 
@@ -28,7 +30,44 @@ public static class TelemetryExporter
         string programHash,
         IReadOnlyDictionary<string, WorkerPerformanceMetrics>? workerMetrics = null)
     {
-        return BuildProfile(scheduler, programHash, pipelineControl: null, workerMetrics);
+        return BuildProfile(scheduler, programHash, null, workerMetrics, null, null);
+    }
+
+    public static TypedSlotTelemetryProfile BuildProfile(
+        MicroOpScheduler scheduler,
+        string programHash,
+        DmaStreamComputeTelemetrySnapshot dmaStreamComputeTelemetry,
+        IReadOnlyDictionary<string, WorkerPerformanceMetrics>? workerMetrics = null)
+    {
+        return BuildProfile(
+            scheduler,
+            programHash,
+            null,
+            workerMetrics,
+            dmaStreamComputeTelemetry,
+            null);
+    }
+
+    public static TypedSlotTelemetryProfile BuildProfile(
+        MicroOpScheduler scheduler,
+        string programHash,
+        AcceleratorTelemetrySnapshot acceleratorTelemetry,
+        IReadOnlyDictionary<string, WorkerPerformanceMetrics>? workerMetrics = null)
+    {
+        return BuildProfile(
+            scheduler,
+            programHash,
+            null,
+            workerMetrics,
+            null,
+            acceleratorTelemetry);
+    }
+
+    public static AcceleratorTelemetrySnapshot ExportAcceleratorTelemetry(
+        AcceleratorTelemetry telemetry)
+    {
+        ArgumentNullException.ThrowIfNull(telemetry);
+        return telemetry.Snapshot();
     }
 
     /// <summary>
@@ -38,7 +77,9 @@ public static class TelemetryExporter
         MicroOpScheduler scheduler,
         string programHash,
         Processor.CPU_Core.PipelineControl? pipelineControl,
-        IReadOnlyDictionary<string, WorkerPerformanceMetrics>? workerMetrics = null)
+        IReadOnlyDictionary<string, WorkerPerformanceMetrics>? workerMetrics = null,
+        DmaStreamComputeTelemetrySnapshot? dmaStreamComputeTelemetry = null,
+        AcceleratorTelemetrySnapshot? acceleratorTelemetry = null)
     {
         ArgumentNullException.ThrowIfNull(scheduler);
         ArgumentNullException.ThrowIfNull(programHash);
@@ -237,6 +278,8 @@ public static class TelemetryExporter
             LastEligibilityVisibleReadyMask = lastEligibilityVisibleReadyMask,
             LastEligibilityMaskedReadyMask = lastEligibilityMaskedReadyMask,
             LoopPhaseProfiles = loopPhaseProfiles,
+            DmaStreamComputeTelemetry = dmaStreamComputeTelemetry,
+            AcceleratorTelemetry = acceleratorTelemetry,
             ScalarLanesRetired = scalarLanesRetired,
             NonScalarLanesRetired = nonScalarLanesRetired,
             RetireCycleCount = retireCycleCount,
@@ -367,11 +410,19 @@ public static class TelemetryExporter
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(TypedSlotTelemetryProfile))]
 [JsonSerializable(typeof(CertificatePressureMetrics))]
+[JsonSerializable(typeof(DmaStreamComputeTelemetrySnapshot))]
+[JsonSerializable(typeof(AcceleratorTelemetrySnapshot))]
+[JsonSerializable(typeof(AcceleratorEvidenceRecord))]
+[JsonSerializable(typeof(AcceleratorRejectCounters))]
+[JsonSerializable(typeof(AcceleratorLifecycleCounters))]
+[JsonSerializable(typeof(AcceleratorByteCounters))]
+[JsonSerializable(typeof(AcceleratorConflictCounters))]
 [JsonSerializable(typeof(LoopPhaseClassProfile))]
 [JsonSerializable(typeof(WorkerPerformanceMetrics))]
 [JsonSerializable(typeof(Dictionary<SlotClass, long>))]
 [JsonSerializable(typeof(Dictionary<TypedSlotRejectReason, long>))]
 [JsonSerializable(typeof(Dictionary<int, long>))]
 [JsonSerializable(typeof(List<LoopPhaseClassProfile>))]
+[JsonSerializable(typeof(List<AcceleratorEvidenceRecord>))]
 [JsonSerializable(typeof(Dictionary<string, WorkerPerformanceMetrics>))]
 internal partial class ProfileSerializerContext : JsonSerializerContext;

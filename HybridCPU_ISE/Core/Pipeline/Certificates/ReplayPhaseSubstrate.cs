@@ -25,7 +25,21 @@ namespace YAKSys_Hybrid_CPU.Core
         ClassTemplateExpired = 9,
 
         // Phase 04: serialising-event epoch boundary
-        SerializingEvent = 10
+        SerializingEvent = 10,
+
+        // DmaStreamCompute Task D: overlapping write footprint invalidates replay evidence.
+        MemoryFootprintOverlap = 11,
+
+        // DmaStreamCompute Task G: explicit replay evidence envelope mismatches.
+        DmaStreamComputeDescriptorMismatch = 12,
+        DmaStreamComputeDescriptorPayloadLost = 13,
+        DmaStreamComputeCarrierMismatch = 14,
+        DmaStreamComputeFootprintMismatch = 15,
+        DmaStreamComputeOwnerDomainMismatch = 16,
+        DmaStreamComputeCertificateInputMismatch = 17,
+        DmaStreamComputeTokenEvidenceMismatch = 18,
+        DmaStreamComputeLanePlacementMismatch = 19,
+        DmaStreamComputeIncompleteEvidence = 20
     }
 
     /// <summary>

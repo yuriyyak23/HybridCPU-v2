@@ -15,7 +15,9 @@ namespace YAKSys_Hybrid_CPU.Core
             int ownerThreadId,
             int operationCount,
             ulong bundleHash,
-            ulong assistStructuralKey)
+            ulong assistStructuralKey,
+            byte dmaStreamComputeIdentityCount = 0,
+            ulong dmaStreamComputeReplayEnvelopeHash = 0)
         {
             CombinedMaskLow = combinedMaskLow;
             CombinedMaskHigh = combinedMaskHigh;
@@ -23,6 +25,8 @@ namespace YAKSys_Hybrid_CPU.Core
             OperationCount = operationCount;
             BundleHash = bundleHash;
             AssistStructuralKey = assistStructuralKey;
+            DmaStreamComputeIdentityCount = dmaStreamComputeIdentityCount;
+            DmaStreamComputeReplayEnvelopeHash = dmaStreamComputeReplayEnvelopeHash;
         }
 
         public ulong CombinedMaskLow { get; }
@@ -37,6 +41,10 @@ namespace YAKSys_Hybrid_CPU.Core
 
         public ulong AssistStructuralKey { get; }
 
+        public byte DmaStreamComputeIdentityCount { get; }
+
+        public ulong DmaStreamComputeReplayEnvelopeHash { get; }
+
         public bool IsValid =>
             (CombinedMaskLow != 0 || CombinedMaskHigh != 0) &&
             OperationCount > 0 &&
@@ -50,7 +58,9 @@ namespace YAKSys_Hybrid_CPU.Core
                    OwnerThreadId == other.OwnerThreadId &&
                    OperationCount == other.OperationCount &&
                    BundleHash == other.BundleHash &&
-                   AssistStructuralKey == other.AssistStructuralKey;
+                   AssistStructuralKey == other.AssistStructuralKey &&
+                   DmaStreamComputeIdentityCount == other.DmaStreamComputeIdentityCount &&
+                   DmaStreamComputeReplayEnvelopeHash == other.DmaStreamComputeReplayEnvelopeHash;
         }
 
         public override bool Equals(object? obj)
@@ -66,7 +76,9 @@ namespace YAKSys_Hybrid_CPU.Core
                 OwnerThreadId,
                 OperationCount,
                 BundleHash,
-                AssistStructuralKey);
+                AssistStructuralKey,
+                DmaStreamComputeIdentityCount,
+                DmaStreamComputeReplayEnvelopeHash);
         }
     }
 
@@ -133,6 +145,16 @@ namespace YAKSys_Hybrid_CPU.Core
         public ulong AssistStructuralKey { get; set; }
 
         /// <summary>
+        /// Count of descriptor-backed lane6 compute evidence records carried by this certificate.
+        /// </summary>
+        public byte DmaStreamComputeIdentityCount { get; set; }
+
+        /// <summary>
+        /// Full DmaStreamCompute replay envelope hash. Evidence only; never commit authority.
+        /// </summary>
+        public ulong DmaStreamComputeReplayEnvelopeHash { get; set; }
+
+        /// <summary>
         /// Structural identity used by replay/template caches.
         /// Keeps certificate reuse scoped to proof context rather than object equality.
         /// </summary>
@@ -143,7 +165,9 @@ namespace YAKSys_Hybrid_CPU.Core
                 OwnerThreadId,
                 OperationCount,
                 BundleHash,
-                AssistStructuralKey);
+                AssistStructuralKey,
+                DmaStreamComputeIdentityCount,
+                DmaStreamComputeReplayEnvelopeHash);
 
         /// <summary>
         /// Create a resource certificate for a bundle of micro-operations.
@@ -162,6 +186,8 @@ namespace YAKSys_Hybrid_CPU.Core
             int operationCount = 0;
             bool isSpeculative = false;
             ulong assistStructuralKey = 0;
+            byte dmaStreamComputeIdentityCount = 0;
+            ulong dmaStreamComputeReplayEnvelopeHash = 0;
 
             // SipHash-2-4: collision-resistant integrity hash (HLS: 4-cycle latency)
             var hasher = new HardwareHash();
@@ -178,11 +204,18 @@ namespace YAKSys_Hybrid_CPU.Core
                 operationCount++;
                 isSpeculative |= op.IsSpeculative;
                 assistStructuralKey = AccumulateAssistStructuralKey(assistStructuralKey, op);
+                dmaStreamComputeIdentityCount = AccumulateDmaStreamComputeIdentityCount(
+                    dmaStreamComputeIdentityCount,
+                    op);
+                dmaStreamComputeReplayEnvelopeHash = AccumulateDmaStreamComputeReplayEnvelopeHash(
+                    dmaStreamComputeReplayEnvelopeHash,
+                    op);
 
                 hasher.Compress((ulong)op.OpCode);
                 hasher.Compress(opMask.Low);
                 hasher.Compress(opMask.High);
                 AppendAssistReplayKey(hasher, op);
+                AppendDmaStreamComputeReplayKey(hasher, op);
             }
 
             ulong bundleHash = hasher.Finalize();
@@ -195,7 +228,9 @@ namespace YAKSys_Hybrid_CPU.Core
                 OperationCount = operationCount,
                 IsSpeculative = isSpeculative,
                 BundleHash = bundleHash,
-                AssistStructuralKey = assistStructuralKey
+                AssistStructuralKey = assistStructuralKey,
+                DmaStreamComputeIdentityCount = dmaStreamComputeIdentityCount,
+                DmaStreamComputeReplayEnvelopeHash = dmaStreamComputeReplayEnvelopeHash
             };
         }
 
@@ -282,6 +317,7 @@ namespace YAKSys_Hybrid_CPU.Core
             hasher.Compress(opMask.Low);
             hasher.Compress(opMask.High);
             AppendAssistReplayKey(hasher, op);
+            AppendDmaStreamComputeReplayKey(hasher, op);
 
             return new BundleResourceCertificate
             {
@@ -291,7 +327,13 @@ namespace YAKSys_Hybrid_CPU.Core
                 OperationCount = OperationCount + 1,
                 IsSpeculative = IsSpeculative || op.IsSpeculative,
                 BundleHash = hasher.Finalize(),
-                AssistStructuralKey = AccumulateAssistStructuralKey(AssistStructuralKey, op)
+                AssistStructuralKey = AccumulateAssistStructuralKey(AssistStructuralKey, op),
+                DmaStreamComputeIdentityCount = AccumulateDmaStreamComputeIdentityCount(
+                    DmaStreamComputeIdentityCount,
+                    op),
+                DmaStreamComputeReplayEnvelopeHash = AccumulateDmaStreamComputeReplayEnvelopeHash(
+                    DmaStreamComputeReplayEnvelopeHash,
+                    op)
             };
         }
 
@@ -332,6 +374,16 @@ namespace YAKSys_Hybrid_CPU.Core
                 (uint)assistMicroOp.TargetCoreId);
         }
 
+        private static void AppendDmaStreamComputeReplayKey(HardwareHash hasher, MicroOp op)
+        {
+            if (op is not DmaStreamComputeMicroOp dmaStreamCompute)
+            {
+                return;
+            }
+
+            hasher.Compress(dmaStreamCompute.ReplayEvidence.EnvelopeHash);
+        }
+
         private static ulong PackIntPair(int low, int high)
         {
             unchecked
@@ -368,6 +420,37 @@ namespace YAKSys_Hybrid_CPU.Core
                 ((ulong)(ushort)assistMicroOp.PodId << 32) |
                 (uint)assistMicroOp.DonorSource.OwnerContextId);
             return hash;
+        }
+
+        private static byte AccumulateDmaStreamComputeIdentityCount(
+            byte currentCount,
+            MicroOp op)
+        {
+            if (op is not DmaStreamComputeMicroOp)
+            {
+                return currentCount;
+            }
+
+            return currentCount == byte.MaxValue
+                ? byte.MaxValue
+                : (byte)(currentCount + 1);
+        }
+
+        private static ulong AccumulateDmaStreamComputeReplayEnvelopeHash(
+            ulong currentHash,
+            MicroOp op)
+        {
+            if (op is not DmaStreamComputeMicroOp dmaStreamCompute)
+            {
+                return currentHash;
+            }
+
+            var hasher = new HardwareHash();
+            hasher.Initialize();
+            hasher.Compress(currentHash);
+            hasher.Compress(dmaStreamCompute.ReplayEvidence.EnvelopeHash);
+            ulong hash = hasher.Finalize();
+            return hash == 0 ? 0xD5C0_BA5EUL : hash;
         }
 
         private static ulong MixAssistStructuralKey(ulong hash, ulong value)

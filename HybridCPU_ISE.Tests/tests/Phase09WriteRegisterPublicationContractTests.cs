@@ -16,6 +16,7 @@ namespace HybridCPU_ISE.Tests.tests
         {
             string[] failures = InstructionRegistry.GetRegisteredOpcodes()
                 .Where(opCode => !InstructionRegistry.IsCustomAcceleratorOpcode(opCode))
+                .Where(opCode => !IsRegistryRawFactoryFailClosedBoundary(opCode))
                 .Select(ValidateRegisteredOpcodeWriteContract)
                 .Where(failure => failure is not null)
                 .Cast<string>()
@@ -26,6 +27,20 @@ namespace HybridCPU_ISE.Tests.tests
                 "Registered writeback contours must publish explicit canonical WriteRegisters. Failures:" +
                 Environment.NewLine +
                 string.Join(Environment.NewLine, failures));
+        }
+
+        [Fact]
+        public void T9_09c_DmaStreamComputeRegistryRawFactory_RemainsFailClosed()
+        {
+            var context = CreateCanonicalDecoderContext((uint)Processor.CPU_Core.InstructionsEnum.DmaStreamCompute);
+
+            DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
+                () => InstructionRegistry.CreateMicroOp(
+                    (uint)Processor.CPU_Core.InstructionsEnum.DmaStreamCompute,
+                    context));
+
+            Assert.Contains("guard-accepted descriptor sideband", exception.Message, StringComparison.Ordinal);
+            Assert.Contains("not the canonical lane6 descriptor path", exception.Message, StringComparison.Ordinal);
         }
 
         [Fact]
@@ -185,6 +200,11 @@ namespace HybridCPU_ISE.Tests.tests
                    opCode == (uint)Processor.CPU_Core.InstructionsEnum.VFMSUB ||
                    opCode == (uint)Processor.CPU_Core.InstructionsEnum.VFNMADD ||
                    opCode == (uint)Processor.CPU_Core.InstructionsEnum.VFNMSUB;
+        }
+
+        private static bool IsRegistryRawFactoryFailClosedBoundary(uint opCode)
+        {
+            return opCode == (uint)Processor.CPU_Core.InstructionsEnum.DmaStreamCompute;
         }
 
         private static string DescribeOpcode(uint opCode)

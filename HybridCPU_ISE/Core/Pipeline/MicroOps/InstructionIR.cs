@@ -1,4 +1,6 @@
 using YAKSys_Hybrid_CPU.Arch;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
 
 namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
 {
@@ -70,6 +72,47 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
         /// <see langword="null"/> for all non-CSR instructions.
         /// </summary>
         public ushort? CsrAddress { get; init; }
+
+        /// <summary>
+        /// Typed decoded sideband for descriptor-backed lane6 memory-memory compute.
+        /// The raw VLIW slot layout is not extended to carry this ABI. Phase 10 native
+        /// decode requires the guard-accepted descriptor payload before projector
+        /// admission can produce the lane6 DmaStreamComputeMicroOp carrier.
+        /// </summary>
+        public DmaStreamComputeDescriptorReference? DmaStreamComputeDescriptorReference { get; init; }
+
+        /// <summary>
+        /// Guard-accepted descriptor payload that survived compiler annotation,
+        /// VLIW decode, InstructionIR, and projector transport without using raw
+        /// reserved VLIW fields as ABI storage.
+        /// </summary>
+        public DmaStreamComputeDescriptor? DmaStreamComputeDescriptor { get; init; }
+
+        /// <summary>
+        /// Typed descriptor reference for lane7 L7-SDC external accelerator commands.
+        /// This is sideband evidence only; raw reserved VLIW fields and raw VT hints are
+        /// never descriptor ABI or owner/domain authority.
+        /// </summary>
+        public AcceleratorDescriptorReference? AcceleratorCommandDescriptorReference { get; init; }
+
+        /// <summary>
+        /// Parsed L7-SDC command descriptor payload that survived native carrier
+        /// cleanliness validation at decode. The L7-SDC transport uses this only to
+        /// materialize a guarded lane7 carrier; it does not grant backend execution,
+        /// queue admission, token lifecycle, staged writes, or commit authority.
+        /// </summary>
+        public AcceleratorCommandDescriptor? AcceleratorCommandDescriptor { get; init; }
+
+        public InstructionIR SetAcceleratorCommandDescriptor(
+            AcceleratorCommandDescriptor descriptor)
+        {
+            System.ArgumentNullException.ThrowIfNull(descriptor);
+            return this with
+            {
+                AcceleratorCommandDescriptor = descriptor,
+                AcceleratorCommandDescriptorReference = descriptor.DescriptorReference
+            };
+        }
 
         // NOTE: No hint fields here.
         // Scheduling hints (branch prediction, stealability, locality, thermal) belong

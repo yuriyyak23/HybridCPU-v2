@@ -37,13 +37,21 @@ namespace YAKSys_Hybrid_CPU.Core
             uint classVector,
             ushort laneTopologySignature,
             byte resourceProfile,
-            int operationCount)
+            int operationCount,
+            byte dmaStreamComputeIdentityCount = 0,
+            ulong dmaStreamComputeDescriptorIdentityHash = 0,
+            ulong dmaStreamComputeNormalizedFootprintHash = 0,
+            ulong dmaStreamComputeReplayEnvelopeHash = 0)
         {
             BundleShapeId = bundleShapeId;
             ClassVector = classVector;
             LaneTopologySignature = laneTopologySignature;
             ResourceProfile = resourceProfile;
             OperationCount = operationCount;
+            DmaStreamComputeIdentityCount = dmaStreamComputeIdentityCount;
+            DmaStreamComputeDescriptorIdentityHash = dmaStreamComputeDescriptorIdentityHash;
+            DmaStreamComputeNormalizedFootprintHash = dmaStreamComputeNormalizedFootprintHash;
+            DmaStreamComputeReplayEnvelopeHash = dmaStreamComputeReplayEnvelopeHash;
         }
 
         /// <summary>
@@ -71,6 +79,28 @@ namespace YAKSys_Hybrid_CPU.Core
         /// </summary>
         public int OperationCount { get; }
 
+        /// <summary>
+        /// Number of lane6 descriptor-backed compute identities carried by the certificate.
+        /// Phase 03 expects this to be 0 or 1 because DmaStreamClass capacity is singleton.
+        /// </summary>
+        public byte DmaStreamComputeIdentityCount { get; }
+
+        /// <summary>
+        /// Descriptor identity hash for a descriptor-backed lane6 compute op, when present.
+        /// </summary>
+        public ulong DmaStreamComputeDescriptorIdentityHash { get; }
+
+        /// <summary>
+        /// Normalized memory-footprint identity hash for a descriptor-backed lane6 compute op, when present.
+        /// </summary>
+        public ulong DmaStreamComputeNormalizedFootprintHash { get; }
+
+        /// <summary>
+        /// Full replay evidence envelope hash for descriptor-backed lane6 compute.
+        /// This is evidence only; it is not execution or commit authority.
+        /// </summary>
+        public ulong DmaStreamComputeReplayEnvelopeHash { get; }
+
         public bool IsValid => LaneTopologySignature != 0 && OperationCount >= 0;
 
         public static BundleResourceCertificateIdentity4Way Create(in BundleResourceCertificate4Way certificate)
@@ -87,13 +117,24 @@ namespace YAKSys_Hybrid_CPU.Core
             hasher.Compress(classVector);
             hasher.Compress(((ulong)CurrentLaneTopologySignature << 32) | resourceProfile);
             hasher.Compress((ulong)certificate.OperationCount);
+            if (certificate.DmaStreamComputeIdentityCount != 0)
+            {
+                hasher.Compress(certificate.DmaStreamComputeIdentityCount);
+                hasher.Compress(certificate.DmaStreamComputeDescriptorIdentityHash);
+                hasher.Compress(certificate.DmaStreamComputeNormalizedFootprintHash);
+                hasher.Compress(certificate.DmaStreamComputeReplayEnvelopeHash);
+            }
 
             return new BundleResourceCertificateIdentity4Way(
                 hasher.Finalize(),
                 classVector,
                 CurrentLaneTopologySignature,
                 resourceProfile,
-                certificate.OperationCount);
+                certificate.OperationCount,
+                certificate.DmaStreamComputeIdentityCount,
+                certificate.DmaStreamComputeDescriptorIdentityHash,
+                certificate.DmaStreamComputeNormalizedFootprintHash,
+                certificate.DmaStreamComputeReplayEnvelopeHash);
         }
 
         public bool Equals(BundleResourceCertificateIdentity4Way other)
@@ -102,7 +143,11 @@ namespace YAKSys_Hybrid_CPU.Core
                    ClassVector == other.ClassVector &&
                    LaneTopologySignature == other.LaneTopologySignature &&
                    ResourceProfile == other.ResourceProfile &&
-                   OperationCount == other.OperationCount;
+                   OperationCount == other.OperationCount &&
+                   DmaStreamComputeIdentityCount == other.DmaStreamComputeIdentityCount &&
+                   DmaStreamComputeDescriptorIdentityHash == other.DmaStreamComputeDescriptorIdentityHash &&
+                   DmaStreamComputeNormalizedFootprintHash == other.DmaStreamComputeNormalizedFootprintHash &&
+                   DmaStreamComputeReplayEnvelopeHash == other.DmaStreamComputeReplayEnvelopeHash;
         }
 
         public override bool Equals(object? obj)
@@ -120,14 +165,22 @@ namespace YAKSys_Hybrid_CPU.Core
                 hash = (hash * 397) ^ LaneTopologySignature;
                 hash = (hash * 397) ^ ResourceProfile;
                 hash = (hash * 397) ^ OperationCount;
+                hash = (hash * 397) ^ DmaStreamComputeIdentityCount.GetHashCode();
+                hash = (hash * 397) ^ DmaStreamComputeDescriptorIdentityHash.GetHashCode();
+                hash = (hash * 397) ^ DmaStreamComputeNormalizedFootprintHash.GetHashCode();
+                hash = (hash * 397) ^ DmaStreamComputeReplayEnvelopeHash.GetHashCode();
                 return hash;
             }
         }
 
         public override string ToString()
         {
+            string dmaStreamSuffix = DmaStreamComputeIdentityCount == 0
+                ? string.Empty
+                : $", DmaDesc=0x{DmaStreamComputeDescriptorIdentityHash:X16}, DmaFootprint=0x{DmaStreamComputeNormalizedFootprintHash:X16}, DmaIds={DmaStreamComputeIdentityCount}";
+
             return $"Cert4WayIdentity(Shape=0x{BundleShapeId:X16}, Class=0x{ClassVector:X5}, " +
-                   $"Topo=0x{LaneTopologySignature:X4}, Profile=0x{ResourceProfile:X2}, Ops={OperationCount})";
+                   $"Topo=0x{LaneTopologySignature:X4}, Profile=0x{ResourceProfile:X2}, Ops={OperationCount}{dmaStreamSuffix})";
         }
 
         private static uint EncodeClassVector(SlotClassCapacityState state)
@@ -147,6 +200,7 @@ namespace YAKSys_Hybrid_CPU.Core
             if (certificate.RegMaskVT1 != 0) profile |= 1 << 2;
             if (certificate.RegMaskVT2 != 0) profile |= 1 << 3;
             if (certificate.RegMaskVT3 != 0) profile |= 1 << 4;
+            if (certificate.DmaStreamComputeIdentityCount != 0) profile |= 1 << 5;
             return profile;
         }
 
@@ -251,6 +305,28 @@ namespace YAKSys_Hybrid_CPU.Core
         public SlotClassCapacityState ClassOccupancy;
 
         /// <summary>
+        /// Count of descriptor-backed lane6 compute identities included in this certificate.
+        /// Normal Phase 03 admission keeps this at 0 or 1 through DmaStreamClass capacity.
+        /// </summary>
+        public byte DmaStreamComputeIdentityCount;
+
+        /// <summary>
+        /// Descriptor identity hash for descriptor-backed lane6 compute evidence.
+        /// </summary>
+        public ulong DmaStreamComputeDescriptorIdentityHash;
+
+        /// <summary>
+        /// Normalized memory-footprint identity hash for descriptor-backed lane6 compute evidence.
+        /// </summary>
+        public ulong DmaStreamComputeNormalizedFootprintHash;
+
+        /// <summary>
+        /// Full DmaStreamCompute replay evidence envelope hash.
+        /// Replay/certificate identity is evidence only and cannot authorize execution or commit.
+        /// </summary>
+        public ulong DmaStreamComputeReplayEnvelopeHash;
+
+        /// <summary>
         /// Opaque structural identity used for replay/template matching.
         /// The certificate keeps raw masks as a local structural primitive, but callers
         /// should compare this identity rather than peeking at mask fields directly.
@@ -335,6 +411,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
             // Phase 05: update class occupancy
             ClassOccupancy.IncrementOccupancy(op.Placement.RequiredSlotClass);
+            AddDmaStreamComputeIdentityIfNeeded(op);
 
             OperationCount++;
         }
@@ -406,6 +483,39 @@ namespace YAKSys_Hybrid_CPU.Core
             }
 
             return true;
+        }
+
+        private void AddDmaStreamComputeIdentityIfNeeded(MicroOp op)
+        {
+            if (op is not DmaStreamComputeMicroOp dmaStreamCompute)
+            {
+                return;
+            }
+
+            if (DmaStreamComputeIdentityCount == 0)
+            {
+                DmaStreamComputeIdentityCount = 1;
+                DmaStreamComputeDescriptorIdentityHash = dmaStreamCompute.DescriptorIdentityHash;
+                DmaStreamComputeNormalizedFootprintHash = dmaStreamCompute.NormalizedFootprintHash;
+                DmaStreamComputeReplayEnvelopeHash = dmaStreamCompute.ReplayEvidence.EnvelopeHash;
+                return;
+            }
+
+            var hasher = new HardwareHash();
+            hasher.Initialize();
+            hasher.Compress(DmaStreamComputeDescriptorIdentityHash);
+            hasher.Compress(DmaStreamComputeNormalizedFootprintHash);
+            hasher.Compress(DmaStreamComputeReplayEnvelopeHash);
+            hasher.Compress(dmaStreamCompute.DescriptorIdentityHash);
+            hasher.Compress(dmaStreamCompute.NormalizedFootprintHash);
+            hasher.Compress(dmaStreamCompute.ReplayEvidence.EnvelopeHash);
+
+            DmaStreamComputeIdentityCount = DmaStreamComputeIdentityCount == byte.MaxValue
+                ? byte.MaxValue
+                : (byte)(DmaStreamComputeIdentityCount + 1);
+            DmaStreamComputeDescriptorIdentityHash = hasher.Finalize();
+            DmaStreamComputeNormalizedFootprintHash ^= dmaStreamCompute.NormalizedFootprintHash;
+            DmaStreamComputeReplayEnvelopeHash ^= dmaStreamCompute.ReplayEvidence.EnvelopeHash;
         }
 
         /// <summary>

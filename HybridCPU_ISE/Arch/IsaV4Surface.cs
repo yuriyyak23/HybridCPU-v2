@@ -27,7 +27,7 @@ namespace YAKSys_Hybrid_CPU.Arch
         public static readonly IReadOnlySet<string> MandatoryCoreClasses = new HashSet<string>
         {
             "ScalarAlu",     // Register-register and immediate integer ALU
-            "Memory",        // Typed scalar loads and stores
+            "Memory",        // Typed scalar loads, stores, and descriptor-backed lane6 DMA/stream compute
             "ControlFlow",   // JAL, JALR, conditional branches
             "Atomic",        // LR/SC and AMO (word and doubleword)
             "System",        // FENCE, ECALL, EBREAK, MRET, SRET, WFI
@@ -58,6 +58,8 @@ namespace YAKSys_Hybrid_CPU.Arch
             "LB", "LBU", "LH", "LHU", "LW", "LWU", "LD",
             // Typed stores
             "SB", "SH", "SW", "SD",
+            // DMA / stream memory-memory compute
+            "DmaStreamCompute",
             // Control flow
             "JAL", "JALR", "BEQ", "BNE", "BLT", "BGE", "BLTU", "BGEU",
             // Atomics — LR/SC word and doubleword
@@ -77,6 +79,22 @@ namespace YAKSys_Hybrid_CPU.Arch
             // VMX instruction plane
             "VMXON", "VMXOFF", "VMLAUNCH", "VMRESUME",
             "VMREAD", "VMWRITE", "VMCLEAR", "VMPTRLD",
+        };
+
+        /// <summary>
+        /// Canonical native L7-SDC lane7 system-device command carriers.
+        /// These are published as fail-closed system opcode surfaces by the
+        /// external accelerator migration, without changing the frozen ISA v4
+        /// mandatory-core count or granting backend execution authority.
+        /// </summary>
+        public static readonly IReadOnlySet<string> SystemDeviceCommandOpcodes = new HashSet<string>
+        {
+            "ACCEL_QUERY_CAPS",
+            "ACCEL_SUBMIT",
+            "ACCEL_POLL",
+            "ACCEL_WAIT",
+            "ACCEL_CANCEL",
+            "ACCEL_FENCE",
         };
 
         // ─── Prohibited Hardware Opcodes ──────────────────────────────────────────
@@ -147,6 +165,7 @@ namespace YAKSys_Hybrid_CPU.Arch
                 ["LB"] = "LSU",  ["LBU"] = "LSU",  ["LH"] = "LSU",  ["LHU"] = "LSU",
                 ["LW"] = "LSU",  ["LWU"] = "LSU",  ["LD"] = "LSU",
                 ["SB"] = "LSU",  ["SH"] = "LSU",   ["SW"] = "LSU",  ["SD"] = "LSU",
+                ["DmaStreamCompute"] = "DMA_STREAM",
                 // BR class
                 ["JAL"] = "BR",  ["JALR"] = "BR",
                 ["BEQ"] = "BR",  ["BNE"] = "BR",   ["BLT"] = "BR",  ["BGE"] = "BR",
@@ -168,6 +187,9 @@ namespace YAKSys_Hybrid_CPU.Arch
                 ["YIELD"] = "SYS_SERIAL",     ["WFE"] = "SYS_SERIAL",
                 ["SEV"] = "SYS_SERIAL",       ["POD_BARRIER"] = "SYS_SERIAL",
                 ["VT_BARRIER"] = "SYS_SERIAL",
+                ["ACCEL_QUERY_CAPS"] = "SYS_SERIAL", ["ACCEL_SUBMIT"] = "SYS_SERIAL",
+                ["ACCEL_POLL"] = "SYS_SERIAL",       ["ACCEL_WAIT"] = "SYS_SERIAL",
+                ["ACCEL_CANCEL"] = "SYS_SERIAL",     ["ACCEL_FENCE"] = "SYS_SERIAL",
                 // CSR_SERIAL class
                 ["CSRRW"] = "CSR_SERIAL",  ["CSRRS"] = "CSR_SERIAL",  ["CSRRC"] = "CSR_SERIAL",
                 ["CSRRWI"] = "CSR_SERIAL", ["CSRRSI"] = "CSR_SERIAL", ["CSRRCI"] = "CSR_SERIAL",
@@ -201,7 +223,7 @@ namespace YAKSys_Hybrid_CPU.Arch
         /// list in the ISA v4 specification (not the summary table, which
         /// over-counts atomics by 2).
         /// </summary>
-        public const int IsaMandatoryOpcodeCount = 96;
+        public const int IsaMandatoryOpcodeCount = 97;
 
         /// <summary>Date on which the ISA v4 surface was formally frozen.</summary>
         public static readonly DateOnly FrozenDate = new(2026, 3, 14);

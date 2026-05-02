@@ -74,6 +74,8 @@ internal static class CompatFreezeGateCatalog
             RelativePath("HybridCPU_ISE", "Core", "Decoder", "VliwDecoderV4.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Diagnostics", "InstructionRegistry.Helpers.Core.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Diagnostics", "InstructionRegistry.Helpers.Vector.cs"),
+            RelativePath("HybridCPU_ISE", "Core", "Execution", "DmaStreamCompute", "DmaStreamComputeDescriptorParser.cs"),
+            RelativePath("HybridCPU_ISE", "Core", "Execution", "ExternalAccelerators", "Descriptors", "AcceleratorDescriptorParser.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Execution", "StreamEngine", "StreamEngine.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Execution", "StreamEngine", "StreamExecutionRequest.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Pipeline", "Core", "CPU_Core.Pipeline.Stages.DecodeStage.cs"),

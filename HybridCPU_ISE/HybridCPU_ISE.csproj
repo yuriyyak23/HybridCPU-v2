@@ -12,11 +12,11 @@
 
 	<PropertyGroup Condition="'$(EnableInternalTestHooks)' == 'true'">
 		<DefineConstants>$(DefineConstants);TESTING</DefineConstants>
-		<OutputPath>bin\$(Configuration)\testsupport\</OutputPath>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		<OutputPath>bin\$(Configuration)\testsupport\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(EnableInternalTestHooks)' == 'true'">

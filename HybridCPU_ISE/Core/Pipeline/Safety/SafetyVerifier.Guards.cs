@@ -1,4 +1,5 @@
 using System;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 
 namespace YAKSys_Hybrid_CPU.Core
 {
@@ -42,8 +43,11 @@ namespace YAKSys_Hybrid_CPU.Core
         public DomainIsolationProbeResult EvaluateDomainIsolationProbe(MicroOp injectedOp, ulong podDomainCert)
         {
             ArgumentNullException.ThrowIfNull(injectedOp);
-            ulong domainTag = injectedOp.Placement.DomainTag;
+            return EvaluateDomainIsolationProbe(injectedOp.Placement.DomainTag, podDomainCert);
+        }
 
+        private DomainIsolationProbeResult EvaluateDomainIsolationProbe(ulong domainTag, ulong podDomainCert)
+        {
             // Phase 04 guard plane: when KernelDomainIsolation is active, kernel ops
             // (DomainTag==0) must not be admitted into user-domain bundles.
             // This closes the timing side-channel where a privileged micro-op could
@@ -64,6 +68,99 @@ namespace YAKSys_Hybrid_CPU.Core
             // Hardware AND gate: domain must match certificate
             bool allowed = (domainTag & podDomainCert) != 0;
             return new DomainIsolationProbeResult(allowed, !allowed, false);
+        }
+
+        /// <summary>
+        /// Evaluate the descriptor-backed lane6 owner/domain guard before descriptor
+        /// acceptance, replay reuse, certificate acceptance, or execution. The descriptor
+        /// structural read may locate owner fields, but this guard decision is the first
+        /// authority allowed to turn those fields into an admissible descriptor.
+        /// </summary>
+        public DmaStreamComputeOwnerGuardDecision EvaluateDmaStreamComputeOwnerGuard(
+            DmaStreamComputeOwnerBinding descriptorOwnerBinding,
+            DmaStreamComputeOwnerGuardContext runtimeOwnerContext)
+        {
+            ArgumentNullException.ThrowIfNull(descriptorOwnerBinding);
+
+            if (descriptorOwnerBinding.OwnerVirtualThreadId != runtimeOwnerContext.OwnerVirtualThreadId)
+            {
+                return RejectDmaStreamComputeOwnerGuard(
+                    descriptorOwnerBinding,
+                    runtimeOwnerContext,
+                    RejectKind.OwnerMismatch,
+                    "DmaStreamCompute owner VT mismatch; raw VLIW transport hints are not owner authority.");
+            }
+
+            if (descriptorOwnerBinding.OwnerContextId != runtimeOwnerContext.OwnerContextId)
+            {
+                return RejectDmaStreamComputeOwnerGuard(
+                    descriptorOwnerBinding,
+                    runtimeOwnerContext,
+                    RejectKind.OwnerMismatch,
+                    "DmaStreamCompute owner context mismatch.");
+            }
+
+            if (descriptorOwnerBinding.OwnerCoreId != runtimeOwnerContext.OwnerCoreId ||
+                descriptorOwnerBinding.OwnerPodId != runtimeOwnerContext.OwnerPodId)
+            {
+                return RejectDmaStreamComputeOwnerGuard(
+                    descriptorOwnerBinding,
+                    runtimeOwnerContext,
+                    RejectKind.OwnerMismatch,
+                    "DmaStreamCompute owner core/pod mismatch; cross-core reuse is not authorized.");
+            }
+
+            if (descriptorOwnerBinding.DeviceId != DmaStreamComputeDescriptor.CanonicalLane6DeviceId ||
+                descriptorOwnerBinding.DeviceId != runtimeOwnerContext.DeviceId)
+            {
+                return RejectDmaStreamComputeOwnerGuard(
+                    descriptorOwnerBinding,
+                    runtimeOwnerContext,
+                    RejectKind.OwnerMismatch,
+                    "DmaStreamCompute DeviceId cannot bypass the canonical lane6 owner/domain guard.");
+            }
+
+            if (descriptorOwnerBinding.OwnerDomainTag != runtimeOwnerContext.OwnerDomainTag)
+            {
+                return RejectDmaStreamComputeOwnerGuard(
+                    descriptorOwnerBinding,
+                    runtimeOwnerContext,
+                    RejectKind.DomainMismatch,
+                    "DmaStreamCompute owner domain tag mismatch.");
+            }
+
+            DomainIsolationProbeResult domainProbe =
+                EvaluateDomainIsolationProbe(
+                    descriptorOwnerBinding.OwnerDomainTag,
+                    runtimeOwnerContext.ActiveDomainCertificate);
+            if (!domainProbe.IsAllowed)
+            {
+                return RejectDmaStreamComputeOwnerGuard(
+                    descriptorOwnerBinding,
+                    runtimeOwnerContext,
+                    RejectKind.DomainMismatch,
+                    domainProbe.IsKernelToUserBlock
+                        ? "DmaStreamCompute kernel-domain descriptor is not legal in a user-domain guard context."
+                        : "DmaStreamCompute owner domain is not covered by the active domain certificate.");
+            }
+
+            return DmaStreamComputeOwnerGuardDecision.Allow(
+                descriptorOwnerBinding,
+                runtimeOwnerContext,
+                "DmaStreamCompute owner/domain guard succeeded.");
+        }
+
+        private static DmaStreamComputeOwnerGuardDecision RejectDmaStreamComputeOwnerGuard(
+            DmaStreamComputeOwnerBinding descriptorOwnerBinding,
+            DmaStreamComputeOwnerGuardContext runtimeOwnerContext,
+            RejectKind rejectKind,
+            string message)
+        {
+            return DmaStreamComputeOwnerGuardDecision.Reject(
+                descriptorOwnerBinding,
+                runtimeOwnerContext,
+                rejectKind,
+                message);
         }
 
         /// <summary>

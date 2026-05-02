@@ -88,6 +88,16 @@ internal static class Program
             return RunNamedMatrix("matrix-spec", "Matrix SPEC-like", DiagnosticProfileCatalog.MatrixSpec, frontendMode, options);
         }
 
+        if (IsWhiteBookSmokeCommand(normalized))
+        {
+            return RunNamedMatrix("whitebook-smoke", "Stream WhiteBook Smoke", DiagnosticProfileCatalog.WhiteBookSmoke, frontendMode, options);
+        }
+
+        if (IsWhiteBookFullCommand(normalized))
+        {
+            return RunNamedMatrix("whitebook-full", "Stream WhiteBook Full", DiagnosticProfileCatalog.WhiteBookFull, frontendMode, options);
+        }
+
         if (IsBaselineVsFspComparisonCommand(normalized))
         {
             return RunBaselineVsFspComparison(frontendMode, options);
@@ -156,6 +166,7 @@ internal static class Program
         DiagnosticRunResult result = new DiagnosticRunController().Execute(profile);
         ReplayCapturedConsole(result);
         PrintSingleRunSummary(result);
+        PrintStreamVectorFinalSummaryIfAvailable(result);
         return result.Status == DiagnosticRunStatus.Succeeded ? 0 : 1;
     }
 
@@ -431,6 +442,28 @@ internal static class Program
                     generatedFiles["assistant_matrix_report"] = "assistant_matrix_report.json";
                     status = assistantReport.Succeeded ? DiagnosticRunStatus.Succeeded : DiagnosticRunStatus.Failed;
                     failureMessage = assistantReport.Succeeded ? null : "Assistant decision matrix did not match expected decisions.";
+                    break;
+
+                case DiagnosticWorkloadKind.StreamVectorSpecSuite:
+                    StreamVectorSpecSuiteReport streamVectorReport =
+                        ExecuteStreamVectorSpecSuiteWorkload(profile.WorkloadIterations);
+                    writer.WriteJson("stream_vector_spec_report.json", streamVectorReport);
+                    generatedFiles["stream_vector_spec_report"] = "stream_vector_spec_report.json";
+                    status = streamVectorReport.Succeeded ? DiagnosticRunStatus.Succeeded : DiagnosticRunStatus.Failed;
+                    failureMessage = streamVectorReport.Succeeded
+                        ? null
+                        : "One or more Stream/Vector SPEC-like scenarios failed correctness validation.";
+                    break;
+
+                case DiagnosticWorkloadKind.WhiteBookContractDiagnostics:
+                    WhiteBookContractDiagnosticsReport whiteBookReport =
+                        ExecuteWhiteBookContractDiagnosticsWorkload(profile.WorkloadIterations);
+                    writer.WriteJson("whitebook_contract_report.json", whiteBookReport);
+                    generatedFiles["whitebook_contract_report"] = "whitebook_contract_report.json";
+                    status = whiteBookReport.Succeeded ? DiagnosticRunStatus.Succeeded : DiagnosticRunStatus.Failed;
+                    failureMessage = whiteBookReport.Succeeded
+                        ? null
+                        : "One or more Stream WhiteBook current/future boundary probes failed.";
                     break;
 
                 default:
@@ -756,6 +789,56 @@ internal static class Program
         return report;
     }
 
+    private static StreamVectorSpecSuiteReport ExecuteStreamVectorSpecSuiteWorkload(ulong iterations)
+    {
+        Console.WriteLine("=== Stream/Vector SPEC-like suite ===");
+        Console.WriteLine($"SPEC-like iterations: {iterations:N0}");
+
+        StreamVectorSpecSuiteReport report = new StreamVectorSpecSuite().Execute(iterations);
+        Console.WriteLine(
+            $"Suite aggregate: scenarios={report.Aggregate.ScenarioCount}, passed={report.Aggregate.PassedScenarioCount}, " +
+            $"dynamic-instructions={report.Aggregate.DynamicInstructionCount:N0}, vector-elements={report.Aggregate.VectorElementsProcessed:N0}, " +
+            $"modeled-bytes={report.Aggregate.ModeledBytesTouched:N0}, checksum=0x{report.Aggregate.ResultChecksum:X16}");
+
+        foreach (StreamVectorSpecScenarioReport scenario in report.Scenarios)
+        {
+            Console.WriteLine(
+                $"{scenario.Id}: passed={scenario.Passed}, instructions={scenario.DynamicInstructionCount:N0}, " +
+                $"elements={scenario.VectorElementsProcessed:N0}, bytes={scenario.ModeledBytesTouched:N0}, " +
+                $"error={scenario.MaxAbsoluteError:G4}, checksum=0x{scenario.ResultChecksum:X16}");
+            if (!scenario.Passed && !string.IsNullOrWhiteSpace(scenario.FailureMessage))
+            {
+                Console.WriteLine($"  failure: {scenario.FailureMessage}");
+            }
+        }
+
+        return report;
+    }
+
+    private static WhiteBookContractDiagnosticsReport ExecuteWhiteBookContractDiagnosticsWorkload(ulong iterations)
+    {
+        Console.WriteLine("=== Stream WhiteBook contract diagnostics ===");
+        Console.WriteLine($"SPEC-like iterations: {iterations:N0}");
+
+        WhiteBookContractDiagnosticsReport report =
+            new SimpleAsmApp().ExecuteWhiteBookContractDiagnostics(iterations);
+        Console.WriteLine(
+            $"WhiteBook contract aggregate: probes={report.Summary.PassedProbeCount}/{report.Summary.ProbeCount}, " +
+            $"claims={report.Summary.CoveredClaimGroups.Count}, status={(report.Succeeded ? "passed" : "failed")}");
+
+        foreach (WhiteBookContractProbeResult probe in report.Probes)
+        {
+            Console.WriteLine(
+                $"{probe.Id}: passed={probe.Passed}, boundary={probe.ExpectedBoundary}, observed={probe.ObservedEvidence}");
+            if (!probe.Passed && !string.IsNullOrWhiteSpace(probe.FailureMessage))
+            {
+                Console.WriteLine($"  failure: {probe.FailureMessage}");
+            }
+        }
+
+        return report;
+    }
+
     private static void PrintSingleRunSummary(DiagnosticRunResult result)
     {
         Console.WriteLine($"Run status: {result.Status}");
@@ -808,6 +891,114 @@ internal static class Program
         {
             Console.WriteLine($"Summary note: {batch.FailureMessage}");
         }
+
+        PrintStreamVectorFinalSummaryIfAvailable(batch);
+    }
+
+    private static void PrintStreamVectorFinalSummaryIfAvailable(DiagnosticBatchRunResult batch)
+    {
+        DiagnosticRunResult? streamVectorResult = batch.Results.FirstOrDefault(static result =>
+            result.Profile.WorkloadKind == DiagnosticWorkloadKind.StreamVectorSpecSuite);
+        if (streamVectorResult is null)
+        {
+            return;
+        }
+
+        PrintStreamVectorFinalSummaryIfAvailable(streamVectorResult);
+    }
+
+    private static void PrintStreamVectorFinalSummaryIfAvailable(DiagnosticRunResult result)
+    {
+        if (result.Profile.WorkloadKind != DiagnosticWorkloadKind.StreamVectorSpecSuite)
+        {
+            return;
+        }
+
+        var writer = new DiagnosticArtifactWriter(result.ArtifactDirectory);
+        StreamVectorSpecSuiteReport? report =
+            writer.TryReadJson<StreamVectorSpecSuiteReport>("stream_vector_spec_report.json");
+        if (report is null)
+        {
+            Console.WriteLine("Stream/Vector final telemetry unavailable: stream_vector_spec_report.json was not produced or could not be read.");
+            return;
+        }
+
+        PrintStreamVectorFinalSummary(report, result.ArtifactDirectory);
+    }
+
+    private static void PrintStreamVectorFinalSummary(
+        StreamVectorSpecSuiteReport report,
+        string artifactDirectory)
+    {
+        double elapsedMs = Math.Max(report.Aggregate.ElapsedMilliseconds, 0.000001d);
+        ulong telemetryBytes = SumTelemetry(report, static telemetry => checked((ulong)Math.Max(telemetry.TotalBytesTransferred, 0)));
+        long totalBursts = report.Scenarios.Sum(static scenario => scenario.Telemetry.TotalBursts);
+        long foregroundWarmAttempts = report.Scenarios.Sum(static scenario => scenario.Telemetry.ForegroundWarmAttempts);
+        long foregroundWarmSuccesses = report.Scenarios.Sum(static scenario => scenario.Telemetry.ForegroundWarmSuccesses);
+        long foregroundWarmReuseHits = report.Scenarios.Sum(static scenario => scenario.Telemetry.ForegroundWarmReuseHits);
+        long foregroundBypassHits = report.Scenarios.Sum(static scenario => scenario.Telemetry.ForegroundBypassHits);
+        long assistWarmAttempts = report.Scenarios.Sum(static scenario => scenario.Telemetry.AssistWarmAttempts);
+        long assistWarmSuccesses = report.Scenarios.Sum(static scenario => scenario.Telemetry.AssistWarmSuccesses);
+        long assistWarmReuseHits = report.Scenarios.Sum(static scenario => scenario.Telemetry.AssistWarmReuseHits);
+        long assistBypassHits = report.Scenarios.Sum(static scenario => scenario.Telemetry.AssistBypassHits);
+        long translationRejects = report.Scenarios.Sum(static scenario => scenario.Telemetry.StreamWarmTranslationRejects);
+        long backendRejects = report.Scenarios.Sum(static scenario => scenario.Telemetry.StreamWarmBackendRejects);
+        ulong dmaBytesRead = SumTelemetry(report, static telemetry => telemetry.DmaBytesRead);
+        ulong dmaBytesStaged = SumTelemetry(report, static telemetry => telemetry.DmaBytesStaged);
+        int dmaReadBursts = report.Scenarios.Sum(static scenario => scenario.Telemetry.DmaReadBurstCount);
+        ulong dmaLatencyCycles = SumTelemetry(report, static telemetry => telemetry.DmaModeledLatencyCycles);
+        ulong dmaElementOps = SumTelemetry(report, static telemetry => telemetry.DmaElementOperations);
+        int dmaDirectWrites = report.Scenarios.Sum(static scenario => scenario.Telemetry.DmaDirectDestinationWrites);
+        bool dmaUsedLane6 = report.Scenarios.Any(static scenario => scenario.Telemetry.DmaUsedLane6Backend);
+
+        Console.WriteLine();
+        Console.WriteLine("=== Stream/Vector final benchmarks, telemetry, statistics ===");
+        Console.WriteLine(
+            $"Suite: {report.SuiteId}, status={(report.Succeeded ? "Passed" : "Failed")}, iterations={report.Iterations:N0}, artifact={Path.Combine(artifactDirectory, "stream_vector_spec_report.json")}");
+        Console.WriteLine(
+            $"Aggregate: scenarios={report.Aggregate.PassedScenarioCount}/{report.Aggregate.ScenarioCount}, " +
+            $"dynamic-instructions={report.Aggregate.DynamicInstructionCount:N0}, vector-elements={report.Aggregate.VectorElementsProcessed:N0}, " +
+            $"modeled-bytes={report.Aggregate.ModeledBytesTouched:N0}, elapsed-ms={report.Aggregate.ElapsedMilliseconds:N3}, checksum=0x{report.Aggregate.ResultChecksum:X16}");
+        Console.WriteLine(
+            $"Throughput: vector-elements/ms={report.Aggregate.VectorElementsProcessed / elapsedMs:N2}, " +
+            $"modeled-bytes/ms={report.Aggregate.ModeledBytesTouched / elapsedMs:N2}, dynamic-instructions/ms={report.Aggregate.DynamicInstructionCount / elapsedMs:N2}");
+
+        Console.WriteLine("Benchmarks:");
+        foreach (StreamVectorSpecScenarioReport scenario in report.Scenarios)
+        {
+            double scenarioElapsedMs = Math.Max(scenario.ElapsedMilliseconds, 0.000001d);
+            Console.WriteLine(
+                $"  {scenario.Id}: {(scenario.Passed ? "passed" : "failed")}, algorithm={scenario.Algorithm}, " +
+                $"instructions={scenario.DynamicInstructionCount:N0}, elements={scenario.VectorElementsProcessed:N0}, " +
+                $"bytes={scenario.ModeledBytesTouched:N0}, elapsed-ms={scenario.ElapsedMilliseconds:N3}, " +
+                $"elements/ms={scenario.VectorElementsProcessed / scenarioElapsedMs:N2}, error={scenario.MaxAbsoluteError:G4}, opcodes={string.Join('/', scenario.Opcodes)}");
+        }
+
+        Console.WriteLine("Stream telemetry:");
+        Console.WriteLine(
+            $"  bursts={totalBursts:N0}, transferred-bytes={telemetryBytes:N0}, foreground-warm={foregroundWarmSuccesses:N0}/{foregroundWarmAttempts:N0}, " +
+            $"foreground-reuse={foregroundWarmReuseHits:N0}, foreground-bypass={foregroundBypassHits:N0}");
+        Console.WriteLine(
+            $"  assist-warm={assistWarmSuccesses:N0}/{assistWarmAttempts:N0}, assist-reuse={assistWarmReuseHits:N0}, assist-bypass={assistBypassHits:N0}, " +
+            $"translation-rejects={translationRejects:N0}, backend-rejects={backendRejects:N0}");
+
+        Console.WriteLine("DMA lane6 telemetry:");
+        Console.WriteLine(
+            $"  lane6-backend-used={dmaUsedLane6}, direct-destination-writes={dmaDirectWrites:N0}, bytes-read={dmaBytesRead:N0}, " +
+            $"bytes-staged={dmaBytesStaged:N0}, read-bursts={dmaReadBursts:N0}, modeled-latency-cycles={dmaLatencyCycles:N0}, element-ops={dmaElementOps:N0}");
+    }
+
+    private static ulong SumTelemetry(
+        StreamVectorSpecSuiteReport report,
+        Func<StreamVectorSpecTelemetry, ulong> selector)
+    {
+        ulong total = 0;
+        foreach (StreamVectorSpecScenarioReport scenario in report.Scenarios)
+        {
+            total += selector(scenario.Telemetry);
+        }
+
+        return total;
     }
 
     private static void PrintBankBatchSummary(DiagnosticBatchRunResult batch)
@@ -1046,6 +1237,16 @@ internal static class Program
         return arg is "matrix-spec" or "spec-matrix";
     }
 
+    private static bool IsWhiteBookSmokeCommand(string arg)
+    {
+        return arg is "whitebook-smoke" or "matrix-whitebook" or "matrix-whitebook-smoke";
+    }
+
+    private static bool IsWhiteBookFullCommand(string arg)
+    {
+        return arg is "whitebook-full" or "matrix-whitebook-full";
+    }
+
     private static bool IsHelpCommand(string arg)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(arg);
@@ -1269,13 +1470,20 @@ internal static class Program
             return 1_000_000UL;
         }
 
+        if (normalized is "stream-vector" or "stream-suite" or "vector-suite" or "spec-stream" or "spec-stream-vector")
+        {
+            return 250UL;
+        }
+
         if (string.IsNullOrEmpty(normalized) ||
             IsMatrixSmokeCommand(normalized) ||
             IsMatrixRuntimeCommand(normalized) ||
             IsMatrixMemoryCommand(normalized) ||
             IsMatrixFullCommand(normalized) ||
             IsMatrixWideCommand(normalized) ||
-            IsMatrixSpecCommand(normalized))
+            IsMatrixSpecCommand(normalized) ||
+            IsWhiteBookSmokeCommand(normalized) ||
+            IsWhiteBookFullCommand(normalized))
         {
             return 250UL;
         }
@@ -1402,10 +1610,10 @@ internal static class Program
     {
         Console.WriteLine("Usage: TestAssemblerConsoleApps [command] [--iterations N] [--timeout-ms N] [--heartbeat-ms N] [--telemetry-logs minimal|extended]");
         Console.WriteLine("No arguments: runs the default SPEC-like diagnostic matrix and asks for the loop-iteration budget at startup.");
-        Console.WriteLine("Single profiles: showcase, showcase-long, vt, novt, alu, max, lk, lk-long, bnmcz, bnmcz-long, replay, safety, replay-reuse, assistant.");
-        Console.WriteLine("Architectural aliases: showcase-runtime, vt-fsp, spec-rate, single-thread-vector, spec-vector, scalar-baseline, spec-int, throughput-max, spec-mix, bank-pressure-lh, spec-mem-lh, bank-pressure-bnmcz, spec-mem-bank, replay-phase, safety-verifier, replay-template, assistant-matrix.");
+        Console.WriteLine("Single profiles: showcase, showcase-long, vt, novt, alu, max, lk, lk-long, bnmcz, bnmcz-long, replay, safety, replay-reuse, assistant, stream-vector, whitebook-contract.");
+        Console.WriteLine("Architectural aliases: showcase-runtime, vt-fsp, spec-rate, single-thread-vector, spec-vector, scalar-baseline, spec-int, throughput-max, spec-mix, bank-pressure-lh, spec-mem-lh, bank-pressure-bnmcz, spec-mem-bank, replay-phase, safety-verifier, replay-template, assistant-matrix, spec-stream-vector, stream-whitebook-contract.");
         Console.WriteLine("Comparisons: banks, banks-long, compare-banks, compare-baseline-fsp.");
-        Console.WriteLine("Matrices: matrix-smoke, matrix-runtime, matrix-memory, matrix-full, matrix-wide, matrix-spec.");
+        Console.WriteLine("Matrices: matrix-smoke, matrix-runtime, matrix-memory, matrix-full, matrix-wide, matrix-spec, whitebook-smoke, whitebook-full.");
         Console.WriteLine("Overrides: --iterations fixes the SPEC-like loop budget without prompting, --timeout-ms overrides auto-scaled wall-clock budgets, --heartbeat-ms changes live checkpoint cadence.");
         Console.WriteLine("Telemetry logging: --minimal-logs keeps compact artifacts; --extended-telemetry or --telemetry-logs extended enables heartbeat history and partial telemetry snapshots.");
     }

@@ -1,14 +1,16 @@
 using System;
 using System.Runtime.CompilerServices;
+using YAKSys_Hybrid_CPU.Core.Memory;
 
 namespace YAKSys_Hybrid_CPU.Memory
 {
     /// <summary>
     /// Standalone DMA Controller for HybridCPU.
-    /// Offloads memory-to-memory transfers from CPU_Core to improve performance.
+    /// Models memory-to-memory channel transfers when callers explicitly drive
+    /// channel cycles.
     ///
     /// Features:
-    /// - Independent operation: doesn't block CPU execution
+    /// - Separate channel state from CPU_Core execution
     /// - AXI4-compliant burst transfers
     /// - Scatter/gather support via descriptor chains
     /// - Multi-channel support (up to 8 channels)
@@ -16,12 +18,16 @@ namespace YAKSys_Hybrid_CPU.Memory
     /// - Hardware prefetch for stream operations
     /// - Priority-based channel arbitration
     /// - Interrupt signaling on completion
-    /// - Async completion via events and callbacks
+    /// - Completion events and callbacks when ExecuteCycle-driven work finishes
     ///
     /// Design goals:
     /// - Allow multiple StreamEngine instances to run concurrently
     /// - Reduce CPU_Core memory bandwidth contention
-    /// - Enable overlapped computation and I/O
+    /// - Provide a base for future overlapped computation and I/O decisions
+    ///
+    /// Current StreamEngine BurstIO helpers drive ExecuteCycle() synchronously;
+    /// this class-level API should not be read as current architectural
+    /// CPU/DMA overlap for StreamEngine or DmaStreamCompute.
     /// </summary>
     public class DMAController
     {
@@ -117,6 +123,7 @@ namespace YAKSys_Hybrid_CPU.Memory
         /// Signature: (DeviceType deviceId, ushort interruptId, ulong coreId).
         /// </summary>
         private readonly Action<Processor.DeviceType, ushort, ulong>? _interruptDispatch;
+        private readonly MemoryCoherencyObserver? _coherencyObserver;
 
         // Performance counters
         private ulong totalBytesTransferred;
@@ -131,10 +138,12 @@ namespace YAKSys_Hybrid_CPU.Memory
         /// When null, falls back to the global <see cref="Processor.InterruptData.CallInterrupt"/>.</param>
         public DMAController(
             ref Processor proc,
-            Action<Processor.DeviceType, ushort, ulong>? interruptDispatch = null)
+            Action<Processor.DeviceType, ushort, ulong>? interruptDispatch = null,
+            MemoryCoherencyObserver? coherencyObserver = null)
         {
             this.processor = proc;
             this._interruptDispatch = interruptDispatch;
+            this._coherencyObserver = coherencyObserver;
             this.channels = new ChannelControl[MAX_CHANNELS];
 
             // Initialize all channels to idle state
@@ -404,6 +413,12 @@ namespace YAKSys_Hybrid_CPU.Memory
                         return false;
                 }
 
+                _coherencyObserver?.NotifyWrite(
+                    new MemoryCoherencyWriteNotification(
+                        dstAddr,
+                        byteCount,
+                        0,
+                        MemoryCoherencyWriteSourceKind.DmaControllerWrite));
                 return true;
             }
             catch

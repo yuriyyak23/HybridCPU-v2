@@ -873,17 +873,14 @@ namespace HybridCPU_ISE.Tests
             string dir = Directory.GetCurrentDirectory();
             while (dir != null)
             {
-                if (Directory.GetFiles(dir, "*.sln").Length > 0)
+                if (Directory.GetFiles(dir, "*.sln").Length > 0 ||
+                    Directory.GetFiles(dir, "*.slnx").Length > 0 ||
+                    Directory.Exists(Path.Combine(dir, ".git")))
                     return dir;
                 var parent = Directory.GetParent(dir);
                 if (parent == null) break;
                 dir = parent.FullName;
             }
-
-            // Fallback: try known path
-            string knownPath = @"\HybridCPU ISE";
-            if (Directory.Exists(knownPath))
-                return knownPath;
 
             return Directory.GetCurrentDirectory();
         }

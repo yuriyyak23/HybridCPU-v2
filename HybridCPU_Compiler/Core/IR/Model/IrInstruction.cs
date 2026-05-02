@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
 
 namespace HybridCPU.Compiler.Core.IR
 {
@@ -45,6 +47,16 @@ namespace HybridCPU.Compiler.Core.IR
         /// Determines ordering and side-effect isolation requirements.
         /// </summary>
         public SerializationClass SerializationClass { get; init; } = SerializationClass.Free;
+
+        /// <summary>
+        /// Descriptor sideband for canonical lane6 DmaStreamCompute emission.
+        /// </summary>
+        public DmaStreamComputeDescriptor? DmaStreamComputeDescriptor { get; init; }
+
+        /// <summary>
+        /// Descriptor sideband for L7-SDC decode/projector validation.
+        /// Phase 04 keeps compiler emission disabled; this field is transport metadata only.
+        /// </summary>
+        public AcceleratorCommandDescriptor? AcceleratorCommandDescriptor { get; init; }
     }
 }
-

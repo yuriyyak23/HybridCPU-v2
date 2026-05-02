@@ -73,6 +73,7 @@ namespace HybridCPU.Compiler.Core
 
             progressObserver?.Invoke("LoweringStarting", "Lowering IR bundles to backend VLIW bundles.");
             var loweredBundles = lowerer.LowerProgram(bundleLayout);
+            var loweredBundleAnnotations = lowerer.EmitAnnotationsForProgram(bundleLayout);
             progressObserver?.Invoke("Lowering", $"Lowered {loweredBundles.Count} backend bundle(s).");
 
             progressObserver?.Invoke("SerializationStarting", "Serializing backend bundles into a fetch-ready image.");
@@ -85,7 +86,8 @@ namespace HybridCPU.Compiler.Core
                 loweredBundles,
                 programImage,
                 CompilerContract.Version,
-                admissibilityAgreement: agreement);
+                admissibilityAgreement: agreement,
+                loweredBundleAnnotations: loweredBundleAnnotations);
         }
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace HybridCPU.Compiler.Core
 
             progressObserver?.Invoke("MemoryWriteStarting", $"Writing {compiledProgram.ProgramImage.Length} byte(s) to emitted program memory at IOVA 0x{baseAddress:X}.");
             Processor.MainMemory.WriteToPosition(compiledProgram.ProgramImage, baseAddress);
+            PublishDescriptorBackedBundleAnnotations(compiledProgram, baseAddress);
             progressObserver?.Invoke("MemoryWrite", $"Bundle image write completed at IOVA 0x{baseAddress:X}.");
 
             progressObserver?.Invoke("FetchStateInvalidationStarting", $"Invalidating fetch state for {compiledProgram.BundleCount} bundle(s).");
@@ -167,6 +170,47 @@ namespace HybridCPU.Compiler.Core
                     Processor.CPU_Cores[coreIndex].InvalidateVliwFetchState(bundleAddress);
                 }
             }
+        }
+
+        private static void PublishDescriptorBackedBundleAnnotations(
+            HybridCpuCompiledProgram compiledProgram,
+            ulong baseAddress)
+        {
+            for (int bundleIndex = 0; bundleIndex < compiledProgram.LoweredBundleAnnotations.Count; bundleIndex++)
+            {
+                VliwBundleAnnotations annotations = compiledProgram.LoweredBundleAnnotations[bundleIndex];
+                if (!HasDescriptorSideband(annotations))
+                {
+                    continue;
+                }
+
+                ulong bundleAddress =
+                    baseAddress + ((ulong)bundleIndex * HybridCpuBundleSerializer.BundleSizeBytes);
+                Processor.MainMemory.PublishVliwBundleAnnotations(
+                    bundleAddress,
+                    annotations);
+            }
+        }
+
+        private static bool HasDescriptorSideband(VliwBundleAnnotations annotations)
+        {
+            for (int slotIndex = 0; slotIndex < annotations.Count; slotIndex++)
+            {
+                if (!annotations.TryGetInstructionSlotMetadata(
+                        slotIndex,
+                        out InstructionSlotMetadata metadata))
+                {
+                    continue;
+                }
+
+                if (metadata.DmaStreamComputeDescriptor is not null ||
+                    metadata.AcceleratorCommandDescriptor is not null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static int CountCycleGroups(IrProgramSchedule programSchedule)

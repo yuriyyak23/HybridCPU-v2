@@ -82,20 +82,15 @@ namespace YAKSys_Hybrid_CPU.Core
             return sb.ToString();
         }
 
-        #region Phase 2: Formal Resource Proofs (Hardware Root of Trust)
+        #region Phase 2: Formal Resource Proof Fixtures
 
         /// <summary>
-        /// Sign a proof using simulated Hardware Root of Trust.
-        /// In real hardware, this would use secure cryptographic coprocessor.
-        /// (Phase 2: Simulated HRoT for ISE)
+        /// Sign a proof with an ISE-local simulated signature.
+        /// This is validation evidence only, not a hardware root-of-trust claim.
         /// </summary>
         private BundleResourceProof SignProof(BundleResourceProof proof)
         {
-            // Simulated signature generation
-            // Real HRoT would use:
-            // - ECDSA P-256 or RSA-2048 signature
-            // - Hardware-protected private key in secure element
-            // - Tamper-evident audit log
+            // Simulated signature generation for validation fixtures only.
 
             // For ISE: generate deterministic signature from proof contents
             using (var sha256 = SHA256.Create())

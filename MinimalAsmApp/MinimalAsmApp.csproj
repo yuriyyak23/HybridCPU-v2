@@ -8,14 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HybridCPU_Compiler\HybridCPU_Compiler.csproj">
-      <AdditionalProperties>DefineTestSupport=$(DefineTestSupport)</AdditionalProperties>
-    </ProjectReference>
-    <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj">
-      <BuildReference>true</BuildReference>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <AdditionalProperties>$(HybridCpuIseProjectReferenceProperties)</AdditionalProperties>
-    </ProjectReference>
+    <ProjectReference Include="..\HybridCPU_Compiler\HybridCPU_Compiler.csproj" />
+    <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj" />
   </ItemGroup>
 
 </Project>

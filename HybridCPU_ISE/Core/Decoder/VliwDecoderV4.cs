@@ -2,6 +2,9 @@ using HybridCPU_ISE.Arch;
 using System.Globalization;
 using System.Collections.Generic;
 using YAKSys_Hybrid_CPU.Arch;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Auth;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
@@ -39,6 +42,14 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
             in VLIW_Instruction instruction,
             int slotIndex)
         {
+            return Decode(in instruction, slotIndex, InstructionSlotMetadata.Default);
+        }
+
+        private InstructionIR Decode(
+            in VLIW_Instruction instruction,
+            int slotIndex,
+            InstructionSlotMetadata slotMetadata)
+        {
             ushort opcode = Processor.CPU_Core.IsaOpcode.FromRawValue(instruction.OpCode).Value;
             var opcodeName = OpcodeRegistry.GetMnemonicOrHex(opcode);
 
@@ -71,6 +82,19 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 opcodeName,
                 slotIndex);
             RejectLegacyPolicyGap(in instruction, slotIndex);
+            AcceleratorCommandDescriptor? acceleratorCommandDescriptor =
+                ValidateAcceleratorCommandDescriptorNativeCarrier(
+                    in instruction,
+                    opcode,
+                    opcodeName,
+                    slotIndex,
+                    slotMetadata);
+            DmaStreamComputeDescriptor? dmaStreamComputeDescriptor =
+                ValidateDmaStreamComputeNativeCarrier(
+                    in instruction,
+                    opcode,
+                    slotIndex,
+                    slotMetadata);
 
             // Gate 2: Classify via the authoritative ISA v4 classifier.
             var (instrClass, serialClass) = InstructionClassifier.Classify(opcode);
@@ -97,6 +121,12 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 Rs2 = rs2,
                 Imm = imm,
                 HasAbsoluteAddressing = hasAbsolute,
+                DmaStreamComputeDescriptorReference =
+                    dmaStreamComputeDescriptor?.DescriptorReference,
+                DmaStreamComputeDescriptor = dmaStreamComputeDescriptor,
+                AcceleratorCommandDescriptorReference =
+                    acceleratorCommandDescriptor?.DescriptorReference,
+                AcceleratorCommandDescriptor = acceleratorCommandDescriptor,
             };
         }
 
@@ -120,19 +150,21 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
             for (int i = 0; i < bundle.Length; i++)
             {
                 var slot = bundle[i];
+                InstructionSlotMetadata slotMetadata = ResolveSlotMetadata(bundleAnnotations, i);
                 // Skip empty slots: opcode 0 is reserved as the hardware NOP sentinel.
                 if (slot.OpCode == 0)
                 {
+                    RejectDescriptorSidebandOnEmptySlot(slotMetadata, i);
                     results.Add(DecodedInstruction.CreateEmpty(
                         i,
-                        ResolveSlotMetadata(bundleAnnotations, i)));
+                        slotMetadata));
                     continue;
                 }
 
                 results.Add(DecodedInstruction.CreateOccupied(
                     i,
-                    Decode(in slot, i),
-                    ResolveSlotMetadata(bundleAnnotations, i)));
+                    Decode(in slot, i, slotMetadata),
+                    slotMetadata));
             }
 
             return new DecodedInstructionBundle(
@@ -238,6 +270,128 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 XsqrtRawOpcode or
                 NotRawOpcode or
                 XfmacRawOpcode;
+        }
+
+        [System.Runtime.CompilerServices.MethodImpl(
+            System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        private static AcceleratorCommandDescriptor? ValidateAcceleratorCommandDescriptorNativeCarrier(
+            in VLIW_Instruction instruction,
+            ushort rawOpcode,
+            string opcodeName,
+            int slotIndex,
+            InstructionSlotMetadata slotMetadata)
+        {
+            AcceleratorCommandDescriptor? descriptor = slotMetadata.AcceleratorCommandDescriptor;
+            bool hasDescriptorSideband = descriptor is not null;
+
+            if (!OpcodeRegistry.IsSystemDeviceCommandOpcode(rawOpcode))
+            {
+                if (hasDescriptorSideband)
+                {
+                    throw new InvalidOpcodeException(
+                        $"Slot {slotIndex}: AcceleratorCommandDescriptor sideband can only accompany the native ACCEL_SUBMIT L7-SDC opcode.",
+                        opcodeIdentifier: opcodeName,
+                        slotIndex: slotIndex,
+                        isProhibited: false);
+                }
+
+                return null;
+            }
+
+            if (hasDescriptorSideband &&
+                rawOpcode != Processor.CPU_Core.IsaOpcodeValues.ACCEL_SUBMIT)
+            {
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: AcceleratorCommandDescriptor sideband is valid only for ACCEL_SUBMIT in Phase 04, not '{opcodeName}'.",
+                    opcodeIdentifier: opcodeName,
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            if (!AcceleratorDescriptorParser.TryValidateNativeVliwCarrier(
+                    in instruction,
+                    rawOpcode,
+                    slotIndex,
+                    hasDescriptorSideband,
+                    out AcceleratorCarrierValidationResult? carrierFailure))
+            {
+                throw new InvalidOpcodeException(
+                    carrierFailure!.Message,
+                    opcodeIdentifier: opcodeName,
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            if (rawOpcode != Processor.CPU_Core.IsaOpcodeValues.ACCEL_SUBMIT)
+            {
+                return null;
+            }
+
+            if (descriptor is null)
+            {
+                throw new InvalidOpcodeException(
+                    "ACCEL_SUBMIT requires typed AcceleratorCommandDescriptor sideband.",
+                    opcodeIdentifier: opcodeName,
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            if (!AcceleratorOwnerDomainGuard.Default.IsDescriptorGuardBacked(
+                    descriptor,
+                    out string guardMessage))
+            {
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: ACCEL_SUBMIT descriptor sideband lacks guard-backed owner/domain acceptance. {guardMessage}",
+                    opcodeIdentifier: opcodeName,
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            AcceleratorGuardDecision submitGuard =
+                AcceleratorOwnerDomainGuard.Default.EnsureBeforeSubmit(
+                    descriptor,
+                    descriptor.OwnerGuardDecision.Evidence);
+            if (!submitGuard.IsAllowed)
+            {
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: ACCEL_SUBMIT admission guard rejected. {submitGuard.Message}",
+                    opcodeIdentifier: opcodeName,
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            ValidateAcceleratorSubmitSidebandPlacement(
+                slotMetadata,
+                opcodeName,
+                slotIndex);
+
+            return descriptor;
+        }
+
+        private static void ValidateAcceleratorSubmitSidebandPlacement(
+            InstructionSlotMetadata slotMetadata,
+            string opcodeName,
+            int slotIndex)
+        {
+            MicroOpAdmissionMetadata admissionMetadata =
+                (slotMetadata.SlotMetadata ?? YAKSys_Hybrid_CPU.Core.SlotMetadata.Default).AdmissionMetadata;
+
+            if (admissionMetadata.Equals(MicroOpAdmissionMetadata.Default))
+            {
+                return;
+            }
+
+            SlotPlacementMetadata placement = admissionMetadata.Placement;
+            if (placement.RequiredSlotClass != SlotClass.SystemSingleton ||
+                placement.PinningKind != SlotPinningKind.HardPinned ||
+                placement.PinnedLaneId != 7)
+            {
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: ACCEL_SUBMIT typed sideband requires SystemSingleton hard-pinned lane7 slot metadata.",
+                    opcodeIdentifier: opcodeName,
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
         }
 
         [System.Runtime.CompilerServices.MethodImpl(
@@ -411,6 +565,14 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
         {
             ushort opcode = unchecked((ushort)instruction.OpCode);
 
+            if (opcode == Processor.CPU_Core.IsaOpcodeValues.DmaStreamCompute)
+            {
+                return (
+                    VLIW_Instruction.NoArchReg,
+                    VLIW_Instruction.NoArchReg,
+                    VLIW_Instruction.NoArchReg);
+            }
+
             if (opcode == Processor.CPU_Core.IsaOpcodeValues.VPOPC)
             {
                 // Scalar-result predicate popcount encodes its destination GPR in the upper
@@ -474,7 +636,93 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
             return InstructionSlotMetadata.Default;
         }
 
+        private static void RejectDescriptorSidebandOnEmptySlot(
+            InstructionSlotMetadata slotMetadata,
+            int slotIndex)
+        {
+            if (slotMetadata.DmaStreamComputeDescriptor is null &&
+                !slotMetadata.DmaStreamComputeDescriptorReference.HasValue &&
+                slotMetadata.AcceleratorCommandDescriptor is null &&
+                !slotMetadata.AcceleratorCommandDescriptorReference.HasValue)
+            {
+                return;
+            }
+
+            throw new InvalidOpcodeException(
+                $"Slot {slotIndex}: descriptor sideband cannot accompany an empty/NOP VLIW slot.",
+                opcodeIdentifier: OpcodeRegistry.GetMnemonicOrHex(0),
+                slotIndex: slotIndex,
+                isProhibited: false);
+        }
+
         // ─── Static prohibition query API ─────────────────────────────────────────
+
+        private static DmaStreamComputeDescriptor? ValidateDmaStreamComputeNativeCarrier(
+            in VLIW_Instruction instruction,
+            ushort opcode,
+            int slotIndex,
+            InstructionSlotMetadata slotMetadata)
+        {
+            if (opcode != Processor.CPU_Core.IsaOpcodeValues.DmaStreamCompute)
+            {
+                if (slotMetadata.DmaStreamComputeDescriptor is not null ||
+                    slotMetadata.DmaStreamComputeDescriptorReference.HasValue)
+                {
+                    throw new InvalidOpcodeException(
+                        $"Slot {slotIndex}: DmaStreamCompute descriptor sideband can only accompany the native DmaStreamCompute opcode.",
+                        opcodeIdentifier: OpcodeRegistry.GetMnemonicOrHex(opcode),
+                        slotIndex: slotIndex,
+                        isProhibited: false);
+                }
+
+                return null;
+            }
+
+            DmaStreamComputeDescriptor? descriptor = slotMetadata.DmaStreamComputeDescriptor;
+            bool hasDescriptorSideband = descriptor is not null;
+            if (!DmaStreamComputeDescriptorParser.TryValidateNativeVliwCarrier(
+                    in instruction,
+                    slotIndex,
+                    hasDescriptorSideband,
+                    out DmaStreamComputeValidationResult? carrierFailure))
+            {
+                throw new InvalidOpcodeException(
+                    carrierFailure!.Message,
+                    opcodeIdentifier: OpcodeRegistry.GetMnemonicOrHex(opcode),
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            if (slotIndex != 6)
+            {
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: DmaStreamCompute is a lane6 DMA/stream instruction and cannot decode on any other VLIW slot.",
+                    opcodeIdentifier: OpcodeRegistry.GetMnemonicOrHex(opcode),
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            if (!descriptor!.OwnerGuardDecision.IsAllowed)
+            {
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: DmaStreamCompute descriptor sideband lacks an accepted owner/domain guard decision.",
+                    opcodeIdentifier: OpcodeRegistry.GetMnemonicOrHex(opcode),
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            if (slotMetadata.DmaStreamComputeDescriptorReference is { } reference &&
+                !reference.Equals(descriptor.DescriptorReference))
+            {
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: DmaStreamCompute descriptor reference sideband does not match the accepted descriptor payload.",
+                    opcodeIdentifier: OpcodeRegistry.GetMnemonicOrHex(opcode),
+                    slotIndex: slotIndex,
+                    isProhibited: false);
+            }
+
+            return descriptor;
+        }
 
         /// <summary>
         /// Returns <see langword="true"/> if <paramref name="opcode"/> is listed as

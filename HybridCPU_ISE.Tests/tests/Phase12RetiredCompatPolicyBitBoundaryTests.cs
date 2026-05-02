@@ -25,6 +25,8 @@ public sealed class Phase12RetiredCompatPolicyBitBoundaryTests
                 RelativePath("HybridCPU_ISE", "Arch", "Compat", "VLIW_Instruction.CompatIngress.cs"),
                 RelativePath("HybridCPU_ISE", "Arch", "Compat", "VLIW_Instruction.Serialization.cs"),
                 RelativePath("HybridCPU_ISE", "Core", "Decoder", "VliwDecoderV4.cs"),
+                RelativePath("HybridCPU_ISE", "Core", "Execution", "DmaStreamCompute", "DmaStreamComputeDescriptorParser.cs"),
+                RelativePath("HybridCPU_ISE", "Core", "Execution", "ExternalAccelerators", "Descriptors", "AcceleratorDescriptorParser.cs"),
                 RelativePath("HybridCPU_ISE", "Core", "Execution", "StreamEngine", "StreamExecutionRequest.cs")
             ]);
 

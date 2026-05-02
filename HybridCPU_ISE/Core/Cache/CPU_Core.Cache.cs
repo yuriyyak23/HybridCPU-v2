@@ -1,6 +1,7 @@
 using HybridCPU_ISE.Arch;
 using System;
 using System.IO;
+using YAKSys_Hybrid_CPU.Core.Memory;
 
 namespace YAKSys_Hybrid_CPU
 {
@@ -148,6 +149,13 @@ namespace YAKSys_Hybrid_CPU
                 PublishReplayPhaseContextIfNeeded(_fspScheduler, _loopBuffer.CurrentReplayPhase);
             }
 
+#if TESTING
+            internal void TestMarkVliwFetchStateMaterializedForPhase09()
+            {
+                _hasMaterializedVliwFetchState = true;
+            }
+#endif
+
             private static void InvalidateVliwBundleCacheLine(Cache_VLIWBundle_Object[]? cache, ulong memoryAddress)
             {
                 if (cache == null)
@@ -194,6 +202,13 @@ namespace YAKSys_Hybrid_CPU
                 /// Structural-only bookkeeping for assist cache partitioning.
                 /// </summary>
                 public Core.AssistCarrierKind AssistCarrierKind;
+
+                /// <summary>
+                /// Current data-cache materialization is read-only/non-dirty.
+                /// If a future write-back cache starts setting this bit, Phase09
+                /// flush proof fails closed until explicit writeback exists.
+                /// </summary>
+                public bool DataCache_IsDirty;
             }
 
             public Cache_VLIWBundle_Object[] L2_VLIWBundles = new Cache_VLIWBundle_Object[65536];
@@ -203,8 +218,31 @@ namespace YAKSys_Hybrid_CPU
 
             public void SyncSMPChache()
             {
-
+                // Historical stub. Phase09 does not install cache coherency here.
             }
+
+            public DataCacheRangeInvalidationResult InvalidateDataCacheRange(
+                ulong memoryAddress,
+                ulong byteCount,
+                ulong domainTag = 0) =>
+                MemoryCoherencyCacheParticipant.InvalidateArrays(
+                    L1_Data,
+                    L2_Data,
+                    memoryAddress,
+                    byteCount,
+                    domainTag);
+
+            public DataCacheRangeFlushResult FlushDataCacheRange(
+                ulong memoryAddress,
+                ulong byteCount,
+                ulong domainTag = 0) =>
+                MemoryCoherencyCacheParticipant.FlushArrays(
+                    L1_Data,
+                    L2_Data,
+                    memoryAddress,
+                    byteCount,
+                    domainTag);
+
             public Cache_Data_Object GetDataByPointer(ulong MemoryAddress, ulong domainTag = 0)
             {
                 for (int int_CycleCount = 0; int_CycleCount != L2_Data.Length; int_CycleCount++)
@@ -364,9 +402,7 @@ namespace YAKSys_Hybrid_CPU
                     {
                         if (L1_Data[i].DomainTag == domainTag)
                         {
-                            L1_Data[i].DataCache_MemoryAddress = 0;
-                            L1_Data[i].DomainTag = 0;
-                            L1_Data[i].AssistResident = false;
+                            L1_Data[i] = default;
                         }
                     }
                 }
@@ -375,9 +411,7 @@ namespace YAKSys_Hybrid_CPU
                 {
                     if (L2_Data[i].DomainTag == domainTag)
                     {
-                        L2_Data[i].DataCache_MemoryAddress = 0;
-                        L2_Data[i].DomainTag = 0;
-                        L2_Data[i].AssistResident = false;
+                        L2_Data[i] = default;
                     }
                 }
             }

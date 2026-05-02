@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 
 namespace YAKSys_Hybrid_CPU.Core
 {
@@ -55,6 +56,49 @@ namespace YAKSys_Hybrid_CPU.Core
 
             // Tier 1: lowest free
             return BitOperations.TrailingZeroCount(freeLanes);
+        }
+
+        public static bool TrySelectDmaStreamLaneWithReplayEvidence(
+            byte freeLanes,
+            int previousLane,
+            DmaStreamComputeReplayEvidence expected,
+            DmaStreamComputeReplayEvidence live,
+            out int selectedLane,
+            out ReplayPhaseInvalidationReason invalidationReason)
+        {
+            selectedLane = -1;
+            invalidationReason = ReplayPhaseInvalidationReason.None;
+
+            DmaStreamComputeReplayEvidenceComparison comparison =
+                DmaStreamComputeReplayEvidenceComparer.Compare(expected, live);
+            if (!comparison.CanReuse)
+            {
+                invalidationReason = comparison.InvalidationReason;
+                return false;
+            }
+
+            byte lane6Mask = SlotClassLaneMap.GetLaneMask(SlotClass.DmaStreamClass);
+            byte freeLane6 = (byte)(freeLanes & lane6Mask);
+            if (freeLane6 == 0)
+            {
+                invalidationReason =
+                    ReplayPhaseInvalidationReason.DmaStreamComputeLanePlacementMismatch;
+                return false;
+            }
+
+            selectedLane = SelectWithReplayHint(
+                freeLane6,
+                replayActive: true,
+                previousLane);
+            if (selectedLane == 6)
+            {
+                return true;
+            }
+
+            selectedLane = -1;
+            invalidationReason =
+                ReplayPhaseInvalidationReason.DmaStreamComputeLanePlacementMismatch;
+            return false;
         }
     }
 }

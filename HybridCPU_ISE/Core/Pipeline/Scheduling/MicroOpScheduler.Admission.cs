@@ -758,5 +758,21 @@ namespace YAKSys_Hybrid_CPU.Core
                 invalidateFourWay);
         }
 
+        internal bool TryInvalidatePhaseCertificateTemplatesForMemoryFootprintOverlap(
+            MicroOp writer,
+            MicroOp replayEvidence)
+        {
+            if (!SafetyVerifier.TryClassifyMemoryFootprintInvalidation(
+                writer,
+                replayEvidence,
+                out ReplayPhaseInvalidationReason reason))
+            {
+                return false;
+            }
+
+            InvalidatePhaseCertificateTemplates(reason);
+            return true;
+        }
+
     }
 }

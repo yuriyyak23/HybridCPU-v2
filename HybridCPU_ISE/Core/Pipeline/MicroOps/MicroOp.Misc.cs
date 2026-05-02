@@ -192,7 +192,7 @@ namespace YAKSys_Hybrid_CPU.Core
     }
 
     /// <summary>
-    /// Fail-closed placeholder for custom HLS accelerator contours.
+    /// Fail-closed placeholder for retained custom-accelerator descriptor contours.
     /// The executable runtime carrier is not implemented truthfully yet, so any
     /// attempt to execute this MicroOp must trap at the API boundary instead of
     /// publishing success.
@@ -206,7 +206,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
         public CustomAcceleratorMicroOp()
         {
-            // FSP metadata depends on accelerator characteristics (stealable by default)
+            // Retained compatibility metadata only; not active execution authority.
             Class = MicroOpClass.Other;
 
             // ISA v4 Phase 02: custom accelerators are System class, FullSerial ordering
@@ -221,9 +221,9 @@ namespace YAKSys_Hybrid_CPU.Core
             CanonicalDecodePublicationMode.ProjectorPublishes;
 
         /// <summary>
-        /// Initialize metadata for custom accelerator operation.
+        /// Initialize retained compatibility metadata for a custom accelerator operation.
         /// Call this after setting up Accelerator and operand register IDs.
-        /// Phase: Safety Tags & Certificates - Mandatory safety mask computation.
+        /// Phase: Safety Tags & Certificates - retained fail-closed contour metadata.
         /// </summary>
         public void InitializeMetadata(int acceleratorId, int[] inputRegIds, int outputRegId)
         {

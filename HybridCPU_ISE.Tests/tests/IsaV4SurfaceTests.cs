@@ -82,7 +82,7 @@ namespace HybridCPU_ISE.Tests
             var canonicalClasses = new System.Collections.Generic.HashSet<string>
             {
                 "ALU", "LSU", "BR", "ATOM",
-                "SYS_SERIAL", "CSR_SERIAL", "VMX_SERIAL",
+                "SYS_SERIAL", "CSR_SERIAL", "VMX_SERIAL", "DMA_STREAM",
             };
 
             foreach (var (opcode, pipelineClass) in IsaV4Surface.PipelineClassMap)
@@ -97,16 +97,14 @@ namespace HybridCPU_ISE.Tests
 
         /// <summary>
         /// The mandatory core must contain exactly <see cref="IsaV4Surface.IsaMandatoryOpcodeCount"/>
-        /// canonical v4 opcodes, as defined by the ISA v4 instruction list in the master plan.
-        /// Note: The master plan summary table (Section 8) lists 98 but the detailed
-        /// instruction list in Section 1.3 yields 96 (22 atomics, not 24 — the table
-        /// over-counts by 2). The instruction list is the authoritative ground truth.
+        /// canonical v4 opcodes, including the lane6 descriptor-backed DmaStreamCompute
+        /// opcode and excluding optional extensions.
         /// </summary>
         [Fact]
-        public void MandatoryCoreOpcodes_ContainsExactly96Opcodes()
+        public void MandatoryCoreOpcodes_ContainsExactly97Opcodes()
         {
             Assert.Equal(IsaV4Surface.IsaMandatoryOpcodeCount, IsaV4Surface.MandatoryCoreOpcodes.Count);
-            Assert.Equal(96, IsaV4Surface.IsaMandatoryOpcodeCount);
+            Assert.Equal(97, IsaV4Surface.IsaMandatoryOpcodeCount);
         }
 
         /// <summary>

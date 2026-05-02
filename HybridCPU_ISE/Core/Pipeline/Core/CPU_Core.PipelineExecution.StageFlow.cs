@@ -507,6 +507,12 @@ namespace YAKSys_Hybrid_CPU
                 ulong currentBundlePc,
                 out DecodeStageResult decodeStageResult)
             {
+                if (currentSlotDescriptor.MicroOp is Core.TrapMicroOp)
+                {
+                    decodeStageResult = default;
+                    return false;
+                }
+
                 if (currentSlotDescriptor.GetRuntimeAdmissionIsMemoryOp() &&
                     currentSlotDescriptor.GetRuntimeExecutionMemoryBankIntent() >= 0 &&
                     _fspScheduler != null)

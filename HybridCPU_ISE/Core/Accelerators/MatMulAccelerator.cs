@@ -4,16 +4,18 @@ using System.Collections.Generic;
 namespace YAKSys_Hybrid_CPU.Core.Accelerators
 {
     /// <summary>
-    /// Example: Matrix multiply accelerator (HLS-generated) - Phase 4
+    /// Retained matrix-multiply custom-accelerator descriptor fixture - Phase 4.
     ///
-    /// This is a reference implementation demonstrating how to integrate
-    /// HLS-generated custom accelerators into the HybridCPU ISE.
+    /// This class is kept for legacy registration and descriptor-shape tests only.
+    /// It is not an active DMA/stream execution path, not a canonical decode
+    /// publication source, and not a security authority. Runtime publication of
+    /// registered custom-accelerator opcodes remains fail-closed until a truthful
+    /// operand ABI, placement, DMA, replay, and retire contract exists.
     ///
-    /// Design notes:
-    /// - Hardware-agnostic C# suitable for HLS synthesis (e.g., Microsoft KiWi)
-    /// - Deterministic execution with predictable timing
-    /// - Data-dependent latency based on matrix dimensions
-    /// - Integrates with FSP scheduler via resource footprint
+    /// Fixture notes:
+    /// - reports a legacy opcode family and resource footprint for tests;
+    /// - models latency from matrix dimensions for quarantined Phase 4 coverage;
+    /// - does not make MatMul an active architecture-facing accelerator.
     /// </summary>
     public class MatMulAccelerator : ICustomAccelerator
     {
@@ -26,7 +28,8 @@ namespace YAKSys_Hybrid_CPU.Core.Accelerators
         };
 
         /// <summary>
-        /// Execute matrix multiplication
+        /// Execute the descriptor fixture's local model.
+        /// This helper is test-only behavior; runtime opcode publication still fails closed.
         /// </summary>
         /// <param name="opcode">Operation code (F32 or F64)</param>
         /// <param name="operands">
@@ -51,18 +54,14 @@ namespace YAKSys_Hybrid_CPU.Core.Accelerators
             int N = (int)operands[4];
             int K = (int)operands[5];
 
-            // Hardware-optimized matrix multiply logic
-            // In real HLS, this would be synthesized to parallel multiply-accumulate units
-            // For simulation, we just track the operation
+            // Descriptor-fixture model only: validate shape and return the destination address.
 
             // Validate dimensions
             if (M <= 0 || N <= 0 || K <= 0)
                 throw new ArgumentException("Invalid matrix dimensions");
 
-            // In a real implementation, this would:
-            // 1. Read matrices A and B from memory via DMA
-            // 2. Perform multiply-accumulate operations in parallel
-            // 3. Write result matrix C back to memory via DMA
+            // A future active implementation would require an explicit descriptor ABI,
+            // owner/domain guard, placement, DMA, replay, and retire contract.
 
             // For simulation, return the result address
             return new ulong[] { matC_addr };
@@ -111,7 +110,7 @@ namespace YAKSys_Hybrid_CPU.Core.Accelerators
         public bool IsPipelined(uint opcode) => true;
 
         /// <summary>
-        /// Reset accelerator state for deterministic execution
+        /// Reset fixture state.
         /// </summary>
         public void Reset()
         {

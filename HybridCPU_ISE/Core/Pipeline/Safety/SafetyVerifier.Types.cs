@@ -400,7 +400,7 @@ namespace YAKSys_Hybrid_CPU.Core
     /// - Memory domain verification
     ///
     /// Phase 2 additions:
-    /// - Hardware Root of Trust (HRoT) proof generation
-    /// - Bundle resource proof certificates
+    /// - simulated proof-fixture signature generation, not a hardware root-of-trust claim
+    /// - bundle resource proof certificates
     /// - Singularity/SIP-style isolation verification
 }

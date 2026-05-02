@@ -22,6 +22,18 @@ namespace YAKSys_Hybrid_CPU.Arch
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.SW, "SW", OpcodeCategory.Memory, 2, InstructionFlags.MemoryWrite | InstructionFlags.UsesImmediate, 4, 1),
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.SD, "SD", OpcodeCategory.Memory, 2, InstructionFlags.MemoryWrite | InstructionFlags.UsesImmediate, 4, 1),
 
+            // ========== ISA v4: Lane6 DMA/Stream Compute ==========
+            new OpcodeInfo(
+                (uint)Processor.CPU_Core.InstructionsEnum.DmaStreamCompute,
+                "DmaStreamCompute",
+                OpcodeCategory.Memory,
+                0,
+                InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite,
+                8,
+                3,
+                InstructionClass.Memory,
+                SerializationClass.MemoryOrdered),
+
             // ========== ISA v2: Control Flow — RISC-V style ==========
             // Assembler-level JMP remains prohibited and lowers through canonical JAL/JALR forms only.
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.JAL, "JAL", OpcodeCategory.ControlFlow, 1, InstructionFlags.UsesImmediate, 1, 0),

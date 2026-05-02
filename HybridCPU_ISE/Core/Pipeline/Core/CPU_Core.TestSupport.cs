@@ -3,6 +3,7 @@ using HybridCPU_ISE.Arch;
 using System;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Execution;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
@@ -132,6 +133,16 @@ namespace YAKSys_Hybrid_CPU
             internal bool TestIsFSPSchedulerReady()
             {
                 return _fspScheduler != null && _fspScheduler.TestMode;
+            }
+
+            /// <summary>
+            /// TEST-ONLY: drive the retire-authoritative DmaStreamCompute token commit seam.
+            /// </summary>
+            internal DmaStreamComputeCommitResult TestApplyDmaStreamComputeTokenCommit(
+                DmaStreamComputeToken token,
+                DmaStreamComputeOwnerGuardDecision commitGuardDecision)
+            {
+                return ApplyRetiredDmaStreamComputeTokenCommit(token, commitGuardDecision);
             }
 
             /// <summary>

@@ -96,6 +96,7 @@ namespace YAKSys_Hybrid_CPU.Arch
                 Processor.CPU_Core.InstructionsEnum.SH               => InstructionClass.Memory,
                 Processor.CPU_Core.InstructionsEnum.SW               => InstructionClass.Memory,
                 Processor.CPU_Core.InstructionsEnum.SD               => InstructionClass.Memory,
+                Processor.CPU_Core.InstructionsEnum.DmaStreamCompute => InstructionClass.Memory,
 
                 // ── Control Flow (jumps and conditional branches) ─────────────────────
                 Processor.CPU_Core.InstructionsEnum.JAL              => InstructionClass.ControlFlow,
@@ -146,6 +147,12 @@ namespace YAKSys_Hybrid_CPU.Arch
                 Processor.CPU_Core.InstructionsEnum.VSETVL           => InstructionClass.System,
                 Processor.CPU_Core.InstructionsEnum.VSETVLI          => InstructionClass.System,
                 Processor.CPU_Core.InstructionsEnum.VSETIVLI         => InstructionClass.System,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_QUERY_CAPS => InstructionClass.System,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_SUBMIT     => InstructionClass.System,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_POLL       => InstructionClass.System,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_WAIT       => InstructionClass.System,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_CANCEL     => InstructionClass.System,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_FENCE      => InstructionClass.System,
 
                 // ── CSR ───────────────────────────────────────────────────────────────
                 Processor.CPU_Core.InstructionsEnum.CSRRW            => InstructionClass.Csr,
@@ -250,6 +257,9 @@ namespace YAKSys_Hybrid_CPU.Arch
                 // Vector exception control: serializes pipeline
                 Processor.CPU_Core.InstructionsEnum.VSETVEXCPMASK    => SerializationClass.FullSerial,
                 Processor.CPU_Core.InstructionsEnum.VSETVEXCPPRI     => SerializationClass.FullSerial,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_WAIT        => SerializationClass.FullSerial,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_CANCEL      => SerializationClass.FullSerial,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_FENCE       => SerializationClass.FullSerial,
 
                 // ── Memory ordering: FENCE (store-load ordering) ──────────────────────
                 Processor.CPU_Core.InstructionsEnum.FENCE            => SerializationClass.MemoryOrdered,
@@ -259,6 +269,8 @@ namespace YAKSys_Hybrid_CPU.Arch
                 Processor.CPU_Core.InstructionsEnum.SH               => SerializationClass.MemoryOrdered,
                 Processor.CPU_Core.InstructionsEnum.SW               => SerializationClass.MemoryOrdered,
                 Processor.CPU_Core.InstructionsEnum.SD               => SerializationClass.MemoryOrdered,
+                Processor.CPU_Core.InstructionsEnum.DmaStreamCompute => SerializationClass.MemoryOrdered,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_SUBMIT     => SerializationClass.MemoryOrdered,
                 Processor.CPU_Core.InstructionsEnum.VSCATTER         => SerializationClass.MemoryOrdered,
                 Processor.CPU_Core.InstructionsEnum.MTILE_STORE      => SerializationClass.MemoryOrdered,
 
@@ -313,6 +325,8 @@ namespace YAKSys_Hybrid_CPU.Arch
                 Processor.CPU_Core.InstructionsEnum.CSRRSI           => SerializationClass.CsrOrdered,
                 Processor.CPU_Core.InstructionsEnum.CSRRCI           => SerializationClass.CsrOrdered,
                 Processor.CPU_Core.InstructionsEnum.CSR_CLEAR        => SerializationClass.CsrOrdered,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_QUERY_CAPS => SerializationClass.CsrOrdered,
+                Processor.CPU_Core.InstructionsEnum.ACCEL_POLL       => SerializationClass.CsrOrdered,
 
                 // ── Default: free — no ordering constraints ───────────────────────────
                 _ => SerializationClass.Free,

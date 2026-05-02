@@ -46,12 +46,12 @@ namespace YAKSys_Hybrid_CPU.Core
         }
 
         /// <summary>
-        /// Register a custom HLS accelerator descriptor surface.
-        /// The current runtime tracks the opcode family but still fails closed for
-        /// canonical decode, direct factory publication, and execution until a truthful
-        /// accelerator carrier contract exists.
+        /// Register a retained custom-accelerator descriptor surface.
+        /// The current runtime tracks the opcode family for diagnostics and negative
+        /// controls only; it still fails closed for canonical decode, direct factory
+        /// publication, and execution until a truthful accelerator carrier contract exists.
         /// </summary>
-        /// <param name="accelerator">Custom accelerator implementation</param>
+        /// <param name="accelerator">Custom accelerator descriptor/test fixture.</param>
         public static void RegisterAccelerator(ICustomAccelerator accelerator)
         {
             ArgumentNullException.ThrowIfNull(accelerator);
@@ -93,7 +93,8 @@ namespace YAKSys_Hybrid_CPU.Core
         }
 
         /// <summary>
-        /// Get a registered accelerator by name.
+        /// Get a registered descriptor/test fixture by name.
+        /// The returned object is not execution authority.
         /// </summary>
         public static ICustomAccelerator? GetAccelerator(string name)
         {
@@ -102,7 +103,8 @@ namespace YAKSys_Hybrid_CPU.Core
         }
 
         /// <summary>
-        /// Get all registered accelerators.
+        /// Get all registered descriptor/test fixtures.
+        /// Registry membership is not canonical decode or execution authority.
         /// </summary>
         public static IReadOnlyDictionary<string, ICustomAccelerator> GetAllAccelerators()
         {

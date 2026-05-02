@@ -2,6 +2,9 @@ using HybridCPU_ISE.Arch;
 using System;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Auth;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 
 namespace YAKSys_Hybrid_CPU.Core.Decoder
@@ -181,6 +184,95 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
             uint opCode = (uint)instruction.CanonicalOpcode;
             int projectedTrapMemoryBankIntent =
                 ResolveProjectedTrapMemoryBankIntent(in rawInstruction, in instruction);
+            if (instruction.DmaStreamComputeDescriptor is not null)
+            {
+                if (opCode != Processor.CPU_Core.IsaOpcodeValues.DmaStreamCompute)
+                {
+                    return CreateCanonicalTrapMicroOp(
+                        opCode,
+                        in instruction,
+                        "DmaStreamCompute descriptor sideband reached projector on a non-DmaStreamCompute opcode.",
+                        slotMetadata,
+                        projectedTrapMemoryBankIntent);
+                }
+
+                var dmaStreamComputeMicroOp = new DmaStreamComputeMicroOp(
+                    instruction.DmaStreamComputeDescriptor);
+                ApplyCanonicalCompatibilitySlotMetadataProjection(
+                    dmaStreamComputeMicroOp,
+                    slotMetadata);
+                return dmaStreamComputeMicroOp;
+            }
+
+            if (instruction.DmaStreamComputeDescriptorReference.HasValue)
+            {
+                return CreateCanonicalTrapMicroOp(
+                    opCode,
+                    in instruction,
+                    "DmaStreamCompute descriptor reference reached projector without the guard-accepted descriptor payload.",
+                    slotMetadata,
+                    projectedTrapMemoryBankIntent);
+            }
+
+            if (instruction.AcceleratorCommandDescriptor is not null)
+            {
+                if (opCode != Processor.CPU_Core.IsaOpcodeValues.ACCEL_SUBMIT)
+                {
+                    return CreateCanonicalTrapMicroOp(
+                        opCode,
+                        in instruction,
+                        "AcceleratorCommandDescriptor sideband reached projector on a non-ACCEL_SUBMIT opcode.",
+                        slotMetadata,
+                        projectedTrapMemoryBankIntent);
+                }
+
+                if (!AcceleratorOwnerDomainGuard.Default.IsDescriptorGuardBacked(
+                        instruction.AcceleratorCommandDescriptor,
+                        out string guardMessage))
+                {
+                    return CreateCanonicalTrapMicroOp(
+                        opCode,
+                        in instruction,
+                        "AcceleratorCommandDescriptor reached projector without guard-backed owner/domain acceptance. " +
+                        guardMessage,
+                        slotMetadata,
+                        projectedTrapMemoryBankIntent);
+                }
+
+                AcceleratorGuardDecision submitGuard =
+                    AcceleratorOwnerDomainGuard.Default.EnsureBeforeSubmit(
+                        instruction.AcceleratorCommandDescriptor,
+                        instruction.AcceleratorCommandDescriptor.OwnerGuardDecision.Evidence);
+                if (!submitGuard.IsAllowed)
+                {
+                    return CreateCanonicalTrapMicroOp(
+                        opCode,
+                        in instruction,
+                        "ACCEL_SUBMIT admission guard rejected before carrier materialization. " +
+                        submitGuard.Message,
+                        slotMetadata,
+                        projectedTrapMemoryBankIntent);
+                }
+
+                var submitMicroOp = new AcceleratorSubmitMicroOp(
+                    instruction.AcceleratorCommandDescriptor);
+                ApplyCanonicalExecutionOwnerProjection(submitMicroOp, slotMetadata);
+                ApplyCanonicalCompatibilitySlotMetadataProjection(
+                    submitMicroOp,
+                    slotMetadata);
+                return submitMicroOp;
+            }
+
+            if (instruction.AcceleratorCommandDescriptorReference.HasValue)
+            {
+                return CreateCanonicalTrapMicroOp(
+                    opCode,
+                    in instruction,
+                    "AcceleratorCommandDescriptor reference reached projector without the validated descriptor payload.",
+                    slotMetadata,
+                    projectedTrapMemoryBankIntent);
+            }
+
             if (!InstructionRegistry.IsRegistered(opCode))
             {
                 return CreateCanonicalTrapMicroOp(

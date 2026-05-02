@@ -139,9 +139,9 @@ namespace HybridCPU_ISE.Tests.Phase12
         }
 
         [Fact]
-        public void IsaMandatoryOpcodeCount_Is96()
+        public void IsaMandatoryOpcodeCount_Is97()
         {
-            Assert.Equal(96, IsaV4Surface.IsaMandatoryOpcodeCount);
+            Assert.Equal(97, IsaV4Surface.IsaMandatoryOpcodeCount);
         }
 
         [Fact]
@@ -800,7 +800,7 @@ namespace HybridCPU_ISE.Tests.Phase12
     }
 
     // в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
-    // ISA v4 Instruction Coverage вЂ” all 98 opcodes in MandatoryCoreOpcodes
+    // ISA v4 Instruction Coverage - all mandatory core opcodes
     // в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
     public sealed class IsaV4InstructionCoverageTests

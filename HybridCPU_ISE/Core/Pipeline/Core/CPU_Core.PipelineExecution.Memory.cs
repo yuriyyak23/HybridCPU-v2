@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 
 namespace YAKSys_Hybrid_CPU
@@ -189,6 +190,24 @@ namespace YAKSys_Hybrid_CPU
                     memoryAddress,
                     CreateExplicitPacketStoreBuffer(memoryData, accessSize),
                     carrierDescription);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private DmaStreamComputeCommitResult ApplyRetiredDmaStreamComputeTokenCommit(
+                DmaStreamComputeToken token,
+                DmaStreamComputeOwnerGuardDecision commitGuardDecision)
+            {
+                ArgumentNullException.ThrowIfNull(token);
+
+                DmaStreamComputeCommitResult result =
+                    token.Commit(GetBoundMainMemory(), commitGuardDecision);
+
+                if (result.RequiresRetireExceptionPublication)
+                {
+                    throw result.CreateRetireException();
+                }
+
+                return result;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

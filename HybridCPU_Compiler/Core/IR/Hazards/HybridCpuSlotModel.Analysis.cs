@@ -22,7 +22,7 @@ namespace HybridCPU.Compiler.Core.IR
                 IrResourceClass.LoadStore => IrIssueSlotMask.Memory,
                 IrResourceClass.ControlFlow => IrIssueSlotMask.Control,
                 IrResourceClass.System => IrIssueSlotMask.System,
-                IrResourceClass.DmaStream => IrIssueSlotMask.Memory,
+                IrResourceClass.DmaStream => IrIssueSlotMask.DmaStream,
                 _ => IrIssueSlotMask.Scalar
             };
         }

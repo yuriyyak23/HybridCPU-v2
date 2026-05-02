@@ -6,5 +6,7 @@ internal enum DiagnosticWorkloadKind
     ReplayPhasePair,
     SafetyVerifierNegativeControls,
     ReplayReuseDiagnostics,
-    AssistantDecisionMatrix
+    AssistantDecisionMatrix,
+    StreamVectorSpecSuite,
+    WhiteBookContractDiagnostics
 }

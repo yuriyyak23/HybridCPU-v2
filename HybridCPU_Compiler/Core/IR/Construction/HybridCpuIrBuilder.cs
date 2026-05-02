@@ -88,6 +88,7 @@ namespace HybridCPU.Compiler.Core.IR
         {
             var opcode = (InstructionsEnum)instruction.OpCode;
             OpcodeInfo? opcodeInfo = HybridCpuOpcodeSemantics.GetOpcodeInfo(opcode);
+            ValidateExplicitAcceleratorIntent(opcode, slotMetadata);
             var operands = BuildOperands(opcode, instruction);
             var defs = BuildDefs(opcode, instruction);
             var uses = BuildUses(opcode, instruction);
@@ -139,6 +140,8 @@ namespace HybridCPU.Compiler.Core.IR
             {
                 InstructionClass = instructionClass,
                 SerializationClass = serializationClass,
+                DmaStreamComputeDescriptor = slotMetadata.DmaStreamComputeDescriptor,
+                AcceleratorCommandDescriptor = slotMetadata.AcceleratorCommandDescriptor,
             };
         }
 
@@ -156,8 +159,51 @@ namespace HybridCPU.Compiler.Core.IR
             return IrSlotMetadata.DefaultForVirtualThread(defaultVirtualThreadId);
         }
 
+        private static void ValidateExplicitAcceleratorIntent(
+            InstructionsEnum opcode,
+            IrSlotMetadata slotMetadata)
+        {
+            bool hasDmaStreamDescriptor = slotMetadata.DmaStreamComputeDescriptor is not null;
+            bool hasAcceleratorDescriptor = slotMetadata.AcceleratorCommandDescriptor is not null;
+            if (hasDmaStreamDescriptor && hasAcceleratorDescriptor)
+            {
+                throw new InvalidOperationException(
+                    "Compiler typed sideband cannot carry lane6 DmaStreamCompute and lane7 L7-SDC descriptors on the same instruction.");
+            }
+
+            if (hasDmaStreamDescriptor &&
+                !HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
+            {
+                throw new InvalidOperationException(
+                    "DmaStreamCompute descriptor sideband may only accompany the native lane6 DmaStreamCompute compiler contour.");
+            }
+
+            if (!OpcodeRegistry.IsSystemDeviceCommandOpcode((uint)opcode))
+            {
+                if (hasAcceleratorDescriptor)
+                {
+                    throw new InvalidOperationException(
+                        "AcceleratorCommandDescriptor sideband may only accompany explicit L7-SDC compiler accelerator intent.");
+                }
+
+                return;
+            }
+
+            if (opcode != InstructionsEnum.ACCEL_SUBMIT ||
+                !hasAcceleratorDescriptor)
+            {
+                throw new InvalidOperationException(
+                    "Compiler L7-SDC emission requires explicit accelerator intent and typed ACCEL_SUBMIT descriptor sideband before native opcode emission.");
+            }
+        }
+
         private static IReadOnlyList<IrOperand> BuildOperands(InstructionsEnum opcode, VLIW_Instruction instruction)
         {
+            if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
+            {
+                return Array.Empty<IrOperand>();
+            }
+
             var operands = new List<IrOperand>(8);
             DecodedRegisterTuple word1Registers = DecodeWord1Registers(opcode, instruction);
             if (word1Registers.HasAny)
@@ -209,6 +255,11 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static IReadOnlyList<IrOperand> BuildDefs(InstructionsEnum opcode, VLIW_Instruction instruction)
         {
+            if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
+            {
+                return Array.Empty<IrOperand>();
+            }
+
             var defs = new List<IrOperand>(1);
             DecodedRegisterTuple word1Registers = DecodeWord1Registers(opcode, instruction);
             if (word1Registers.HasAny)
@@ -233,6 +284,11 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static IReadOnlyList<IrOperand> BuildUses(InstructionsEnum opcode, VLIW_Instruction instruction)
         {
+            if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
+            {
+                return Array.Empty<IrOperand>();
+            }
+
             var uses = new List<IrOperand>(6);
             DecodedRegisterTuple word1Registers = DecodeWord1Registers(opcode, instruction);
             DecodedRegisterTuple controlRegisters = DecodeControlRegisters(opcode, instruction);
@@ -357,6 +413,11 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static IrResourceClass ClassifyResource(InstructionsEnum opcode)
         {
+            if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
+            {
+                return IrResourceClass.DmaStream;
+            }
+
             if (HybridCpuOpcodeSemantics.IsLoadStoreOpcode(opcode))
             {
                 return IrResourceClass.LoadStore;

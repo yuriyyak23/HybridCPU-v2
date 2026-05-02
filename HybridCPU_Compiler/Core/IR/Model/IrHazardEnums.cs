@@ -20,6 +20,7 @@ namespace HybridCPU.Compiler.Core.IR
         Scalar = Slot0 | Slot1 | Slot2 | Slot3,
         Vector = Slot4 | Slot5,
         Memory = Slot6,
+        DmaStream = Slot6,
         Control = Slot7,
         System = Slot7,
         All = Scalar | Vector | Memory | Slot7
