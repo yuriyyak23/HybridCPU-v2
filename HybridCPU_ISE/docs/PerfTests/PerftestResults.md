@@ -1,6 +1,6 @@
 ﻿# FSP Performance Test Results
 
-> **Generated:** 2026-04-28 20:16:39 UTC
+> **Generated:** 2026-05-03 20:06:18 UTC
 > **Simulator:** HybridCPU ISE (Cycle-Accurate)
 > **Configuration:** VLIW Width W=8, SMT Ways=4, Cycles/Test=500
 > **Methodology:** Adversarial benchmark suite per `ipc_speedup_analysis.md`

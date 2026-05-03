@@ -10,6 +10,7 @@ using MinimalAsmApp.Examples.Programs;
 using MinimalAsmApp.Examples.Registers;
 using MinimalAsmApp.Examples.StackNotSupported;
 using MinimalAsmApp.Examples.Stream;
+using MinimalAsmApp.Examples.Smt;
 using MinimalAsmApp.Examples.Vector;
 
 namespace MinimalAsmApp.Examples;
@@ -52,7 +53,17 @@ public static class CpuExampleCatalog
             new VectorTransferEncodingExample(),
             new StreamControlEncodingExample(),
             new StreamControlNotSupportedExample(),
-            new DmaStreamComputeNotSupportedExample()
+            new DmaStreamComputeNotSupportedExample(),
+            new FourWayVliwSmtLayoutExample(),
+            new VirtualThreadIdRangeExample(),
+            new FspStealableSlotsExample(),
+            new FspProtectedSlotsExample(),
+            new FspDonorVtHintExample(),
+            new FspBoundaryMetadataExample(),
+            new BundleMixedPolicyExample(),
+            new SmtSyncOpcodeEncodingExample(),
+            new SmtObservationSurfaceExample(),
+            new ExecutableSmtProgramNotSupportedExample()
         ];
 
         return new CpuExampleRunner(examples);
