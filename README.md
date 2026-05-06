@@ -2,6 +2,8 @@
 
 **Replay-stable SMT-VLIW instruction-set emulator/runtime with streaming-vector transport, typed-slot scheduling, runtime-owned legality, replay evidence, and compiler/runtime structural agreement.**
 
+research preprint: https://zenodo.org/records/19785302
+
 The central implementation is an instruction-set emulator/runtime with a fixed 8-slot VLIW carrier, 4-way SMT inside a core, class-aware lane topology, explicit legality decisions, bounded replay reuse, retire-visible evidence, and a staged compiler contract.
 
 This README deliberately compresses the WhiteBook into the repository entry point. It keeps file references minimal; for deeper detail, start with:
