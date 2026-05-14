@@ -1179,17 +1179,6 @@ For Stream WhiteBook work, read in dependency order:
 4. [Stream WhiteBook diagrams](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md).
 5. Historical Ex1 gates for memory/conflict/cache/compiler/backend changes, especially [Phase11](Documentation/Refactoring/Phases%20Ex1/11_Compiler_Backend_Lowering_Contract.md), [Phase12](Documentation/Refactoring/Phases%20Ex1/12_Testing_Conformance_And_Documentation_Migration.md), and [Phase13](Documentation/Refactoring/Phases%20Ex1/13_Dependency_Graph_And_Execution_Order.md).
 
-For implementation work, map claims back to the live scheduler, safety, compiler-contract, replay, diagnostics, and pipeline code before strengthening any README or paper statement.
-
-For paper writing, keep the claims bounded:
-
-- "runtime-owned legality" rather than "compiler-proved correctness";
-- "replay-stable inside the evidence envelope" rather than "globally deterministic";
-- "retire-time visibility boundary" rather than "complete memory theorem";
-- "stage-aware fault ordering" rather than "blanket precise exceptions";
-- "ValidationOnly typed-slot facts" rather than "mandatory compiler certificates";
-- "simulated proof signing" rather than "hardware-rooted attestation."
-
 ## Working Commands
 
 ```powershell
