@@ -9,6 +9,7 @@ using MinimalAsmApp.Examples.Memory;
 using MinimalAsmApp.Examples.Programs;
 using MinimalAsmApp.Examples.Registers;
 using MinimalAsmApp.Examples.StackNotSupported;
+using MinimalAsmApp.Examples.InstructionClosure;
 using MinimalAsmApp.Examples.Stream;
 using MinimalAsmApp.Examples.Smt;
 using MinimalAsmApp.Examples.Vector;
@@ -26,6 +27,7 @@ public static class CpuExampleCatalog
             new RegisterMoveExample(),
             new AddSubExample(),
             new MulDivExample(),
+            new BitwiseExample(),
             new MemoryLoadStoreExample(),
             new MemoryCopyExample(),
             new CompareSetExample(),
@@ -63,7 +65,11 @@ public static class CpuExampleCatalog
             new BundleMixedPolicyExample(),
             new SmtSyncOpcodeEncodingExample(),
             new SmtObservationSurfaceExample(),
-            new ExecutableSmtProgramNotSupportedExample()
+            new ExecutableSmtProgramNotSupportedExample(),
+            new ScalarExtensionClosureExample(),
+            new AtomicWordClosureExample(),
+            new AtomicDoublewordClosureExample(),
+            new FenceOrderingClosureExample()
         ];
 
         return new CpuExampleRunner(examples);

@@ -26,6 +26,25 @@ public static class CpuInstructions
     public static VLIW_Instruction Move(int destinationRegister, int sourceRegister) =>
         AddImmediate(destinationRegister, sourceRegister, 0);
 
+    public static VLIW_Instruction ScalarUnary(
+        Instruction opcode,
+        int destinationRegister,
+        int sourceRegister,
+        DataTypeEnum dataType = DataTypeEnum.INT32)
+    {
+        return InstructionEncoder.EncodeScalarUnary(
+            (uint)opcode,
+            dataType,
+            checked((ushort)destinationRegister),
+            checked((ushort)sourceRegister));
+    }
+
+    public static VLIW_Instruction SignExtendWord(int destinationRegister, int sourceRegister) =>
+        ScalarUnary(Instruction.SEXT_W, destinationRegister, sourceRegister);
+
+    public static VLIW_Instruction ZeroExtendWord(int destinationRegister, int sourceRegister) =>
+        ScalarUnary(Instruction.ZEXT_W, destinationRegister, sourceRegister);
+
     public static VLIW_Instruction Binary(
         Instruction opcode,
         int destinationRegister,
@@ -93,6 +112,60 @@ public static class CpuInstructions
         };
     }
 
+    public static VLIW_Instruction Atomic(
+        Instruction opcode,
+        DataTypeEnum dataType,
+        int destinationRegister,
+        int addressRegister,
+        int sourceRegister = 0,
+        bool acquire = false,
+        bool release = false)
+    {
+        return new VLIW_Instruction
+        {
+            OpCode = (uint)opcode,
+            DataTypeValue = dataType,
+            Acquire = acquire,
+            Release = release,
+            DestSrc1Pointer = VLIW_Instruction.PackArchRegs(
+                checked((byte)destinationRegister),
+                checked((byte)addressRegister),
+                checked((byte)sourceRegister))
+        };
+    }
+
+    public static VLIW_Instruction AtomicWord(
+        Instruction opcode,
+        int destinationRegister,
+        int addressRegister,
+        int sourceRegister = 0,
+        bool acquire = false,
+        bool release = false) =>
+        Atomic(
+            opcode,
+            DataTypeEnum.INT32,
+            destinationRegister,
+            addressRegister,
+            sourceRegister,
+            acquire,
+            release);
+
+    public static VLIW_Instruction AtomicDoubleword(
+        Instruction opcode,
+        int destinationRegister,
+        int addressRegister,
+        int sourceRegister = 0,
+        bool acquire = false,
+        bool release = false) =>
+        Atomic(
+            opcode,
+            DataTypeEnum.INT64,
+            destinationRegister,
+            addressRegister,
+            sourceRegister,
+            acquire,
+            release);
+
     public static VLIW_Instruction Vector1D(
         Instruction opcode,
         ulong destinationAndSource1Address,
@@ -130,6 +203,15 @@ public static class CpuInstructions
         return new VLIW_Instruction
         {
             OpCode = (uint)Instruction.FENCE,
+            PredicateMask = 0
+        };
+    }
+
+    public static VLIW_Instruction FenceI()
+    {
+        return new VLIW_Instruction
+        {
+            OpCode = (uint)Instruction.FENCE_I,
             PredicateMask = 0
         };
     }
