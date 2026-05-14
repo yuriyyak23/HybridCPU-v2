@@ -2,7 +2,7 @@
 
 **Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
 
-HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT, heterogeneous lane classes, explicit legality decisions, bounded replay reuse, retire-visible effects, and a versioned compiler/runtime contract. The repository now keeps the instruction-side closure in `Documentation/InstructionsRefactor/WhiteBook/` and the stream, lane6, and lane7 architecture records in `Documentation/Stream WhiteBook/`.
+The central implementation is an instruction-set emulator/runtime with a fixed 8-slot VLIW carrier, 4-way SMT inside a core, class-aware lane topology, explicit legality decisions, bounded replay reuse, retire-visible evidence, and a staged compiler contract.
 
 This README deliberately compresses the current documentation map into the repository entry point. It keeps file references minimal; for deeper detail, start with:
 
