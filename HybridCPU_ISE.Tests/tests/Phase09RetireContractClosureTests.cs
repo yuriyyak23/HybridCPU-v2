@@ -258,11 +258,13 @@ namespace HybridCPU_ISE.Tests.Phase09
             byte rs2 = 0,
             ushort immediate = 0)
         {
+            bool isCanonicalFence =
+                opcode is InstructionsEnum.FENCE or InstructionsEnum.FENCE_I;
             return new VLIW_Instruction
             {
                 OpCode = (uint)opcode,
                 DataTypeValue = DataTypeEnum.INT32,
-                PredicateMask = 0xFF,
+                PredicateMask = isCanonicalFence ? (byte)0 : (byte)0xFF,
                 DestSrc1Pointer = VLIW_Instruction.PackArchRegs(rd, rs1, rs2),
                 Src2Pointer = immediate,
                 Immediate = immediate,

@@ -18,6 +18,9 @@ Code anchors:
 
 Documentation anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/02_Runtime_Surface_Closure.md`
+- `Documentation/InstructionsRefactor/WhiteBook/04_Memory_Atomic_Fence_Model.md`
+- `Documentation/InstructionsRefactor/WhiteBook/06_Verification_And_Risk_Closure.md`
 - `Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md`
 - `Documentation/Stream WhiteBook/StreamEngine DmaStreamCompute/02_DmaStreamCompute.md`
 - `Documentation/Refactoring/Phases Ex1/02_Executable_Lane6_DSC_ADR_Gate.md`

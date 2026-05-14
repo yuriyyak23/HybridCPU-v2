@@ -115,10 +115,20 @@ namespace HybridCPU_ISE.Tests.tests
 
         private static DecoderContext CreateCanonicalDecoderContext(uint opCode)
         {
+            if (opCode is (uint)Processor.CPU_Core.InstructionsEnum.FENCE or
+                (uint)Processor.CPU_Core.InstructionsEnum.FENCE_I)
+            {
+                return new DecoderContext
+                {
+                    OpCode = opCode,
+                    PredicateMask = 0,
+                };
+            }
+
             ulong vectorPrimaryPointer = IsVectorFmaOpcode(opCode) ? 0x240UL : 0x220UL;
             ulong vectorSecondaryPointer = IsVectorFmaOpcode(opCode) ? 0x340UL : 0x320UL;
 
-            return new DecoderContext
+            DecoderContext context = new DecoderContext
             {
                 OpCode = opCode,
                 Immediate = 0x123,
@@ -148,6 +158,26 @@ namespace HybridCPU_ISE.Tests.tests
                 OwnerThreadId = 0,
                 MemoryDomainId = 0
             };
+
+            if (opCode is (uint)Processor.CPU_Core.InstructionsEnum.SLLIW or
+                (uint)Processor.CPU_Core.InstructionsEnum.SRLIW or
+                (uint)Processor.CPU_Core.InstructionsEnum.SRAIW or
+                (uint)Processor.CPU_Core.InstructionsEnum.SEXT_W or
+                (uint)Processor.CPU_Core.InstructionsEnum.ZEXT_W)
+            {
+                context.Reg3ID = 0;
+                context.PackedRegisterTriplet = VLIW_Instruction.PackArchRegs(7, 5, 0);
+                context.HasPackedRegisterTriplet = true;
+
+                if (opCode is (uint)Processor.CPU_Core.InstructionsEnum.SEXT_W or
+                    (uint)Processor.CPU_Core.InstructionsEnum.ZEXT_W)
+                {
+                    context.Immediate = 0;
+                    context.HasImmediate = true;
+                }
+            }
+
+            return context;
         }
 
         private static void PrepareOpcodeSpecificEnvironment(uint opCode)

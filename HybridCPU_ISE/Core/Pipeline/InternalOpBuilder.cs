@@ -28,6 +28,7 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
             ushort opcode = instruction.CanonicalOpcode.Value;
             InternalOpKind kind = MapToKind(opcode);
             InternalOpFlags flags = DeriveFlags(opcode);
+            flags |= DeriveAtomicOrderingFlags(kind, instruction);
 
             return new InternalOp
             {
@@ -36,6 +37,7 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
                 Rs2       = instruction.Rs2,
                 Rd        = instruction.Rd,
                 Immediate = instruction.Imm,
+                DataType  = ResolveDataType(opcode, instruction),
                 Flags     = flags,
             };
         }
@@ -59,10 +61,34 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
                         {
                             case "ADD":
                                 return InternalOpKind.Add;
+                            case "ADDW":
+                                return InternalOpKind.AddW;
+                            case "SUBW":
+                                return InternalOpKind.SubW;
+                            case "SLLW":
+                                return InternalOpKind.SllW;
+                            case "SRLW":
+                                return InternalOpKind.SrlW;
+                            case "SRAW":
+                                return InternalOpKind.SraW;
                             case "SUB":
                                 return InternalOpKind.Sub;
                             case "MUL":
                                 return InternalOpKind.Mul;
+                            case "MULW":
+                                return InternalOpKind.MulW;
+                            case "DIVW":
+                                return InternalOpKind.DivW;
+                            case "DIVUW":
+                                return InternalOpKind.DivuW;
+                            case "REMW":
+                                return InternalOpKind.RemW;
+                            case "REMUW":
+                                return InternalOpKind.RemuW;
+                            case "SEXT.W":
+                                return InternalOpKind.SextW;
+                            case "ZEXT.W":
+                                return InternalOpKind.ZextW;
                             case "DIV":
                                 return InternalOpKind.Div;
                             case "SLT":
@@ -83,6 +109,8 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
                                 return InternalOpKind.Remu;
                             case "ADDI":
                                 return InternalOpKind.AddI;
+                            case "ADDIW":
+                                return InternalOpKind.AddIW;
                             case "ANDI":
                                 return InternalOpKind.AndI;
                             case "ORI":
@@ -95,8 +123,16 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
                                 return InternalOpKind.SltiU;
                             case "SLLI":
                                 return InternalOpKind.SllI;
+                            case "SLLIW":
+                                return InternalOpKind.SllIW;
+                            case "SRLIW":
+                                return InternalOpKind.SrlIW;
+                            case "SRAIW":
+                                return InternalOpKind.SraIW;
                             case "SRLI":
                                 return InternalOpKind.SrlI;
+                            case "SRA":
+                                return InternalOpKind.Sra;
                             case "SRAI":
                                 return InternalOpKind.SraI;
                             case "LUI":
@@ -313,9 +349,22 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
             return opcode switch
             {
                 // ── Scalar ALU reg-reg ────────────────────────────────────────
+                OpcodeValues.ADDW          => InternalOpKind.AddW,
+                OpcodeValues.SUBW          => InternalOpKind.SubW,
+                OpcodeValues.SLLW          => InternalOpKind.SllW,
+                OpcodeValues.SRLW          => InternalOpKind.SrlW,
+                OpcodeValues.SRAW          => InternalOpKind.SraW,
+                OpcodeValues.MULW          => InternalOpKind.MulW,
+                OpcodeValues.DIVW          => InternalOpKind.DivW,
+                OpcodeValues.DIVUW         => InternalOpKind.DivuW,
+                OpcodeValues.REMW          => InternalOpKind.RemW,
+                OpcodeValues.REMUW         => InternalOpKind.RemuW,
+                OpcodeValues.SEXT_W        => InternalOpKind.SextW,
+                OpcodeValues.ZEXT_W        => InternalOpKind.ZextW,
                 OpcodeValues.Modulus       => InternalOpKind.Rem,
                 OpcodeValues.ShiftLeft     => InternalOpKind.Sll,
                 OpcodeValues.ShiftRight    => InternalOpKind.Srl,
+                OpcodeValues.SRA           => InternalOpKind.Sra,
                 OpcodeValues.XOR           => InternalOpKind.Xor,
                 OpcodeValues.OR            => InternalOpKind.Or,
                 OpcodeValues.AND           => InternalOpKind.And,
@@ -364,12 +413,26 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
         // Helpers
         // ─────────────────────────────────────────────────────────────────────
 
+        private static InternalOpDataType ResolveDataType(
+            ushort opcode,
+            InstructionIR instruction)
+        {
+            return opcode switch
+            {
+                OpcodeValues.ADDIW or OpcodeValues.SLLIW or OpcodeValues.SRLIW or OpcodeValues.SRAIW or OpcodeValues.ADDW or OpcodeValues.SUBW or OpcodeValues.SLLW or OpcodeValues.SRLW or OpcodeValues.SRAW or OpcodeValues.MULW or OpcodeValues.DIVW or OpcodeValues.DIVUW or OpcodeValues.REMW or OpcodeValues.REMUW or OpcodeValues.SEXT_W or OpcodeValues.ZEXT_W => InternalOpDataType.Word,
+                _ => instruction.DataType,
+            };
+        }
+
         private static InternalOpFlags DeriveFlags(ushort opcode)
         {
             OpcodeInfo? opcodeInfo = OpcodeRegistry.GetInfo(opcode);
             InternalOpKind kind = MapToKind(opcode);
 
             if (kind is InternalOpKind.Div or
+                InternalOpKind.DivW or
+                InternalOpKind.RemW or
+                InternalOpKind.SextW or
                 InternalOpKind.Rem or
                 InternalOpKind.Slt or
                 InternalOpKind.SltI)
@@ -377,7 +440,7 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
                 return InternalOpFlags.Signed;
             }
 
-            if (kind == InternalOpKind.SraI)
+            if (kind is InternalOpKind.Sra or InternalOpKind.SraW or InternalOpKind.SraI or InternalOpKind.SraIW)
             {
                 return InternalOpFlags.ArithmeticShift;
             }
@@ -401,6 +464,35 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
                 OpcodeValues.JumpIfAboveOrEqual => InternalOpFlags.Signed,
                 _ => InternalOpFlags.None,
             };
+        }
+
+        private static InternalOpFlags DeriveAtomicOrderingFlags(
+            InternalOpKind kind,
+            InstructionIR instruction)
+        {
+            if (kind is not (
+                    InternalOpKind.LrW or
+                    InternalOpKind.ScW or
+                    InternalOpKind.LrD or
+                    InternalOpKind.ScD or
+                    InternalOpKind.AmoWord or
+                    InternalOpKind.AmoDword))
+            {
+                return InternalOpFlags.None;
+            }
+
+            InternalOpFlags flags = InternalOpFlags.None;
+            if (instruction.AcquireOrdering)
+            {
+                flags |= InternalOpFlags.AcquireOrdering;
+            }
+
+            if (instruction.ReleaseOrdering)
+            {
+                flags |= InternalOpFlags.ReleaseOrdering;
+            }
+
+            return flags;
         }
     }
 }

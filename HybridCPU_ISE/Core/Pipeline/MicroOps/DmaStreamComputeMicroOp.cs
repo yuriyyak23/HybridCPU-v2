@@ -41,7 +41,7 @@ namespace YAKSys_Hybrid_CPU.Core
             VirtualThreadId = descriptor.OwnerBinding.OwnerVirtualThreadId;
             OwnerContextId = ConvertOwnerContextId(descriptor.OwnerBinding.OwnerContextId);
 
-            SetClassFlexiblePlacement(SlotClass.DmaStreamClass);
+            SetHardPinnedPlacement(SlotClass.DmaStreamClass, 6);
             Placement = Placement with { DomainTag = descriptor.OwnerBinding.OwnerDomainTag };
 
             ReadRegisters = Array.Empty<int>();

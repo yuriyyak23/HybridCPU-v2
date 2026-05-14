@@ -89,16 +89,22 @@ namespace YAKSys_Hybrid_CPU
 
                 if (pipeEX.IsLoad)
                 {
+                    ScalarExecuteLaneState executeLane = pipeEX.GetLane(pipeEX.ActiveLaneIndex);
                     ulong address = pipeEX.MemoryAddress;
-                    if (IsScalarMemoryAccessInBounds(address, 8))
+                    byte loadAccessSize = NormalizeScalarMemoryAccessSize(executeLane.MemoryAccessSize);
+                    if (IsScalarMemoryAccessInBounds(address, loadAccessSize))
                     {
-                        byte[] buffer = new byte[8];
+                        byte[] buffer = new byte[loadAccessSize];
                         ReadBoundMainMemory(
                             address,
                             buffer,
-                            accessSize: 8,
+                            loadAccessSize,
                             "PipelineStage_Memory() synchronous single-lane load");
-                        pipeMEM.ResultValue = BitConverter.ToUInt64(buffer, 0);
+                        pipeMEM.ResultValue = Core.LoadStoreMicroOp.DecodeLoadValue(
+                            executeLane.OpCode,
+                            buffer,
+                            loadAccessSize,
+                            "PipelineStage_Memory() synchronous single-lane load");
                     }
                     else
                     {
@@ -223,31 +229,12 @@ namespace YAKSys_Hybrid_CPU
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static ulong DecodeExplicitPacketLoadBuffer(byte[] buffer, byte accessSize)
-            {
-                int requiredSize = accessSize switch
-                {
-                    1 => 1,
-                    2 => 2,
-                    4 => 4,
-                    _ => 8
-                };
-
-                if (buffer.Length < requiredSize)
-                {
-                    throw new InvalidOperationException(
-                        $"Explicit packet load decode reached a partial buffer ({buffer.Length} byte(s)) for an access size of {requiredSize} byte(s). " +
-                        "The authoritative memory lane must fail closed instead of decoding a partial load image across the boundary contour.");
-                }
-
-                return accessSize switch
-                {
-                    1 => buffer[0],
-                    2 => BitConverter.ToUInt16(buffer, 0),
-                    4 => BitConverter.ToUInt32(buffer, 0),
-                    _ => BitConverter.ToUInt64(buffer, 0)
-                };
-            }
+            private static ulong DecodeExplicitPacketLoadBuffer(uint opcode, byte[] buffer, byte accessSize) =>
+                Core.LoadStoreMicroOp.DecodeLoadValue(
+                    opcode,
+                    buffer,
+                    accessSize,
+                    "Explicit packet load decode");
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void CancelInFlightExplicitMemoryRequests()
@@ -362,6 +349,7 @@ namespace YAKSys_Hybrid_CPU
                         if (lane.IsLoad)
                         {
                             lane.ResultValue = DecodeExplicitPacketLoadBuffer(
+                                lane.OpCode,
                                 lane.PendingMemoryRequest.GetBuffer(),
                                 accessSize);
                         }
@@ -377,7 +365,10 @@ namespace YAKSys_Hybrid_CPU
                         if (lane.IsLoad)
                         {
                             byte[] readBuffer = ReadExplicitPacketLoadIntoReusableBuffer(address, accessSize);
-                            lane.ResultValue = DecodeExplicitPacketLoadBuffer(readBuffer, accessSize);
+                            lane.ResultValue = DecodeExplicitPacketLoadBuffer(
+                                lane.OpCode,
+                                readBuffer,
+                                accessSize);
                         }
                         else
                         {

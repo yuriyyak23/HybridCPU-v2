@@ -97,6 +97,44 @@ namespace YAKSys_Hybrid_CPU.Core
             return microOp;
         }
 
+        private static SysEventMicroOp CreateFenceSystemEventMicroOp(
+            DecoderContext context,
+            Func<SysEventMicroOp> factory)
+        {
+            ValidateCanonicalFenceDecoderContext(context);
+            return CreateSystemEventMicroOp(context.OpCode, factory);
+        }
+
+        private static void ValidateCanonicalFenceDecoderContext(DecoderContext context)
+        {
+            ushort opcode = unchecked((ushort)context.OpCode);
+            bool hasUnsupportedPayload =
+                context.Immediate != 0 ||
+                context.PredicateMask != 0 ||
+                context.AcquireOrdering ||
+                context.ReleaseOrdering ||
+                context.IndexedAddressing ||
+                context.Is2DAddressing ||
+                context.VectorPrimaryPointer != 0 ||
+                context.VectorSecondaryPointer != 0 ||
+                context.VectorStreamLength != 0 ||
+                context.VectorStride != 0 ||
+                context.VectorRowStride != 0 ||
+                context.TailAgnostic ||
+                context.MaskAgnostic ||
+                context.HasVectorPayload;
+
+            if (!hasUnsupportedPayload)
+            {
+                return;
+            }
+
+            throw new DecodeProjectionFaultException(
+                $"Opcode {OpcodeRegistry.GetMnemonicOrHex(opcode)} reached InstructionRegistry.CreateMicroOp(...) with unsupported Phase 10 fence payload. " +
+                "FENCE/FENCE.I materialization accepts only the canonical zero-payload form; " +
+                "decoder context fields and aq/rl bits are evidence only, not ordering authority.");
+        }
+
         /// <summary>
         /// Blueprint Phase 7: compute a <see cref="SafetyMask128"/> for a MicroOp.
         /// Uses <see cref="DefaultSafetyMask128Generator"/> so that safety authority

@@ -100,10 +100,19 @@ records executable lane6 DMA, pipeline token allocation, production executable
 DSC compiler/backend lowering, async scheduling, global fences, and
 cache/coherency as future architecture decisions.
 
-Known residual risk remains separated from this Stream/DMA/Accelerator decision:
-the latest full-suite snapshot reported `5928` passed, `2` skipped, and `3`
-failures in independent `Phase12VliwCompatFreezeTests` coverage for missing
+## Current Risk Closure
+
+The current live `TestAssemblerConsoleApps` profile is `250` iterations,
+`11` child runs, and `stream-vector` passed. Compare that run against
+`Documentation/AsmAppTestResults.md`; the older successful `200` / `10`
+profile remains the stored comparison log baseline only.
+
+## Historical Residual-Risk Snapshot
+
+Known residual risk from the older full-suite snapshot remains documented for
+archive purposes only: `5928` passed, `2` skipped, and `3` failures in
+independent `Phase12VliwCompatFreezeTests` coverage for missing
 `build\run-compat-freeze-gate.ps1` and allowlist hits in
-`TestAssemblerConsoleApps\StreamVectorSpecSuite.cs`. That residual risk is not
-evidence of a Stream/DMA/Accelerator refactor regression without a matching
-failure in the focused contour.
+`TestAssemblerConsoleApps\StreamVectorSpecSuite.cs`. That snapshot is not
+evidence of a current Stream/DMA/Accelerator refactor regression without a
+matching failure in the focused contour.

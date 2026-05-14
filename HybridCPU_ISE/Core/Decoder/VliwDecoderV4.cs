@@ -82,6 +82,11 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 opcodeName,
                 slotIndex);
             RejectLegacyPolicyGap(in instruction, slotIndex);
+            RejectUnsupportedFencePayload(
+                in instruction,
+                opcode,
+                opcodeName,
+                slotIndex);
             AcceleratorCommandDescriptor? acceleratorCommandDescriptor =
                 ValidateAcceleratorCommandDescriptorNativeCarrier(
                     in instruction,
@@ -103,6 +108,22 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 instrClass,
                 opcodeName,
                 slotIndex);
+            RejectScalarImmediateRegisterFormAlias(
+                opcode,
+                opcodeName,
+                rs2,
+                slotIndex);
+            RejectScalarUnaryRegisterFormAlias(
+                opcode,
+                opcodeName,
+                rs2,
+                instruction.Immediate,
+                slotIndex);
+            RejectControlFlowLegacyTargetTransport(
+                opcode,
+                opcodeName,
+                in instruction,
+                slotIndex);
 
             ulong? absoluteMemory = ResolveAbsoluteMemoryAddress(in instruction, opcode);
             bool hasAbsolute = absoluteMemory.HasValue;
@@ -121,6 +142,8 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 Rs2 = rs2,
                 Imm = imm,
                 HasAbsoluteAddressing = hasAbsolute,
+                AcquireOrdering = instruction.Acquire,
+                ReleaseOrdering = instruction.Release,
                 DmaStreamComputeDescriptorReference =
                     dmaStreamComputeDescriptor?.DescriptorReference,
                 DmaStreamComputeDescriptor = dmaStreamComputeDescriptor,
@@ -621,6 +644,109 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                     ? ExtractRegField(instruction.Src2Pointer)
                     : instruction.Reg2ID),
                 (byte)instruction.Reg3ID);
+        }
+
+        private static void RejectScalarImmediateRegisterFormAlias(
+            ushort opcode,
+            string opcodeName,
+            byte rs2,
+            int slotIndex)
+        {
+            if (opcode is not (
+                    Processor.CPU_Core.IsaOpcodeValues.SLLIW or
+                    Processor.CPU_Core.IsaOpcodeValues.SRLIW or
+                    Processor.CPU_Core.IsaOpcodeValues.SRAIW) ||
+                rs2 == 0)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException(
+                $"Opcode '{opcodeName}' (slot {slotIndex}) requires canonical scalar-immediate Word1=(rd, rs1, x0). " +
+                "Register-form aliasing through rs2 is not accepted.");
+        }
+
+        private static void RejectScalarUnaryRegisterFormAlias(
+            ushort opcode,
+            string opcodeName,
+            byte rs2,
+            ushort immediate,
+            int slotIndex)
+        {
+            if (opcode is not (
+                    Processor.CPU_Core.IsaOpcodeValues.SEXT_W or
+                    Processor.CPU_Core.IsaOpcodeValues.ZEXT_W))
+            {
+                return;
+            }
+
+            if (rs2 != 0)
+            {
+                throw new InvalidOperationException(
+                    $"Opcode '{opcodeName}' (slot {slotIndex}) requires canonical scalar-unary Word1=(rd, rs1, x0). " +
+                    "Register-form aliasing through rs2 is not accepted.");
+            }
+
+            if (immediate != 0)
+            {
+                throw new InvalidOperationException(
+                    $"Opcode '{opcodeName}' (slot {slotIndex}) requires canonical scalar-unary Immediate=0. " +
+                    "Immediate-form aliasing is not accepted.");
+            }
+        }
+
+        private static void RejectControlFlowLegacyTargetTransport(
+            ushort opcode,
+            string opcodeName,
+            in VLIW_Instruction instruction,
+            int slotIndex)
+        {
+            if (!OpcodeRegistry.IsControlFlowOp(opcode) ||
+                instruction.Src2Pointer == 0)
+            {
+                return;
+            }
+
+            throw new InvalidOpcodeException(
+                $"Opcode '{opcodeName}' (slot {slotIndex}) uses legacy Src2Pointer control-flow target transport. " +
+                "Published branch/control ABI encodes the target displacement in Immediate; JALR uses rs1 plus Immediate.",
+                opcodeIdentifier: opcodeName,
+                slotIndex: slotIndex,
+                isProhibited: false);
+        }
+
+        private static void RejectUnsupportedFencePayload(
+            in VLIW_Instruction instruction,
+            ushort opcode,
+            string opcodeName,
+            int slotIndex)
+        {
+            if (opcode is not (
+                    Processor.CPU_Core.IsaOpcodeValues.FENCE or
+                    Processor.CPU_Core.IsaOpcodeValues.FENCE_I))
+            {
+                return;
+            }
+
+            ulong flags = (instruction.Word0 >> 16) & 0xFFUL;
+            ulong word3Payload = instruction.Word3 & ~(0x3UL << 48);
+            if (instruction.Immediate == 0 &&
+                instruction.PredicateMask == 0 &&
+                flags == 0 &&
+                instruction.Word1 == 0 &&
+                instruction.Word2 == 0 &&
+                word3Payload == 0)
+            {
+                return;
+            }
+
+            throw new InvalidOpcodeException(
+                $"Opcode '{opcodeName}' (slot {slotIndex}) carries unsupported Phase 10 fence payload. " +
+                "Current runtime-owned FENCE/FENCE.I semantics accept only the canonical zero-payload form: " +
+                "Immediate=0, PredicateMask=0, flags=0, Word1=0, Word2=0, and no Word3 payload.",
+                opcodeIdentifier: opcodeName,
+                slotIndex: slotIndex,
+                isProhibited: false);
         }
 
         private static InstructionSlotMetadata ResolveSlotMetadata(

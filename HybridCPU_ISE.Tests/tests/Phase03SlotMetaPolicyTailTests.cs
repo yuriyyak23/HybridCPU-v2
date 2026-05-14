@@ -113,13 +113,15 @@ public sealed class Phase03SlotMetaPolicyTailTests
         byte rs2 = 0,
         ushort immediate = 0)
     {
+        bool isFence = opcode is InstructionsEnum.FENCE or InstructionsEnum.FENCE_I;
+
         return new VLIW_Instruction
         {
             OpCode = (uint)opcode,
-            DataTypeValue = DataTypeEnum.INT32,
-            PredicateMask = 0xFF,
-            DestSrc1Pointer = VLIW_Instruction.PackArchRegs(rd, rs1, rs2),
-            Src2Pointer = immediate,
+            DataTypeValue = isFence ? (byte)0 : DataTypeEnum.INT32,
+            PredicateMask = isFence ? (byte)0 : (byte)0xFF,
+            DestSrc1Pointer = isFence ? 0UL : VLIW_Instruction.PackArchRegs(rd, rs1, rs2),
+            Src2Pointer = isFence ? 0UL : immediate,
             StreamLength = 0,
             Stride = 0,
             VirtualThreadId = 0

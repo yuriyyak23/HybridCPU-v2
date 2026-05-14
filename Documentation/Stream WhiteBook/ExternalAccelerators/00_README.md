@@ -8,6 +8,11 @@ and keeps every statement tied to live code, tests, or phase closure evidence.
 Current implementation, model-only APIs, fail-closed surfaces, and future design
 are separated. Future architecture is not implemented behavior.
 
+Current instruction-side closure and risk evidence now live in
+`Documentation/InstructionsRefactor/WhiteBook/`. Read that pack for the
+current scalar, atomic, fence, vector, and risk-closure record; keep this pack
+as the separate L7-SDC / stream-accelerator reference.
+
 ## Reading order
 
 1. `01_L7_SDC_Executive_Summary.md`
@@ -22,6 +27,7 @@ are separated. Future architecture is not implemented behavior.
 10. `10_Telemetry_And_Evidence.md`
 11. `11_DmaStreamCompute_And_Assist_Separation.md`
 12. `Diagrams/00_Diagram_Index.md`
+13. `Documentation/InstructionsRefactor/WhiteBook/00_README.md` - current instruction-side closure reference.
 
 
 ## Boundaries not expanded

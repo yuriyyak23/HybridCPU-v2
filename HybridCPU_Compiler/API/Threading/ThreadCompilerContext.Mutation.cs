@@ -84,6 +84,7 @@ namespace HybridCPU.Compiler.Core.Threading
 
             copy._labelDeclarations.AddRange(_labelDeclarations);
             copy._entryPointDeclarations.AddRange(_entryPointDeclarations);
+            copy._controlFlowTargetReferences.AddRange(_controlFlowTargetReferences);
 
             return copy;
         }

@@ -71,6 +71,8 @@ Code anchors:
 
 WhiteBook / Ex1 anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/04_Memory_Atomic_Fence_Model.md`
+- `Documentation/InstructionsRefactor/WhiteBook/05_NonExecutable_And_Future_Gates.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/06_Backend_Staging_Commit_And_Rollback.md`
 - `Documentation/Refactoring/Phases Ex1/05_Memory_Ordering_And_Global_Conflict_Service.md`
 - `Documentation/Refactoring/Phases Ex1/13_Dependency_Graph_And_Execution_Order.md`

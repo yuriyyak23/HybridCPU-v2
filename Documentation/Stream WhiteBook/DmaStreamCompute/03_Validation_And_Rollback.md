@@ -5,7 +5,7 @@
 ```powershell
 dotnet test ".\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" -v minimal
 powershell -ExecutionPolicy Bypass -File ".\build\run-validation-baseline.ps1" -NoRestore
-dotnet run --project ".\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj" -- --iterations 200
+dotnet run --project ".\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj"
 ```
 
 ## Useful Focused Commands
@@ -62,6 +62,14 @@ Harness deltas versus `Documentation/AsmAppTestResults.md` were classified as:
 - expected additive diagnostic detail: replay fallback/warmup fields, assistant
   visibility/non-retirement detail, minimal telemetry logging, non-interactive final `Done.`;
 - real regressions: none.
+
+## Current Risk Closure
+
+The latest live `TestAssemblerConsoleApps` profile is `250` iterations,
+`11` child runs, and `stream-vector` passed with aggregate `Succeeded`.
+Compare that run against `Documentation/AsmAppTestResults.md`; the stored
+comparison log still holds the older successful `200` / `10` profile without
+`stream-vector`, so that drift is expected and should be reported explicitly.
 
 ## Rollback Rules
 

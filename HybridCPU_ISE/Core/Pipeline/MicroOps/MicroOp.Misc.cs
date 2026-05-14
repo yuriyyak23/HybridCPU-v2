@@ -100,6 +100,10 @@ namespace YAKSys_Hybrid_CPU.Core
 
         public byte Size { get; set; }
 
+        public bool AcquireOrdering { get; set; }
+
+        public bool ReleaseOrdering { get; set; }
+
         public override ulong MemoryAddress => Address;
 
         public AtomicMicroOp()
@@ -176,7 +180,9 @@ namespace YAKSys_Hybrid_CPU.Core
                 address,
                 sourceValue,
                 (int)core.CoreID,
-                vtId);
+                vtId,
+                AcquireOrdering,
+                ReleaseOrdering);
             return true;
         }
 

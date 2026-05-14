@@ -149,6 +149,26 @@ namespace YAKSys_Hybrid_CPU
                 PublishReplayPhaseContextIfNeeded(_fspScheduler, _loopBuffer.CurrentReplayPhase);
             }
 
+            /// <summary>
+            /// Invalidates all fetch-side VLIW state for an instruction fence.
+            /// This is a bounded current-core fetch visibility operation, not a
+            /// general data-cache or inter-agent coherence theorem.
+            /// </summary>
+            public void InvalidateAllVliwFetchState(
+                Core.ReplayPhaseInvalidationReason invalidationReason =
+                    Core.ReplayPhaseInvalidationReason.CertificateMutation)
+            {
+                if (_hasMaterializedVliwFetchState)
+                {
+                    ClearVliwBundleCache(L1_VLIWBundles);
+                    ClearVliwBundleCache(L2_VLIWBundles);
+                    _hasMaterializedVliwFetchState = false;
+                }
+
+                _loopBuffer.Invalidate(invalidationReason);
+                PublishReplayPhaseContextIfNeeded(_fspScheduler, _loopBuffer.CurrentReplayPhase);
+            }
+
 #if TESTING
             internal void TestMarkVliwFetchStateMaterializedForPhase09()
             {
@@ -170,6 +190,16 @@ namespace YAKSys_Hybrid_CPU
                         cache[index] = default;
                     }
                 }
+            }
+
+            private static void ClearVliwBundleCache(Cache_VLIWBundle_Object[]? cache)
+            {
+                if (cache == null)
+                {
+                    return;
+                }
+
+                Array.Clear(cache, 0, cache.Length);
             }
 
             public struct Cache_VLIWBundle_Object

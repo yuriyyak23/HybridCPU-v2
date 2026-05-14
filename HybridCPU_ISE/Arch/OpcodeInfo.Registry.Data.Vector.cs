@@ -19,12 +19,12 @@ namespace YAKSys_Hybrid_CPU.Arch
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VNOT, "VNOT", OpcodeCategory.Vector, 1, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite, 1, 2),
 
             // ========== Vector Comparison Instructions (Generate Masks) ==========
-            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPEQ, "VCMPEQ", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite, 1, 2),
-            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPNE, "VCMPNE", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite, 1, 2),
-            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPLT, "VCMPLT", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite, 1, 2),
-            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPLE, "VCMPLE", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite, 1, 2),
-            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPGT, "VCMPGT", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite, 1, 2),
-            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPGE, "VCMPGE", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead | InstructionFlags.MemoryWrite, 1, 2),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPEQ, "VCMPEQ", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead, 1, 2),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPNE, "VCMPNE", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead, 1, 2),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPLT, "VCMPLT", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead, 1, 2),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPLE, "VCMPLE", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead, 1, 2),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPGT, "VCMPGT", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead, 1, 2),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VCMPGE, "VCMPGE", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.Maskable | InstructionFlags.TwoOperand | InstructionFlags.MemoryRead, 1, 2),
 
             // ========== Predicate Mask Manipulation Instructions ==========
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.VMAND, "VMAND", OpcodeCategory.Comparison, 2, InstructionFlags.Vector | InstructionFlags.TwoOperand | InstructionFlags.MaskManipulation, 1, 0),

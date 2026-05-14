@@ -465,16 +465,16 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
 
         public bool IsComplete =>
             RequiredSlotClass == SlotClass.DmaStreamClass &&
-            PinningKind == SlotPinningKind.ClassFlexible &&
-            (SelectedLane == -1 || SelectedLane == 6) &&
+            PinningKind == SlotPinningKind.HardPinned &&
+            SelectedLane == 6 &&
             EvidenceHash != 0;
 
         public static DmaStreamComputeLanePlacementEvidence DescriptorSurface()
         {
             return Create(
                 SlotClass.DmaStreamClass,
-                SlotPinningKind.ClassFlexible,
-                selectedLane: -1,
+                SlotPinningKind.HardPinned,
+                selectedLane: 6,
                 freeLaneMask: SlotClassLaneMap.GetLaneMask(SlotClass.DmaStreamClass),
                 stableDonorMask: 0,
                 replayActive: false);
@@ -488,7 +488,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
         {
             return Create(
                 SlotClass.DmaStreamClass,
-                SlotPinningKind.ClassFlexible,
+                SlotPinningKind.HardPinned,
                 selectedLane,
                 freeLaneMask,
                 stableDonorMask,

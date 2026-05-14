@@ -545,7 +545,8 @@ namespace YAKSys_Hybrid_CPU
                 ulong address,
                 ulong data,
                 byte accessSize,
-                int vtId = 0)
+                int vtId = 0,
+                InstructionsEnum? opcode = null)
             {
                 if (laneIndex < 4 || laneIndex > 5)
                 {
@@ -558,8 +559,13 @@ namespace YAKSys_Hybrid_CPU
                 pipeMEM.Clear();
                 pipeEX.Clear();
 
+                uint resolvedOpcode = opcode.HasValue
+                    ? (uint)opcode.Value
+                    : (uint)InstructionsEnum.Store;
+
                 var storeOp = new YAKSys_Hybrid_CPU.Core.StoreMicroOp
                 {
+                    OpCode = resolvedOpcode,
                     OwnerThreadId = vtId,
                     VirtualThreadId = vtId,
                     OwnerContextId = vtId,
@@ -574,7 +580,7 @@ namespace YAKSys_Hybrid_CPU
                 lane.Clear(laneIndex);
                 lane.IsOccupied = true;
                 lane.PC = pc;
-                lane.OpCode = (uint)InstructionsEnum.Store;
+                lane.OpCode = resolvedOpcode;
                 lane.IsMemoryOp = true;
                 lane.MemoryAddress = address;
                 lane.MemoryData = data;
@@ -620,7 +626,8 @@ namespace YAKSys_Hybrid_CPU
                 ulong address,
                 ushort destRegId,
                 byte accessSize,
-                int vtId = 0)
+                int vtId = 0,
+                InstructionsEnum? opcode = null)
             {
                 if (laneIndex < 4 || laneIndex > 5)
                 {
@@ -634,7 +641,9 @@ namespace YAKSys_Hybrid_CPU
                 pipeEX.Clear();
 
                 byte normalizedAccessSize = NormalizeScalarMemoryAccessSize(accessSize);
-                uint opcode = normalizedAccessSize switch
+                uint resolvedOpcode = opcode.HasValue
+                    ? (uint)opcode.Value
+                    : normalizedAccessSize switch
                 {
                     1 => (uint)InstructionsEnum.LB,
                     2 => (uint)InstructionsEnum.LH,
@@ -644,7 +653,7 @@ namespace YAKSys_Hybrid_CPU
 
                 var loadOp = new YAKSys_Hybrid_CPU.Core.LoadMicroOp
                 {
-                    OpCode = opcode,
+                    OpCode = resolvedOpcode,
                     OwnerThreadId = vtId,
                     VirtualThreadId = vtId,
                     OwnerContextId = vtId,
@@ -660,7 +669,7 @@ namespace YAKSys_Hybrid_CPU
                 lane.Clear(laneIndex);
                 lane.IsOccupied = true;
                 lane.PC = pc;
-                lane.OpCode = opcode;
+                lane.OpCode = resolvedOpcode;
                 lane.IsMemoryOp = true;
                 lane.MemoryAddress = address;
                 lane.MemoryData = 0;
@@ -701,7 +710,10 @@ namespace YAKSys_Hybrid_CPU
                     new byte[normalizedAccessSize],
                     normalizedAccessSize,
                     "Explicit packet load test expectation");
-                ulong expectedValue = DecodeExplicitPacketLoadBuffer(expectedBuffer, normalizedAccessSize);
+                ulong expectedValue = DecodeExplicitPacketLoadBuffer(
+                    resolvedOpcode,
+                    expectedBuffer,
+                    normalizedAccessSize);
                 if (readyLane.ResultValue != expectedValue)
                 {
                     throw new InvalidOperationException(
@@ -1212,6 +1224,12 @@ namespace YAKSys_Hybrid_CPU
                 {
                     InstructionsEnum.Nope => true,
                     InstructionsEnum.Addition => true,
+                    InstructionsEnum.ADDW => true,
+                    InstructionsEnum.SUBW => true,
+                    InstructionsEnum.SLLW => true,
+                    InstructionsEnum.SRLW => true,
+                    InstructionsEnum.SRAW => true,
+                    InstructionsEnum.MULW => true,
                     InstructionsEnum.Subtraction => true,
                     InstructionsEnum.Multiplication => true,
                     InstructionsEnum.Division => true,
@@ -1221,9 +1239,13 @@ namespace YAKSys_Hybrid_CPU
                     InstructionsEnum.XOR => true,
                     InstructionsEnum.ShiftLeft => true,
                     InstructionsEnum.ShiftRight => true,
+                    InstructionsEnum.SRA => true,
                     InstructionsEnum.Move_Num => true,
                     InstructionsEnum.Move => true,
                     InstructionsEnum.ADDI => true,
+                    InstructionsEnum.ADDIW => true,
+                    InstructionsEnum.SLLIW => true,
+                    InstructionsEnum.SRLIW => true,
                     InstructionsEnum.ANDI => true,
                     InstructionsEnum.ORI => true,
                     InstructionsEnum.XORI => true,

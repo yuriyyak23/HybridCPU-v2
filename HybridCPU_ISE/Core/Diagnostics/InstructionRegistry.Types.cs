@@ -36,6 +36,8 @@ namespace YAKSys_Hybrid_CPU.Core
         public ushort Reg3ID;
         public ulong AuxData;
         public ushort PredicateMask;
+        public bool AcquireOrdering;
+        public bool ReleaseOrdering;
         public int OwnerThreadId;
         public int MemoryDomainId;
     }

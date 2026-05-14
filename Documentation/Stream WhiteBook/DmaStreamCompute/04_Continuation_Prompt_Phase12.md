@@ -12,7 +12,7 @@ validation layers.
 
 ## Inputs
 
-Workspace: `C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE`
+Workspace: `HybridCPU ISE`
 
 Plan: `Documentation\Stream WhiteBook\DmaStreamCompute\`
 

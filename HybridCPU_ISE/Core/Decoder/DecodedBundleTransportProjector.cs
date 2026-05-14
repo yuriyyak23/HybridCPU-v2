@@ -314,8 +314,13 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                     Reg1ID = ToLegacyDecoderField(instruction.Rd),
                     Reg2ID = ToLegacyDecoderField(instruction.Rs1),
                     Reg3ID = ToLegacyDecoderField(instruction.Rs2),
-                    AuxData = instruction.HasAbsoluteAddressing ? (ulong)instruction.Imm : contextInstruction.Src2Pointer,
-                    PredicateMask = rawInstruction.PredicateMask
+                    AuxData = ResolveCanonicalAuxData(
+                        in instruction,
+                        in contextInstruction,
+                        bundlePc),
+                    PredicateMask = rawInstruction.PredicateMask,
+                    AcquireOrdering = instruction.AcquireOrdering,
+                    ReleaseOrdering = instruction.ReleaseOrdering
                 };
 
                 MicroOp microOp = InstructionRegistry.CreateMicroOp(opCode, context);
@@ -433,14 +438,6 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                     instruction.Rs2);
                 projectedControlFlowInstruction.Src2Pointer = 0;
 
-                if (TryResolveCanonicalStaticBranchTarget(
-                    in instruction,
-                    bundlePc,
-                    out ulong targetAddress))
-                {
-                    projectedControlFlowInstruction.Src2Pointer = targetAddress;
-                }
-
                 return projectedControlFlowInstruction;
             }
 
@@ -448,6 +445,25 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
             // Non-control-flow materialization no longer needs a second raw-instruction
             // rewrite branch for retained absolute Load/Store compatibility contours.
             return rawInstruction;
+        }
+
+        private static ulong ResolveCanonicalAuxData(
+            in InstructionIR instruction,
+            in VLIW_Instruction contextInstruction,
+            ulong? bundlePc)
+        {
+            if (instruction.Class == InstructionClass.ControlFlow &&
+                TryResolveCanonicalStaticBranchTarget(
+                    in instruction,
+                    bundlePc,
+                    out ulong targetAddress))
+            {
+                return targetAddress;
+            }
+
+            return instruction.HasAbsoluteAddressing
+                ? (ulong)instruction.Imm
+                : contextInstruction.Src2Pointer;
         }
 
         private static bool TryResolveCanonicalStaticBranchTarget(

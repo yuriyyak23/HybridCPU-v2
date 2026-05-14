@@ -8,6 +8,7 @@ namespace HybridCPU.Compiler.Core.Threading
     {
         private readonly List<IrLabelDeclaration> _labelDeclarations = new List<IrLabelDeclaration>();
         private readonly List<IrEntryPointDeclaration> _entryPointDeclarations = new List<IrEntryPointDeclaration>();
+        private readonly List<IrControlFlowTargetReference> _controlFlowTargetReferences = new List<IrControlFlowTargetReference>();
 
         /// <summary>
         /// Declares a named IR label for an instruction in the current VT-local stream.
@@ -71,10 +72,16 @@ namespace HybridCPU.Compiler.Core.Threading
             return _entryPointDeclarations;
         }
 
+        internal IReadOnlyList<IrControlFlowTargetReference> GetControlFlowTargetReferences()
+        {
+            return _controlFlowTargetReferences;
+        }
+
         private void ResetIrMetadataDeclarations()
         {
             _labelDeclarations.Clear();
             _entryPointDeclarations.Clear();
+            _controlFlowTargetReferences.Clear();
         }
 
         private void ShiftIrMetadataDeclarations(int startInstructionIndex, int oldInstructionCount, int delta)
@@ -99,6 +106,15 @@ namespace HybridCPU.Compiler.Core.Threading
                 if (ShouldShiftMetadataDeclaration(declaration.InstructionIndex, startInstructionIndex, oldInstructionCount))
                 {
                     _entryPointDeclarations[index] = declaration with { InstructionIndex = declaration.InstructionIndex + delta };
+                }
+            }
+
+            for (int index = 0; index < _controlFlowTargetReferences.Count; index++)
+            {
+                IrControlFlowTargetReference reference = _controlFlowTargetReferences[index];
+                if (ShouldShiftMetadataDeclaration(reference.InstructionIndex, startInstructionIndex, oldInstructionCount))
+                {
+                    _controlFlowTargetReferences[index] = reference with { InstructionIndex = reference.InstructionIndex + delta };
                 }
             }
         }

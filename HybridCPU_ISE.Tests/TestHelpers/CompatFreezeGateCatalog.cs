@@ -53,8 +53,10 @@ internal static class CompatFreezeGateCatalog
             RelativePath("HybridCPU_Compiler", "API", "Facade", "PlatformAsmFacade.cs"),
             RelativePath("HybridCPU_Compiler", "API", "Multithreaded", "HybridCpuMultithreadedCompiler.cs"),
             RelativePath("HybridCPU_Compiler", "API", "Threading", "HybridCpuThreadCompilerContext.cs"),
+            RelativePath("HybridCPU_Compiler", "API", "Threading", "ThreadCompilerContext.ControlFlow.cs"),
             RelativePath("HybridCPU_Compiler", "API", "Threading", "ThreadCompilerContext.Mutation.cs"),
             RelativePath("HybridCPU_Compiler", "Core", "IR", "Bundling", "HybridCpuBundleLowerer.cs"),
+            RelativePath("HybridCPU_Compiler", "Core", "IR", "Bundling", "HybridCpuControlFlowRelocationResolver.cs"),
             RelativePath("HybridCPU_Compiler", "Core", "IR", "Construction", "HybridCpuIrBuilder.cs"),
             RelativePath("HybridCPU_Compiler", "Core", "IR", "Decomposition", "CoordinatorFunctionSynthesizer.cs"),
             RelativePath("HybridCPU_Compiler", "Core", "IR", "Decomposition", "WorkerFunctionSynthesizer.cs"),
@@ -104,6 +106,7 @@ internal static class CompatFreezeGateCatalog
             RelativePath("HybridCPU_ISE", "Processor", "Core", "Processor.CompilerBridge.cs"),
             RelativePath("TestAssemblerConsoleApps", "SimpleAsmApp.cs"),
             RelativePath("TestAssemblerConsoleApps", "SimpleAsmApp.Emit.cs"),
+            RelativePath("TestAssemblerConsoleApps", "StreamVectorSpecSuite.cs"),
         ]);
 
     internal static readonly SymbolAllowance InstructionsEnumMentions = new(
@@ -119,6 +122,7 @@ internal static class CompatFreezeGateCatalog
             RelativePath("HybridCPU_Compiler", "API", "Facade", "PlatformAsmFacade.cs"),
             RelativePath("HybridCPU_Compiler", "API", "Multithreaded", "HybridCpuMultithreadedCompiler.cs"),
             RelativePath("HybridCPU_Compiler", "API", "Threading", "HybridCpuThreadCompilerContext.cs"),
+            RelativePath("HybridCPU_Compiler", "API", "Threading", "ThreadCompilerContext.ControlFlow.cs"),
             RelativePath("HybridCPU_Compiler", "Core", "IR", "Analysis", "ParallelRegionDetector.cs"),
             RelativePath("HybridCPU_Compiler", "Core", "IR", "Bundling", "HybridCpuBundleLowerer.cs"),
             RelativePath("HybridCPU_Compiler", "Core", "IR", "Construction", "HybridCpuIrBuilder.cs"),
@@ -139,12 +143,14 @@ internal static class CompatFreezeGateCatalog
             RelativePath("HybridCPU_EnvGUI", "SimpleAsmApp.PlatformLevel.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "InstructionClassifier.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "InstructionEncoder.cs"),
+            RelativePath("HybridCPU_ISE", "Arch", "InstructionSupportStatus.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "OpcodeInfo.Registry.Data.MemoryControl.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "OpcodeInfo.Registry.Data.Scalar.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "OpcodeInfo.Registry.Data.System.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "OpcodeInfo.Registry.Data.Vector.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "OpcodeInfo.Registry.Helpers.cs"),
             RelativePath("HybridCPU_ISE", "Arch", "OpcodeInfo.Types.cs"),
+            RelativePath("HybridCPU_ISE", "Arch", "VectorLegalityMatrix.cs"),
             RelativePath("HybridCPU_ISE", "Core", "ALU", "ScalarAluOps.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Common", "CPU_Core.Enums.cs"),
             
@@ -177,6 +183,7 @@ internal static class CompatFreezeGateCatalog
             RelativePath("TestAssemblerConsoleApps", "ArchitecturalDiagnostics.cs"),
             RelativePath("TestAssemblerConsoleApps", "SimpleAsmApp.Emit.cs"),
             RelativePath("TestAssemblerConsoleApps", "SimpleAsmApp.Showcase.cs"),
+            RelativePath("TestAssemblerConsoleApps", "StreamVectorSpecSuite.cs"),
         ]);
 
     internal static readonly SymbolAllowance LiveStreamCompatMentions = new(

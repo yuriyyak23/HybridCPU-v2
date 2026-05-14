@@ -16,7 +16,8 @@ namespace HybridCPU.Compiler.Core.Threading
                 GetLabelDeclarations(),
                 GetEntryPointDeclarations(),
                 bundleAnnotations: GetBundleAnnotations(),
-                domainTag: DomainTag);
+                domainTag: DomainTag,
+                controlFlowTargetReferences: GetControlFlowTargetReferences());
         }
     }
 }

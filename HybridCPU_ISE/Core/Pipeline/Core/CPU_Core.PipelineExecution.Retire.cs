@@ -559,6 +559,11 @@ namespace YAKSys_Hybrid_CPU
                     InvalidateAssistRuntime(invalidationReason);
                 }
 
+                if (systemEventKind == Core.SystemEventKind.FenceI)
+                {
+                    InvalidateAllVliwFetchState(Core.ReplayPhaseInvalidationReason.SerializingEvent);
+                }
+
                 ApplyRetiredSystemEvent(systemEventKind, retiredPc, virtualThreadId);
                 return invalidationReason != Core.AssistInvalidationReason.None;
             }
@@ -600,6 +605,11 @@ namespace YAKSys_Hybrid_CPU
                 else if (invalidationReason != Core.AssistInvalidationReason.None)
                 {
                     InvalidateAssistRuntime(invalidationReason);
+                }
+
+                if (IsInstructionFence(pipelineEvent))
+                {
+                    InvalidateAllVliwFetchState(Core.ReplayPhaseInvalidationReason.SerializingEvent);
                 }
 
                 ApplyRetiredPipelineEvent(pipelineEvent, retiredPc, virtualThreadId);
@@ -689,6 +699,12 @@ namespace YAKSys_Hybrid_CPU
             {
                 return orderGuarantee == Core.SystemEventOrderGuarantee.FlushPipeline ||
                        orderGuarantee == Core.SystemEventOrderGuarantee.FullSerialTrapBoundary;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static bool IsInstructionFence(Core.Pipeline.PipelineEvent pipelineEvent)
+            {
+                return pipelineEvent is Core.Pipeline.FenceEvent { IsInstructionFence: true };
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -101,10 +101,10 @@ namespace HybridCPU_ISE.Tests
         /// opcode and excluding optional extensions.
         /// </summary>
         [Fact]
-        public void MandatoryCoreOpcodes_ContainsExactly97Opcodes()
+        public void MandatoryCoreOpcodes_ContainsExactly110Opcodes()
         {
             Assert.Equal(IsaV4Surface.IsaMandatoryOpcodeCount, IsaV4Surface.MandatoryCoreOpcodes.Count);
-            Assert.Equal(97, IsaV4Surface.IsaMandatoryOpcodeCount);
+            Assert.Equal(111, IsaV4Surface.IsaMandatoryOpcodeCount);
         }
 
         /// <summary>

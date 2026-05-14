@@ -208,15 +208,19 @@ public sealed class DirectFactorySystemEventFollowThroughTests
 
     private static VLIW_Instruction CreateSystemInstruction(InstructionsEnum opcode)
     {
+        bool isFence = opcode is InstructionsEnum.FENCE or InstructionsEnum.FENCE_I;
+
         return new VLIW_Instruction
         {
             OpCode = (uint)opcode,
-            DataTypeValue = DataTypeEnum.INT32,
-            PredicateMask = 0xFF,
-            DestSrc1Pointer = VLIW_Instruction.PackArchRegs(
-                VLIW_Instruction.NoArchReg,
-                VLIW_Instruction.NoArchReg,
-                VLIW_Instruction.NoArchReg),
+            DataTypeValue = isFence ? (byte)0 : DataTypeEnum.INT32,
+            PredicateMask = isFence ? (byte)0 : (byte)0xFF,
+            DestSrc1Pointer = isFence
+                ? 0UL
+                : VLIW_Instruction.PackArchRegs(
+                    VLIW_Instruction.NoArchReg,
+                    VLIW_Instruction.NoArchReg,
+                    VLIW_Instruction.NoArchReg),
             StreamLength = 0,
             Stride = 0,
             VirtualThreadId = 0

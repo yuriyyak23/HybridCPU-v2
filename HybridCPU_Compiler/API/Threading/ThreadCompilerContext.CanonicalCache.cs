@@ -15,7 +15,8 @@ namespace HybridCPU.Compiler.Core.Threading
                 GetEntryPointDeclarations(),
                 FrontendMode,
                 bundleAnnotations: GetBundleAnnotations(),
-                domainTag: DomainTag);
+                domainTag: DomainTag,
+                controlFlowTargetReferences: GetControlFlowTargetReferences());
             return _canonicalCompiledProgram;
         }
 

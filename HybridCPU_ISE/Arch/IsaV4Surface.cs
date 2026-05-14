@@ -4,14 +4,16 @@ using System.Collections.Generic;
 namespace YAKSys_Hybrid_CPU.Arch
 {
     /// <summary>
-    /// Canonical HybridCPU ISA v4 surface declaration.
+    /// Legacy HybridCPU ISA v4 surface declaration.
     /// <para>
     /// This file is the single authoritative source for which instruction classes and
     /// mnemonics are part of the mandatory ISA v4 core, which are assembler pseudo-ops
     /// only, and which are optional extension instructions.
     /// </para>
     /// <para>
-    /// All decoders, IR builders, and execution units must conform to this surface.
+    /// Current support terminology is refined by <see cref="InstructionSupportStatusCatalog"/>.
+    /// This declaration does not by itself prove decode, MicroOp materialization, or execution.
+    /// All decoders, IR builders, and execution units must conform to the runtime-owned evidence surface.
     /// No instruction listed in <see cref="ProhibitedOpcodes"/> may appear as a
     /// hardware opcode in any ISE subsystem.
     /// </para>
@@ -45,13 +47,13 @@ namespace YAKSys_Hybrid_CPU.Arch
         public static readonly IReadOnlySet<string> MandatoryCoreOpcodes = new HashSet<string>
         {
             // Scalar integer ALU (reg-reg)
-            "ADD", "SUB", "AND", "OR", "XOR", "SLL", "SRL", "SRA", "SLT", "SLTU",
+            "ADD", "ADDW", "SUBW", "SUB", "AND", "OR", "XOR", "SLL", "SLLW", "SRL", "SRLW", "SRA", "SRAW", "SLT", "SLTU",
             // Scalar integer multiply
-            "MUL", "MULH", "MULHU", "MULHSU",
+            "MUL", "MULW", "MULH", "MULHU", "MULHSU",
             // Scalar integer divide
-            "DIV", "DIVU", "REM", "REMU",
+            "DIV", "DIVW", "DIVUW", "DIVU", "REM", "REMW", "REMUW", "REMU",
             // Scalar immediate
-            "ADDI", "ANDI", "ORI", "XORI", "SLLI", "SRLI", "SRAI", "SLTI", "SLTIU",
+            "ADDI", "ADDIW", "SLLIW", "SRLIW", "SRAIW", "ANDI", "ORI", "XORI", "SLLI", "SRLI", "SRAI", "SLTI", "SLTIU",
             // Upper immediate
             "LUI", "AUIPC",
             // Typed loads
@@ -95,6 +97,140 @@ namespace YAKSys_Hybrid_CPU.Arch
             "ACCEL_WAIT",
             "ACCEL_CANCEL",
             "ACCEL_FENCE",
+        };
+
+        public static readonly IReadOnlySet<string> CarrierOnlyOpcodes = new HashSet<string>
+        {
+            "ACCEL_QUERY_CAPS",
+            "ACCEL_POLL",
+            "ACCEL_WAIT",
+            "ACCEL_CANCEL",
+            "ACCEL_FENCE",
+        };
+
+        /// <summary>
+        /// Mandatory scalar repair surface tracked by the instructions refactor.
+        /// Membership here is an ISA requirement only. Executable support is reported
+        /// by <see cref="InstructionSupportStatusCatalog"/> after the runtime-owned
+        /// decode, materialization, execution, retire, and test gates close.
+        /// </summary>
+        public static readonly IReadOnlySet<string> MandatoryInteger64RepairOpcodes = new HashSet<string>
+        {
+            "SRA",
+            "ADDIW",
+            "ADDW",
+            "SUBW",
+            "SLLW",
+            "SRLW",
+            "SRAW",
+            "SLLIW",
+            "SRLIW",
+            "SRAIW",
+            "MULW",
+            "DIVW",
+            "DIVUW",
+            "REMW",
+            "REMUW",
+            "SEXT.W",
+            "ZEXT.W",
+        };
+
+        /// <summary>
+        /// Explicitly non-executable contours in the current runtime-owned support model.
+        /// Descriptor or parser recognition is not an execution claim.
+        /// </summary>
+        public static readonly IReadOnlySet<string> DescriptorOnlyOpcodes = new HashSet<string>
+        {
+            "VGATHER",
+            "VSCATTER",
+            "DmaStreamCompute",
+            "ACCEL_SUBMIT",
+        };
+
+        public static readonly IReadOnlySet<string> ParserOnlyOpcodes = new HashSet<string>
+        {
+            "DSC2",
+        };
+
+        public static readonly IReadOnlySet<string> OptionalEnabledOpcodes = new HashSet<string>
+        {
+            "VSETVL",
+            "VSETVLI",
+            "VSETIVLI",
+            "VADD",
+            "VSUB",
+            "VMUL",
+            "VDIV",
+            "VSQRT",
+            "VMOD",
+            "VLOAD",
+            "VSTORE",
+            "VXOR",
+            "VOR",
+            "VAND",
+            "VNOT",
+            "VSLL",
+            "VSRL",
+            "VSRA",
+            "VFMADD",
+            "VFMSUB",
+            "VFNMADD",
+            "VFNMSUB",
+            "VMIN",
+            "VMAX",
+            "VMINU",
+            "VMAXU",
+            "VMAND",
+            "VMOR",
+            "VMXOR",
+            "VMNOT",
+            "VCMPEQ",
+            "VCMPNE",
+            "VCMPLT",
+            "VCMPLE",
+            "VCMPGT",
+            "VCMPGE",
+            "VPOPC",
+            "VCOMPRESS",
+            "VEXPAND",
+            "VPERMUTE",
+            "VRGATHER",
+            "VSLIDEUP",
+            "VSLIDEDOWN",
+            "VREVERSE",
+            "VPOPCNT",
+            "VCLZ",
+            "VCTZ",
+            "VBREV8",
+            "VREDSUM",
+            "VREDMAX",
+            "VREDMIN",
+            "VREDMAXU",
+            "VREDMINU",
+            "VREDAND",
+            "VREDOR",
+            "VREDXOR",
+            "VDOT",
+            "VDOTU",
+            "VDOTF",
+            "VDOT_FP8",
+        };
+
+        public static readonly IReadOnlySet<string> OptionalDisabledOpcodes = new HashSet<string>
+        {
+            "MTILE_LOAD",
+            "MTILE_STORE",
+            "MTILE_MACC",
+            "MTRANSPOSE",
+        };
+
+        public static readonly IReadOnlySet<string> ReservedOpcodes = new HashSet<string>
+        {
+            "SFENCE.VMA",
+            "DCACHE_CLEAN",
+            "DCACHE_INVAL",
+            "DCACHE_FLUSH",
+            "ICACHE_INVAL",
         };
 
         // ─── Prohibited Hardware Opcodes ──────────────────────────────────────────
@@ -153,12 +289,13 @@ namespace YAKSys_Hybrid_CPU.Arch
             new Dictionary<string, string>
             {
                 // ALU class
-                ["ADD"] = "ALU",   ["SUB"] = "ALU",   ["AND"] = "ALU",  ["OR"] = "ALU",
-                ["XOR"] = "ALU",   ["SLL"] = "ALU",   ["SRL"] = "ALU",  ["SRA"] = "ALU",
-                ["SLT"] = "ALU",   ["SLTU"] = "ALU",  ["MUL"] = "ALU",  ["MULH"] = "ALU",
-                ["MULHU"] = "ALU", ["MULHSU"] = "ALU",["DIV"] = "ALU",  ["DIVU"] = "ALU",
-                ["REM"] = "ALU",   ["REMU"] = "ALU",
-                ["ADDI"] = "ALU",  ["ANDI"] = "ALU",  ["ORI"] = "ALU",  ["XORI"] = "ALU",
+                ["ADD"] = "ALU",   ["ADDW"] = "ALU",  ["SUBW"] = "ALU", ["SUB"] = "ALU",  ["AND"] = "ALU",  ["OR"] = "ALU",
+                ["XOR"] = "ALU",   ["SLL"] = "ALU",   ["SLLW"] = "ALU", ["SRL"] = "ALU",  ["SRLW"] = "ALU", ["SRA"] = "ALU",
+                ["SRAW"] = "ALU",
+                ["SLT"] = "ALU",   ["SLTU"] = "ALU",  ["MUL"] = "ALU",  ["MULW"] = "ALU", ["MULH"] = "ALU",
+                ["MULHU"] = "ALU", ["MULHSU"] = "ALU",["DIV"] = "ALU",  ["DIVW"] = "ALU", ["DIVUW"] = "ALU", ["DIVU"] = "ALU",
+                ["REM"] = "ALU",   ["REMW"] = "ALU",  ["REMUW"] = "ALU", ["REMU"] = "ALU", ["SEXT.W"] = "ALU", ["ZEXT.W"] = "ALU",
+                ["ADDI"] = "ALU",  ["ADDIW"] = "ALU", ["SLLIW"] = "ALU", ["SRLIW"] = "ALU", ["SRAIW"] = "ALU", ["ANDI"] = "ALU",  ["ORI"] = "ALU",  ["XORI"] = "ALU",
                 ["SLLI"] = "ALU",  ["SRLI"] = "ALU",  ["SRAI"] = "ALU", ["SLTI"] = "ALU",
                 ["SLTIU"] = "ALU", ["LUI"] = "ALU",   ["AUIPC"] = "ALU",
                 // LSU class
@@ -211,7 +348,7 @@ namespace YAKSys_Hybrid_CPU.Arch
         ///
         /// Mandatory core: <see cref="IsaMandatoryOpcodeCount"/> instructions
         /// across 8 categories.
-        /// New in v4 vs v3: DIVU, REMU, MULH, MULHU, MULHSU, 9× AMO*_D,
+        /// New in v4 vs v3: SLLW, SRLW, SRAW, DIVU, REMU, MULH, MULHU, MULHSU, 9× AMO*_D,
         /// full VMX instruction plane formalization.
         /// Removed from v3: RDVTID, RDVTMASK, FSP_FENCE, hint opcode family.
         /// </summary>
@@ -223,7 +360,7 @@ namespace YAKSys_Hybrid_CPU.Arch
         /// list in the ISA v4 specification (not the summary table, which
         /// over-counts atomics by 2).
         /// </summary>
-        public const int IsaMandatoryOpcodeCount = 97;
+        public const int IsaMandatoryOpcodeCount = 111;
 
         /// <summary>Date on which the ISA v4 surface was formally frozen.</summary>
         public static readonly DateOnly FrozenDate = new(2026, 3, 14);

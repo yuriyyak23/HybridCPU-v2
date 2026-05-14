@@ -5,6 +5,11 @@ This directory is the compact current-contract context for descriptor-backed lan
 runtime-side helper APIs, token commit semantics, fail-closed surfaces, and future
 architecture.
 
+The current instruction-side closure and risk record live in
+`Documentation/InstructionsRefactor/WhiteBook/`. Read that pack for the current
+scalar, atomic, fence, and risk-closure baseline; keep this directory as the
+separate lane6 DmaStreamCompute contract pack.
+
 ## Files
 
 - `01_Current_Contract.md` - live semantic contract, hard constraints, and relevant code surfaces.
@@ -41,9 +46,12 @@ As of 2026-04-30, after Ex1 Phase00-Phase13 closure:
 - Live code is authoritative for implementation behavior.
 - `Documentation/AsmAppTestResults.md` is the runtime harness comparison baseline.
 - Telemetry, replay evidence, certificates, and tokens are evidence surfaces only, not authority.
-- Ex1 traceability is under `Documentation/Refactoring/Phases Ex1/`, with
-  Phase12 guarding documentation migration and Phase13 guarding dependency
-  order/non-inversion.
+- Current instruction-side closure lives in
+  `Documentation/InstructionsRefactor/WhiteBook/`; it is the adjacent runtime/ISA
+  reference for scalar, atomic, fence, and risk-closure boundaries.
+- Ex1 traceability is historical; the current instruction-side closure pack is
+  `Documentation/InstructionsRefactor/WhiteBook/`, with Phase 10/Phase 12
+  validation and risk-closure evidence recorded there.
 - This directory intentionally excludes old external-analysis drafts, broken prompts, and stale
   "next task" wording.
 

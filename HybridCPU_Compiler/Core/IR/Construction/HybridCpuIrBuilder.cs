@@ -34,7 +34,8 @@ namespace HybridCPU.Compiler.Core.IR
             IReadOnlyList<IrSectionDeclaration>? sectionDeclarations = null,
             IReadOnlyList<IrFunctionDeclaration>? functionDeclarations = null,
             VliwBundleAnnotations? bundleAnnotations = null,
-            ulong domainTag = 0)
+            ulong domainTag = 0,
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null)
         {
             var irInstructions = new List<IrInstruction>(instructions.Length);
 
@@ -46,7 +47,11 @@ namespace HybridCPU.Compiler.Core.IR
 
             ApplyInstructionSourceBindings(irInstructions, instructionSourceBindings);
 
-            var graph = BuildControlFlowGraph(irInstructions, labelDeclarations, entryPointDeclarations);
+            var graph = BuildControlFlowGraph(
+                irInstructions,
+                labelDeclarations,
+                entryPointDeclarations,
+                controlFlowTargetReferences);
             var labels = BuildLabels(virtualThreadId, irInstructions, graph.Blocks, labelDeclarations, entryPointDeclarations);
             var blocks = ApplyPrimaryLabels(graph.Blocks, labels);
             var entryPoints = BuildEntryPoints(virtualThreadId, irInstructions, blocks, entryPointDeclarations);
@@ -89,6 +94,7 @@ namespace HybridCPU.Compiler.Core.IR
             var opcode = (InstructionsEnum)instruction.OpCode;
             OpcodeInfo? opcodeInfo = HybridCpuOpcodeSemantics.GetOpcodeInfo(opcode);
             ValidateExplicitAcceleratorIntent(opcode, slotMetadata);
+            ValidateCanonicalScalarZeroRs2Payload(opcode, instruction);
             var operands = BuildOperands(opcode, instruction);
             var defs = BuildDefs(opcode, instruction);
             var uses = BuildUses(opcode, instruction);
@@ -388,7 +394,9 @@ namespace HybridCPU.Compiler.Core.IR
             return new DecodedRegisterTuple(
                 CreateArchitecturalRegisterOperand("rd", rd),
                 CreateArchitecturalRegisterOperand("rs1", rs1),
-                CreateArchitecturalRegisterOperand("rs2", rs2));
+                UsesCanonicalScalarZeroRs2(opcode)
+                    ? null
+                    : CreateArchitecturalRegisterOperand("rs2", rs2));
         }
 
         private static DecodedRegisterTuple DecodeControlRegisters(InstructionsEnum opcode, VLIW_Instruction instruction)
@@ -410,6 +418,52 @@ namespace HybridCPU.Compiler.Core.IR
         {
             return (packedRegisters & PackedArchRegisterTupleMask) != 0;
         }
+
+        private static void ValidateCanonicalScalarZeroRs2Payload(
+            InstructionsEnum opcode,
+            VLIW_Instruction instruction)
+        {
+            if (!UsesCanonicalScalarZeroRs2(opcode))
+            {
+                return;
+            }
+
+            if (!VLIW_Instruction.TryUnpackArchRegs(
+                    instruction.Word1,
+                    out _,
+                    out _,
+                    out byte rs2) ||
+                rs2 != 0)
+            {
+                throw new InvalidOperationException(
+                    $"{opcode} compiler emission requires canonical scalar Word1=(rd, rs1, x0).");
+            }
+
+            if (UsesCanonicalScalarWordUnaryZeroRs2(opcode) &&
+                instruction.Immediate != 0)
+            {
+                throw new InvalidOperationException(
+                    $"{opcode} compiler emission requires canonical scalar word-unary Immediate=0.");
+            }
+        }
+
+        private static bool UsesCanonicalScalarZeroRs2(InstructionsEnum opcode)
+        {
+            return UsesCanonicalScalarWordImmediateZeroRs2(opcode) ||
+                   UsesCanonicalScalarWordUnaryZeroRs2(opcode);
+        }
+
+        private static bool UsesCanonicalScalarWordImmediateZeroRs2(InstructionsEnum opcode) =>
+            opcode is
+                InstructionsEnum.ADDIW or
+                InstructionsEnum.SLLIW or
+                InstructionsEnum.SRLIW or
+                InstructionsEnum.SRAIW;
+
+        private static bool UsesCanonicalScalarWordUnaryZeroRs2(InstructionsEnum opcode) =>
+            opcode is
+                InstructionsEnum.SEXT_W or
+                InstructionsEnum.ZEXT_W;
 
         private static IrResourceClass ClassifyResource(InstructionsEnum opcode)
         {

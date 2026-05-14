@@ -199,8 +199,8 @@ public sealed class Phase03IssueHandoffPlacementTailTests
             new VLIW_Instruction
             {
                 OpCode = (uint)InstructionsEnum.FENCE,
-                DataTypeValue = DataTypeEnum.INT32,
-                PredicateMask = 0xFF,
+                DataTypeValue = 0,
+                PredicateMask = 0,
                 VirtualThreadId = 0
             });
 

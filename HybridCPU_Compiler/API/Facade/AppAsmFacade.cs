@@ -12,7 +12,7 @@ namespace HybridCPU.Compiler.Core.API.Facade;
 /// <summary>
 /// Compatibility application-level assembly facade implementation.
 /// Uses canonical compiler emission where phase-02 flat architectural register flow is already available
-/// and keeps unsupported control-transfer wrappers fail-closed until canonical branch lowering is wired end-to-end.
+/// and lowers scoped symbolic control-transfer wrappers through compiler-owned relocation metadata.
 /// </summary>
 [Obsolete(AsmFacadeDeprecation.Message)]
 [EditorBrowsable(EditorBrowsableState.Never)]
@@ -23,6 +23,7 @@ public class AppAsmFacade : IAppAsmFacade
     private const byte DefaultScalarPredicateMask = 0xFF;
     private const byte ScalarDataType = 0;
     private const byte ScalarPredicateMask = 0;
+    private const byte ZeroArchReg = 0;
     private const ulong ScalarStreamLength = 1;
     private const ushort ScalarStride = 8;
 
@@ -66,6 +67,60 @@ public class AppAsmFacade : IAppAsmFacade
             stealabilityPolicy: StealabilityPolicy.NotStealable);
     }
 
+    /// <summary>Emits a canonical scalar word-immediate instruction using packed architectural registers.</summary>
+    protected void EmitScalarWordImmediate(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src, short immediate)
+    {
+        Context.CompileInstruction(
+            (uint)opcode,
+            (byte)DataTypeEnum.INT32,
+            ScalarPredicateMask,
+            unchecked((ushort)immediate),
+            VLIW_Instruction.PackArchRegs(
+                Resolve(dest).Value,
+                Resolve(src).Value,
+                ZeroArchReg),
+            0,
+            ScalarStreamLength,
+            ScalarStride,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
+    }
+
+    /// <summary>Emits a canonical scalar word register-register instruction using packed architectural registers.</summary>
+    protected void EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        Context.CompileInstruction(
+            (uint)opcode,
+            (byte)DataTypeEnum.INT32,
+            ScalarPredicateMask,
+            0,
+            VLIW_Instruction.PackArchRegs(
+                Resolve(dest).Value,
+                Resolve(src1).Value,
+                Resolve(src2).Value),
+            0,
+            ScalarStreamLength,
+            ScalarStride,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
+    }
+
+    /// <summary>Emits a canonical scalar word-unary instruction using packed architectural registers.</summary>
+    protected void EmitScalarWordUnary(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src)
+    {
+        Context.CompileInstruction(
+            (uint)opcode,
+            (byte)DataTypeEnum.INT32,
+            ScalarPredicateMask,
+            0,
+            VLIW_Instruction.PackArchRegs(
+                Resolve(dest).Value,
+                Resolve(src).Value,
+                ZeroArchReg),
+            0,
+            ScalarStreamLength,
+            ScalarStride,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
+    }
+
     /// <summary>Emits a canonical scalar register-register instruction using packed architectural registers.</summary>
     protected void EmitScalarBinary(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src1, AsmRegister src2)
     {
@@ -102,13 +157,6 @@ public class AppAsmFacade : IAppAsmFacade
             stealabilityPolicy: StealabilityPolicy.NotStealable);
     }
 
-    protected static InvalidOperationException CreateUnsupportedControlTransferException(string helperName)
-    {
-        return new InvalidOperationException(
-            $"{helperName} already uses the compiler-native control-target contract, but facade-level control-transfer lowering is not wired through canonical branch emission/relocation in HybridCPU_Compiler yet. " +
-            "Use thread-compiler metadata APIs or explicit canonical control-flow emission instead.");
-    }
-
     protected static IrEntryPointKind Resolve(AsmControlTarget target)
     {
         return target.Kind switch
@@ -129,22 +177,67 @@ public class AppAsmFacade : IAppAsmFacade
         }
     }
 
+    protected void EmitSymbolicControlTransfer(
+        Processor.CPU_Core.InstructionsEnum opcode,
+        AsmControlTarget target,
+        byte rd,
+        byte rs1,
+        byte rs2,
+        IrControlTransferKind transferKind)
+    {
+        Validate(target, nameof(target));
+        Context.CompileSymbolicControlFlow(
+            opcode,
+            target.Name,
+            rd,
+            rs1,
+            rs2,
+            transferKind);
+    }
+
     // ── Arithmetic ──
 
     public void Add(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarBinary(Processor.CPU_Core.InstructionsEnum.Addition, dest, src1, src2);
 
+    public void AddWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.ADDW, dest, src1, src2);
+
     public void Sub(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarBinary(Processor.CPU_Core.InstructionsEnum.Subtraction, dest, src1, src2);
+
+    public void SubWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.SUBW, dest, src1, src2);
 
     public void Mul(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarBinary(Processor.CPU_Core.InstructionsEnum.Multiplication, dest, src1, src2);
 
+    public void MultiplyWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.MULW, dest, src1, src2);
+
     public void Div(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarBinary(Processor.CPU_Core.InstructionsEnum.Division, dest, src1, src2);
 
+    public void DivideWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.DIVW, dest, src1, src2);
+
+    public void DivideUnsignedWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.DIVUW, dest, src1, src2);
+
     public void Mod(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarBinary(Processor.CPU_Core.InstructionsEnum.Modulus, dest, src1, src2);
+
+    public void RemainderWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.REMW, dest, src1, src2);
+
+    public void RemainderUnsignedWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.REMUW, dest, src1, src2);
+
+    public void SignExtendWord(AsmRegister dest, AsmRegister src) =>
+        EmitScalarWordUnary(Processor.CPU_Core.InstructionsEnum.SEXT_W, dest, src);
+
+    public void ZeroExtendWord(AsmRegister dest, AsmRegister src) =>
+        EmitScalarWordUnary(Processor.CPU_Core.InstructionsEnum.ZEXT_W, dest, src);
 
     public void Sqrt(AsmRegister dest, AsmRegister src) =>
         Core.SquareRoot(Resolve(dest), Resolve(src));
@@ -158,11 +251,35 @@ public class AppAsmFacade : IAppAsmFacade
     public void Dec(AsmRegister reg) =>
         EmitScalarImmediate(Processor.CPU_Core.InstructionsEnum.ADDI, reg, reg, -1);
 
+    public void AddWordImmediate(AsmRegister dest, AsmRegister src, int immediate) =>
+        EmitScalarWordImmediate(Processor.CPU_Core.InstructionsEnum.ADDIW, dest, src, checked((short)immediate));
+
     public void ShiftLeft(AsmRegister dest, AsmRegister src, int amount) =>
         EmitScalarImmediate(Processor.CPU_Core.InstructionsEnum.ShiftLeft, dest, src, checked((short)amount));
 
+    public void ShiftLeftWordImmediate(AsmRegister dest, AsmRegister src, int amount) =>
+        EmitScalarWordImmediate(Processor.CPU_Core.InstructionsEnum.SLLIW, dest, src, checked((short)amount));
+
     public void ShiftRight(AsmRegister dest, AsmRegister src, int amount) =>
         EmitScalarImmediate(Processor.CPU_Core.InstructionsEnum.ShiftRight, dest, src, checked((short)amount));
+
+    public void ShiftRightLogicalWordImmediate(AsmRegister dest, AsmRegister src, int amount) =>
+        EmitScalarWordImmediate(Processor.CPU_Core.InstructionsEnum.SRLIW, dest, src, checked((short)amount));
+
+    public void ShiftRightArithmeticWordImmediate(AsmRegister dest, AsmRegister src, int amount) =>
+        EmitScalarWordImmediate(Processor.CPU_Core.InstructionsEnum.SRAIW, dest, src, checked((short)amount));
+
+    public void ShiftRightArithmetic(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarBinary(Processor.CPU_Core.InstructionsEnum.SRA, dest, src1, src2);
+
+    public void ShiftLeftWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.SLLW, dest, src1, src2);
+
+    public void ShiftRightLogicalWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.SRLW, dest, src1, src2);
+
+    public void ShiftRightArithmeticWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
+        EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.SRAW, dest, src1, src2);
 
     public void Xor(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarBinary(Processor.CPU_Core.InstructionsEnum.XOR, dest, src1, src2);
@@ -263,22 +380,70 @@ public class AppAsmFacade : IAppAsmFacade
     }
 
     public void Jump(AsmControlTarget target) =>
-        throw CreateUnsupportedControlTransferException(nameof(Jump));
+        EmitSymbolicControlTransfer(
+            Processor.CPU_Core.InstructionsEnum.JAL,
+            target,
+            0,
+            VLIW_Instruction.NoArchReg,
+            VLIW_Instruction.NoArchReg,
+            IrControlTransferKind.Branch);
 
-    public void JumpIfNotEqual(AsmControlTarget target, AsmRegister acc, AsmRegister op1, AsmRegister op2, int hint) =>
-        throw CreateUnsupportedControlTransferException(nameof(JumpIfNotEqual));
+    public void JumpIfNotEqual(AsmControlTarget target, AsmRegister acc, AsmRegister op1, AsmRegister op2, int hint)
+    {
+        _ = Resolve(acc);
+        _ = hint;
+        EmitSymbolicControlTransfer(
+            Processor.CPU_Core.InstructionsEnum.BNE,
+            target,
+            VLIW_Instruction.NoArchReg,
+            Resolve(op1).Value,
+            Resolve(op2).Value,
+            IrControlTransferKind.ConditionalBranch);
+    }
 
-    public void JumpIfBelow(AsmControlTarget target, AsmRegister acc, AsmRegister op1, AsmRegister op2, int hint) =>
-        throw CreateUnsupportedControlTransferException(nameof(JumpIfBelow));
+    public void JumpIfBelow(AsmControlTarget target, AsmRegister acc, AsmRegister op1, AsmRegister op2, int hint)
+    {
+        _ = Resolve(acc);
+        _ = hint;
+        EmitSymbolicControlTransfer(
+            Processor.CPU_Core.InstructionsEnum.BLTU,
+            target,
+            VLIW_Instruction.NoArchReg,
+            Resolve(op1).Value,
+            Resolve(op2).Value,
+            IrControlTransferKind.ConditionalBranch);
+    }
 
-    public void JumpIfAbove(AsmControlTarget target, AsmRegister acc, AsmRegister op1, AsmRegister op2, int hint) =>
-        throw CreateUnsupportedControlTransferException(nameof(JumpIfAbove));
+    public void JumpIfAbove(AsmControlTarget target, AsmRegister acc, AsmRegister op1, AsmRegister op2, int hint)
+    {
+        _ = Resolve(acc);
+        _ = hint;
+        EmitSymbolicControlTransfer(
+            Processor.CPU_Core.InstructionsEnum.BLTU,
+            target,
+            VLIW_Instruction.NoArchReg,
+            Resolve(op2).Value,
+            Resolve(op1).Value,
+            IrControlTransferKind.ConditionalBranch);
+    }
 
-    public void Call(AsmControlTarget target, AsmRegister acc, int hint) =>
-        throw CreateUnsupportedControlTransferException(nameof(Call));
+    public void Call(AsmControlTarget target, AsmRegister acc, int hint)
+    {
+        _ = hint;
+        EmitSymbolicControlTransfer(
+            Processor.CPU_Core.InstructionsEnum.JAL,
+            target,
+            Resolve(acc).Value,
+            VLIW_Instruction.NoArchReg,
+            VLIW_Instruction.NoArchReg,
+            IrControlTransferKind.Call);
+    }
 
-    public void Return(AsmControlTarget target, AsmRegister acc) =>
-        throw CreateUnsupportedControlTransferException(nameof(Return));
+    public void Return(AsmControlTarget target, AsmRegister acc)
+    {
+        Validate(target, nameof(target));
+        Context.CompileRegisterReturn(Resolve(acc).Value);
+    }
 
     // ── Parallel hints ──
 
@@ -307,4 +472,3 @@ public class AppAsmFacade : IAppAsmFacade
     {
     }
 }
-

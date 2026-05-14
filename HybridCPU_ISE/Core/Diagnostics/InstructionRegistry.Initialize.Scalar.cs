@@ -39,6 +39,19 @@ namespace YAKSys_Hybrid_CPU.Core
             });
             RegisterOpAttributes((uint)Processor.CPU_Core.InstructionsEnum.Subtraction, CreatePublishedScalarDescriptor((uint)Processor.CPU_Core.InstructionsEnum.Subtraction));
 
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.ADDW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.SUBW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.SLLW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.SRLW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.SRAW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.MULW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.DIVW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.DIVUW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.REMW);
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.REMUW);
+            RegisterScalarUnaryRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.SEXT_W);
+            RegisterScalarUnaryRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.ZEXT_W);
+
             RegisterSemanticFactory((uint)Processor.CPU_Core.InstructionsEnum.Multiplication, ctx =>
             {
                 var op = new ScalarALUMicroOp
@@ -131,6 +144,8 @@ namespace YAKSys_Hybrid_CPU.Core
                 WritesRegister = true,
                 IsMemoryOp = false,
             });
+
+            RegisterScalarRegisterOp((uint)Processor.CPU_Core.InstructionsEnum.SRA);
 
             RegisterSemanticFactory((uint)Processor.CPU_Core.InstructionsEnum.XOR, ctx =>
             {

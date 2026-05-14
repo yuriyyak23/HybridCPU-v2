@@ -81,6 +81,9 @@ Code anchors:
 
 WhiteBook / Ex1 anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/02_Runtime_Surface_Closure.md`
+- `Documentation/InstructionsRefactor/WhiteBook/03_ABI_Decode_MicroOp_Retire_Contract.md`
+- `Documentation/InstructionsRefactor/WhiteBook/05_NonExecutable_And_Future_Gates.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/02_Topology_And_ISA_Placement.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/05_Token_Lifecycle_And_Register_ABI.md`
 - `Documentation/Refactoring/Phases Ex1/10_External_Accelerator_L7_SDC_Gate.md`

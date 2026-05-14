@@ -502,7 +502,9 @@ namespace YAKSys_Hybrid_CPU.Core
             ulong sourceValue,
             ushort destinationRegister,
             ushort coreId,
-            int virtualThreadId)
+            int virtualThreadId,
+            bool acquireOrdering,
+            bool releaseOrdering)
         {
             IsValid = isValid;
             Opcode = opcode;
@@ -512,6 +514,8 @@ namespace YAKSys_Hybrid_CPU.Core
             DestinationRegister = destinationRegister;
             CoreId = coreId;
             VirtualThreadId = virtualThreadId;
+            AcquireOrdering = acquireOrdering;
+            ReleaseOrdering = releaseOrdering;
         }
 
         public bool IsValid { get; }
@@ -530,6 +534,10 @@ namespace YAKSys_Hybrid_CPU.Core
 
         public int VirtualThreadId { get; }
 
+        public bool AcquireOrdering { get; }
+
+        public bool ReleaseOrdering { get; }
+
         public bool HasRegisterDestination =>
             DestinationRegister != 0 &&
             DestinationRegister != VLIW_Instruction.NoReg;
@@ -541,7 +549,9 @@ namespace YAKSys_Hybrid_CPU.Core
             ulong sourceValue,
             ushort destinationRegister,
             ushort coreId,
-            int virtualThreadId) =>
+            int virtualThreadId,
+            bool acquireOrdering = false,
+            bool releaseOrdering = false) =>
             new(
                 isValid: true,
                 opcode,
@@ -550,7 +560,9 @@ namespace YAKSys_Hybrid_CPU.Core
                 sourceValue,
                 destinationRegister,
                 coreId,
-                virtualThreadId);
+                virtualThreadId,
+                acquireOrdering,
+                releaseOrdering);
     }
 
     /// <summary>

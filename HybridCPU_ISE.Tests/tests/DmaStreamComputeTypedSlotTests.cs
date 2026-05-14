@@ -20,7 +20,8 @@ public sealed class DmaStreamComputeTypedSlotTests
         DmaStreamComputeMicroOp microOp = CreateValidMicroOp();
 
         Assert.Equal(SlotClass.DmaStreamClass, microOp.Placement.RequiredSlotClass);
-        Assert.Equal(SlotPinningKind.ClassFlexible, microOp.Placement.PinningKind);
+        Assert.Equal(SlotPinningKind.HardPinned, microOp.Placement.PinningKind);
+        Assert.Equal((byte)6, microOp.Placement.PinnedLaneId);
         Assert.Equal((byte)0b_0100_0000, SlotClassLaneMap.GetLaneMask(SlotClass.DmaStreamClass));
         Assert.Equal(1, SlotClassLaneMap.GetClassCapacity(SlotClass.DmaStreamClass));
         Assert.Equal(4, SlotClassLaneMap.GetClassCapacity(SlotClass.AluClass));
@@ -37,6 +38,8 @@ public sealed class DmaStreamComputeTypedSlotTests
         Assert.Equal(1, facts.DmaStreamCount);
         Assert.Equal(0, facts.AluCount);
         Assert.Equal(0, facts.LsuCount);
+        Assert.Equal(1, facts.PinnedOpCount);
+        Assert.Equal(0, facts.FlexibleOpCount);
     }
 
     [Fact]

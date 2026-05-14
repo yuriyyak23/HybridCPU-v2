@@ -507,7 +507,52 @@
                 /// <summary>Matrix Tile Multiply-Accumulate: tile_acc += tile_a * tile_b. DataType/descriptor control shape/dtype.</summary>
                 MTILE_MACC = 218,
                 /// <summary>Matrix Transpose: transpose tile in tile register file</summary>
-                MTRANSPOSE = 219
+                MTRANSPOSE = 219,
+
+                // ═══════════════════════════════════════════════════
+                // Instructions Refactor: mandatory scalar integer64 repair
+                // Candidate allocation block 300-319.
+                // ═══════════════════════════════════════════════════
+
+                /// <summary>Arithmetic right shift: rd = (int64)rs1 >> (rs2 &amp; 0x3F)</summary>
+                SRA = 300,
+                /// <summary>Add immediate word: rd = sign_extend_64((uint32)rs1 + sign_extend(imm))</summary>
+                ADDIW = 301,
+                /// <summary>Add word: rd = sign_extend_64((uint32)rs1 + (uint32)rs2)</summary>
+                ADDW = 302,
+                /// <summary>Subtract word: rd = sign_extend_64((uint32)rs1 - (uint32)rs2)</summary>
+                SUBW = 303,
+                /// <summary>Shift left word: rd = sign_extend_64((uint32)rs1 &lt;&lt; (rs2 &amp; 0x1F))</summary>
+                SLLW = 304,
+                /// <summary>Logical right shift word: rd = sign_extend_64((uint32)rs1 &gt;&gt; (rs2 &amp; 0x1F))</summary>
+                SRLW = 305,
+                /// <summary>Arithmetic right shift word: rd = sign_extend_64((int32)rs1 &gt;&gt; (rs2 &amp; 0x1F))</summary>
+                SRAW = 306,
+                /// <summary>Shift left immediate word: rd = sign_extend_64((uint32)rs1 &lt;&lt; (imm &amp; 0x1F))</summary>
+                SLLIW = 307,
+                /// <summary>Logical right shift immediate word: rd = sign_extend_64((uint32)rs1 &gt;&gt; (imm &amp; 0x1F))</summary>
+                SRLIW = 308,
+                /// <summary>Arithmetic right shift immediate word: rd = sign_extend_64((int32)rs1 &gt;&gt; (imm &amp; 0x1F))</summary>
+                SRAIW = 309,
+                /// <summary>Multiply word: rd = sign_extend_64(low32(rs1) * low32(rs2))</summary>
+                MULW = 310,
+                /// <summary>Divide word: rd = sign_extend_64((int32)low32(rs1) / (int32)low32(rs2))</summary>
+                DIVW = 311,
+                /// <summary>Unsigned divide word: rd = sign_extend_64((uint32)low32(rs1) / (uint32)low32(rs2))</summary>
+                DIVUW = 312,
+                /// <summary>Remainder word: rd = sign_extend_64((int32)low32(rs1) % (int32)low32(rs2))</summary>
+                REMW = 313,
+                /// <summary>Unsigned remainder word: rd = sign_extend_64((uint32)low32(rs1) % (uint32)low32(rs2))</summary>
+                REMUW = 314,
+
+                // ═══════════════════════════════════════════════════
+                // Explicit extension op block 320-329.
+                // ═══════════════════════════════════════════════════
+
+                /// <summary>Sign-extend word: rd = sign_extend_64(low32(rs1))</summary>
+                SEXT_W = 320,
+                /// <summary>Zero-extend word: rd = zero_extend_64(low32(rs1))</summary>
+                ZEXT_W = 321
             }
 
             public static class IsaOpcodeValues
@@ -530,6 +575,23 @@
                 public const ushort Modulus = (ushort)InstructionsEnum.Modulus;
                 public const ushort ShiftLeft = (ushort)InstructionsEnum.ShiftLeft;
                 public const ushort ShiftRight = (ushort)InstructionsEnum.ShiftRight;
+                public const ushort SRA = (ushort)InstructionsEnum.SRA;
+                public const ushort ADDIW = (ushort)InstructionsEnum.ADDIW;
+                public const ushort ADDW = (ushort)InstructionsEnum.ADDW;
+                public const ushort SUBW = (ushort)InstructionsEnum.SUBW;
+                public const ushort SLLW = (ushort)InstructionsEnum.SLLW;
+                public const ushort SRLW = (ushort)InstructionsEnum.SRLW;
+                public const ushort SRAW = (ushort)InstructionsEnum.SRAW;
+                public const ushort SLLIW = (ushort)InstructionsEnum.SLLIW;
+                public const ushort SRLIW = (ushort)InstructionsEnum.SRLIW;
+                public const ushort SRAIW = (ushort)InstructionsEnum.SRAIW;
+                public const ushort MULW = (ushort)InstructionsEnum.MULW;
+                public const ushort DIVW = (ushort)InstructionsEnum.DIVW;
+                public const ushort DIVUW = (ushort)InstructionsEnum.DIVUW;
+                public const ushort REMW = (ushort)InstructionsEnum.REMW;
+                public const ushort REMUW = (ushort)InstructionsEnum.REMUW;
+                public const ushort SEXT_W = (ushort)InstructionsEnum.SEXT_W;
+                public const ushort ZEXT_W = (ushort)InstructionsEnum.ZEXT_W;
                 public const ushort XOR = (ushort)InstructionsEnum.XOR;
                 public const ushort OR = (ushort)InstructionsEnum.OR;
                 public const ushort AND = (ushort)InstructionsEnum.AND;

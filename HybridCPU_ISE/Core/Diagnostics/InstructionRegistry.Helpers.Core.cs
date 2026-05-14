@@ -1,3 +1,4 @@
+using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers;
@@ -9,6 +10,43 @@ namespace YAKSys_Hybrid_CPU.Core
     {
         private static ulong SignExtendScalarImmediate(ushort rawImmediate) =>
             unchecked((ulong)(long)(short)rawImmediate);
+
+        private static void RejectScalarImmediateRegisterFormAlias(
+            in DecoderContext ctx)
+        {
+            if (unchecked((ushort)ctx.OpCode) is not (OpcodeValues.SLLIW or OpcodeValues.SRLIW or OpcodeValues.SRAIW) ||
+                ctx.Reg3ID == 0)
+            {
+                return;
+            }
+
+            throw new DecodeProjectionFaultException(
+                $"Scalar-immediate opcode {OpcodeRegistry.GetMnemonicOrHex(ctx.OpCode)} requires canonical Word1=(rd, rs1, x0). " +
+                "Register-form aliasing through rs2 is not accepted.");
+        }
+
+        private static void RejectScalarUnaryRegisterFormAlias(
+            in DecoderContext ctx)
+        {
+            if (unchecked((ushort)ctx.OpCode) is not (OpcodeValues.SEXT_W or OpcodeValues.ZEXT_W))
+            {
+                return;
+            }
+
+            if (ctx.Reg3ID != 0)
+            {
+                throw new DecodeProjectionFaultException(
+                    $"Scalar-unary opcode {OpcodeRegistry.GetMnemonicOrHex(ctx.OpCode)} requires canonical Word1=(rd, rs1, x0). " +
+                    "Register-form aliasing through rs2 is not accepted.");
+            }
+
+            if (ctx.HasImmediate && ctx.Immediate != 0)
+            {
+                throw new DecodeProjectionFaultException(
+                    $"Scalar-unary opcode {OpcodeRegistry.GetMnemonicOrHex(ctx.OpCode)} requires canonical Immediate=0. " +
+                    "Immediate-form aliasing is not accepted.");
+            }
+        }
 
         private static ushort GetRequiredDecoderImmediate(
             in DecoderContext ctx,
@@ -597,10 +635,33 @@ namespace YAKSys_Hybrid_CPU.Core
             RegisterOpAttributes(opCode, CreatePublishedScalarDescriptor(opCode));
         }
 
+        private static void RegisterScalarUnaryRegisterOp(uint opCode)
+        {
+            RegisterSemanticFactory(opCode, ctx =>
+            {
+                RejectScalarUnaryRegisterFormAlias(in ctx);
+
+                var op = new ScalarALUMicroOp
+                {
+                    OpCode = ctx.OpCode,
+                    DestRegID = ctx.Reg1ID,
+                    Src1RegID = ctx.Reg2ID,
+                    Src2RegID = VLIW_Instruction.NoReg,
+                    UsesImmediate = false,
+                };
+
+                op.InitializeMetadata();
+                return op;
+            });
+            RegisterOpAttributes(opCode, CreatePublishedScalarDescriptor(opCode));
+        }
+
         private static void RegisterScalarImmediateOp(uint opCode)
         {
             RegisterSemanticFactory(opCode, ctx =>
             {
+                RejectScalarImmediateRegisterFormAlias(in ctx);
+
                 var op = new ScalarALUMicroOp
                 {
                     OpCode = ctx.OpCode,
@@ -750,6 +811,8 @@ namespace YAKSys_Hybrid_CPU.Core
                     BaseRegID = ctx.Reg2ID,
                     SrcRegID = ctx.Reg3ID,
                     Address = ctx.AuxData,
+                    AcquireOrdering = ctx.AcquireOrdering,
+                    ReleaseOrdering = ctx.ReleaseOrdering,
                     Size = opCode switch
                     {
                         OpcodeValues.LR_W or

@@ -83,6 +83,59 @@ namespace YAKSys_Hybrid_CPU.Arch
         }
 
         /// <summary>
+        /// Encode a scalar immediate operation using the canonical packed architectural
+        /// register ABI: Word1 = (rd, rs1, x0), Immediate = signed payload.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static VLIW_Instruction EncodeScalarImmediate(
+            uint opCode,
+            DataTypeEnum dataType,
+            ushort destReg,
+            ushort srcReg,
+            short immediate,
+            byte predicateMask = 0,
+            bool tailAgnostic = false,
+            bool maskAgnostic = false)
+        {
+            return EncodeScalar(
+                opCode,
+                dataType,
+                destReg,
+                srcReg,
+                0,
+                predicateMask,
+                unchecked((ushort)immediate),
+                tailAgnostic,
+                maskAgnostic);
+        }
+
+        /// <summary>
+        /// Encode a scalar unary register operation using the canonical packed
+        /// architectural register ABI: Word1 = (rd, rs1, x0), Immediate = 0.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static VLIW_Instruction EncodeScalarUnary(
+            uint opCode,
+            DataTypeEnum dataType,
+            ushort destReg,
+            ushort srcReg,
+            byte predicateMask = 0,
+            bool tailAgnostic = false,
+            bool maskAgnostic = false)
+        {
+            return EncodeScalar(
+                opCode,
+                dataType,
+                destReg,
+                srcReg,
+                0,
+                predicateMask,
+                immediate: 0,
+                tailAgnostic,
+                maskAgnostic);
+        }
+
+        /// <summary>
         /// Encode a vector memory-to-memory operation with 1D strided addressing.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -262,7 +315,10 @@ namespace YAKSys_Hybrid_CPU.Arch
         }
 
         /// <summary>
-        /// Encode a control flow instruction (jump, call, return).
+        /// Encode a canonical control-flow instruction.
+        /// Branch/JAL targets use the signed PC-relative immediate field; JALR uses
+        /// register base plus the same immediate. Absolute target transport is not
+        /// encoded through Src2Pointer.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static VLIW_Instruction EncodeControlFlow(
@@ -270,15 +326,23 @@ namespace YAKSys_Hybrid_CPU.Arch
             ushort reg1,
             ushort reg2,
             ushort reg3,
-            ulong targetAddress)
+            short relativeOffset)
         {
+            if (!OpcodeRegistry.IsControlFlowOp(opCode))
+            {
+                throw new ArgumentException(
+                    $"Opcode 0x{opCode:X} is not a published control-flow opcode.",
+                    nameof(opCode));
+            }
+
             var inst = new VLIW_Instruction();
             inst.OpCode = opCode;
             inst.Word1 = VLIW_Instruction.PackArchRegs(
                 RequireOptionalArchReg(reg1, nameof(reg1)),
                 RequireOptionalArchReg(reg2, nameof(reg2)),
                 RequireOptionalArchReg(reg3, nameof(reg3)));
-            inst.Src2Pointer = targetAddress; // Jump target
+            inst.Immediate = unchecked((ushort)relativeOffset);
+            inst.Src2Pointer = 0;
 
             return inst;
         }
@@ -322,6 +386,14 @@ namespace YAKSys_Hybrid_CPU.Arch
             bool tailAgnostic = false,
             bool maskAgnostic = false)
         {
+            if (destPtr != src1Ptr)
+            {
+                throw new InvalidOperationException(
+                    "EncodeDotProduct rejected a separate destination pointer for the current VDOT* ABI. " +
+                    "Runtime dot-product execution is limited to the 1D scalar-footprint contour where destination aliases source1; " +
+                    "separate destination/accumulator transport must fail closed until a complete executable ABI is implemented.");
+            }
+
             var inst = new VLIW_Instruction();
             inst.OpCode = opCode;
             inst.DataType = (byte)dataType;
@@ -335,9 +407,6 @@ namespace YAKSys_Hybrid_CPU.Arch
 
             // Set reduction flag (dot product reduces to scalar)
             inst.Reduction = true;
-
-            // Store destination pointer in immediate field (architectural decision for ternary ops)
-            // Note: May need adjustment based on actual instruction encoding
 
             inst.Indexed = false;
             inst.Is2D = false;
@@ -577,4 +646,3 @@ namespace YAKSys_Hybrid_CPU.Arch
         }
     }
 }
-

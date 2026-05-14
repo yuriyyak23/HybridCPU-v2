@@ -1,6 +1,6 @@
 # Отчёт об исправленной проблеме сборки
 
-**Проект:** `C:\Users\Yuriy Kurnosov\Desktop\HybridCPU v2\`  
+**Проект:** `HybridCPU v2\`  
 **Каталог отчёта:** `Documentation`  
 **Дата:** 2026-04-25
 

@@ -26,7 +26,8 @@ namespace HybridCPU.Compiler.Core
             FrontendMode frontendMode = FrontendMode.NativeVLIW,
             VliwBundleAnnotations? bundleAnnotations = null,
             ulong domainTag = 0,
-            Action<string, string>? progressObserver = null)
+            Action<string, string>? progressObserver = null,
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null)
         {
             ValidateFrontendMode(frontendMode);
 
@@ -45,7 +46,8 @@ namespace HybridCPU.Compiler.Core
                 labelDeclarations,
                 entryPointDeclarations,
                 bundleAnnotations: bundleAnnotations,
-                domainTag: domainTag);
+                domainTag: domainTag,
+                controlFlowTargetReferences: controlFlowTargetReferences);
             progressObserver?.Invoke("IrBuild", $"IR contains {program.Instructions.Count} instruction(s) across {program.BasicBlocks.Count} basic block(s).");
 
             progressObserver?.Invoke("ScheduleStarting", $"Scheduling {program.BasicBlocks.Count} basic block(s).");
@@ -73,6 +75,7 @@ namespace HybridCPU.Compiler.Core
 
             progressObserver?.Invoke("LoweringStarting", "Lowering IR bundles to backend VLIW bundles.");
             var loweredBundles = lowerer.LowerProgram(bundleLayout);
+            loweredBundles = HybridCpuControlFlowRelocationResolver.ApplyRelocations(bundleLayout, loweredBundles);
             var loweredBundleAnnotations = lowerer.EmitAnnotationsForProgram(bundleLayout);
             progressObserver?.Invoke("Lowering", $"Lowered {loweredBundles.Count} backend bundle(s).");
 
@@ -102,7 +105,8 @@ namespace HybridCPU.Compiler.Core
             FrontendMode frontendMode = FrontendMode.NativeVLIW,
             VliwBundleAnnotations? bundleAnnotations = null,
             ulong domainTag = 0,
-            Action<string, string>? progressObserver = null)
+            Action<string, string>? progressObserver = null,
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null)
         {
             HybridCpuCompiledProgram compiledProgram = CompileProgram(
                 virtualThreadId,
@@ -112,7 +116,8 @@ namespace HybridCPU.Compiler.Core
                 frontendMode,
                 bundleAnnotations,
                 domainTag,
-                progressObserver);
+                progressObserver,
+                controlFlowTargetReferences);
             return EmitProgram(compiledProgram, baseAddress, progressObserver);
         }
 

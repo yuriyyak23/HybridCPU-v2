@@ -86,6 +86,118 @@ namespace HybridCPU_ISE.Tests.Phase09
         }
 
         [Fact]
+        public void DecodedJal_WithoutRawTargetPointer_RetiresCanonicalImmediateLinkAndRedirectThroughWriteBack()
+        {
+            const ulong startPc = 0x2340;
+            const ushort immediate = 0x0030;
+            const ulong targetPc = startPc + immediate;
+            const ulong linkValue = startPc + 4;
+
+            var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
+            core.PrepareExecutionStart(startPc, activeVtId: 0);
+            core.WriteCommittedPc(0, startPc);
+
+            VLIW_Instruction[] rawSlots =
+                CreateBundle(CreateControlInstruction(
+                    InstructionsEnum.JAL,
+                    rd: 5,
+                    immediate: immediate));
+
+            core.TestRunDecodeStageWithFetchedBundle(rawSlots, startPc);
+
+            var decodeStatus = core.TestReadDecodeStageStatus();
+            Assert.True(decodeStatus.Valid);
+            Assert.Equal((uint)InstructionsEnum.JAL, decodeStatus.OpCode);
+            Assert.False(decodeStatus.IsMemoryOp);
+
+            BranchMicroOp decodeBranch = Assert.IsType<BranchMicroOp>(core.TestReadDecodeStageMicroOp());
+            Assert.False(decodeBranch.IsConditional);
+            Assert.Equal((ushort)5, decodeBranch.DestRegID);
+            Assert.Equal(VLIW_Instruction.NoReg, decodeBranch.Reg1ID);
+            Assert.Equal(VLIW_Instruction.NoReg, decodeBranch.Reg2ID);
+            Assert.Equal(new[] { 5 }, decodeBranch.AdmissionMetadata.WriteRegisters);
+            Assert.Empty(decodeBranch.AdmissionMetadata.ReadRegisters);
+
+            RuntimeClusterAdmissionHandoff handoff = core.TestReadDecodeStageAdmissionHandoff();
+            Assert.Equal(0, handoff.CandidateView.ScalarCandidateMask);
+            Assert.Equal(0x01, handoff.CandidateView.AuxiliaryCandidateMask);
+            Assert.Equal(0, handoff.IssuePacket.ScalarIssueMask);
+            BranchMicroOp issuePacketBranch = Assert.IsType<BranchMicroOp>(handoff.IssuePacket.Lane7.MicroOp);
+            Assert.False(issuePacketBranch.IsConditional);
+            Assert.False(handoff.IssuePacket.Lane7.CountsTowardScalarProjection);
+            Assert.Equal((byte)0, handoff.IssuePacket.Lane7.SlotIndex);
+
+            core.TestRunExecuteStageFromCurrentDecodeState();
+
+            var executeStage = core.GetExecuteStage();
+            Assert.True(executeStage.Valid);
+            Assert.True(executeStage.UsesExplicitPacketLanes);
+            Assert.True(executeStage.Lane7.IsOccupied);
+            BranchMicroOp executeBranch = Assert.IsType<BranchMicroOp>(executeStage.Lane7.MicroOp);
+            Assert.False(executeBranch.IsConditional);
+            Assert.True(executeStage.Lane7.ResultReady);
+            Assert.Equal(linkValue, executeStage.Lane7.ResultValue);
+            Assert.NotEqual(targetPc, core.ReadActiveLivePc());
+            Assert.Equal(startPc, core.ReadCommittedPc(0));
+
+            core.TestRunMemoryStageFromCurrentExecuteState();
+            var memoryStage = core.GetMemoryStage();
+            Assert.True(memoryStage.Valid);
+            Assert.True(memoryStage.UsesExplicitPacketLanes);
+            Assert.True(memoryStage.Lane7.IsOccupied);
+            Assert.True(memoryStage.Lane7.ResultReady);
+            Assert.Equal(linkValue, memoryStage.Lane7.ResultValue);
+
+            core.TestRunWriteBackStage();
+
+            Assert.Equal(targetPc, core.ReadCommittedPc(0));
+            Assert.Equal(targetPc, core.ReadActiveLivePc());
+            Assert.Equal(linkValue, core.ReadArch(0, 5));
+
+            var control = core.GetPipelineControl();
+            Assert.Equal(1UL, control.InstructionsRetired);
+            Assert.Equal(0UL, control.ScalarLanesRetired);
+            Assert.Equal(1UL, control.NonScalarLanesRetired);
+            Assert.Equal(0UL, control.Lane7ConditionalBranchExecuteCompletionCount);
+            Assert.Equal(0UL, control.Lane7ConditionalBranchRedirectCount);
+        }
+
+        [Fact]
+        public void DecodedJal_WithLegacyRawTargetPointer_FailsClosedBeforeExecuteRetire()
+        {
+            VLIW_Instruction instruction = CreateControlInstruction(
+                InstructionsEnum.JAL,
+                rd: 5,
+                targetPc: 0x7788,
+                immediate: 0x0020);
+
+            var decoder = new VliwDecoderV4();
+            InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
+                () => decoder.Decode(in instruction, slotIndex: 7));
+
+            Assert.Contains("legacy Src2Pointer control-flow target transport", exception.Message, StringComparison.Ordinal);
+            Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
+        }
+
+        [Fact]
+        public void DecodedJalr_WithLegacyRawTargetPointer_FailsClosedBeforeExecuteRetire()
+        {
+            VLIW_Instruction instruction = CreateControlInstruction(
+                InstructionsEnum.JALR,
+                rd: 5,
+                rs1: 2,
+                targetPc: 0x7788,
+                immediate: 0x0020);
+
+            var decoder = new VliwDecoderV4();
+            InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
+                () => decoder.Decode(in instruction, slotIndex: 7));
+
+            Assert.Contains("legacy Src2Pointer control-flow target transport", exception.Message, StringComparison.Ordinal);
+            Assert.Contains("JALR uses rs1 plus Immediate", exception.Message, StringComparison.Ordinal);
+        }
+
+        [Fact]
         public void DecodedBeq_OnActiveVt0_RetiresLane7RedirectThroughWriteBackWindow()
         {
             const ulong startPc = 0x1800;
@@ -104,7 +216,6 @@ namespace HybridCPU_ISE.Tests.Phase09
                     rd: 0,
                     rs1: 1,
                     rs2: 2,
-                    targetPc: targetPc,
                     immediate: branchImmediate));
 
             core.TestRunDecodeStageWithFetchedBundle(rawSlots, startPc);
@@ -184,6 +295,121 @@ namespace HybridCPU_ISE.Tests.Phase09
         }
 
         [Fact]
+        public void DecodedBeqNotTaken_WithoutRawTargetPointer_RetiresWithoutPcWrite()
+        {
+            const ulong startPc = 0x2420;
+            const ushort branchImmediate = 0x0040;
+
+            var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
+            core.PrepareExecutionStart(startPc, activeVtId: 0);
+            core.WriteCommittedPc(0, startPc);
+            core.WriteCommittedArch(0, 3, 0x77UL);
+            core.WriteCommittedArch(0, 4, 0x88UL);
+
+            VLIW_Instruction[] rawSlots =
+                CreateBundle(CreateControlInstruction(
+                    InstructionsEnum.BEQ,
+                    rd: 0,
+                    rs1: 3,
+                    rs2: 4,
+                    immediate: branchImmediate));
+
+            core.TestRunDecodeStageWithFetchedBundle(rawSlots, startPc);
+            core.TestRunExecuteStageFromCurrentDecodeState();
+
+            var executeStage = core.GetExecuteStage();
+            Assert.True(executeStage.Valid);
+            Assert.True(executeStage.UsesExplicitPacketLanes);
+            Assert.True(executeStage.Lane7.IsOccupied);
+            BranchMicroOp executeBranch = Assert.IsType<BranchMicroOp>(executeStage.Lane7.MicroOp);
+            Assert.True(executeBranch.IsConditional);
+            Assert.False(executeBranch.ConditionMet);
+            Assert.Equal(startPc + 256, executeStage.Lane7.ResultValue);
+            Assert.Equal(startPc + 256, core.ReadActiveLivePc());
+            Assert.Equal(startPc, core.ReadCommittedPc(0));
+
+            core.TestRunMemoryStageFromCurrentExecuteState();
+            core.TestRunWriteBackStage();
+
+            Assert.Equal(startPc + 256, core.ReadActiveLivePc());
+            Assert.Equal(startPc, core.ReadCommittedPc(0));
+
+            var control = core.GetPipelineControl();
+            Assert.Equal(1UL, control.InstructionsRetired);
+            Assert.Equal(0UL, control.ScalarLanesRetired);
+            Assert.Equal(1UL, control.NonScalarLanesRetired);
+            Assert.Equal(1UL, control.Lane7ConditionalBranchExecuteCompletionCount);
+            Assert.Equal(0UL, control.Lane7ConditionalBranchRedirectCount);
+        }
+
+        [Fact]
+        public void DecodedBne_WithoutRawTargetPointer_RetiresCanonicalPcRelativeRedirectThroughWriteBack()
+        {
+            const ulong startPc = 0x2440;
+            const ushort branchImmediate = 0x0030;
+            const ulong targetPc = startPc + branchImmediate;
+
+            var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
+            core.PrepareExecutionStart(startPc, activeVtId: 0);
+            core.WriteCommittedPc(0, startPc);
+            core.WriteCommittedArch(0, 3, 0x77UL);
+            core.WriteCommittedArch(0, 4, 0x88UL);
+
+            VLIW_Instruction[] rawSlots =
+                CreateBundle(CreateControlInstruction(
+                    InstructionsEnum.BNE,
+                    rd: 0,
+                    rs1: 3,
+                    rs2: 4,
+                    immediate: branchImmediate));
+
+            core.TestRunDecodeStageWithFetchedBundle(rawSlots, startPc);
+
+            var decodeStatus = core.TestReadDecodeStageStatus();
+            Assert.True(decodeStatus.Valid);
+            Assert.Equal((uint)InstructionsEnum.BNE, decodeStatus.OpCode);
+
+            BranchMicroOp decodeBranch = Assert.IsType<BranchMicroOp>(core.TestReadDecodeStageMicroOp());
+            Assert.True(decodeBranch.IsConditional);
+            Assert.Equal(VLIW_Instruction.NoReg, decodeBranch.DestRegID);
+            Assert.Equal((ushort)3, decodeBranch.Reg1ID);
+            Assert.Equal((ushort)4, decodeBranch.Reg2ID);
+            Assert.Equal(targetPc, decodeBranch.TargetAddress);
+            Assert.True(decodeBranch.HasRelativeTargetDisplacement);
+            Assert.Equal((short)branchImmediate, decodeBranch.RelativeTargetDisplacement);
+            Assert.Equal(new[] { 3, 4 }, decodeBranch.ReadRegisters);
+            Assert.Empty(decodeBranch.WriteRegisters);
+            Assert.Equal(new[] { 3, 4 }, decodeBranch.AdmissionMetadata.ReadRegisters);
+            Assert.Empty(decodeBranch.AdmissionMetadata.WriteRegisters);
+
+            core.TestRunExecuteStageFromCurrentDecodeState();
+
+            var executeStage = core.GetExecuteStage();
+            Assert.True(executeStage.Valid);
+            Assert.True(executeStage.UsesExplicitPacketLanes);
+            Assert.True(executeStage.Lane7.IsOccupied);
+            BranchMicroOp executeBranch = Assert.IsType<BranchMicroOp>(executeStage.Lane7.MicroOp);
+            Assert.True(executeBranch.IsConditional);
+            Assert.True(executeBranch.ConditionMet);
+            Assert.Equal(targetPc, executeStage.Lane7.ResultValue);
+            Assert.Equal(startPc + 256, core.ReadActiveLivePc());
+            Assert.Equal(startPc, core.ReadCommittedPc(0));
+
+            core.TestRunMemoryStageFromCurrentExecuteState();
+            core.TestRunWriteBackStage();
+
+            Assert.Equal(targetPc, core.ReadActiveLivePc());
+            Assert.Equal(targetPc, core.ReadCommittedPc(0));
+
+            var control = core.GetPipelineControl();
+            Assert.Equal(1UL, control.InstructionsRetired);
+            Assert.Equal(0UL, control.ScalarLanesRetired);
+            Assert.Equal(1UL, control.NonScalarLanesRetired);
+            Assert.Equal(1UL, control.Lane7ConditionalBranchExecuteCompletionCount);
+            Assert.Equal(1UL, control.Lane7ConditionalBranchRedirectCount);
+        }
+
+        [Fact]
         public void DecodedBneNotTaken_RetiresLane7BranchWithoutPcWrite()
         {
             const ulong startPc = 0x2460;
@@ -211,6 +437,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             Assert.True(executeStage.UsesExplicitPacketLanes);
             Assert.True(executeStage.Lane7.IsOccupied);
             BranchMicroOp executeBranch = Assert.IsType<BranchMicroOp>(executeStage.Lane7.MicroOp);
+            Assert.True(executeBranch.IsConditional);
             Assert.False(executeBranch.ConditionMet);
             Assert.Equal(startPc + 256, executeStage.Lane7.ResultValue);
             Assert.Equal(startPc + 256, core.ReadActiveLivePc());
@@ -228,6 +455,174 @@ namespace HybridCPU_ISE.Tests.Phase09
             Assert.Equal(1UL, control.NonScalarLanesRetired);
             Assert.Equal(1UL, control.Lane7ConditionalBranchExecuteCompletionCount);
             Assert.Equal(0UL, control.Lane7ConditionalBranchRedirectCount);
+        }
+
+        [Fact]
+        public void DecodedBne_WithLegacyRawTargetPointer_FailsClosedBeforeExecuteRetire()
+        {
+            VLIW_Instruction instruction = CreateControlInstruction(
+                InstructionsEnum.BNE,
+                rs1: 3,
+                rs2: 4,
+                targetPc: 0x7788,
+                immediate: 0x0020);
+
+            var decoder = new VliwDecoderV4();
+            InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
+                () => decoder.Decode(in instruction, slotIndex: 7));
+
+            Assert.Contains("legacy Src2Pointer control-flow target transport", exception.Message, StringComparison.Ordinal);
+            Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
+        }
+
+        [Theory]
+        [InlineData(InstructionsEnum.BLT, -2L, 1L)]
+        [InlineData(InstructionsEnum.BGE, 5L, -1L)]
+        [InlineData(InstructionsEnum.BLTU, 0L, -1L)]
+        [InlineData(InstructionsEnum.BGEU, -1L, 0L)]
+        public void DecodedRemainingPublishedConditionalBranch_WithoutRawTargetPointer_RetiresCanonicalPcRelativeRedirectThroughWriteBack(
+            InstructionsEnum opcode,
+            long signedOperand1,
+            long signedOperand2)
+        {
+            const ulong startPc = 0x2480;
+            const ushort branchImmediate = 0x0050;
+            const ulong targetPc = startPc + branchImmediate;
+
+            var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
+            core.PrepareExecutionStart(startPc, activeVtId: 0);
+            core.WriteCommittedPc(0, startPc);
+            core.WriteCommittedArch(0, 3, unchecked((ulong)signedOperand1));
+            core.WriteCommittedArch(0, 4, unchecked((ulong)signedOperand2));
+
+            VLIW_Instruction[] rawSlots =
+                CreateBundle(CreateControlInstruction(
+                    opcode,
+                    rd: 0,
+                    rs1: 3,
+                    rs2: 4,
+                    immediate: branchImmediate));
+
+            core.TestRunDecodeStageWithFetchedBundle(rawSlots, startPc);
+
+            var decodeStatus = core.TestReadDecodeStageStatus();
+            Assert.True(decodeStatus.Valid);
+            Assert.Equal((uint)opcode, decodeStatus.OpCode);
+
+            BranchMicroOp decodeBranch = Assert.IsType<BranchMicroOp>(core.TestReadDecodeStageMicroOp());
+            Assert.True(decodeBranch.IsConditional);
+            Assert.Equal(VLIW_Instruction.NoReg, decodeBranch.DestRegID);
+            Assert.Equal((ushort)3, decodeBranch.Reg1ID);
+            Assert.Equal((ushort)4, decodeBranch.Reg2ID);
+            Assert.Equal(targetPc, decodeBranch.TargetAddress);
+            Assert.True(decodeBranch.HasRelativeTargetDisplacement);
+            Assert.Equal((short)branchImmediate, decodeBranch.RelativeTargetDisplacement);
+            Assert.Equal(new[] { 3, 4 }, decodeBranch.AdmissionMetadata.ReadRegisters);
+            Assert.Empty(decodeBranch.AdmissionMetadata.WriteRegisters);
+
+            core.TestRunExecuteStageFromCurrentDecodeState();
+
+            var executeStage = core.GetExecuteStage();
+            Assert.True(executeStage.Valid);
+            Assert.True(executeStage.UsesExplicitPacketLanes);
+            Assert.True(executeStage.Lane7.IsOccupied);
+            BranchMicroOp executeBranch = Assert.IsType<BranchMicroOp>(executeStage.Lane7.MicroOp);
+            Assert.True(executeBranch.IsConditional);
+            Assert.True(executeBranch.ConditionMet);
+            Assert.Equal(targetPc, executeStage.Lane7.ResultValue);
+            Assert.Equal(startPc + 256, core.ReadActiveLivePc());
+            Assert.Equal(startPc, core.ReadCommittedPc(0));
+
+            core.TestRunMemoryStageFromCurrentExecuteState();
+            core.TestRunWriteBackStage();
+
+            Assert.Equal(targetPc, core.ReadActiveLivePc());
+            Assert.Equal(targetPc, core.ReadCommittedPc(0));
+
+            var control = core.GetPipelineControl();
+            Assert.Equal(1UL, control.InstructionsRetired);
+            Assert.Equal(0UL, control.ScalarLanesRetired);
+            Assert.Equal(1UL, control.NonScalarLanesRetired);
+            Assert.Equal(1UL, control.Lane7ConditionalBranchExecuteCompletionCount);
+            Assert.Equal(1UL, control.Lane7ConditionalBranchRedirectCount);
+        }
+
+        [Theory]
+        [InlineData(InstructionsEnum.BLT, 7L, -2L)]
+        [InlineData(InstructionsEnum.BGE, -3L, 2L)]
+        [InlineData(InstructionsEnum.BLTU, -1L, 0L)]
+        [InlineData(InstructionsEnum.BGEU, 0L, -1L)]
+        public void DecodedRemainingPublishedConditionalBranch_NotTaken_RetiresWithoutPcWrite(
+            InstructionsEnum opcode,
+            long signedOperand1,
+            long signedOperand2)
+        {
+            const ulong startPc = 0x24C0;
+            const ushort branchImmediate = 0x0050;
+
+            var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
+            core.PrepareExecutionStart(startPc, activeVtId: 0);
+            core.WriteCommittedPc(0, startPc);
+            core.WriteCommittedArch(0, 3, unchecked((ulong)signedOperand1));
+            core.WriteCommittedArch(0, 4, unchecked((ulong)signedOperand2));
+
+            VLIW_Instruction[] rawSlots =
+                CreateBundle(CreateControlInstruction(
+                    opcode,
+                    rd: 0,
+                    rs1: 3,
+                    rs2: 4,
+                    immediate: branchImmediate));
+
+            core.TestRunDecodeStageWithFetchedBundle(rawSlots, startPc);
+            core.TestRunExecuteStageFromCurrentDecodeState();
+
+            var executeStage = core.GetExecuteStage();
+            Assert.True(executeStage.Valid);
+            Assert.True(executeStage.UsesExplicitPacketLanes);
+            Assert.True(executeStage.Lane7.IsOccupied);
+            BranchMicroOp executeBranch = Assert.IsType<BranchMicroOp>(executeStage.Lane7.MicroOp);
+            Assert.True(executeBranch.IsConditional);
+            Assert.False(executeBranch.ConditionMet);
+            Assert.Equal(startPc + 256, executeStage.Lane7.ResultValue);
+            Assert.Equal(startPc + 256, core.ReadActiveLivePc());
+            Assert.Equal(startPc, core.ReadCommittedPc(0));
+
+            core.TestRunMemoryStageFromCurrentExecuteState();
+            core.TestRunWriteBackStage();
+
+            Assert.Equal(startPc + 256, core.ReadActiveLivePc());
+            Assert.Equal(startPc, core.ReadCommittedPc(0));
+
+            var control = core.GetPipelineControl();
+            Assert.Equal(1UL, control.InstructionsRetired);
+            Assert.Equal(0UL, control.ScalarLanesRetired);
+            Assert.Equal(1UL, control.NonScalarLanesRetired);
+            Assert.Equal(1UL, control.Lane7ConditionalBranchExecuteCompletionCount);
+            Assert.Equal(0UL, control.Lane7ConditionalBranchRedirectCount);
+        }
+
+        [Theory]
+        [InlineData(InstructionsEnum.BLT)]
+        [InlineData(InstructionsEnum.BGE)]
+        [InlineData(InstructionsEnum.BLTU)]
+        [InlineData(InstructionsEnum.BGEU)]
+        public void DecodedRemainingPublishedConditionalBranch_WithLegacyRawTargetPointer_FailsClosedBeforeExecuteRetire(
+            InstructionsEnum opcode)
+        {
+            VLIW_Instruction instruction = CreateControlInstruction(
+                opcode,
+                rs1: 3,
+                rs2: 4,
+                targetPc: 0x7788,
+                immediate: 0x0020);
+
+            var decoder = new VliwDecoderV4();
+            InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
+                () => decoder.Decode(in instruction, slotIndex: 7));
+
+            Assert.Contains("legacy Src2Pointer control-flow target transport", exception.Message, StringComparison.Ordinal);
+            Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
         }
 
         [Fact]
@@ -276,11 +671,12 @@ namespace HybridCPU_ISE.Tests.Phase09
         }
 
         [Fact]
-        public void DecodedJalr_RetiresThroughWriteBackWindow_WithoutLegacyDirectRetireContour()
+        public void DecodedJalr_RetiresRs1PlusImmediateMaskedTargetAndLinkThroughWriteBackWindow()
         {
             const ulong startPc = 0x2C80;
             const ulong baseValue = 0x4101;
-            const ulong targetPc = 0x4120;
+            const ushort immediate = 0x0020;
+            const ulong targetPc = (baseValue + immediate) & ~1UL;
             const ulong linkValue = startPc + 4;
 
             var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
@@ -293,7 +689,7 @@ namespace HybridCPU_ISE.Tests.Phase09
                     InstructionsEnum.JALR,
                     rd: 5,
                     rs1: 2,
-                    immediate: 0x0020));
+                    immediate: immediate));
 
             core.TestRunDecodeStageWithFetchedBundle(rawSlots, startPc);
 

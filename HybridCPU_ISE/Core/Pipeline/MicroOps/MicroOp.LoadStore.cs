@@ -2,9 +2,11 @@ using HybridCPU_ISE.Arch;
 
 using System;
 using System.Collections.Generic;
+using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core.Memory;
 using YAKSys_Hybrid_CPU.Core.Registers;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
+using OpcodeValues = YAKSys_Hybrid_CPU.Processor.CPU_Core.IsaOpcodeValues;
 
 
 namespace YAKSys_Hybrid_CPU.Core
@@ -53,6 +55,76 @@ namespace YAKSys_Hybrid_CPU.Core
             string executionSurface)
         {
             core.ReadBoundMainMemoryExact(address, buffer, executionSurface);
+        }
+
+        internal static ulong DecodeLoadValue(
+            uint opcode,
+            byte[] buffer,
+            byte accessSize,
+            string executionSurface)
+        {
+            int requiredSize = accessSize switch
+            {
+                1 => 1,
+                2 => 2,
+                4 => 4,
+                0 or 8 => 8,
+                _ => throw new InvalidOperationException(
+                    $"{executionSurface} reached unsupported scalar load access size {accessSize}.")
+            };
+
+            if (buffer.Length < requiredSize)
+            {
+                throw new InvalidOperationException(
+                    $"{executionSurface} reached a partial load buffer ({buffer.Length} byte(s)) for an access size of {requiredSize} byte(s). " +
+                    "The authoritative memory lane must fail closed instead of decoding a partial load image across the boundary contour.");
+            }
+
+            ushort normalizedOpcode = unchecked((ushort)opcode);
+            if (TryResolveTypedLoadAccessSize(normalizedOpcode, out byte typedAccessSize) &&
+                typedAccessSize != requiredSize)
+            {
+                throw new InvalidOperationException(
+                    $"{executionSurface} reached typed load opcode {OpcodeRegistry.GetMnemonicOrHex(opcode)} " +
+                    $"with access size {requiredSize}, but the published runtime contour requires {typedAccessSize} byte(s).");
+            }
+
+            return normalizedOpcode switch
+            {
+                OpcodeValues.LB => unchecked((ulong)(long)(sbyte)buffer[0]),
+                OpcodeValues.LH => unchecked((ulong)(long)(short)BitConverter.ToUInt16(buffer, 0)),
+                OpcodeValues.LW => unchecked((ulong)(long)(int)BitConverter.ToUInt32(buffer, 0)),
+                OpcodeValues.LBU => buffer[0],
+                OpcodeValues.LHU => BitConverter.ToUInt16(buffer, 0),
+                OpcodeValues.LWU => BitConverter.ToUInt32(buffer, 0),
+                OpcodeValues.LD => BitConverter.ToUInt64(buffer, 0),
+                _ => DecodeUntypedLoadValue(buffer, requiredSize)
+            };
+        }
+
+        private static ulong DecodeUntypedLoadValue(byte[] buffer, int requiredSize)
+        {
+            return requiredSize switch
+            {
+                1 => buffer[0],
+                2 => BitConverter.ToUInt16(buffer, 0),
+                4 => BitConverter.ToUInt32(buffer, 0),
+                _ => BitConverter.ToUInt64(buffer, 0)
+            };
+        }
+
+        private static bool TryResolveTypedLoadAccessSize(ushort opcode, out byte accessSize)
+        {
+            accessSize = opcode switch
+            {
+                OpcodeValues.LB or OpcodeValues.LBU => 1,
+                OpcodeValues.LH or OpcodeValues.LHU => 2,
+                OpcodeValues.LW or OpcodeValues.LWU => 4,
+                OpcodeValues.LD => 8,
+                _ => (byte)0
+            };
+
+            return accessSize != 0;
         }
 
         /// <summary>
@@ -204,64 +276,24 @@ namespace YAKSys_Hybrid_CPU.Core
 
                     // Request complete - decode result
                     byte[] resultBuffer = _requestToken.GetBuffer();
-                    switch (Size)
-                    {
-                        case 1:
-                            _loadedValue = resultBuffer[0];
-                            break;
-                        case 2:
-                            _loadedValue = BitConverter.ToUInt16(resultBuffer, 0);
-                            break;
-                        case 4:
-                            _loadedValue = BitConverter.ToUInt32(resultBuffer, 0);
-                            break;
-                        case 8:
-                            _loadedValue = BitConverter.ToUInt64(resultBuffer, 0);
-                            break;
-                        default:
-                            _loadedValue = 0;
-                            break;
-                    }
+                    _loadedValue = DecodeLoadValue(
+                        OpCode,
+                        resultBuffer,
+                        Size,
+                        "LoadMicroOp.Execute()");
                     return true; // Operation complete
                 }
 
                 // Fallback to synchronous implementation if MemorySubsystem is not available
                 if (HasExactMainMemoryRange(ref core, Address, Size))
                 {
-                    switch (Size)
-                    {
-                        case 1:
-                            {
-                                byte[] bytes = new byte[1];
-                                ReadMainMemoryExact(ref core, Address, bytes, "LoadMicroOp.Execute()");
-                                _loadedValue = bytes[0];
-                                break;
-                            }
-                        case 2:
-                            {
-                                byte[] bytes = new byte[2];
-                                ReadMainMemoryExact(ref core, Address, bytes, "LoadMicroOp.Execute()");
-                                _loadedValue = BitConverter.ToUInt16(bytes, 0);
-                                break;
-                            }
-                        case 4:
-                            {
-                                byte[] bytes = new byte[4];
-                                ReadMainMemoryExact(ref core, Address, bytes, "LoadMicroOp.Execute()");
-                                _loadedValue = BitConverter.ToUInt32(bytes, 0);
-                                break;
-                            }
-                        case 8:
-                            {
-                                byte[] bytes = new byte[8];
-                                ReadMainMemoryExact(ref core, Address, bytes, "LoadMicroOp.Execute()");
-                                _loadedValue = BitConverter.ToUInt64(bytes, 0);
-                                break;
-                            }
-                        default:
-                            _loadedValue = 0;
-                            break;
-                    }
+                    byte[] bytes = new byte[Size];
+                    ReadMainMemoryExact(ref core, Address, bytes, "LoadMicroOp.Execute()");
+                    _loadedValue = DecodeLoadValue(
+                        OpCode,
+                        bytes,
+                        Size,
+                        "LoadMicroOp.Execute()");
                     return true;
                 }
 

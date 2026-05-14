@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using YAKSys_Hybrid_CPU.Arch;
+using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Memory;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
@@ -37,8 +38,20 @@ namespace YAKSys_Hybrid_CPU.Core.Execution
             {
                 // ── Reg-reg arithmetic ───────────────────────────────────────
                 IsaOpcodeValues.Addition       => rs1 + rs2,
+                IsaOpcodeValues.ADDW           => ScalarAluOps.AddWord(rs1, rs2),
+                IsaOpcodeValues.SUBW           => ScalarAluOps.SubWord(rs1, rs2),
+                IsaOpcodeValues.SLLW           => ScalarAluOps.ShiftLeftWord(rs1, rs2),
+                IsaOpcodeValues.SRLW           => ScalarAluOps.ShiftRightLogicalWord(rs1, rs2),
+                IsaOpcodeValues.SRAW           => ScalarAluOps.ShiftRightArithmeticWord(rs1, rs2),
                 IsaOpcodeValues.Subtraction    => rs1 - rs2,
                 IsaOpcodeValues.Multiplication => rs1 * rs2,
+                IsaOpcodeValues.MULW           => ScalarAluOps.MultiplyWord(rs1, rs2),
+                IsaOpcodeValues.DIVW           => ScalarAluOps.DivideWord(rs1, rs2),
+                IsaOpcodeValues.DIVUW          => ScalarAluOps.DivideUnsignedWord(rs1, rs2),
+                IsaOpcodeValues.REMW           => ScalarAluOps.RemainderWord(rs1, rs2),
+                IsaOpcodeValues.REMUW          => ScalarAluOps.RemainderUnsignedWord(rs1, rs2),
+                IsaOpcodeValues.SEXT_W         => ScalarAluOps.SignExtendWordFromScalar(rs1),
+                IsaOpcodeValues.ZEXT_W         => ScalarAluOps.ZeroExtendWordFromScalar(rs1),
                 IsaOpcodeValues.Division       => rs2 != 0 ? rs1 / rs2 : unchecked((ulong)-1L),
                 IsaOpcodeValues.Modulus        => rs2 != 0 ? rs1 % rs2 : rs1,
 
@@ -64,9 +77,14 @@ namespace YAKSys_Hybrid_CPU.Core.Execution
                 // ── Shifts (register-register; immediate-based shifts use Imm) ─
                 IsaOpcodeValues.ShiftLeft  => rs1 << (int)(rs2 & 0x3F),
                 IsaOpcodeValues.ShiftRight => rs1 >> (int)(rs2 & 0x3F),
+                IsaOpcodeValues.SRA        => (ulong)((long)rs1 >> (int)(rs2 & 0x3F)),
 
                 // ── Immediate ALU ─────────────────────────────────────────────
                 IsaOpcodeValues.ADDI  => rs1 + (ulong)imm,
+                IsaOpcodeValues.ADDIW => ScalarAluOps.AddWordImmediate(rs1, imm),
+                IsaOpcodeValues.SLLIW => ScalarAluOps.ShiftLeftWordImmediate(rs1, imm),
+                IsaOpcodeValues.SRLIW => ScalarAluOps.ShiftRightLogicalWordImmediate(rs1, imm),
+                IsaOpcodeValues.SRAIW => ScalarAluOps.ShiftRightArithmeticWordImmediate(rs1, imm),
                 IsaOpcodeValues.ANDI  => rs1 & (ulong)imm,
                 IsaOpcodeValues.ORI   => rs1 | (ulong)imm,
                 IsaOpcodeValues.XORI  => rs1 ^ (ulong)imm,
@@ -131,7 +149,9 @@ namespace YAKSys_Hybrid_CPU.Core.Execution
                 ReadExecutionRegister(state, vtId, instr.Rs1),
                 ReadExecutionRegister(state, vtId, instr.Rs2),
                 state.GetCoreID(),
-                vtId);
+                vtId,
+                instr.AcquireOrdering,
+                instr.ReleaseOrdering);
             retireBatch.CaptureRetireWindowAtomicEffect(effect);
         }
 

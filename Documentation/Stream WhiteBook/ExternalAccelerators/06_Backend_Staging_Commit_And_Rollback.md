@@ -73,6 +73,9 @@ Code anchors:
 
 WhiteBook / Ex1 anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/02_Runtime_Surface_Closure.md`
+- `Documentation/InstructionsRefactor/WhiteBook/04_Memory_Atomic_Fence_Model.md`
+- `Documentation/InstructionsRefactor/WhiteBook/05_NonExecutable_And_Future_Gates.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/05_Token_Lifecycle_And_Register_ABI.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/07_Memory_Conflict_Model.md`
 - `Documentation/Refactoring/Phases Ex1/09_Cache_Prefetch_And_NonCoherent_Protocol.md`

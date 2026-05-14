@@ -61,6 +61,12 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
         /// </summary>
         public bool HasAbsoluteAddressing { get; init; }
 
+        /// <summary>Atomic acquire ordering bit captured from canonical decode.</summary>
+        public bool AcquireOrdering { get; init; }
+
+        /// <summary>Atomic release ordering bit captured from canonical decode.</summary>
+        public bool ReleaseOrdering { get; init; }
+
         /// <summary>
         /// Operand data type for typed memory and vector operations.
         /// Defaults to <see cref="InternalOpDataType.DWord"/> for most scalar instructions.

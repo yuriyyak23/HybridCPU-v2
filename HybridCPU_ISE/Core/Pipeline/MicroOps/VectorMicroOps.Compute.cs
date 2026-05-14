@@ -695,6 +695,7 @@ namespace YAKSys_Hybrid_CPU.Core
             base.InitializeMetadata();
 
             IsMemoryOp = false;
+            HasSideEffects = true;
             ThrowIfUnsupportedElementDataTypeForMetadata("VectorComparisonMicroOp.InitializeMetadata()");
 
             // Calculate memory ranges based on instruction parameters
@@ -865,6 +866,7 @@ namespace YAKSys_Hybrid_CPU.Core
             base.InitializeMetadata();
 
             IsMemoryOp = false;
+            HasSideEffects = true;
             ReadMemoryRanges = Array.Empty<(ulong, ulong)>();
             WriteMemoryRanges = Array.Empty<(ulong, ulong)>();
 

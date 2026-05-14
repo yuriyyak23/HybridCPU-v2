@@ -114,7 +114,8 @@ public sealed class L7SdcHardPinnedPlacementTests
         Assert.Equal(InstructionClass.Memory, dma.InstructionClass);
         Assert.Equal(SerializationClass.MemoryOrdered, dma.SerializationClass);
         Assert.Equal(SlotClass.DmaStreamClass, dma.Placement.RequiredSlotClass);
-        Assert.Equal(SlotPinningKind.ClassFlexible, dma.Placement.PinningKind);
+        Assert.Equal(SlotPinningKind.HardPinned, dma.Placement.PinningKind);
+        Assert.Equal((byte)6, dma.Placement.PinnedLaneId);
         Assert.Equal((byte)0b_0100_0000, SlotClassLaneMap.GetLaneMask(SlotClass.DmaStreamClass));
         Assert.Equal(1, SlotClassLaneMap.GetClassCapacity(SlotClass.DmaStreamClass));
         Assert.NotEqual(SlotClass.SystemSingleton, dma.Placement.RequiredSlotClass);

@@ -8,8 +8,14 @@ namespace HybridCPU.Compiler.Core.IR
         private static ControlFlowGraph BuildControlFlowGraph(
             List<IrInstruction> instructions,
             IReadOnlyList<IrLabelDeclaration>? labelDeclarations,
-            IReadOnlyList<IrEntryPointDeclaration>? entryPointDeclarations)
+            IReadOnlyList<IrEntryPointDeclaration>? entryPointDeclarations,
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences)
         {
+            ResolveSymbolicControlFlowTargets(
+                instructions,
+                labelDeclarations,
+                entryPointDeclarations,
+                controlFlowTargetReferences);
             ResolveBranchTargets(instructions);
 
             var blocks = BuildBasicBlocks(instructions, labelDeclarations, entryPointDeclarations);
@@ -17,6 +23,122 @@ namespace HybridCPU.Compiler.Core.IR
             var enrichedBlocks = EnrichBlocks(blocks, edges);
 
             return new ControlFlowGraph(enrichedBlocks, edges);
+        }
+
+        private static void ResolveSymbolicControlFlowTargets(
+            List<IrInstruction> instructions,
+            IReadOnlyList<IrLabelDeclaration>? labelDeclarations,
+            IReadOnlyList<IrEntryPointDeclaration>? entryPointDeclarations,
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences)
+        {
+            if (controlFlowTargetReferences is null || controlFlowTargetReferences.Count == 0)
+            {
+                return;
+            }
+
+            Dictionary<string, int> symbolMap = BuildControlFlowSymbolMap(
+                labelDeclarations,
+                entryPointDeclarations);
+
+            for (int index = 0; index < controlFlowTargetReferences.Count; index++)
+            {
+                IrControlFlowTargetReference reference = controlFlowTargetReferences[index];
+                ValidateMetadataInstructionIndex(
+                    reference.InstructionIndex,
+                    instructions.Count,
+                    $"control-flow target reference '{reference.TargetName}'");
+
+                IrInstruction instruction = instructions[reference.InstructionIndex];
+                if (instruction.Annotation.ControlFlowKind is not (
+                        IrControlFlowKind.ConditionalBranch or
+                        IrControlFlowKind.UnconditionalBranch))
+                {
+                    throw new InvalidOperationException(
+                        $"Symbolic control-flow target '{reference.TargetName}' is attached to non-branch opcode '{instruction.Opcode}'.");
+                }
+
+                if (!symbolMap.TryGetValue(reference.TargetName, out int targetInstructionIndex))
+                {
+                    throw new InvalidOperationException(
+                        $"Unresolved symbolic control-flow target '{reference.TargetName}' for instruction {reference.InstructionIndex}.");
+                }
+
+                IrInstructionAnnotation annotation = instruction.Annotation;
+                instructions[reference.InstructionIndex] = instruction with
+                {
+                    Annotation = annotation with
+                    {
+                        BranchTargetSymbolName = reference.TargetName,
+                        EncodedBranchTarget = (ulong)targetInstructionIndex,
+                        ResolvedBranchTargetInstructionIndex = targetInstructionIndex
+                    }
+                };
+            }
+        }
+
+        private static Dictionary<string, int> BuildControlFlowSymbolMap(
+            IReadOnlyList<IrLabelDeclaration>? labelDeclarations,
+            IReadOnlyList<IrEntryPointDeclaration>? entryPointDeclarations)
+        {
+            var symbolMap = new Dictionary<string, int>(StringComparer.Ordinal);
+            AddControlFlowSymbols(symbolMap, labelDeclarations);
+            AddControlFlowSymbols(symbolMap, entryPointDeclarations);
+            return symbolMap;
+        }
+
+        private static void AddControlFlowSymbols(
+            IDictionary<string, int> symbolMap,
+            IReadOnlyList<IrLabelDeclaration>? labelDeclarations)
+        {
+            if (labelDeclarations is null)
+            {
+                return;
+            }
+
+            for (int index = 0; index < labelDeclarations.Count; index++)
+            {
+                AddControlFlowSymbol(
+                    symbolMap,
+                    labelDeclarations[index].Name,
+                    labelDeclarations[index].InstructionIndex);
+            }
+        }
+
+        private static void AddControlFlowSymbols(
+            IDictionary<string, int> symbolMap,
+            IReadOnlyList<IrEntryPointDeclaration>? entryPointDeclarations)
+        {
+            if (entryPointDeclarations is null)
+            {
+                return;
+            }
+
+            for (int index = 0; index < entryPointDeclarations.Count; index++)
+            {
+                AddControlFlowSymbol(
+                    symbolMap,
+                    entryPointDeclarations[index].Name,
+                    entryPointDeclarations[index].InstructionIndex);
+            }
+        }
+
+        private static void AddControlFlowSymbol(
+            IDictionary<string, int> symbolMap,
+            string name,
+            int instructionIndex)
+        {
+            if (symbolMap.TryGetValue(name, out int existingInstructionIndex))
+            {
+                if (existingInstructionIndex != instructionIndex)
+                {
+                    throw new InvalidOperationException(
+                        $"Control-flow symbol '{name}' is ambiguous across instruction indices {existingInstructionIndex} and {instructionIndex}.");
+                }
+
+                return;
+            }
+
+            symbolMap.Add(name, instructionIndex);
         }
 
         private static void ResolveBranchTargets(List<IrInstruction> instructions)
@@ -130,7 +252,8 @@ namespace HybridCPU.Compiler.Core.IR
 
             var terminator = blockInstructions[blockInstructions.Count - 1];
             bool hasUnresolvedControlTransfer = terminator.Annotation.ControlFlowKind is IrControlFlowKind.ConditionalBranch or IrControlFlowKind.UnconditionalBranch
-                && terminator.Annotation.EncodedBranchTarget.HasValue
+                && (terminator.Annotation.EncodedBranchTarget.HasValue ||
+                    terminator.Annotation.BranchTargetSymbolName is not null)
                 && !terminator.Annotation.ResolvedBranchTargetInstructionIndex.HasValue;
 
             return new IrBasicBlock(

@@ -52,6 +52,7 @@ Code anchors:
 
 WhiteBook / Ex1 anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/06_Verification_And_Risk_Closure.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/04_Authority_Model.md`
 - `Documentation/Refactoring/Phases Ex1/12_Testing_Conformance_And_Documentation_Migration.md`

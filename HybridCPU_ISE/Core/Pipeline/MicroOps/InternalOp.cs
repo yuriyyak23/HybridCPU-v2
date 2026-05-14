@@ -71,6 +71,8 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
         Divu   = 15,
         Rem    = 16,
         Remu   = 17,
+        AddW   = 18,
+        SubW   = 19,
 
         // ── ALU immediate ─────────────────────────────────────────────────────
         AddI   = 20,
@@ -84,10 +86,26 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
         SltiU  = 28,
         Lui    = 29,
         Auipc  = 30,
+        AddIW  = 31,
+        SllW   = 32,
+        SrlW   = 33,
+        SraW   = 34,
+        SllIW  = 35,
+        SrlIW  = 36,
+        SraIW  = 37,
+        MulW   = 38,
+        DivW   = 39,
 
         // ── Memory ────────────────────────────────────────────────────────────
         Load   = 40,
         Store  = 41,
+
+        // ── Word M-extension continuation; values are explicit to preserve existing InternalOpKind values.
+        DivuW  = 42,
+        RemW   = 43,
+        RemuW  = 44,
+        SextW  = 45,
+        ZextW  = 46,
 
         // ── Control flow ──────────────────────────────────────────────────────
         Jal    = 50,
@@ -258,13 +276,19 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
             InternalOpKind.Add  or InternalOpKind.Sub  or InternalOpKind.And  or
             InternalOpKind.Or   or InternalOpKind.Xor  or InternalOpKind.Sll  or
             InternalOpKind.Srl  or InternalOpKind.Sra  or InternalOpKind.Slt  or
-            InternalOpKind.Sltu or InternalOpKind.Mul  or InternalOpKind.MulH or
+            InternalOpKind.Sltu or InternalOpKind.AddW or InternalOpKind.SubW or
+            InternalOpKind.SllW or InternalOpKind.SrlW or InternalOpKind.SraW or
+            InternalOpKind.Mul  or InternalOpKind.MulH or
             InternalOpKind.MulHu or InternalOpKind.MulHsu or InternalOpKind.Div or
             InternalOpKind.Divu or InternalOpKind.Rem  or InternalOpKind.Remu or
             InternalOpKind.AddI or InternalOpKind.AndI or InternalOpKind.OrI  or
             InternalOpKind.XorI or InternalOpKind.SllI or InternalOpKind.SrlI or
             InternalOpKind.SraI or InternalOpKind.SltI or InternalOpKind.SltiU or
-            InternalOpKind.Lui  or InternalOpKind.Auipc
+            InternalOpKind.Lui  or InternalOpKind.Auipc or InternalOpKind.AddIW or
+            InternalOpKind.SllIW or InternalOpKind.SrlIW or InternalOpKind.SraIW or
+            InternalOpKind.MulW or InternalOpKind.DivW or InternalOpKind.DivuW or
+            InternalOpKind.RemW or InternalOpKind.RemuW or InternalOpKind.SextW or
+            InternalOpKind.ZextW
                 => InternalOpCategory.Computation,
 
             // ── Memory access ────────────────────────────────────────────────

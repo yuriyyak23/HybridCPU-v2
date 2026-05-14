@@ -50,5 +50,6 @@ namespace HybridCPU.Compiler.Core.IR
         SlotClass RequiredSlotClass,
         IrSlotBindingKind BindingKind,
         ulong DomainTag,
-        bool StealabilityHint = false);
+        bool StealabilityHint = false,
+        string? BranchTargetSymbolName = null);
 }

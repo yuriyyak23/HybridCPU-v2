@@ -15,6 +15,11 @@ If external notes say `SFR` in this context, this summary treats that as the sam
 stream-register-file contour unless a future document defines a different SFR
 surface explicitly.
 
+The current instruction-side closure and risk record live in
+`Documentation/InstructionsRefactor/WhiteBook/`. Read that pack for the
+current scalar, atomic, fence, and risk-closure baseline; keep this pack as the
+separate stream-engine / DmaStreamCompute / assist summary.
+
 ## Authority Rules
 
 These files are summaries, not a new semantic contract. Live code, tests, and the
@@ -22,6 +27,11 @@ current WhiteBook DmaStreamCompute contract remain authoritative.
 
 Current anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/02_Runtime_Surface_Closure.md`
+- `Documentation/InstructionsRefactor/WhiteBook/03_ABI_Decode_MicroOp_Retire_Contract.md`
+- `Documentation/InstructionsRefactor/WhiteBook/04_Memory_Atomic_Fence_Model.md`
+- `Documentation/InstructionsRefactor/WhiteBook/05_NonExecutable_And_Future_Gates.md`
+- `Documentation/InstructionsRefactor/WhiteBook/06_Verification_And_Risk_Closure.md`
 - `Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md`
 - `Documentation/Stream WhiteBook/DmaStreamCompute/02_Phase_Evidence_Ledger.md`
 - `Documentation/Refactoring/Phases Ex1/12_Testing_Conformance_And_Documentation_Migration.md`
@@ -69,6 +79,12 @@ Phase 12. See
 `Documentation/Stream WhiteBook/DmaStreamCompute/02_Phase_Evidence_Ledger.md`
 for the compact evidence ledger.
 
+Current live assembler-app risk closure is newer than the archived comparison
+log: the observed profile is `250` iterations, `11` child runs, and
+`stream-vector` passed. Keep comparing against
+`Documentation/AsmAppTestResults.md`; the live profile drift is expected while
+the aggregate status stays `Succeeded`.
+
 ## Reading Order
 
 Read this package in dependency order:
@@ -80,3 +96,6 @@ Read this package in dependency order:
    VectorALU success.
 3. VDSA assist, because it shares lane6 and SRF carrier resources with stream
    execution but remains assist-only, non-retiring, and architecturally invisible.
+4. `Documentation/InstructionsRefactor/WhiteBook/00_README.md`, because it is
+   the current instruction-side closure reference for scalar, atomic, fence,
+   and risk-closure boundaries.

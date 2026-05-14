@@ -26,6 +26,10 @@ namespace YAKSys_Hybrid_CPU.Core
             RegisterRetainedAbsoluteLoadOp((uint)Processor.CPU_Core.InstructionsEnum.Load);
 
             RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.ADDI);
+            RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.ADDIW);
+            RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.SLLIW);
+            RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.SRLIW);
+            RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.SRAIW);
             RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.ANDI);
             RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.ORI);
             RegisterScalarImmediateOp((uint)Processor.CPU_Core.InstructionsEnum.XORI);
@@ -122,11 +126,11 @@ namespace YAKSys_Hybrid_CPU.Core
             RegisterAtomicOp((uint)Processor.CPU_Core.InstructionsEnum.AMOMAXU_D);
 
             RegisterSemanticFactory((uint)Processor.CPU_Core.InstructionsEnum.FENCE,
-                ctx => CreateSystemEventMicroOp(ctx.OpCode, SysEventMicroOp.ForFence));
+                ctx => CreateFenceSystemEventMicroOp(ctx, SysEventMicroOp.ForFence));
             RegisterOpAttributes((uint)Processor.CPU_Core.InstructionsEnum.FENCE, CreatePublishedSystemLikeDescriptor((uint)Processor.CPU_Core.InstructionsEnum.FENCE));
 
             RegisterSemanticFactory((uint)Processor.CPU_Core.InstructionsEnum.FENCE_I,
-                ctx => CreateSystemEventMicroOp(ctx.OpCode, SysEventMicroOp.ForFenceI));
+                ctx => CreateFenceSystemEventMicroOp(ctx, SysEventMicroOp.ForFenceI));
             RegisterOpAttributes((uint)Processor.CPU_Core.InstructionsEnum.FENCE_I, CreatePublishedSystemLikeDescriptor((uint)Processor.CPU_Core.InstructionsEnum.FENCE_I));
 
             RegisterCsrClearOp((uint)Processor.CPU_Core.InstructionsEnum.CSR_CLEAR);

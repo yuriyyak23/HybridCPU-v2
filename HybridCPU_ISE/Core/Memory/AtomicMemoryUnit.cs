@@ -39,7 +39,9 @@ namespace YAKSys_Hybrid_CPU.Core.Memory
             ulong address,
             ulong sourceValue,
             int coreId,
-            int virtualThreadId)
+            int virtualThreadId,
+            bool acquireOrdering = false,
+            bool releaseOrdering = false)
         {
             MainMemoryAtomicMemoryUnit mainMemoryAtomicMemoryUnit =
                 RequireMainMemoryAtomicMemoryUnit(
@@ -54,7 +56,9 @@ namespace YAKSys_Hybrid_CPU.Core.Memory
                 sourceValue,
                 destinationRegister,
                 unchecked((ushort)coreId),
-                virtualThreadId);
+                virtualThreadId,
+                acquireOrdering,
+                releaseOrdering);
         }
 
         /// <summary>

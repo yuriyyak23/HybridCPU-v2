@@ -73,6 +73,13 @@ decision explicitly wires them into `SystemDeviceCommandMicroOp.Execute(...)`.
 
 Current WhiteBook and Ex1 anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/00_README.md`
+- `Documentation/InstructionsRefactor/WhiteBook/01_Authority_And_Phase_Map.md`
+- `Documentation/InstructionsRefactor/WhiteBook/02_Runtime_Surface_Closure.md`
+- `Documentation/InstructionsRefactor/WhiteBook/03_ABI_Decode_MicroOp_Retire_Contract.md`
+- `Documentation/InstructionsRefactor/WhiteBook/04_Memory_Atomic_Fence_Model.md`
+- `Documentation/InstructionsRefactor/WhiteBook/05_NonExecutable_And_Future_Gates.md`
+- `Documentation/InstructionsRefactor/WhiteBook/06_Verification_And_Risk_Closure.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/05_Token_Lifecycle_And_Register_ABI.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/09_Compiler_Emission_Path.md`

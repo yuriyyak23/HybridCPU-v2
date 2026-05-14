@@ -108,6 +108,11 @@ namespace YAKSys_Hybrid_CPU.Arch
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool RequiresVectorPayloadProjection(uint opCode)
         {
+            if (IsVectorConfigSystemSingletonOpcode(opCode))
+            {
+                return false;
+            }
+
             if (IsVectorOp(opCode))
             {
                 return true;
@@ -158,7 +163,8 @@ namespace YAKSys_Hybrid_CPU.Arch
             Processor.CPU_Core.InstructionsEnum semanticOpcode =
                 NormalizePackedArchRegisterSemanticOpcode(opcode);
 
-            if (IsVectorOp((uint)semanticOpcode))
+            if (IsVectorOp((uint)semanticOpcode) &&
+                !IsVectorConfigSystemSingletonOpcode(semanticOpcode))
             {
                 return false;
             }
@@ -189,7 +195,8 @@ namespace YAKSys_Hybrid_CPU.Arch
         {
             uint semanticOpcode = NormalizePackedArchRegisterSemanticOpcode(opcode);
 
-            if (IsVectorOp(semanticOpcode))
+            if (IsVectorOp(semanticOpcode) &&
+                !IsVectorConfigSystemSingletonOpcode(semanticOpcode))
             {
                 return false;
             }
@@ -311,6 +318,21 @@ namespace YAKSys_Hybrid_CPU.Arch
                 _ => opcode,
             };
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsVectorConfigSystemSingletonOpcode(
+            Processor.CPU_Core.InstructionsEnum opcode)
+            => opcode is
+                Processor.CPU_Core.InstructionsEnum.VSETVL or
+                Processor.CPU_Core.InstructionsEnum.VSETVLI or
+                Processor.CPU_Core.InstructionsEnum.VSETIVLI;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsVectorConfigSystemSingletonOpcode(uint opcode)
+            => opcode is
+                Processor.CPU_Core.IsaOpcodeValues.VSETVL or
+                Processor.CPU_Core.IsaOpcodeValues.VSETVLI or
+                Processor.CPU_Core.IsaOpcodeValues.VSETIVLI;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool UsesClassifierOnlyPackedArchRegisterWord1(

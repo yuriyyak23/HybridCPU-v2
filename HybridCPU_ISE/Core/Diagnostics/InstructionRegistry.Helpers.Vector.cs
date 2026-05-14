@@ -54,6 +54,25 @@ namespace YAKSys_Hybrid_CPU.Core
                     return false;
                 }
 
+                Processor.CPU_Core.InstructionsEnum opcode =
+                    (Processor.CPU_Core.InstructionsEnum)ctx.OpCode;
+                if (!VectorLegalityMatrix.TryGetAddressingStatus(
+                        opcode,
+                        indexed,
+                        is2D,
+                        out VectorContourLegalityStatus legalityStatus))
+                {
+                    throw new DecodeProjectionFaultException(
+                        $"Opcode {(ushort)ctx.OpCode} reached InstructionRegistry.CreateMicroOp(...) with no runtime-owned vector legality matrix row. " +
+                        "Vector indexed/2D addressing must fail closed until the runtime matrix explicitly publishes an executable contour.");
+                }
+
+                if (legalityStatus == VectorContourLegalityStatus.Executable)
+                {
+                    addressingContour = string.Empty;
+                    return false;
+                }
+
                 addressingContour = DescribeNonRepresentableVectorAddressingContour(indexed, is2D);
                 return true;
             }
@@ -638,4 +657,3 @@ namespace YAKSys_Hybrid_CPU.Core
             }
     }
 }
-

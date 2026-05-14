@@ -109,7 +109,7 @@ public sealed class CoordinatorFunctionSynthesizer
         context.CompileInstruction(
             opCode: (uint)InstructionsEnum.FENCE,
             dataType: 0,
-            predicate: 0xFF,
+            predicate: 0,
             immediate: 0,
             destSrc1: 0,
             src2: 0,
@@ -120,7 +120,7 @@ public sealed class CoordinatorFunctionSynthesizer
         context.CompileInstruction(
             opCode: (uint)InstructionsEnum.FENCE,
             dataType: 0,
-            predicate: 0xFF,
+            predicate: 0,
             immediate: 0,
             destSrc1: 0,
             src2: 0,
@@ -219,4 +219,3 @@ public sealed class CoordinatorFunctionSynthesizer
             stealabilityPolicy: StealabilityPolicy.NotStealable);
     }
 }
-

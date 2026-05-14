@@ -1,11 +1,12 @@
 # HybridCPU ISE
 
-**Replay-stable SMT-VLIW instruction-set emulator/runtime with streaming-vector transport, typed-slot scheduling, runtime-owned legality, replay evidence, and compiler/runtime structural agreement.**
+**Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
 
-The central implementation is an instruction-set emulator/runtime with a fixed 8-slot VLIW carrier, 4-way SMT inside a core, class-aware lane topology, explicit legality decisions, bounded replay reuse, retire-visible evidence, and a staged compiler contract.
+HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT, heterogeneous lane classes, explicit legality decisions, bounded replay reuse, retire-visible effects, and a versioned compiler/runtime contract. The repository now keeps the instruction-side closure in `Documentation/InstructionsRefactor/WhiteBook/` and the stream, lane6, and lane7 architecture records in `Documentation/Stream WhiteBook/`.
 
-This README deliberately compresses the WhiteBook into the repository entry point. It keeps file references minimal; for deeper detail, start with:
+This README deliberately compresses the current documentation map into the repository entry point. It keeps file references minimal; for deeper detail, start with:
 
+- `Documentation/InstructionsRefactor/WhiteBook/00_README.md`
 - `Documentation/WhiteBook/0. chapter-index.md`
 - `Documentation/operational-semantics.md`
 - `Documentation/validation-baseline.md`
@@ -15,18 +16,23 @@ This README deliberately compresses the WhiteBook into the repository entry poin
 - [lane7 L7-SDC external accelerator WhiteBook](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md)
 - [Stream WhiteBook diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md)
 
-When this README, older notes, and code disagree, live code and the current proof/evidence surfaces are the authority. Historical material under old documentation paths is repository archaeology unless a current proof surface cites it.
+When this README, the WhiteBooks, older notes, and code disagree, live code and the current proof/evidence surfaces are the authority. Historical material under old documentation paths is repository archaeology unless a current proof surface cites it.
 
-## Stream WhiteBook Entry Points
+## Documentation Entry Points
 
-The Stream WhiteBook paths are current architecture records for stream/vector, lane6 DSC, and lane7 L7-SDC surfaces. They are entry points, not implementation approvals for future features.
+The instruction-side closure overlay and the Stream WhiteBook paths are current architecture records for the instruction, stream/vector, lane6 DSC, and lane7 L7-SDC surfaces. They are entry points rather than implementation approvals for future features.
 
 | Area | Start here | Claim boundary |
 |---|---|---|
+| Instruction-side closure | [Instructions Refactor WhiteBook](Documentation/InstructionsRefactor/WhiteBook/00_README.md) | Current bounded runtime ISA closure overlay for scalar, atomic, fence, vector, lane6, lane7, and risk-closure evidence. |
 | StreamEngine / VectorALU / SRF / BurstIO | [StreamEngine, SFR/SRF, And VectorALU](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/01_StreamEngine_SFR_SRF_VectorALU.md) | Live StreamEngine stream/vector behavior plus helper/data-ingress caveats; not DSC or L7 evidence. |
 | Lane6 DSC | [DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md) | Current descriptor/decode carrier, fail-closed direct execution, DSC1 strict ABI, DSC2 parser-only, helper/token model. |
 | Lane7 L7-SDC | [L7-SDC executive summary](Documentation/Stream%20WhiteBook/ExternalAccelerators/01_L7_SDC_Executive_Summary.md) | Current fail-closed `ACCEL_*` carriers plus model/helper/test APIs for token, backend, commit, conflict, and telemetry. |
 | Diagrams | [diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md) | Explanatory diagrams only; not approval for executable DSC/L7, async overlap, coherent DMA/cache, or production lowering. |
+
+## Instruction-Surface Closure
+
+The instruction-side closure overlay is summarized in `Documentation/InstructionsRefactor/WhiteBook/`. It is the current bounded runtime ISA record for scalar repair through `ZEXT.W`, branch/control target transport, scalar load/store, LR/SC and AMO W/D retire semantics, acquire/release ordering, canonical zero-payload `FENCE` and `FENCE_I`, and explicit non-executable or future-gated contours. It is documentation derived from code and tests, not a replacement for either.
 
 ## Evidence Discipline
 
@@ -1001,18 +1007,22 @@ flowchart LR
 
 The current validation posture is evidence-oriented rather than pass-count marketing.
 
-A local recount on 2026-04-24 reported:
+The current scoped runtime and refactor slices recorded in the updated WhiteBooks are:
 
-| Surface | Count |
-|---|---:|
-| `HybridCPU_ISE` source files | `365` |
-| `HybridCPU_Compiler` source files | `145` |
-| test files under the main tests directory | `265` |
-| `[Fact]` / `[Theory]` declarations under the main tests directory | `2180` |
-| full test-tree source files | `373` |
-| full test-tree `[Fact]` / `[Theory]` declarations | `3699` |
+| Surface | Result |
+|---|---|
+| Focused runtime baseline | Passed 482, Failed 0 |
+| Combined runtime baseline | Passed 511, Failed 0 |
+| Phase 08 atomic semantics | Passed 26, Failed 0 |
+| Phase 08 load/store semantics | Passed 36, Failed 0 |
+| Phase 09 replay/rollback and SMT/VT ownership | Passed 41, Failed 0 |
+| Lane6 DSC / DmaStream / Lane7 pinning slice | Passed 186, Failed 0 |
+| Lane7 L7-SDC contract slice | Passed 303, Failed 0 |
+| Compiler scalar-tail inventory slice | Passed 19, Failed 0 |
+| Runtime scalar closure through `ZEXT.W` | Passed 148, Failed 0 |
+| Phase 10 atomic ordering plus `FENCE` / `FENCE_I` | Passed 49, Failed 0 |
 
-These are live-tree counts, not a fresh full-suite pass total.
+These are scoped slices, not a fresh repository-wide full-suite total.
 
 The reproducible smoke baseline is the Phase 06 proof subset:
 
@@ -1020,14 +1030,13 @@ The reproducible smoke baseline is the Phase 06 proof subset:
 powershell -ExecutionPolicy Bypass -File .\build\run-validation-baseline.ps1 -NoRestore
 ```
 
-The same smoke command passed locally on 2026-04-24:
+The current assembler-console risk closure is:
 
-| Smoke result | Count |
-|---|---:|
-| Failed | `0` |
-| Passed | `52` |
-| Skipped | `0` |
-| Total | `52` |
+```powershell
+dotnet run --project .\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj
+```
+
+The latest live profile is `250` iterations, `11` child runs, and `stream-vector` passed. Compare it against `Documentation/AsmAppTestResults.md`; the older `200` / `10` profile remains the stored comparison log baseline, so the drift should be reported explicitly.
 
 The broader recount command is:
 
@@ -1054,13 +1063,13 @@ flowchart LR
 
 ## Runtime Harness Sanity
 
-The repository also keeps a runtime harness sanity surface through the assembler console app:
+The repository also keeps a runtime harness sanity surface through the assembler console app. The risk-closure run is the bare `dotnet run` command in the validation section; this no-build variant is a quick local check when the binary is already current:
 
 ```powershell
 dotnet run --project .\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj --no-restore --no-build
 ```
 
-The documented harness matrix tracks IPC, retired count, cycles, last reject kind, legality authority, slack reclaim ratio, and replay success for representative modes. Treat those values as runtime-drift evidence, not as a universal performance claim.
+The documented harness matrix tracks IPC, retired count, cycles, last reject kind, legality authority, slack reclaim ratio, and replay success for representative modes. Treat those values as runtime-drift evidence, not as a universal performance claim. The live risk-closure profile remains `250` iterations, `11` child runs, and `stream-vector` passed; compare it to `Documentation/AsmAppTestResults.md` rather than overwriting the stored comparison log.
 
 Throughput wording in this repository should therefore stay bounded: harness IPC and effective surface measurements are diagnostic-envelope evidence for named workloads, not a global peak theorem for every program shape or lane mix.
 
@@ -1081,6 +1090,9 @@ The following claims are safe repository-facing statements for the current codeb
 - replay-stable behavior is bounded by the replay/evidence envelope;
 - typed-slot facts are active agreement evidence but currently `ValidationOnly`;
 - compiler contract version mismatch is fail-closed;
+- scalar repair through `ZEXT.W` is closed and the compiler tail is confirmed to `ZEXT.W = 321`;
+- LR/SC and AMO W/D publish retire-time memory effects, and acquire/release ordering is proven through runtime retire evidence rather than metadata or decoder facts;
+- canonical zero-payload `FENCE` and `FENCE_I` are bounded runtime system contours; unsupported masks and payloads fail closed;
 - StreamEngine is the current raw stream/vector execution surface for supported contours;
 - VectorALU, SRF exact warm/bypass, and explicit SRF invalidation are current StreamEngine-side behavior within their documented bounds;
 - BurstIO DMA use in StreamEngine is synchronous helper behavior, not async overlap;
@@ -1116,6 +1128,7 @@ Do not read the live repository as claiming:
 - executable lane6 `DmaStreamCompute` or executable DSC2;
 - parser/decode/normal issue token allocation as current DSC behavior;
 - StreamEngine, VectorALU, DMAController, custom accelerator, or fake backend fallback for rejected DSC/L7;
+- executable `VGATHER` / `VSCATTER`, future dot-product ABI variants, or cache/TLB/coherency claims as current ISA behavior;
 - executable L7 `ACCEL_*`, executable `ACCEL_FENCE`, production backend dispatch, or current architectural `rd` writeback;
 - fake/test L7 backend behavior as production protocol;
 - capability registry, telemetry, token, certificate, replay, descriptor identity, or status words as authority;
@@ -1137,7 +1150,9 @@ The following limitations are explicit:
 - DSC2, address-space, strided/tile/scatter-gather, and capability-profile surfaces are parser-only/model-only unless future executable gates close;
 - L7-SDC queue, poll, wait, cancel, fence, register ABI, backend, commit, rollback, conflict, and telemetry surfaces are model/helper/test-only unless future executable gates close;
 - current DSC helper memory is physical helper/model memory, and current L7 mapping/IOMMU epoch validation is model authority rather than executable IOMMU-backed memory;
-- the installed conflict/cache surfaces are explicit and non-coherent; global conflict authority, dirty-line/writeback, coherent DMA/cache, and async overlap remain future-gated;
+- `FENCE` and `FENCE_I` are bounded system contours only; they do not imply a broad cache/TLB/DMA/coherence theorem;
+- `SFENCE.VMA`, `DCACHE_CLEAN`, `DCACHE_INVAL`, `DCACHE_FLUSH`, and `ICACHE_INVAL` remain reserved or optional-disabled until a complete runtime-owned model is implemented and tested end to end;
+- the installed conflict/cache surfaces are explicit and non-coherent; global conflict authority, dirty-line/writeback, coherent DMA/cache, async overlap, and any broad cache/TLB theorem remain future-gated;
 - production compiler/backend lowering to executable DSC/L7 is blocked by `CompilerBackendLoweringContract`;
 - proof signing is simulated ISE scaffolding, not a production root-of-trust path;
 - telemetry schema is rich but source-defined rather than frozen as a long-term external compatibility contract;
@@ -1146,7 +1161,15 @@ The following limitations are explicit:
 
 ## Practical Reading Order
 
-For a short technical pass, read this README first, then the WhiteBook index, then the operational semantics artifact, then the validation baseline and evidence matrix.
+For a short technical pass, read this README first, then the instruction-refactor WhiteBook, then the WhiteBook index, then the operational semantics artifact, then the validation baseline and evidence matrix.
+
+For instruction-side closure work, read in dependency order:
+
+1. [Instructions Refactor WhiteBook](Documentation/InstructionsRefactor/WhiteBook/00_README.md).
+2. [WhiteBook chapter index](Documentation/WhiteBook/0.%20chapter-index.md).
+3. `Documentation/operational-semantics.md`.
+4. `Documentation/validation-baseline.md`.
+5. `Documentation/evidence-matrix.md`.
 
 For Stream WhiteBook work, read in dependency order:
 
@@ -1154,7 +1177,7 @@ For Stream WhiteBook work, read in dependency order:
 2. [lane6 DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md).
 3. [L7-SDC external accelerator WhiteBook](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md).
 4. [Stream WhiteBook diagrams](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md).
-5. Ex1 gates for memory/conflict/cache/compiler/backend changes, especially [Phase11](Documentation/Refactoring/Phases%20Ex1/11_Compiler_Backend_Lowering_Contract.md), [Phase12](Documentation/Refactoring/Phases%20Ex1/12_Testing_Conformance_And_Documentation_Migration.md), and [Phase13](Documentation/Refactoring/Phases%20Ex1/13_Dependency_Graph_And_Execution_Order.md).
+5. Historical Ex1 gates for memory/conflict/cache/compiler/backend changes, especially [Phase11](Documentation/Refactoring/Phases%20Ex1/11_Compiler_Backend_Lowering_Contract.md), [Phase12](Documentation/Refactoring/Phases%20Ex1/12_Testing_Conformance_And_Documentation_Migration.md), and [Phase13](Documentation/Refactoring/Phases%20Ex1/13_Dependency_Graph_And_Execution_Order.md).
 
 For implementation work, map claims back to the live scheduler, safety, compiler-contract, replay, diagnostics, and pipeline code before strengthening any README or paper statement.
 
@@ -1172,7 +1195,7 @@ For paper writing, keep the claims bounded:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\build\run-validation-baseline.ps1 -NoRestore
 powershell -ExecutionPolicy Bypass -File .\build\recount-validation-evidence.ps1 -NoRestore
-dotnet run --project .\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj --no-restore --no-build
+dotnet run --project .\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj
 ```
 
-These commands are the current repository-facing entry points for smoke validation, evidence recount, and runtime harness sanity. They do not replace code review, full test execution, or architecture-specific proof inspection.
+These commands are the current repository-facing entry points for smoke validation, evidence recount, and runtime harness risk closure. They do not replace code review, full test execution, or architecture-specific proof inspection, and the live `TestAssemblerConsoleApps` profile should still be compared against `Documentation/AsmAppTestResults.md`.

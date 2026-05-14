@@ -17,6 +17,9 @@ public sealed class Phase03DirectFactoryVectorTransferPublicationTailTests
         ulong destSrc1Pointer,
         ulong src2Pointer)
     {
+        OpcodeInfo? info = OpcodeRegistry.GetInfo((uint)opcode);
+        Assert.NotNull(info);
+
         var core = new Processor.CPU_Core(0);
         core.PrepareExecutionStart(0xAF00);
 
@@ -32,17 +35,12 @@ public sealed class Phase03DirectFactoryVectorTransferPublicationTailTests
 
         Assert.Same(microOp, slot.MicroOp);
         Assert.True(slot.IsVectorOp);
-        Assert.False(slot.IsMemoryOp);
         Assert.False(slot.WritesRegister);
         Assert.Empty(slot.WriteRegisters);
-        Assert.False(microOp.IsMemoryOp);
-        Assert.False(microOp.AdmissionMetadata.IsMemoryOp);
         Assert.Empty(microOp.AdmissionMetadata.WriteRegisters);
-        Assert.Equal(InstructionClass.ScalarAlu, microOp.InstructionClass);
-        Assert.Equal(SerializationClass.Free, microOp.SerializationClass);
-        Assert.Equal(SlotClass.AluClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
-        Assert.Equal(SlotPinningKind.ClassFlexible, microOp.AdmissionMetadata.Placement.PinningKind);
-        Assert.Equal(SlotClass.AluClass, slot.Placement.RequiredSlotClass);
+        Assert.Equal(info.Value.InstructionClass, microOp.InstructionClass);
+        Assert.Equal(info.Value.SerializationClass, microOp.SerializationClass);
+        Assert.Equal(microOp.AdmissionMetadata.Placement.RequiredSlotClass, slot.Placement.RequiredSlotClass);
         Assert.Equal(microOp.AdmissionMetadata.Placement.PinningKind, slot.Placement.PinningKind);
 
         switch (opcode)

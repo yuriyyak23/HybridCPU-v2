@@ -60,6 +60,8 @@ Code anchors:
 
 WhiteBook / Ex1 anchors:
 
+- `Documentation/InstructionsRefactor/WhiteBook/01_Authority_And_Phase_Map.md`
+- `Documentation/InstructionsRefactor/WhiteBook/06_Verification_And_Risk_Closure.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/03_Descriptor_ABI_And_Carrier_Cleanliness.md`
 - `Documentation/Stream WhiteBook/ExternalAccelerators/10_Telemetry_And_Evidence.md`
 - `Documentation/Refactoring/Phases Ex1/06_Addressing_Backend_And_IOMMU_Integration.md`

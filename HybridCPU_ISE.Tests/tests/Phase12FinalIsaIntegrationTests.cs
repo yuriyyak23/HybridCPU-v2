@@ -139,9 +139,9 @@ namespace HybridCPU_ISE.Tests.Phase12
         }
 
         [Fact]
-        public void IsaMandatoryOpcodeCount_Is97()
+        public void IsaMandatoryOpcodeCount_Is111()
         {
-            Assert.Equal(97, IsaV4Surface.IsaMandatoryOpcodeCount);
+            Assert.Equal(111, IsaV4Surface.IsaMandatoryOpcodeCount);
         }
 
         [Fact]

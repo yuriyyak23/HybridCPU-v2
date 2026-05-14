@@ -256,7 +256,9 @@ namespace HybridCPU.Compiler.Core.IR
         {
             byte firstRegister = VLIW_Instruction.NoArchReg;
             byte secondRegister = VLIW_Instruction.NoArchReg;
-            byte thirdRegister = VLIW_Instruction.NoArchReg;
+            byte thirdRegister = UsesCanonicalScalarZeroRs2(instruction.Opcode, firstName, secondName, thirdName)
+                ? (byte)0
+                : VLIW_Instruction.NoArchReg;
             bool hasAnyRegister = false;
 
             foreach (IrOperand operand in instruction.Operands)
@@ -295,6 +297,24 @@ namespace HybridCPU.Compiler.Core.IR
                 secondRegister,
                 thirdRegister);
             return true;
+        }
+
+        private static bool UsesCanonicalScalarZeroRs2(
+            Processor.CPU_Core.InstructionsEnum opcode,
+            string firstName,
+            string secondName,
+            string thirdName)
+        {
+            return string.Equals(firstName, "rd", StringComparison.Ordinal) &&
+                   string.Equals(secondName, "rs1", StringComparison.Ordinal) &&
+                   string.Equals(thirdName, "rs2", StringComparison.Ordinal) &&
+                   opcode is
+                       Processor.CPU_Core.InstructionsEnum.ADDIW or
+                       Processor.CPU_Core.InstructionsEnum.SLLIW or
+                       Processor.CPU_Core.InstructionsEnum.SRLIW or
+                       Processor.CPU_Core.InstructionsEnum.SRAIW or
+                       Processor.CPU_Core.InstructionsEnum.SEXT_W or
+                       Processor.CPU_Core.InstructionsEnum.ZEXT_W;
         }
     }
 }

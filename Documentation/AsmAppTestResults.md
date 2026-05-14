@@ -735,7 +735,7 @@ Result:
 Matrix Smoke summary:
 Aggregate status: Succeeded
 Child runs: 3
-Artifacts: C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE\TestResults\TestAssemblerConsoleApps\20260428_114428_445_matrix-smoke
+Artifacts: HybridCPU ISE\TestResults\TestAssemblerConsoleApps\20260428_114428_445_matrix-smoke
 ```
 
 Comparison notes:
@@ -796,12 +796,12 @@ Diagnostics results:
 Matrix Smoke summary:
 Aggregate status: Succeeded
 Child runs: 3
-Artifacts: C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE\TestResults\TestAssemblerConsoleApps\20260428_202008_353_matrix-smoke
+Artifacts: HybridCPU ISE\TestResults\TestAssemblerConsoleApps\20260428_202008_353_matrix-smoke
 
 Matrix Memory summary:
 Aggregate status: Succeeded
 Child runs: 2
-Artifacts: C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE\TestResults\TestAssemblerConsoleApps\20260428_202017_546_matrix-memory
+Artifacts: HybridCPU ISE\TestResults\TestAssemblerConsoleApps\20260428_202017_546_matrix-memory
 ```
 
 Comparison notes:

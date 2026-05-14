@@ -115,7 +115,7 @@ public sealed class L7SdcOpcodeSurfaceTests
     [Fact]
     public void L7SdcOpcodeSurface_DedicatedSurfaceDoesNotMutateFrozenMandatoryCore()
     {
-        Assert.Equal(97, IsaV4Surface.IsaMandatoryOpcodeCount);
+        Assert.Equal(111, IsaV4Surface.IsaMandatoryOpcodeCount);
         Assert.Equal(IsaV4Surface.IsaMandatoryOpcodeCount, IsaV4Surface.MandatoryCoreOpcodes.Count);
 
         foreach ((InstructionsEnum _, ushort _, string mnemonic, SerializationClass _, Type _) in

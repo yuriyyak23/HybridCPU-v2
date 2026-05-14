@@ -17,6 +17,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution
         private ExecutionResult ExecuteSystem(InstructionIR instr, ICanonicalCpuState state, ulong bundleSerial, byte vtId)
         {
             ushort opcode = ResolveOpcode(instr);
+            ValidateCanonicalFenceInstruction(instr, opcode);
 
             switch (opcode)
             {
@@ -84,6 +85,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution
             byte vtId)
         {
             ushort opcode = ResolveOpcode(instr);
+            ValidateCanonicalFenceInstruction(instr, opcode);
 
             Core.Pipeline.PipelineEvent systemEvent = opcode switch
             {
@@ -161,6 +163,29 @@ namespace YAKSys_Hybrid_CPU.Core.Execution
                     => Core.SystemEventOrderGuarantee.DrainMemory,
                 _ => Core.SystemEventOrderGuarantee.None
             };
+        }
+
+        private static void ValidateCanonicalFenceInstruction(
+            InstructionIR instr,
+            ushort opcode)
+        {
+            if (opcode is not (IsaOpcodeValues.FENCE or IsaOpcodeValues.FENCE_I))
+            {
+                return;
+            }
+
+            if (instr.Imm == 0 &&
+                !instr.HasAbsoluteAddressing &&
+                !instr.AcquireOrdering &&
+                !instr.ReleaseOrdering)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException(
+                $"Opcode {FormatOpcode(opcode)} reached ExecutionDispatcherV4 with unsupported Phase 10 fence IR payload. " +
+                "Current runtime-owned FENCE/FENCE.I semantics accept only the canonical zero-payload form; " +
+                "IR immediates, absolute addressing, and aq/rl bits are not ordering authority.");
         }
     }
 }

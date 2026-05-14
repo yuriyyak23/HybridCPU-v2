@@ -735,6 +735,7 @@ namespace YAKSys_Hybrid_CPU.Core
         {
             base.InitializeMetadata();
 
+            PublishTransferClassification();
             IsMemoryOp = false;
             ThrowIfUnsupportedElementDataTypeForMetadata("VectorTransferMicroOp.InitializeMetadata()");
 
@@ -751,6 +752,22 @@ namespace YAKSys_Hybrid_CPU.Core
             }
 
             RefreshVectorAdmissionMetadata(readsMemory: true, writesMemory: true);
+        }
+
+        private void PublishTransferClassification()
+        {
+            switch (OpCode)
+            {
+                case Processor.CPU_Core.IsaOpcodeValues.VLOAD:
+                case Processor.CPU_Core.IsaOpcodeValues.VSTORE:
+                    InstructionClass = Arch.InstructionClass.Memory;
+                    SerializationClass = Arch.InstructionClassifier.GetSerializationClass((ushort)OpCode);
+                    return;
+
+                default:
+                    throw new InvalidOperationException(
+                        $"VectorTransferMicroOp.InitializeMetadata() rejected unsupported transfer opcode 0x{OpCode:X} on the authoritative VLOAD/VSTORE carrier contour.");
+            }
         }
 
         public override bool Execute(ref Processor.CPU_Core core)

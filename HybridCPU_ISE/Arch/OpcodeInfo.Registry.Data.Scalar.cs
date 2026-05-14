@@ -26,12 +26,132 @@ namespace YAKSys_Hybrid_CPU.Arch
             ),
 
             new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.ADDW,
+                mnemonic: "ADDW",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.SUBW,
+                mnemonic: "SUBW",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.SLLW,
+                mnemonic: "SLLW",
+                category: OpcodeCategory.BitManip,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.SRLW,
+                mnemonic: "SRLW",
+                category: OpcodeCategory.BitManip,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.SRAW,
+                mnemonic: "SRAW",
+                category: OpcodeCategory.BitManip,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
                 opCode: (uint)Processor.CPU_Core.InstructionsEnum.Multiplication,
                 mnemonic: "MUL",
                 category: OpcodeCategory.Scalar,
                 operandCount: 2,
                 flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
                 executionLatency: 3,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.MULW,
+                mnemonic: "MULW",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 3,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.DIVW,
+                mnemonic: "DIVW",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 16,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.DIVUW,
+                mnemonic: "DIVUW",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 16,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.REMW,
+                mnemonic: "REMW",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 16,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.REMUW,
+                mnemonic: "REMUW",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 16,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.SEXT_W,
+                mnemonic: "SEXT.W",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.ZEXT_W,
+                mnemonic: "ZEXT.W",
+                category: OpcodeCategory.Scalar,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
                 memoryBandwidth: 0
             ),
 
@@ -76,6 +196,16 @@ namespace YAKSys_Hybrid_CPU.Arch
             ),
 
             new OpcodeInfo(
+                opCode: (uint)Processor.CPU_Core.InstructionsEnum.SRA,
+                mnemonic: "SRA",
+                category: OpcodeCategory.BitManip,
+                operandCount: 2,
+                flags: InstructionFlags.TwoOperand | InstructionFlags.ModifiesFlags,
+                executionLatency: 1,
+                memoryBandwidth: 0
+            ),
+
+            new OpcodeInfo(
                 opCode: (uint)Processor.CPU_Core.InstructionsEnum.XOR,
                 mnemonic: "XOR",
                 category: OpcodeCategory.Scalar,
@@ -107,6 +237,10 @@ namespace YAKSys_Hybrid_CPU.Arch
 
             // ========== ISA v2: RISC-VV Scalar Immediate ALU ==========
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ADDI, "ADDI", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ADDIW, "ADDIW", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.SLLIW, "SLLIW", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.SRLIW, "SRLIW", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
+            new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.SRAIW, "SRAIW", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ANDI, "ANDI", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.ORI, "ORI", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
             new OpcodeInfo((uint)Processor.CPU_Core.InstructionsEnum.XORI, "XORI", OpcodeCategory.Scalar, 2, InstructionFlags.UsesImmediate, 1, 0),
