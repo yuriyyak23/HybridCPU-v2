@@ -1,3 +1,10 @@
+# Now In-Progress: 
+
+1) New Instructions to ISA
+2) Virtualization and Secure Compute layers
+
+**You can help with the development sponsoring project by PayPal (https://paypal.me/YAKGitHub)
+
 # HybridCPU ISE
 
 **Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
