@@ -5,12 +5,12 @@
 | Phase | Status | Closure Boundary |
 | --- | --- | --- |
 | 01 Audit and semantic closure | Closed | Truth boundary established; VDSA/custom accelerator/MatMul active-compute claims quarantined. |
-| 02 Descriptor ABI and fail-closed validator | Closed | Parser-only descriptor ABI, typed sideband, raw carrier rejection, execution disabled. |
-| 03 Micro-op surface and typed-slot legality | Closed | `DmaStreamComputeMicroOp` lane6 surface; no custom/scalar/ALU/vector fallback. |
+| 02 Descriptor ABI and validator | Closed | DSC1 descriptor ABI, typed sideband, raw carrier rejection, `ExecutionEnabled=true` for the current DSC1 contour. |
+| 03 Micro-op surface and typed-slot legality | Closed | `DmaStreamComputeMicroOp` lane6 surface, materialized Phase 06 execution, no custom/scalar/ALU/vector fallback. |
 | 04 Domain and owner guard integration | Closed | Owner/domain guard before descriptor acceptance, replay/certificate reuse, helper admission, commit. |
 | 05 Footprint and alias invalidation | Closed | Mandatory normalized read/write footprints, alias policy, replay invalidation. |
 | 06 Retire/commit token and exception contour | Closed | Staged writes publish only through token commit; faults route through retire exception. |
-| 07 explicit runtime helper/backend substrate | Closed | Copy/add/mul/fma/reduce helper stages writes through token contour without StreamEngine or DMAController execution. |
+| 07 explicit runtime/backend substrate | Closed | Copy/add/mul/fma/reduce runtime stages writes through token contour without StreamEngine or DMAController fallback. |
 | 08 Replay evidence and determinism envelope | Closed | Replay reuse bounded by descriptor/carrier/footprint/owner-domain/certificate/token/lane evidence. |
 | 09 Telemetry, backpressure, quota | Closed | Compute-specific telemetry, quota/backpressure, append-only reject taxonomy; telemetry is observation-only. |
 | 10 Compiler/ISA adoption | Closed | Compiler emits canonical native opcode plus descriptor sideband; decoder/projector preserve ABI; no fallback. |
@@ -71,17 +71,19 @@ Captured for WhiteBook actualization on 2026-04-30:
   architecture approval, code evidence, positive/negative tests,
   compiler/backend conformance, and documentation claim-safety.
 - Phase13 records dependency order as a planning/documentation gate only. It
-  does not approve executable lane6 DSC, executable L7, DSC2 execution,
+  does not approve expansion beyond current lane6 Phase 06 DSC1, expansion
+  beyond current L7 Phase 08 / Phase 08A commands, DSC2 execution,
   IOMMU-backed execution, coherent DMA/cache, async DMA overlap, successful
   partial completion, or production compiler/backend lowering.
 - Current Ex1 evidence preserves:
-  lane6 DSC fail-closed and `ExecutionEnabled=false`; token store/model-only
-  issue-admission separation; retire/fault publication as model-only; absent or
+  lane6 DSC1 Phase 06 enabled and `ExecutionEnabled=true`; token store
+  issue-admission separation; retire/fault publication; absent or
   passive conflict-service authority; backend/addressing/IOMMU no-fallback and
   non-wiring; DSC2 parser-only behavior; all-or-none/progress non-publication;
   explicit non-coherent cache invalidation surfaces without coherent-DMA claim;
-  L7 fail-closed/model-only boundary; and Phase11 compiler/backend production
-  lowering prohibitions.
+  L7 Phase08/08A scoped executable command contour plus remaining adjacent
+  fail-closed boundaries; and Phase11 compiler/backend production lowering
+  prohibitions.
 - Downstream evidence cannot close upstream execution gates:
   parser-only DSC2 descriptors and footprints; model token stores and retire
   observations; progress diagnostics; L7 fake backend, queue, fence, token,
@@ -91,14 +93,17 @@ Captured for WhiteBook actualization on 2026-04-30:
 
 ## Current Closure
 
-Phase 12 is closed. Phase 3 of the 2026-04-29 refactoring plan is also closed
-as an architecture decision: Option A is selected for lane6
-`DmaStreamComputeMicroOp`.
+Phase 12 is closed. Phase 3 of the 2026-04-29 refactoring plan is recorded as a
+historical baseline for lane6 `DmaStreamComputeMicroOp`; current code supersedes
+that baseline for the scoped DSC1 Phase 06 contour.
 
-The current refactoring baseline keeps direct lane6 execution fail-closed and
-records executable lane6 DMA, pipeline token allocation, production executable
-DSC compiler/backend lowering, async scheduling, global fences, and
-cache/coherency as future architecture decisions.
+The current refactoring baseline opens the Phase 06 DSC1 materialized lane6
+execution contour: `DmaStreamComputeMicroOp.Execute(...)` enters
+`DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`, while
+`DmaStreamComputeRuntime.ExecuteToCommitPending(...)` remains a direct helper.
+DSC2 execution, queue lifecycle, production DSC compiler/backend lowering,
+async scheduling, global fences, and cache/coherency remain future architecture
+decisions.
 
 ## Current Risk Closure
 

@@ -3,6 +3,7 @@ using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Memory;
 using System;
+using HybridCPU_ISE.CloseToRTL.Memory.Banks;
 
 namespace HybridCPU_ISE.Tests
 {

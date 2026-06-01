@@ -1,9 +1,9 @@
 # HybridCPU ISE Memory Accelerators
 
 This directory is the compact current-contract context for descriptor-backed lane6
-`DmaStreamCompute`. It separates implemented carrier behavior, explicit
-runtime-side helper APIs, token commit semantics, fail-closed surfaces, and future
-architecture.
+`DmaStreamCompute`. It separates the current Phase 06 DSC1 materialized
+micro-op contour, explicit runtime-side helper APIs, token commit semantics,
+fail-closed adjacent surfaces, and future architecture.
 
 The current instruction-side closure and risk record live in
 `Documentation/InstructionsRefactor/WhiteBook/`. Read that pack for the current
@@ -21,16 +21,19 @@ separate lane6 DmaStreamCompute contract pack.
 
 ## Current Status
 
-As of 2026-04-30, after Ex1 Phase00-Phase13 closure:
+As of the current CloseToRTL/NonRTL codebase:
 
-- The lane6 carrier is implemented as descriptor/decode evidence only.
-- Phase 3 and Ex1 Phase02 keep Option A as the current contract: the lane6
-  carrier stays fail-closed unless a later ADR, implementation, tests, and
-  Phase12 documentation migration close the executable gate.
-- `DmaStreamComputeMicroOp.Execute(...)` is disabled and must fail closed.
-- `DmaStreamComputeDescriptorParser.ExecutionEnabled` is `false`.
-- `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` is an explicit
-  runtime helper, not canonical micro-op execution.
+- The lane6 carrier is implemented as a guarded typed descriptor carrier with a
+  current Phase 06 DSC1 production contour.
+- `DmaStreamComputeMicroOp.Execute(...)` enters
+  `DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`
+  after lane6 materialization, token-store issue/admission, owner/domain guard,
+  and Phase 06 DSC1 shape checks.
+- `DmaStreamComputeDescriptorParser.ExecutionEnabled` is `true` for the current
+  DSC1 Phase 06 contour.
+- `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` remains an explicit
+  direct helper retained for runtime tests and orchestration; production micro-op
+  execution enters through `ExecuteMaterializedMicroOpToCommitPending(...)`.
 - Runtime/helper memory is exact physical main memory via
   `TryReadPhysicalRange` and `TryWritePhysicalRange`.
 - DSC2 is a parser-only/model-only descriptor foundation. Parser acceptance,
@@ -59,10 +62,12 @@ As of 2026-04-30, after Ex1 Phase00-Phase13 closure:
 
 - `W=8`: lanes 0-3 ALU, 4-5 LSU, lane6 DMA/stream, lane7 branch/system.
 - Active frontend is native VLIW only.
-- `DmaStreamCompute` is the lane6 descriptor carrier plus explicit helper/token
-  model, not a custom accelerator and not executable lane6 DMA.
-- No pipeline token allocation or production executable DSC lowering is approved
-  for the current contract.
+- `DmaStreamCompute` is the lane6 descriptor carrier plus explicit materialized
+  runtime/token/commit model for the current DSC1 Phase 06 contour, not a custom
+  accelerator.
+- No DSC2 execution, queue lifecycle, async overlap, coherent DMA/cache,
+  partial-success mode, or broad production compiler/backend lowering is
+  approved by the current contract.
 - Helper/runtime tokens, retire-style observations, progress diagnostics,
   backend infrastructure, cache/conflict observers, and compiler sideband
   transport are downstream evidence only. They must not satisfy upstream
@@ -83,8 +88,8 @@ As of 2026-04-30, after Ex1 Phase00-Phase13 closure:
 
 | Audit ID | Status |
 | --- | --- |
-| AUDIT-002 | Still valid: lane6 direct execution is fail-closed. |
-| AUDIT-005 | Still valid: runtime helper is separate from StreamEngine and DMAController. |
+| AUDIT-002 | Superseded: current lane6 DSC1 has Phase 06 materialized micro-op execution; unsupported/guest/adjacent contours still fail closed. |
+| AUDIT-005 | Still valid: runtime path is separate from StreamEngine and DMAController fallback. |
 | AUDIT-007 | Still valid: runtime/helper uses physical main memory. |
 | AUDIT-009 | Future design decision: no DSC pause/resume/cancel/reset/fence ISA surface. |
 | AUDIT-011 | Still valid: StreamEngine, DMAController, DSC token lifecycle, and L7 models remain separate. |

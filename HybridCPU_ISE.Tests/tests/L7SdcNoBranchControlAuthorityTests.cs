@@ -41,7 +41,7 @@ public sealed class L7SdcNoBranchControlAuthorityTests
 
     [Theory]
     [MemberData(nameof(L7SdcPhase03TestCases.AllOpcodes), MemberType = typeof(L7SdcPhase03TestCases))]
-    public void L7SdcNoBranchControlAuthority_DirectExecuteThrowsFailClosedWithoutArchitecturalEffects(
+    public void L7SdcNoBranchControlAuthority_DirectExecuteUsesSystemSingletonNotBranchOrLane6Authority(
         InstructionsEnum opcode,
         ushort _,
         string mnemonic,
@@ -60,10 +60,13 @@ public sealed class L7SdcNoBranchControlAuthorityTests
         Assert.False(carrier.TryGetPrimaryWriteBackResult(out ulong writeBackValue));
         Assert.Equal(0UL, writeBackValue);
         Assert.Equal(typeof(MicroOp), carrier.GetType().GetMethod(nameof(MicroOp.Commit))!.DeclaringType);
+        Assert.Equal(SlotClass.SystemSingleton, carrier.Placement.RequiredSlotClass);
+        Assert.NotEqual(SlotClass.BranchControl, carrier.Placement.RequiredSlotClass);
+        Assert.NotEqual(SlotClass.DmaStreamClass, carrier.Placement.RequiredSlotClass);
 
         Processor.MainMemoryArea previousMainMemory = Processor.MainMemory;
         var previousMemorySubsystem = Processor.Memory;
-        Processor.MainMemory = new Processor.MultiBankMemoryArea(1, 0x1000);
+        Processor.MainMemory = new Processor.MultiBankMemoryArea(1, 0x10000);
         Processor.Memory = null;
         byte[] original = new byte[] { 0x5A, 0xC3, 0x7E, 0x11 };
         try
@@ -71,16 +74,21 @@ public sealed class L7SdcNoBranchControlAuthorityTests
             Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x100, original));
             var core = new Processor.CPU_Core(0);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-                () => carrier.Execute(ref core));
-
-            Assert.Contains("unsupported", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("backend execution", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("token lifecycle", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("staged writes", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("commit", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("fallback", ex.Message, StringComparison.OrdinalIgnoreCase);
+            if (carrier is AcceleratorSubmitMicroOp { CommandDescriptor: null } submit)
+            {
+                InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+                    () => submit.Execute(ref core));
+                Assert.Contains("descriptorless raw factory execution remains fail-closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+                Assert.False(submit.UsedLegacyCustomAcceleratorFallback);
+            }
+            else
+            {
+                Assert.True(carrier.Execute(ref core));
+                SystemDeviceCommandMicroOp command =
+                    Assert.IsAssignableFrom<SystemDeviceCommandMicroOp>(carrier);
+                Assert.False(command.UsedLegacyCustomAcceleratorFallback);
+                Assert.False(command.UsedArithmeticExecutionPlane);
+            }
 
             byte[] observed = new byte[original.Length];
             Assert.True(Processor.MainMemory.TryReadPhysicalRange(0x100, observed));

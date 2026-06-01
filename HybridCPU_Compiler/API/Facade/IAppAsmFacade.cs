@@ -22,6 +22,9 @@ public interface IAppAsmFacade
     void Mod(AsmRegister dest, AsmRegister src1, AsmRegister src2);
     void RemainderWord(AsmRegister dest, AsmRegister src1, AsmRegister src2);
     void RemainderUnsignedWord(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void CountLeadingZeros(AsmRegister dest, AsmRegister src);
+    void CountTrailingZeros(AsmRegister dest, AsmRegister src);
+    void CountSetBits(AsmRegister dest, AsmRegister src);
     void SignExtendWord(AsmRegister dest, AsmRegister src);
     void ZeroExtendWord(AsmRegister dest, AsmRegister src);
     void Sqrt(AsmRegister dest, AsmRegister src);

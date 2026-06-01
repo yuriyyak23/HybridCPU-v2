@@ -192,8 +192,12 @@ public sealed class DmaStreamComputeDomainGuardTests
     }
 
     [Fact]
-    public void GuardedDescriptorAcceptance_PublishesMicroOpAndExecutionRemainsFailClosed()
+    public void GuardedDescriptorAcceptance_PublishesExecutableMicroOp()
     {
+        DmaStreamComputeTelemetryTests.InitializeMainMemory(0x10000);
+        DmaStreamComputeTelemetryTests.WriteMemory(0x1000, DmaStreamComputeTelemetryTests.Fill(0x01, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x2000, DmaStreamComputeTelemetryTests.Fill(0x02, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x9000, DmaStreamComputeTelemetryTests.Fill(0x00, 16));
         byte[] descriptorBytes = BuildDescriptor();
         DmaStreamComputeOwnerGuardDecision guardDecision =
             EvaluateGuard(descriptorBytes, ValidContext);
@@ -212,10 +216,8 @@ public sealed class DmaStreamComputeDomainGuardTests
         Assert.Equal((int)OwnerContextId, microOp.OwnerContextId);
         Assert.Equal(OwnerDomainTag, microOp.Placement.DomainTag);
 
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => microOp.Execute(ref core));
-        Assert.Contains("execution is disabled", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.True(microOp.Execute(ref core));
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, microOp.LastExecutionToken!.State);
     }
 
     [Fact]

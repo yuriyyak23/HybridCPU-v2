@@ -1,5 +1,5 @@
 using System;
-using HybridCPU_ISE;
+using HybridCPU_ISE.Machine;
 using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;

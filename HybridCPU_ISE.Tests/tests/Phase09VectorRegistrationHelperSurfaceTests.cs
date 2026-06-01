@@ -13,6 +13,7 @@ public sealed class Phase09VectorRegistrationHelperSurfaceTests
         string filePath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Vector.cs");

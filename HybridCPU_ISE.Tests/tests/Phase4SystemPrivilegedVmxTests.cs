@@ -167,6 +167,7 @@ namespace HybridCPU_ISE.Tests.V5Phase4
         }
     }
 
+#if false // Retired VMCS manager test doubles: carrier removed without replacement in task 190.
     /// <summary>
     /// IVmcsManager stub: always loads successfully, records SaveGuestState /
     /// RestoreHostState calls for assertion.
@@ -292,6 +293,7 @@ namespace HybridCPU_ISE.Tests.V5Phase4
         public void RestoreHostState(ICanonicalCpuState state, byte vtId) { }
         public void MarkLaunched() { }
     }
+#endif
 
     // в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
     // T4-01 вЂ” ECALL
@@ -532,6 +534,7 @@ namespace HybridCPU_ISE.Tests.V5Phase4
     // T4-08 вЂ” VMXON
     // в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
+#if false // Retired behavior tests for the removed VmxExecutionUnit constructor/opcode shell.
     public sealed class VmxOnHandlerTests
     {
         [Fact]
@@ -711,6 +714,7 @@ namespace HybridCPU_ISE.Tests.V5Phase4
     // T4-11 вЂ” VMREAD / VMWRITE are InternalOpKind, not PipelineEvent subtypes
     // в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
+#endif
     public sealed class VmReadWriteAreInternalOpsTests
     {
         [Fact]
@@ -965,23 +969,24 @@ namespace HybridCPU_ISE.Tests.V5Phase4
         }
 
         [Fact]
-        public void T4_15f_VmxOff_WhenInTask_FsmStateUnchanged()
+        public void T4_15f_RemovedVmxOffShell_FailsClosedAndLeavesTaskStateUnchanged()
         {
-            // VMXOFF from Task вЂ” the FSM table has no GuestExecutionв†’VmExit trigger
-            // for VmxOff from Task state; PipelineFsmGuard.Advance returns current.
-            var csr     = new CsrFile();
-            var vmx = new VmxExecutionUnit(csr, new TrackingVmcsManager());
-            var state = new P4CpuState();
+            var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
+            var microOp = new VmxMicroOp
+            {
+                OpCode = (uint)InstructionsEnum.VMXOFF,
+                Instruction = P4VmxIrHelper.MakeVmx(InstructionsEnum.VMXOFF),
+            };
 
-            // First enable VMX so we can turn it off.
-            vmx.Execute(P4VmxIrHelper.MakeVmx(InstructionsEnum.VMXON), state, PrivilegeLevel.Machine);
+            Assert.True(microOp.Execute(ref core));
+            VmxRetireOutcome outcome = core.ApplyRetiredVmxEffectForTesting(
+                microOp.CreateRetireEffect(),
+                virtualThreadId: 0);
 
-            var result = vmx.Execute(P4VmxIrHelper.MakeVmx(InstructionsEnum.VMXOFF), state, PrivilegeLevel.Machine);
-
-            Assert.False(result.VmxFaulted);
-            Assert.Equal(0UL, csr.DirectRead(CsrAddresses.VmxEnable));
-            // VMXOFF from Task disables VMX without leaving host Task state.
-            Assert.Equal(PipelineState.Task, state.GetCurrentPipelineState());
+            Assert.True(outcome.Faulted);
+            Assert.Equal(VmExitReason.SecurityPolicyViolation, outcome.FailureReason);
+            Assert.Equal(0UL, core.Csr.DirectRead(CsrAddresses.VmxEnable));
+            Assert.Equal(PipelineState.Task, core.ReadVirtualThreadPipelineState(0));
         }
 
         [Fact]
@@ -1038,5 +1043,3 @@ namespace HybridCPU_ISE.Tests.V5Phase4
         }
     }
 }
-
-

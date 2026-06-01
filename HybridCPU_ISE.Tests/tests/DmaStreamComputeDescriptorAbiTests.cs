@@ -15,7 +15,7 @@ namespace HybridCPU_ISE.Tests.MemoryAccelerators;
 public sealed class DmaStreamComputeDescriptorAbiTests
 {
     [Fact]
-    public void ValidDescriptor_Parse_PublishesNormalizedDescriptorWithoutEnablingExecution()
+    public void ValidDescriptor_Parse_PublishesNormalizedDescriptorForPhase06Execution()
     {
         byte[] descriptorBytes = BuildDescriptor();
         var carrier = new DmaStreamComputeDescriptorReference(
@@ -39,7 +39,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
         Assert.Equal(2, result.Descriptor.ReadMemoryRanges.Count);
         Assert.Single(result.Descriptor.WriteMemoryRanges);
         Assert.NotEqual(0UL, result.Descriptor.NormalizedFootprintHash);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
     }
 
     [Fact]

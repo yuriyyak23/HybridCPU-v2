@@ -9,7 +9,7 @@ evidence records for diagnostics.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Telemetry/AcceleratorTelemetry.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Telemetry/AcceleratorTelemetry.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTelemetryTests.cs`
 
 ## Immutable observation snapshots
@@ -19,21 +19,22 @@ authorize descriptor acceptance, capability acceptance, submit admission, backen
 execution, commit, cancel, fence, fault, or exception publication. Tests pass telemetry
 and evidence-plane inputs to authority surfaces and verify rejection.
 
-Fault telemetry and model status words are observations. They do not imply that
-the current `ACCEL_*` carrier path publishes retire exceptions; direct carrier
-execution is fail-closed and commit/fence/backend model failures remain model
-results.
+Fault telemetry and status words are observations. They do not imply that the
+current `ACCEL_*` carrier path publishes retire exceptions; current
+commit/fence/backend failures remain runtime results surfaced through guarded
+status/register ABI paths.
 
 Telemetry snapshots, token handles, capability records, conflict records,
 backend results, and status words are downstream evidence only. Under Ex1
-Phase13 they cannot close executable L7, lane6 DSC, DSC2 execution,
-IOMMU-backed execution, async overlap, coherent DMA/cache, successful partial
-completion, or production compiler/backend lowering gates.
+Phase13 they cannot close gates for expansion beyond the current L7 contour,
+lane6 DSC expansion beyond Phase 06 DSC1, DSC2 execution, IOMMU-backed
+execution, async overlap, coherent DMA/cache, successful partial completion, or
+production compiler/backend lowering.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Telemetry/AcceleratorTelemetry.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Telemetry/AcceleratorTelemetry.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcEvidenceIsNotAuthorityTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTelemetryTests.cs`
 
@@ -47,7 +48,7 @@ Code anchors:
 
 - `HybridCPU_ISE/Core/Diagnostics/TelemetryExporter.cs`
 - `HybridCPU_ISE/Core/Diagnostics/TypedSlotTelemetryProfile.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeTelemetry.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeTelemetry.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTelemetryTests.cs`
 
 WhiteBook / Ex1 anchors:

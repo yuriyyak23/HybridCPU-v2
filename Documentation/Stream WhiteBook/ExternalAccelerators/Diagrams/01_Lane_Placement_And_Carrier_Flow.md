@@ -1,7 +1,9 @@
 # Lane Placement And Carrier Flow
 
-This is a carrier/projection flow. The terminal state is fail-closed direct
-execution, not backend dispatch or architectural writeback.
+This is a carrier/projection flow for the current scoped L7 runtime contour.
+Dirty carriers and missing descriptors fail closed; accepted carriers dispatch
+only the implemented command surface, with register writeback and commit still
+owned by runtime/retire rules.
 
 ```mermaid
 flowchart TD
@@ -18,7 +20,10 @@ flowchart TD
     H --> I["DecodedBundleTransportProjector"]
     I --> J["AcceleratorSubmitMicroOp"]
     J --> K["SetHardPinnedPlacement(SystemSingleton, 7)"]
-    K --> L["Direct Execute throws fail-closed"]
+    K --> L["Execute dispatches scoped ExternalAcceleratorRuntime command"]
+    L --> M{"Runtime accepts command?"}
+    M -- no --> R
+    M -- yes --> N["Retire-owned ABI writeback / guarded commit as applicable"]
 ```
 
 ## Code anchors
@@ -26,9 +31,9 @@ flowchart TD
 - `HybridCPU_Compiler/Core/IR/Model/IrAcceleratorModels.cs`
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
 - `HybridCPU_Compiler/Core/IR/Bundling/HybridCpuBundleLowerer.cs`
-- `HybridCPU_ISE/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
-- `HybridCPU_ISE/Core/Decoder/DecodedBundleTransportProjector.cs`
-- `HybridCPU_ISE/Core/Pipeline/MicroOps/SystemDeviceCommandMicroOp.cs`
+- `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcHardPinnedPlacementTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcInstructionTransportSidebandTests.cs`

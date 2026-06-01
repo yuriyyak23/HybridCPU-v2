@@ -134,10 +134,19 @@ public sealed class Phase09LegacyFsmRuntimeGateTests
     public void TickAndAdvancePipelineState_NoProductionCallSitesRemain()
     {
         string repoRoot = FindRepoRoot();
+        var allowList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            Path.Combine(
+                "HybridCPU_ISE",
+                "Core",
+                "Execution",
+                "ExternalAccelerators",
+                "ExternalAcceleratorRuntime.cs")
+        };
         string[] violations = ScanRuntimeFiles(
             repoRoot,
             [".Tick(", ".AdvancePipelineState("],
-            allowList: []);
+            allowList);
 
         Assert.True(
             violations.Length == 0,

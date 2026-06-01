@@ -1,10 +1,10 @@
+using HybridCPU_ISE.CloseToRTL.Memory.DMA;
 using System;
 using System.Buffers.Binary;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
-using YAKSys_Hybrid_CPU.Memory;
 
 namespace HybridCPU_ISE.Tests.MemoryAccelerators;
 
@@ -278,18 +278,26 @@ public sealed class DmaStreamComputeCommitTokenTests
     }
 
     [Fact]
-    public void DmaStreamComputeCommitToken_MicroOpExecution_RemainsFailClosed()
+    public void DmaStreamComputeCommitToken_MicroOpExecution_UsesTokenAndRetireCommit()
     {
+        InitializeMainMemory(0x10000);
+        WriteMemory(0x1000, Fill(0x34, 16));
+        WriteMemory(0x9000, Fill(0x12, 16));
         DmaStreamComputeDescriptor descriptor = ParseValid(BuildDescriptor(
             writeRanges: new[] { new DmaStreamComputeMemoryRange(0x9000, 16) }));
         var microOp = new DmaStreamComputeMicroOp(descriptor);
         var core = new Processor.CPU_Core(0);
 
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => microOp.Execute(ref core));
+        Assert.True(microOp.Execute(ref core));
 
-        Assert.Contains("execution is disabled", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.NotNull(microOp.LastExecutionToken);
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, microOp.LastExecutionToken!.State);
+        Assert.Equal(Fill(0x12, 16), ReadMemory(0x9000, 16));
+
+        microOp.Commit(ref core);
+
+        Assert.Equal(DmaStreamComputeTokenState.Committed, microOp.LastExecutionToken.State);
+        Assert.Equal(Fill(0x34, 16), ReadMemory(0x9000, 16));
     }
 
     [Fact]

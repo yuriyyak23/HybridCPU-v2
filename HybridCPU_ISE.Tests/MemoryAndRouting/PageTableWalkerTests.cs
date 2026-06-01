@@ -1,5 +1,5 @@
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 using Xunit;
-using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Memory;
 
 namespace HybridCPU_ISE.Tests

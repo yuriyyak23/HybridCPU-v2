@@ -25,8 +25,8 @@ Code anchors:
 - `HybridCPU_Compiler/Core/IR/Model/IrInstruction.cs`
 - `HybridCPU_Compiler/Core/IR/Model/IrSlotMetadata.cs`
 - `HybridCPU_Compiler/Core/IR/Bundling/HybridCpuBundleLowerer.cs`
-- `HybridCPU_ISE/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 
 ## Compile-time strategy boundary
 
@@ -35,24 +35,24 @@ Compiler capability strategy may select CPU/non-accelerator lowering or lane6
 emitted, runtime rejection remains an L7-SDC rejection; the compiler model forbids a
 post-submit alternate execution promise.
 
-Current compiler/backend conformance must also preserve the model/executable
+Current compiler/backend conformance must preserve the scoped executable
 boundary:
 
-- emitting an `ACCEL_SUBMIT` carrier with descriptor sideband is not production
-  device execution;
-- the current projected carrier has `WritesRegister = false` even if an intent
-  records a token destination register for model/future ABI correlation;
-- backend code must not assume architectural `rd` writeback for `ACCEL_*`;
-- executable `ACCEL_SUBMIT`, executable `ACCEL_FENCE`, async completion, global
-  fences, and external accelerator command dispatch require future
-  architecture approval and new conformance tests.
+- emitting an `ACCEL_SUBMIT` carrier with descriptor sideband admits only the
+  current guarded SDC1 runtime contour;
+- the current projected carrier advertises `WritesRegister` only when a
+  destination register is present;
+- backend code must treat architectural `rd` writeback as conditional on the
+  runtime ABI result plus carrier destination register;
+- broad async completion, global fences, universal external accelerator command
+  dispatch, and new result publication forms require future architecture
+  approval and new conformance tests;
 - IOMMU-backed L7 memory execution, coherent DMA/cache, successful partial
-  completion, and model/fake backend promotion are also future-gated and cannot
-  be inferred from sideband emission.
-- Production compiler/backend lowering remains last-mile work under Ex1
-  Phase11/Phase13: it requires executable L7 implementation, result publication,
-  backend/addressing, ordering/conflict, cache protocol, positive/negative
-  tests, compiler conformance, and Phase12 documentation migration.
+  completion, and fake/backend promotion beyond the current contour are also
+  future-gated and cannot be inferred from sideband emission;
+- production compiler/backend lowering remains last-mile work under Ex1
+  Phase11/Phase13 for any behavior beyond the tested Phase 08 / Phase 08A
+  commands.
 
 Code anchors:
 

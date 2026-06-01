@@ -620,12 +620,9 @@ public sealed class Phase03CanonicalOpcodeIdentityTests
     }
 
     [Fact]
-    public void VmxExecutionUnit_VmxOn_UsesCanonicalOpcodeIdentity()
+    public void VmxMicroOp_VmxOn_UsesCanonicalOpcodeIdentityAndFailsClosed()
     {
-        var csr = new CsrFile();
-        var vmcs = new VmcsManager();
-        var vmx = new VmxExecutionUnit(csr, vmcs);
-        var state = new HybridCPU_ISE.Tests.Phase09.Vmx09FakeCpuState();
+        var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
         var instruction = new InstructionIR
         {
             CanonicalOpcode = InstructionsEnum.VMXON,
@@ -636,11 +633,14 @@ public sealed class Phase03CanonicalOpcodeIdentityTests
             Rs2 = 0,
             Imm = 0,
         };
+        var microOp = new VmxMicroOp { OpCode = (uint)InstructionsEnum.VMXON, Instruction = instruction };
 
-        ExecutionResult result = vmx.Execute(instruction, state, PrivilegeLevel.Machine);
+        Assert.True(microOp.Execute(ref core));
+        VmxRetireEffect effect = microOp.CreateRetireEffect();
 
-        Assert.False(result.VmxFaulted);
-        Assert.Equal(1UL, csr.Read(CsrAddresses.VmxEnable, PrivilegeLevel.Machine));
+        Assert.Equal(VmxOperationKind.VmxOn, effect.Operation);
+        Assert.True(effect.IsFaulted);
+        Assert.Equal(VmExitReason.SecurityPolicyViolation, effect.FailureReason);
     }
 
     [Fact]
@@ -1770,5 +1770,4 @@ public sealed class Phase03CanonicalOpcodeIdentityTests
         Assert.Equal(expectedStructuralKind == 2, atomicMask.IsNonZero);
     }
 }
-
 

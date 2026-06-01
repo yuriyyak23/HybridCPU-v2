@@ -52,7 +52,7 @@ namespace HybridCPU_ISE.Tests.tests
         {
             string loopBuffer = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\Components\\LoopBuffer.cs");
             string replayToken = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\MicroOps\\ReplayToken.cs");
-            string traceSink = ReadRepoFile("HybridCPU_ISE\\Core\\Diagnostics\\TraceSink.cs");
+            string traceSink = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Core\\Diagnostics\\TraceSink.cs");
 
             foreach (string replaySurface in new[] { loopBuffer, replayToken, traceSink })
             {
@@ -102,9 +102,9 @@ namespace HybridCPU_ISE.Tests.tests
         [Fact]
         public void T9_08q_PerformanceTypedSlotTelemetry_DropsLegacyFspExhaustionVocabulary()
         {
-            string performanceReport = ReadRepoFile("HybridCPU_ISE\\Processor\\Performance\\PerformanceReport.TypedSlot.cs");
+            string performanceReport = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Processor\\Performance\\PerformanceReport.TypedSlot.cs");
             string scheduler = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\Scheduling\\MicroOpScheduler.cs");
-            string rejectTypes = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\Safety\\SafetyVerifier.Types.cs");
+            string rejectTypes = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Core\\Pipeline\\Safety\\SafetyVerifier.Types.cs");
 
             Assert.Contains("typed-slot densification exhaustion", performanceReport, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("FSP exhaustion", performanceReport, StringComparison.OrdinalIgnoreCase);
@@ -138,12 +138,12 @@ namespace HybridCPU_ISE.Tests.tests
         public void T9_08s_Phase11CustomAcceleratorLegacySurfaces_AreQuarantinedAndFailClosed()
         {
             string matMul = ReadRepoFile("HybridCPU_ISE\\Core\\Accelerators\\MatMulAccelerator.cs");
-            string registryTypes = ReadRepoFile("HybridCPU_ISE\\Core\\Diagnostics\\InstructionRegistry.Types.cs");
-            string registryAccelerators = ReadRepoFile("HybridCPU_ISE\\Core\\Diagnostics\\InstructionRegistry.Accelerators.cs");
-            string failClosed = ReadRepoFile("HybridCPU_ISE\\Core\\Execution\\BurstIO\\AcceleratorRuntimeFailClosed.cs");
+            string registryTypes = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Core\\Diagnostics\\InstructionRegistry.Types.cs");
+            string registryAccelerators = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Core\\Diagnostics\\InstructionRegistry.Accelerators.cs");
+            string failClosed = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Core\\Execution\\BurstIO\\AcceleratorRuntimeFailClosed.cs");
             string microOps = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\MicroOps\\MicroOp.Misc.cs");
-            string bundleCertificate = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\Certificates\\BundleCertificate.cs");
-            string safetyVerifier = ReadRepoFile("HybridCPU_ISE\\Core\\Pipeline\\Safety\\SafetyVerifier.Verification.cs");
+            string bundleCertificate = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Core\\Pipeline\\Certificates\\BundleCertificate.cs");
+            string safetyVerifier = ReadRepoFile("HybridCPU_ISE\\NonRTL\\Core\\Pipeline\\Safety\\SafetyVerifier.Verification.cs");
 
             foreach (string text in new[] { matMul, registryTypes, registryAccelerators, failClosed, microOps })
             {

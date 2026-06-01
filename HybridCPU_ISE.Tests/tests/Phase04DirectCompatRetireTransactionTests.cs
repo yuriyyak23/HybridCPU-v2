@@ -635,20 +635,16 @@ namespace HybridCPU_ISE.Tests.Phase04
         }
 
         [Fact]
-        public void VmreadTransaction_CarriesTypedVmxEffect()
+        public void VmreadTransaction_CarriesTypedFailClosedVmxEffectWithoutFieldPublication()
         {
             var csr = new CsrFile();
             csr.Write(CsrAddresses.VmxEnable, 1UL, PrivilegeLevel.Machine);
-
-            var vmcs = new VmcsManager();
-            vmcs.LoadPointer(0x1000);
 
             var state = new FakeCpuState();
             state.SetReg(1, (ulong)VmcsField.HostPc);
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: csr,
-                vmxUnit: new VmxExecutionUnit(csr, vmcs));
+                csrFile: csr);
             InstructionIR ir = IrBuilder.Make(
                 InstructionsEnum.VMREAD,
                 rd: 5,
@@ -660,24 +656,22 @@ namespace HybridCPU_ISE.Tests.Phase04
             Assert.Equal(RetireWindowCaptureEffectKind.Vmx, transaction.TypedEffectKind);
             Assert.Equal(0, transaction.RetireRecordCount);
             Assert.Equal(VmxOperationKind.VmRead, transaction.VmxEffect.Operation);
-            Assert.True(transaction.VmxEffect.HasRegisterDestination);
-            Assert.Equal((ushort)5, transaction.VmxEffect.RegisterDestination);
-            Assert.Equal(VmcsField.HostPc, transaction.VmxEffect.VmcsField);
+            Assert.True(transaction.VmxEffect.IsFaulted);
+            Assert.Equal(VmExitReason.SecurityPolicyViolation, transaction.VmxEffect.FailureReason);
+            Assert.False(transaction.VmxEffect.HasRegisterDestination);
         }
 
         [Fact]
-        public void VmxOffTransaction_CarriesTypedExitEffect()
+        public void VmxOffTransaction_CarriesTypedFailClosedEffectWithoutGuestExit()
         {
             var csr = new CsrFile();
             csr.Write(CsrAddresses.VmxEnable, 1UL, PrivilegeLevel.Machine);
 
-            var vmcs = new VmcsManager();
             var state = new FakeCpuState();
             state.SetCurrentPipelineState(PipelineState.GuestExecution);
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: csr,
-                vmxUnit: new VmxExecutionUnit(csr, vmcs));
+                csrFile: csr);
             InstructionIR ir = IrBuilder.Make(InstructionsEnum.VMXOFF);
 
             RetireWindowCaptureSnapshot transaction =
@@ -685,7 +679,9 @@ namespace HybridCPU_ISE.Tests.Phase04
 
             Assert.Equal(RetireWindowCaptureEffectKind.Vmx, transaction.TypedEffectKind);
             Assert.Equal(VmxOperationKind.VmxOff, transaction.VmxEffect.Operation);
-            Assert.True(transaction.VmxEffect.ExitGuestContextOnRetire);
+            Assert.True(transaction.VmxEffect.IsFaulted);
+            Assert.Equal(VmExitReason.SecurityPolicyViolation, transaction.VmxEffect.FailureReason);
+            Assert.False(transaction.VmxEffect.ExitGuestContextOnRetire);
         }
 
         [Theory]
@@ -709,4 +705,3 @@ namespace HybridCPU_ISE.Tests.Phase04
         }
     }
 }
-

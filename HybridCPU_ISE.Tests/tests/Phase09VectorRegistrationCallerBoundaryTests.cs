@@ -14,11 +14,13 @@ public sealed class Phase09VectorRegistrationCallerBoundaryTests
         string productionRoot = Path.Combine(repoRoot, "HybridCPU_ISE");
         string allowedCallerPath = Path.Combine(
             productionRoot,
+            "NonRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Initialize.Vector.cs");
         string helperDefinitionPath = Path.Combine(
             productionRoot,
+            "NonRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Vector.cs");

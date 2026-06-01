@@ -1,3 +1,4 @@
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 using System;
 using Xunit;
 using YAKSys_Hybrid_CPU;

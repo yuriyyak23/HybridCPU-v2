@@ -173,16 +173,16 @@ public sealed class Phase09Lane6DscContractClosureTests
 
         try
         {
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x1000, new byte[16]));
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x2000, new byte[16]));
             Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x9000, original));
             var core = new Processor.CPU_Core(0);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-                () => microOp.Execute(ref core));
+            Assert.True(microOp.Execute(ref core));
 
-            Assert.Contains("execution is disabled", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("no StreamEngine or DMAController fallback", ex.Message, StringComparison.Ordinal);
-            Assert.Contains("DmaStreamComputeRuntime is an explicit runtime helper", ex.Message, StringComparison.Ordinal);
+            Assert.NotNull(microOp.LastExecutionResult);
+            Assert.True(microOp.LastExecutionResult!.IsStoreTracked);
+            Assert.Equal(DmaStreamComputeTokenState.CommitPending, microOp.LastExecutionToken!.State);
             Assert.False(microOp.TryGetPrimaryWriteBackResult(out ulong value));
             Assert.Equal(0UL, value);
 
@@ -208,6 +208,7 @@ public sealed class Phase09Lane6DscContractClosureTests
         Assert.DoesNotContain("VectorALU.", projectionAndCarrierSource, StringComparison.Ordinal);
         Assert.DoesNotContain("new ScalarALUMicroOp", projectionAndCarrierSource, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamComputeRuntime.ExecuteToCommitPending", projectionAndCarrierSource, StringComparison.Ordinal);
+        Assert.Contains("DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending", projectionAndCarrierSource, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamAcceleratorBackend", projectionAndCarrierSource, StringComparison.Ordinal);
         Assert.DoesNotContain("Processor.DMAController", projectionAndCarrierSource, StringComparison.Ordinal);
         Assert.DoesNotContain("DMAController.", projectionAndCarrierSource, StringComparison.Ordinal);
@@ -230,7 +231,7 @@ public sealed class Phase09Lane6DscContractClosureTests
         DmaStreamComputeDescriptor descriptor = validation.RequireDescriptorForAdmission();
         DmaStreamComputeTelemetrySnapshot parsedSnapshot = telemetry.Snapshot();
         Assert.Equal(1, parsedSnapshot.DescriptorAccepted);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
         var microOp = new DmaStreamComputeMicroOp(descriptor);
         Assert.True(microOp.ReplayEvidence.IsComplete);
@@ -268,13 +269,13 @@ public sealed class Phase09Lane6DscContractClosureTests
 
         try
         {
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x1000, new byte[16]));
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x2000, new byte[16]));
             Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x9000, original));
             var core = new Processor.CPU_Core(0);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-                () => microOp.Execute(ref core));
+            Assert.True(microOp.Execute(ref core));
 
-            Assert.Contains("descriptor and footprint evidence only", ex.Message, StringComparison.OrdinalIgnoreCase);
             Assert.Equal(original, ReadMemory(0x9000, original.Length));
             DmaStreamComputeTelemetrySnapshot finalSnapshot = telemetry.Snapshot();
             Assert.Equal(1, finalSnapshot.DescriptorAccepted);

@@ -2,6 +2,7 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Memory;
 using System;
+using HybridCPU_ISE.CloseToRTL.Memory.DMA;
 
 namespace HybridCPU_ISE.Tests
 {

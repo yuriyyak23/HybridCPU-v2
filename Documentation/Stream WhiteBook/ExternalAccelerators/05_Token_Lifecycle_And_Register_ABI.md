@@ -12,16 +12,13 @@ methods reject self-promotion through those states.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorToken.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStatusWord.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorToken.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStatusWord.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTokenLifecycleTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcCommitTests.cs`
 
 ## Submit, poll, wait, cancel, fence
-
-These are explicit model API behaviors, not current pipeline instruction
-semantics.
 
 - Submit creates a nonzero opaque handle only after descriptor, capability, guard, feature
   switch, and optional conflict checks pass.
@@ -34,35 +31,39 @@ semantics.
   completed tokens only through `AcceleratorCommitCoordinator`.
 
 Current `ACCEL_QUERY_CAPS`, `ACCEL_POLL`, `ACCEL_WAIT`, `ACCEL_CANCEL`, and
-`ACCEL_FENCE` carriers do not write architectural registers or publish memory.
-Future read-only query/poll or full submit/wait/fence/cancel execution requires
-the Ex1 Phase10 L7 gate, ordering/conflict/cache/backend/fault semantics,
-compiler/backend conformance, and Phase12 documentation migration.
+`ACCEL_FENCE` carriers execute through `ExternalAcceleratorRuntime` inside the
+current scoped contour. They can produce register ABI results when the command
+semantics and carrier destination register permit it. Staged memory publishes
+only through the guarded commit coordinator. Expansion beyond these command
+semantics requires the Ex1 Phase10 L7 gate, ordering/conflict/cache/backend/fault
+semantics, compiler/backend conformance, and Phase12 documentation migration.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStore.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorObservationControlPolicies.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Fences/AcceleratorFenceModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStore.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorObservationControlPolicies.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Fences/AcceleratorFenceModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/ExternalAcceleratorRuntime.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcPollWaitCancelFenceTests.cs`
+- `HybridCPU_ISE.Tests/tests/L7SdcPhase08ExecutableTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcFaultPublicationTests.cs`
 
 ## Model Register ABI
 
-`AcceleratorRegisterAbi` is a model result helper. It is not wired into
-`SystemDeviceCommandMicroOp.Execute(...)`.
+`AcceleratorRegisterAbi` is the runtime result helper used by the current scoped
+`SystemDeviceCommandMicroOp.Execute(...)` path.
 
 In the model API, accepted submit can produce a nonzero opaque handle result,
 non-trapping rejection can produce zero, precise fault produces no write, status
 helpers can produce a packed `AcceleratorTokenStatusWord`, and capability query
 can produce a bounded metadata summary after guard-backed capability acceptance.
 
-In current pipeline execution, `ACCEL_SUBMIT`, `ACCEL_POLL`, `ACCEL_WAIT`,
-`ACCEL_CANCEL`, `ACCEL_FENCE`, and `ACCEL_QUERY_CAPS` do not write
-architectural `rd`: every carrier has `WritesRegister = false`, empty
-`WriteRegisters`, and direct `Execute(...)` throws fail-closed. Therefore
-`AcceleratorRegisterAbiResult.WritesRegister` is a model result property only
-and must not be used as a compiler/backend promise of pipeline writeback.
+In current pipeline execution, carriers advertise `WritesRegister` only when a
+destination register is present. Retire writes architectural `rd` only when
+`AcceleratorRegisterAbiResult.WritesRegister` is true and the carrier has that
+destination. A non-writing runtime result, missing destination register, faulted
+command, descriptorless submit, or compatibility-denied path must not publish an
+architectural register write.
 
 L7-SDC model faults are guarded observations/results. They are not current
 retire exceptions; `AcceleratorCommitResult.RequiresRetireExceptionPublication`
@@ -70,9 +71,10 @@ is `false`.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorRegisterAbi.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStatusWord.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorRegisterAbi.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStatusWord.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcRegisterAbiTests.cs`
+- `HybridCPU_ISE.Tests/tests/L7SdcPhase08ExecutableTests.cs`
 
 WhiteBook / Ex1 anchors:
 

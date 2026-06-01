@@ -7,6 +7,7 @@ using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Legality;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
@@ -148,6 +149,33 @@ public sealed class DmaStreamComputeIsaEncodingTests
                 bundleAddress: 0x4000));
 
         Assert.Contains("lane6", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void NativeDecodedBundleLegalityPublishesLane6DmaStreamSlotNotLsu()
+    {
+        DmaStreamComputeDescriptor descriptor =
+            DmaStreamComputeTestDescriptorFactory.CreateDescriptor();
+        var rawSlots = new VLIW_Instruction[BundleMetadata.BundleSlotCount];
+        rawSlots[6] = CreateNativeInstruction();
+
+        var decoder = new VliwDecoderV4();
+        DecodedInstructionBundle decoded = decoder.DecodeInstructionBundle(
+            rawSlots,
+            CreateBundleAnnotations(descriptor),
+            bundleAddress: 0x4600);
+
+        BundleLegalityDescriptor legality = new BundleLegalityAnalyzer().Analyze(decoded);
+
+        Assert.Equal(0b_0100_0000, legality.TypedSlotFacts.DmaStreamClassMask);
+        Assert.Equal(0, legality.TypedSlotFacts.LsuClassMask);
+        Assert.Equal(0b_0100_0000, legality.TypedSlotFacts.PinnedSlotMask);
+        Assert.Equal(0, legality.TypedSlotFacts.FlexibleSlotMask);
+        Assert.Equal(SlotClass.DmaStreamClass, legality.GetSlotLegality(6).SlotClass);
+        Assert.True(legality.HasMemoryOps);
+        Assert.True(legality.DependencySummary.HasValue);
+        Assert.Equal(0UL, legality.DependencySummary.Value.ReadRegisterMask);
+        Assert.Equal(0UL, legality.DependencySummary.Value.WriteRegisterMask);
     }
 
     private static VLIW_Instruction CreateNativeInstruction() =>

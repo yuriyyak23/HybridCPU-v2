@@ -746,6 +746,7 @@ namespace HybridCPU_ISE.Tests
             Assert.Equal(assistInvalidationsBefore, scheduler.AssistInvalidations);
         }
 
+#if false // Retired successful VM-exit publication through VMCS state; manager removed in task 190.
         [Fact]
         public void ApplyRetiredVmxEffect_OnInactiveGuestVt_ThenReplayAndSchedulerPublishSerializingEventWithoutRedirectingActiveFrontend()
         {
@@ -821,6 +822,8 @@ namespace HybridCPU_ISE.Tests
             Assert.Equal(activeLivePcBefore, core.ReadActiveLivePc());
             Assert.Equal(AssistInvalidationReason.VmTransition, scheduler.LastAssistInvalidationReason);
         }
+
+#endif
 
         [Fact]
         public void ApplyFspPacking_WhenReplayPhaseAlreadyInactiveWithSerializingBoundary_ThenSchedulerDoesNotReplayInvalidateAgain()

@@ -1,4 +1,6 @@
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.CloseToRTL.Memory.Banks;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
@@ -53,9 +55,9 @@ public sealed class Phase09SingleLaneMemoryTransferLatchTests
         const ulong address = 0x280UL;
         const ulong pc = 0x8B00UL;
 
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap();
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+        MultiBankMemoryArea.SetAccessDomainTag(0);
 
         var core = new Processor.CPU_Core(0);
         core.InitializePipeline();

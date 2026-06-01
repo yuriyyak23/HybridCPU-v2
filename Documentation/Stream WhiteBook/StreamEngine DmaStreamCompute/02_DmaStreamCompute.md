@@ -3,8 +3,9 @@
 ## Scope
 
 `DmaStreamCompute` is the lane6 descriptor/decode carrier path plus explicit
-runtime/helper token model for descriptor-backed memory compute. Direct
-`DmaStreamComputeMicroOp.Execute(...)` is disabled and must fail closed.
+runtime/token model for descriptor-backed memory compute. Direct
+`DmaStreamComputeMicroOp.Execute(...)` is open only for the current DSC1 Phase 06
+contour and fails closed outside that contour.
 
 This summary covers:
 
@@ -14,8 +15,8 @@ This summary covers:
 - descriptor ABI validation
 - owner/domain guard authority
 - decode and projector behavior
-- micro-op placement and fail-closed execution boundary
-- explicit runtime helper, token, commit, replay, and telemetry contours
+- micro-op placement and gated Phase 06 execution boundary
+- explicit runtime path, direct helper, token, commit, replay, and telemetry contours
 - rejected fallback patterns
 
 ## Primary Code Surfaces
@@ -39,22 +40,22 @@ Compiler and IR:
 
 Transport, decode, and projection:
 
-- `HybridCPU_ISE/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_ISE/Core/Pipeline/MicroOps/InstructionIR.cs`
-- `HybridCPU_ISE/Core/Decoder/DecodedBundleTransportProjector.cs`
+- `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
 
 Descriptor/runtime:
 
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptor.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeValidationResult.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeTelemetry.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeReplayEvidence.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeToken.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeRuntime.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamAcceleratorBackend.cs`
-- `HybridCPU_ISE/Core/Pipeline/MicroOps/DmaStreamComputeMicroOp.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptor.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeValidationResult.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeTelemetry.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeReplayEvidence.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeToken.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeRuntime.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamAcceleratorBackend.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs`
 
 Primary proof surfaces:
 
@@ -68,14 +69,15 @@ Primary proof surfaces:
 ## Current Implemented Boundary
 
 Current code implements descriptor preservation, typed-slot placement, owner
-guard validation, parser rejection surfaces, runtime helper APIs, token staging,
-and token commit helpers. It does not implement executable lane6 DMA in the
-canonical micro-op path.
+guard validation, parser rejection surfaces, materialized Phase 06 micro-op
+execution, runtime helper APIs, token staging, and token commit helpers.
 
-`DmaStreamComputeDescriptorParser.ExecutionEnabled` is `false`.
-`DmaStreamComputeRuntime.ExecuteToCommitPending(...)` is a runtime-side helper,
-not `MicroOp.Execute`. Compiler/backend code must not lower production compute
-assuming executable lane6 DSC semantics.
+`DmaStreamComputeDescriptorParser.ExecutionEnabled` is `true` for DSC1.
+`DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)` is the
+canonical materialized micro-op entry so issue/admission owns token allocation.
+`DmaStreamComputeRuntime.ExecuteToCommitPending(...)` remains a direct helper.
+Compiler/backend code must not lower broad production compute beyond the current
+gated DSC1 contour.
 
 Ex1 Phase12/Phase13 add two global guards:
 
@@ -325,23 +327,33 @@ projector creates a canonical trap micro-op instead of guessing or falling back.
   domain bucket
 - self-publishes canonical decode metadata
 
-Current direct `Execute(...)` is disabled and throws:
+Current direct `Execute(...)` is open only for the Phase 06 DSC1 production
+contour. Admission and issue allocate the lane6 token, then execution enters
+the materialized runtime path:
 
 ```text
-DmaStreamComputeMicroOp execution is disabled and must fail closed.
-The lane6 typed-slot surface preserves descriptor and footprint evidence only.
+DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)
 ```
 
-`DmaStreamComputeDescriptorParser.ExecutionEnabled` is also `false`.
+Descriptors outside the current Phase 06 DSC1 contour are rejected without
+StreamEngine or DMAController fallback:
 
-This is intentional. It preserves the native ISA/compiler/decode path while
-avoiding an unguarded active execution claim.
+```text
+DmaStreamComputeMicroOp production execution rejects descriptors outside the
+Phase 06 DSC1 contour and fails closed without StreamEngine or DMAController
+fallback.
+```
+
+`DmaStreamComputeDescriptorParser.ExecutionEnabled` is `true` for the current
+DSC1 parser/runtime contour. DSC2 and extension-rich descriptor forms remain
+parser-only/model-only.
 
 ## Runtime Helper And Token Model
 
-`DmaStreamComputeRuntime` models descriptor execution to commit-pending through
-a backend and token helper. This is not the same as enabling direct canonical
-micro-op execution.
+`DmaStreamComputeRuntime` executes current DSC1 descriptors to commit-pending
+through a backend and token helper. The canonical micro-op entry is
+`ExecuteMaterializedMicroOpToCommitPending(...)`; `ExecuteToCommitPending(...)`
+remains a direct helper for tests and runtime-side callers.
 
 Runtime helper flow:
 
@@ -522,11 +534,15 @@ Invalid patterns:
 
 `DmaStreamCompute` is a native lane6 typed-sideband descriptor path. Its current
 canonical decode surface can carry and verify descriptor, footprint, owner/domain,
-lane placement, replay, token, and telemetry evidence. Direct micro-op execution
-is intentionally disabled and fail-closed. Runtime helper/token tests model the
-commit contour, but they do not weaken the canonical lane6 boundary.
+lane placement, replay, token, and telemetry evidence. Current DSC1 Phase 06
+micro-op execution is enabled through the materialized runtime entry and retire
+commit path. DSC2, queue/async operation, broad compiler/backend lowering,
+coherent DMA/cache integration, IOMMU-backed execution, successful partial
+completion, and StreamEngine/DMAController fallback remain outside the current
+implemented contour.
 
 Phase13 downstream evidence non-inversion applies here: parser-only descriptors,
 model tokens, helper runtime paths, backend/addressing infrastructure,
 conflict/cache observers, and compiler sideband transport are useful evidence
-only when labeled as such. They do not satisfy upstream execution gates.
+only when labeled as such. They do not satisfy upstream gates for surfaces still
+outside the current Phase 06 DSC1 contour.

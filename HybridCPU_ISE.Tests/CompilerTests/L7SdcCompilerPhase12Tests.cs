@@ -96,8 +96,8 @@ public sealed class L7SdcCompilerEmissionTests
         Assert.Equal(SlotClass.SystemSingleton, submit.Placement.RequiredSlotClass);
         Assert.Equal(SlotPinningKind.HardPinned, submit.Placement.PinningKind);
         Assert.Equal(7, submit.Placement.PinnedLaneId);
-        Assert.False(submit.WritesRegister);
-        Assert.Empty(submit.WriteRegisters);
+        Assert.True(submit.WritesRegister);
+        Assert.Equal(new[] { 9 }, submit.WriteRegisters);
 
         _ = new Processor(ProcessorMode.Emulation);
         _ = compiledProgram.EmitVliwBundleImage(baseAddress: 0);
@@ -119,6 +119,38 @@ public sealed class L7SdcCompilerEmissionTests
         InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
             () => context.CompileInstruction(
                 opCode: (uint)InstructionsEnum.ACCEL_SUBMIT,
+                dataType: 0,
+                predicate: 0,
+                immediate: 0,
+                destSrc1: VLIW_Instruction.PackArchRegs(
+                    VLIW_Instruction.NoArchReg,
+                    VLIW_Instruction.NoArchReg,
+                    VLIW_Instruction.NoArchReg),
+                src2: 0,
+                streamLength: 0,
+                stride: 0,
+                stealabilityPolicy: StealabilityPolicy.NotStealable));
+
+        Assert.Contains("explicit accelerator intent", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(0, context.InstructionCount);
+    }
+
+    [Theory]
+    [InlineData(InstructionsEnum.ACCEL_QUERY_CAPS)]
+    [InlineData(InstructionsEnum.ACCEL_SUBMIT)]
+    [InlineData(InstructionsEnum.ACCEL_POLL)]
+    [InlineData(InstructionsEnum.ACCEL_WAIT)]
+    [InlineData(InstructionsEnum.ACCEL_CANCEL)]
+    [InlineData(InstructionsEnum.ACCEL_FENCE)]
+    [InlineData(InstructionsEnum.ACCEL_STATUS)]
+    public void DirectSystemDeviceCommandCompilerEmission_RejectsBeforeCarrierEmission(
+        InstructionsEnum opcode)
+    {
+        var context = new HybridCpuThreadCompilerContext(0);
+
+        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+            () => context.CompileInstruction(
+                opCode: (uint)opcode,
                 dataType: 0,
                 predicate: 0,
                 immediate: 0,
@@ -413,12 +445,17 @@ public sealed class L7SdcCompilerNoRuntimeFallbackTests
                 Processor.MainMemory = new Processor.MultiBankMemoryArea(1, 0x10000);
             }
 
-            var core = new Processor.CPU_Core(0);
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-                () => submit.Execute(ref core));
+            Processor.MainMemory.TryWritePhysicalRange(0x1000, Enumerable.Repeat((byte)0x29, 0x40).ToArray());
+            Processor.MainMemory.TryWritePhysicalRange(0x9000, Enumerable.Repeat((byte)0x81, 0x40).ToArray());
 
-            Assert.Contains("direct execution is unsupported", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("fallback routing", ex.Message, StringComparison.OrdinalIgnoreCase);
+            var core = new Processor.CPU_Core(0);
+            Assert.True(submit.Execute(ref core));
+            Assert.NotNull(submit.LastSubmitAdmission);
+            Assert.True(submit.LastSubmitAdmission!.IsAccepted, submit.LastSubmitAdmission.Message);
+            Assert.False(submit.UsedLegacyCustomAcceleratorFallback);
+            Assert.False(submit.UsedArithmeticExecutionPlane);
+            Assert.True(submit.TryGetPrimaryWriteBackResult(out ulong tokenHandle));
+            Assert.NotEqual(0UL, tokenHandle);
         }
         finally
         {

@@ -125,17 +125,21 @@ public sealed class DmaStreamComputeTypedSlotTests
     }
 
     [Fact]
-    public void DmaStreamComputeMicroOp_ExecuteThrowsFailClosedWhileExecutionDisabled()
+    public void DmaStreamComputeMicroOp_ExecuteRejectsDescriptorsOutsidePhase06Contour()
     {
-        DmaStreamComputeMicroOp microOp = CreateValidMicroOp();
+        DmaStreamComputeDescriptor descriptor = ParseValidDescriptor() with
+        {
+            Shape = DmaStreamComputeShapeKind.FixedReduce
+        };
+        var microOp = new DmaStreamComputeMicroOp(descriptor);
         var core = new Processor.CPU_Core(0);
 
         InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
             () => microOp.Execute(ref core));
 
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
-        Assert.Contains("execution is disabled", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.Contains("Phase 06 DSC1 contour", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("fails closed", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -201,7 +205,7 @@ public sealed class DmaStreamComputeTypedSlotTests
     public void Phase10_AddsNativeIsaCompilerEmissionWithoutCustomAcceleratorRegistryPath()
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string registryText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_ISE", "Core", "Diagnostics"), "InstructionRegistry*.cs");
+        string registryText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Core", "Diagnostics"), "InstructionRegistry*.cs");
         string compilerText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_Compiler"), "*.cs");
 
         Assert.DoesNotContain(nameof(DmaStreamComputeMicroOp), registryText, StringComparison.Ordinal);

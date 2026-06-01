@@ -314,7 +314,10 @@ namespace HybridCPU.Compiler.Core.IR
                        Processor.CPU_Core.InstructionsEnum.SRLIW or
                        Processor.CPU_Core.InstructionsEnum.SRAIW or
                        Processor.CPU_Core.InstructionsEnum.SEXT_W or
-                       Processor.CPU_Core.InstructionsEnum.ZEXT_W;
+                       Processor.CPU_Core.InstructionsEnum.ZEXT_W or
+                       Processor.CPU_Core.InstructionsEnum.CLZ or
+                       Processor.CPU_Core.InstructionsEnum.CTZ or
+                       Processor.CPU_Core.InstructionsEnum.CPOP;
         }
     }
 }

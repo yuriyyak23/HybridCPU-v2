@@ -47,8 +47,6 @@ public sealed class Phase03InstructionRegistryPublishedDescriptorTests
 
     [Theory]
     [InlineData(InstructionsEnum.JumpIfEqual, 0, false)]
-    [InlineData(InstructionsEnum.VGATHER, 3, false)]
-    [InlineData(InstructionsEnum.VSCATTER, 3, false)]
     public void PublishedDescriptorOnlyContours_PreserveDescriptorSurfaceWithoutRevivingCarrierRegistration(
         InstructionsEnum opcode,
         int expectedMemFootprintClass,

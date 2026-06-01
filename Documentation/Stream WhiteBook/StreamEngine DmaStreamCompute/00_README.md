@@ -6,7 +6,8 @@ contours requested after the Phase 12 validation baseline:
 - `01_StreamEngine_SFR_SRF_VectorALU.md` - StreamEngine, the stream register file
   contour, and VectorALU execution.
 - `02_DmaStreamCompute.md` - lane6 descriptor-backed `DmaStreamCompute`
-  carrier, explicit runtime helper, and token/commit contour.
+  carrier, Phase 06 materialized runtime contour, explicit direct helper, and
+  token/commit contour.
 - `03_VDSA_Assist_Warming_Prefetch_SRF_DataIngress.md` - VDSA assist, warming,
   prefetch, SRF, and data-ingress behavior.
 
@@ -42,7 +43,9 @@ Global invariants preserved by this summary:
 - `W=8`: lanes 0-3 ALU, lanes 4-5 LSU, lane6 DMA/stream, lane7 branch/system.
 - The active frontend is native VLIW only.
 - `DmaStreamCompute` is the lane6 descriptor carrier path; direct micro-op
-  execution remains fail-closed.
+  execution is open only for the current DSC1 Phase 06 contour and remains
+  fail-closed for unsupported descriptor shapes, VMX guest lane binding, DSC2,
+  queue lifecycle, async overlap, and coherent DMA/cache.
 - Descriptor payload travels as typed sideband metadata. Raw scalar fields,
   reserved bits, and raw VT hints are not ABI or authority.
 - Owner/domain guards precede descriptor acceptance, replay/certificate reuse,
@@ -57,9 +60,9 @@ Global invariants preserved by this summary:
   Unknown modes reject.
 - StreamEngine, SRF, assist warming, DMA helper paths, IOMMU warm helpers,
   prefetch/cache surfaces, and telemetry are downstream evidence or independent
-  helper/runtime surfaces. They must not satisfy upstream executable DSC, L7,
-  DSC2, async overlap, coherent DMA/cache, IOMMU-backed execution, or production
-  compiler/backend lowering gates.
+  helper/runtime surfaces. They must not satisfy upstream DSC2, queue lifecycle,
+  broad L7, async overlap, coherent DMA/cache, IOMMU-backed execution, or
+  production compiler/backend lowering gates.
 - Phase12 controls documentation migration. Phase13 is dependency planning only
   and does not approve implementation.
 

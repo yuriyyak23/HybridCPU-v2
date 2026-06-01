@@ -27,11 +27,11 @@ flowchart TD
 
 ## Code anchors
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Capabilities/AcceleratorCapabilityRegistry.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStore.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Capabilities/AcceleratorCapabilityRegistry.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStore.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcDescriptorParserTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcCapabilityIsNotAuthorityTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcOwnerDomainGuardTests.cs`

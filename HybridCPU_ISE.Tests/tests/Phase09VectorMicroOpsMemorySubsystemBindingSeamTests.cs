@@ -3,6 +3,7 @@ using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Memory;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 
 namespace HybridCPU_ISE.Tests.Phase09;
 

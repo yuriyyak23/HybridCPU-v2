@@ -1,5 +1,6 @@
 ﻿using System;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;

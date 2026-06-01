@@ -26,9 +26,9 @@ rejects mismatched sideband placement.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Pipeline/MicroOps/SystemDeviceCommandMicroOp.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
-- `HybridCPU_ISE/Core/Decoder/DecodedBundleTransportProjector.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcHardPinnedPlacementTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNoBranchControlAuthorityTests.cs`
 
@@ -43,18 +43,22 @@ The native command surface is:
 - `ACCEL_CANCEL`: system command, full serial.
 - `ACCEL_FENCE`: system command, full serial.
 
-Current carriers are placement/decode carriers only:
+Current carriers are hard-pinned lane7 command carriers with a scoped executable
+runtime contour:
 
-- `SystemDeviceCommandMicroOp.WritesRegister = false`;
-- `WriteRegisters` is empty for every `ACCEL_*` subclass;
-- direct `Execute(...)` throws fail-closed;
-- model APIs are explicit runtime-side helpers and do not imply backend
-  execution, staged write publication, architectural commit, `rd` writeback, or
-  fallback routing.
-- Ex1 Phase10 keeps all executable `ACCEL_*` behavior future-gated. Query,
-  poll, wait, cancel, fence, submit, and backend-dispatch semantics are model
-  surfaces only until a later ADR, implementation, tests, and Phase12 migration
-  close the relevant gate.
+- `SystemDeviceCommandMicroOp.WritesRegister = DestinationRegister != 0`;
+- `WriteRegisters` contains the destination register when present;
+- direct `Execute(...)` dispatches the current runtime command surface for
+  query-caps, submit, poll, wait, cancel, fence, and status;
+- register writeback is emitted at retire only when the runtime ABI result
+  writes and the carrier has a destination register;
+- staged writes publish only through the guarded commit coordinator.
+
+Ex1 Phase10 keeps expansion beyond the current contour future-gated. Universal
+external accelerator protocol semantics, arbitrary backend dispatch, VMX guest
+binding, coherent DMA/cache, broad compiler/backend lowering, and new CSR/rd
+publication forms require a later ADR, implementation, tests, and Phase12
+migration.
 
 Raw carrier validation requires lane7 placement and clean reserved/retired policy fields,
 zero raw VT hint, valid packed register tuple, and zero raw `Src2` pointer fields. The
@@ -64,8 +68,8 @@ Code anchors:
 
 - `HybridCPU_ISE/Arch/OpcodeInfo.Registry.Data.System.cs`
 - `HybridCPU_ISE/Arch/InstructionClassifier.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
-- `HybridCPU_ISE/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
+- `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNativeCarrierValidationTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcInstructionTransportSidebandTests.cs`
 
@@ -76,13 +80,14 @@ comes from typed slot class, hard-pinned placement, and decoder/projector checks
 membership alone is insufficient for L7-SDC because the command carrier must be exactly
 lane7 `SystemSingleton`.
 
-Typed placement and clean carrier evidence do not prove executable L7 ISA.
-Compiler sideband transport and carrier projection are downstream evidence under
-Ex1 Phase13 and must not satisfy upstream execution gates.
+Typed placement and clean carrier evidence prove only the current scoped L7
+carrier contract. Compiler sideband transport and carrier projection are
+downstream evidence under Ex1 Phase13 and must not satisfy gates for expansion
+beyond the tested runtime contour.
 
 Code anchors:
 
 - `HybridCPU_Compiler/Core/IR/Bundling/HybridCpuBundleLowerer.cs`
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
-- `HybridCPU_ISE/Core/Decoder/DecodedBundleTransportProjector.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`

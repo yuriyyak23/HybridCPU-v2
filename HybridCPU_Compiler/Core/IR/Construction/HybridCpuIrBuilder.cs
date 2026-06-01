@@ -439,18 +439,18 @@ namespace HybridCPU.Compiler.Core.IR
                     $"{opcode} compiler emission requires canonical scalar Word1=(rd, rs1, x0).");
             }
 
-            if (UsesCanonicalScalarWordUnaryZeroRs2(opcode) &&
+            if (UsesCanonicalScalarUnaryZeroRs2(opcode) &&
                 instruction.Immediate != 0)
             {
                 throw new InvalidOperationException(
-                    $"{opcode} compiler emission requires canonical scalar word-unary Immediate=0.");
+                    $"{opcode} compiler emission requires canonical scalar-unary Immediate=0.");
             }
         }
 
         private static bool UsesCanonicalScalarZeroRs2(InstructionsEnum opcode)
         {
             return UsesCanonicalScalarWordImmediateZeroRs2(opcode) ||
-                   UsesCanonicalScalarWordUnaryZeroRs2(opcode);
+                   UsesCanonicalScalarUnaryZeroRs2(opcode);
         }
 
         private static bool UsesCanonicalScalarWordImmediateZeroRs2(InstructionsEnum opcode) =>
@@ -460,10 +460,13 @@ namespace HybridCPU.Compiler.Core.IR
                 InstructionsEnum.SRLIW or
                 InstructionsEnum.SRAIW;
 
-        private static bool UsesCanonicalScalarWordUnaryZeroRs2(InstructionsEnum opcode) =>
+        private static bool UsesCanonicalScalarUnaryZeroRs2(InstructionsEnum opcode) =>
             opcode is
                 InstructionsEnum.SEXT_W or
-                InstructionsEnum.ZEXT_W;
+                InstructionsEnum.ZEXT_W or
+                InstructionsEnum.CLZ or
+                InstructionsEnum.CTZ or
+                InstructionsEnum.CPOP;
 
         private static IrResourceClass ClassifyResource(InstructionsEnum opcode)
         {

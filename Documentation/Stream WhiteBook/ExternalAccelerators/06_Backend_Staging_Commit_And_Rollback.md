@@ -7,16 +7,17 @@
 contours that queue guarded commands, read source ranges through a read-only portal, and
 stage result bytes into backend-private buffers. Backend results cannot publish
 architectural memory.
-Backend result surfaces are model results; current backend results do not
-publish exceptions through instruction retire (`CanPublishException = false`).
-Fake/test backends are not production protocol and do not prove executable L7
-ISA.
+Backend result surfaces are runtime results for the scoped L7 contour; current
+backend results do not publish exceptions through instruction retire
+(`CanPublishException = false`). Fake/test backends are not a universal
+production protocol and do not prove expansion beyond the tested L7 ISA
+commands.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Backends/ExternalAcceleratorBackends.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Backends/FakeMatMulExternalAcceleratorBackend.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Queues/AcceleratorCommandQueue.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Backends/ExternalAcceleratorBackends.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Backends/FakeMatMulExternalAcceleratorBackend.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Queues/AcceleratorCommandQueue.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcBackendTests.cs`
 
 ## Guarded source reads and staging
@@ -28,27 +29,28 @@ held outside architectural memory until commit.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Memory/AcceleratorMemoryModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Memory/AcceleratorMemoryModel.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcBackendTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcDirectWriteViolationTests.cs`
 
 ## Commit coordinator
 
-`AcceleratorCommitCoordinator` owns explicit model-side architectural memory
-publication. It validates token state, descriptor identity, normalized footprint
+`AcceleratorCommitCoordinator` owns architectural memory publication for scoped
+L7 staged writes. It validates token state, descriptor identity, normalized footprint
 binding, exact staged coverage, guard/epoch authority, direct-write violation
 flags, and optional conflict-manager state. It promotes tokens through
 coordinator-only `CommitPending` and `Committed` transitions.
 
-This coordinator is not `SystemDeviceCommandMicroOp.Execute(...)` and does not
-turn `ACCEL_SUBMIT` or `ACCEL_FENCE` into executable pipeline operations.
-Commit rejection is a model result, not a current retire exception:
+`SystemDeviceCommandMicroOp.Execute(...)` can reach this coordinator only
+through the scoped runtime fence/commit path. Submit still stages work and does
+not directly publish memory. Commit rejection is a runtime result, not a current
+retire exception:
 `AcceleratorCommitResult.RequiresRetireExceptionPublication` is `false`.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorToken.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorToken.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcCommitTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTokenHandleIsNotAuthorityTests.cs`
 
@@ -66,7 +68,7 @@ separate coherent-DMA ADR.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcRollbackTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcSrfCacheInvalidationTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTelemetryTests.cs`

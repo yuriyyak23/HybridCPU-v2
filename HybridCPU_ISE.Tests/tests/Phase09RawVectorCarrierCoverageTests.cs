@@ -19,11 +19,6 @@ public sealed class Phase09RawVectorCarrierCoverageTests
                 continue;
             }
 
-            if (opcode is Processor.CPU_Core.InstructionsEnum.VGATHER or Processor.CPU_Core.InstructionsEnum.VSCATTER)
-            {
-                continue;
-            }
-
             yield return new object[] { opcode };
         }
     }
@@ -38,12 +33,9 @@ public sealed class Phase09RawVectorCarrierCoverageTests
             $"Expected raw-capable vector opcode {(uint)opcode} ({opcode}) to keep a published InstructionRegistry carrier.");
     }
 
-    [Theory]
-    [InlineData(Processor.CPU_Core.InstructionsEnum.VGATHER)]
-    [InlineData(Processor.CPU_Core.InstructionsEnum.VSCATTER)]
-    public void ExplicitFailClosedIndexedTransferOpcodes_RemainOutsidePublishedCarrierSet(
-        Processor.CPU_Core.InstructionsEnum opcode)
+    [Fact]
+    public void ExplicitIndexedScatterOpcode_HasPublishedCarrierSet()
     {
-        Assert.False(InstructionRegistry.IsRegistered((uint)opcode));
+        Assert.True(InstructionRegistry.IsRegistered((uint)Processor.CPU_Core.InstructionsEnum.VSCATTER));
     }
 }

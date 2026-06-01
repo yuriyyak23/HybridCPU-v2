@@ -108,6 +108,10 @@ public sealed class L7SdcNativeCarrierValidationTests
     [Theory]
     [InlineData("reserved")]
     [InlineData("vt-hint")]
+    [InlineData("immediate")]
+    [InlineData("predicate")]
+    [InlineData("acquire")]
+    [InlineData("indexed")]
     [InlineData("raw-pointer")]
     [InlineData("word3-policy-gap")]
     public void L7SdcNativeCarrierValidation_DirtyRawCarrierFields_Reject(string mutation)
@@ -124,6 +128,18 @@ public sealed class L7SdcNativeCarrierValidationTests
                 break;
             case "vt-hint":
                 rawSlots[7].VirtualThreadId = 1;
+                break;
+            case "immediate":
+                rawSlots[7].Immediate = 1;
+                break;
+            case "predicate":
+                rawSlots[7].PredicateMask = 1;
+                break;
+            case "acquire":
+                rawSlots[7].Acquire = true;
+                break;
+            case "indexed":
+                rawSlots[7].Indexed = true;
                 break;
             case "raw-pointer":
                 rawSlots[7].Src2Pointer = 0x9000;
@@ -190,7 +206,7 @@ public sealed class L7SdcNativeCarrierValidationTests
 
     [Theory]
     [MemberData(nameof(L7SdcPhase03TestCases.AllOpcodes), MemberType = typeof(L7SdcPhase03TestCases))]
-    public void L7SdcNativeCarrierValidation_DirectExecuteForEveryCarrier_RemainsFailClosed(
+    public void L7SdcNativeCarrierValidation_DirectExecuteForCurrentCarriers_IsRuntimeOwnedOrDescriptorFailClosed(
         InstructionsEnum opcode,
         ushort _,
         string mnemonic,
@@ -203,17 +219,17 @@ public sealed class L7SdcNativeCarrierValidationTests
         Assert.Equal(mnemonic, OpcodeRegistry.GetMnemonicOrHex((uint)opcode));
         Assert.Equal(serialization, carrier.SerializationClass);
         Assert.Equal(carrierType, carrier.GetType());
-        AssertCarrierExecuteFailsWithoutMemoryMutation(carrier);
+        AssertCarrierRuntimeOwnedWithoutDirectCommit(carrier);
     }
 
     [Fact]
-    public void L7SdcNativeCarrierValidation_DescriptorBackedSubmitExecute_RemainsFailClosed()
+    public void L7SdcNativeCarrierValidation_DescriptorBackedSubmitExecute_StagesWithoutDirectCommit()
     {
         AcceleratorSubmitMicroOp submit = new(
             L7SdcTestDescriptorFactory.ParseValidDescriptor());
 
         Assert.NotNull(submit.CommandDescriptor);
-        AssertCarrierExecuteFailsWithoutMemoryMutation(submit);
+        AssertCarrierRuntimeOwnedWithoutDirectCommit(submit);
     }
 
     [Fact]
@@ -319,31 +335,39 @@ public sealed class L7SdcNativeCarrierValidationTests
         return new VliwBundleAnnotations(metadata);
     }
 
-    private static void AssertCarrierExecuteFailsWithoutMemoryMutation(MicroOp carrier)
+    private static void AssertCarrierRuntimeOwnedWithoutDirectCommit(MicroOp carrier)
     {
         Processor.MainMemoryArea previousMainMemory = Processor.MainMemory;
         var previousMemorySubsystem = Processor.Memory;
-        Processor.MainMemory = new Processor.MultiBankMemoryArea(1, 0x1000);
+        Processor.MainMemory = new Processor.MultiBankMemoryArea(1, 0x10000);
         Processor.Memory = null;
-        byte[] original = { 0x3D, 0x7A, 0x88, 0x21 };
+        byte[] original = L7SdcPhase07TestFactory.Fill(0x3D, 0x40);
         try
         {
-            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x100, original));
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x1000, L7SdcPhase07TestFactory.Fill(0x11, 0x40)));
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x9000, original));
             var core = new Processor.CPU_Core(0);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-                () => carrier.Execute(ref core));
-
-            Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("backend execution", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("token lifecycle", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("staged writes", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("commit", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.False(carrier.TryGetPrimaryWriteBackResult(out ulong value));
-            Assert.Equal(0UL, value);
+            if (carrier is AcceleratorSubmitMicroOp { CommandDescriptor: null } descriptorlessSubmit)
+            {
+                InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+                    () => descriptorlessSubmit.Execute(ref core));
+                Assert.Contains("descriptorless raw factory execution remains fail-closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+                Assert.False(descriptorlessSubmit.UsedLegacyCustomAcceleratorFallback);
+            }
+            else
+            {
+                Assert.True(carrier.Execute(ref core));
+                SystemDeviceCommandMicroOp command =
+                    Assert.IsAssignableFrom<SystemDeviceCommandMicroOp>(carrier);
+                Assert.NotNull(command.LastCommandResult);
+                Assert.False(command.UsedLegacyCustomAcceleratorFallback);
+                Assert.False(command.UsedArithmeticExecutionPlane);
+                Assert.False(command.TryGetPrimaryWriteBackResult(out _));
+            }
 
             byte[] observed = new byte[original.Length];
-            Assert.True(Processor.MainMemory.TryReadPhysicalRange(0x100, observed));
+            Assert.True(Processor.MainMemory.TryReadPhysicalRange(0x9000, observed));
             Assert.Equal(original, observed);
         }
         finally

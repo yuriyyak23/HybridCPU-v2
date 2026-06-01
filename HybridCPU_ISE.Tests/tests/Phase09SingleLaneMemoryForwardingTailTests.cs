@@ -1,3 +1,5 @@
+using HybridCPU_ISE.CloseToRTL.Memory.Banks;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 using System;
 using Xunit;
 using YAKSys_Hybrid_CPU;
@@ -83,7 +85,7 @@ public sealed class Phase09SingleLaneMemoryForwardingTailTests
 
     private static void InitializeCpuMainMemoryIdentityMap()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         IOMMU.Initialize();
         IOMMU.RegisterDevice(0);
         IOMMU.Map(
@@ -92,6 +94,6 @@ public sealed class Phase09SingleLaneMemoryForwardingTailTests
             physicalAddress: 0,
             size: 0x100000000UL,
             permissions: IOMMUAccessPermissions.ReadWrite);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+        MultiBankMemoryArea.SetAccessDomainTag(0);
     }
 }

@@ -99,7 +99,8 @@ namespace HybridCPU_ISE.Tests.Phase09
 
             Assert.True(wiredCore.CanRouteDecodedSlotToExecutionSurfaceForTesting(slot));
             Assert.False(unwiredCore.CanRouteDecodedSlotToExecutionSurfaceForTesting(slot));
-            Assert.Throws<InvalidOperationException>(() => _ = unwiredCore.VmxUnit);
+            Assert.Throws<InvalidOperationException>(
+                () => unwiredCore.EnforceDecodedSlotExecutionSurfaceContractForTesting(slot, bundlePc: 0x4400));
         }
 
         [Fact]
@@ -319,6 +320,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             Assert.False(shouldSuppressYoungerWork);
         }
 
+#if false // Retired successful VM-exit state movement; manager removed without replacement in task 190.
         [Fact]
         public void VmExitRetireEffect_OnActiveVt_RedirectsLivePcAndFlushBoundary()
         {
@@ -404,6 +406,8 @@ namespace HybridCPU_ISE.Tests.Phase09
             return core;
         }
 
+#endif
+
         private static WriteBackStage CreateVmExitCarrierWriteBackStage(int virtualThreadId)
         {
             WriteBackStage writeBack = new();
@@ -447,4 +451,3 @@ namespace HybridCPU_ISE.Tests.Phase09
         }
     }
 }
-

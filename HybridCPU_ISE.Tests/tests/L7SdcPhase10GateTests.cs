@@ -29,7 +29,7 @@ public sealed class L7SdcPhase10GateTests
 {
     [Theory]
     [MemberData(nameof(L7SdcPhase03TestCases.AllOpcodes), MemberType = typeof(L7SdcPhase03TestCases))]
-    public void Phase10_AllAccelCarriersRemainFailClosedAndArchitecturalRegisterSilent(
+    public void Phase10_CurrentAccelCarriersAreLane7RuntimeOwnedAndNoFallback(
         InstructionsEnum opcode,
         ushort _,
         string mnemonic,
@@ -38,7 +38,9 @@ public sealed class L7SdcPhase10GateTests
     {
         MicroOp carrier = InstructionRegistry.CreateMicroOp(
             (uint)opcode,
-            new DecoderContext { OpCode = (uint)opcode });
+            L7SdcPhase03TestCases.CreateRegisterResultContext(opcode));
+        SystemDeviceCommandMicroOp command =
+            Assert.IsAssignableFrom<SystemDeviceCommandMicroOp>(carrier);
         var core = new Processor.CPU_Core(0);
         const int observedRegister = 9;
         const ulong sentinel = 0xCAFE_BABE_1020_3040UL;
@@ -46,20 +48,30 @@ public sealed class L7SdcPhase10GateTests
         ulong before = core.ReadArch(0, observedRegister);
 
         Assert.Equal(expectedCarrierType, carrier.GetType());
-        Assert.False(carrier.WritesRegister);
-        Assert.Empty(carrier.WriteRegisters);
+        Assert.True(command.WritesRegister);
+        Assert.Equal(new[] { 5 }, command.WriteRegisters);
         Assert.Equal(expectedSerialization, carrier.SerializationClass);
+        Assert.Equal(SlotClass.SystemSingleton, command.Placement.RequiredSlotClass);
+        Assert.Equal(SlotPinningKind.HardPinned, command.Placement.PinningKind);
+        Assert.Equal(7, command.Placement.PinnedLaneId);
+        Assert.False(command.UsedLegacyCustomAcceleratorFallback);
+        Assert.False(command.UsedArithmeticExecutionPlane);
 
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => carrier.Execute(ref core));
+        if (command.CommandKind == SystemDeviceCommandKind.Submit)
+        {
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+                () => carrier.Execute(ref core));
+            Assert.Contains("descriptorless raw factory execution remains fail-closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+        }
+        else
+        {
+            Assert.True(carrier.Execute(ref core));
+            Assert.NotNull(command.LastCommandResult);
+        }
 
         Assert.Equal(sentinel, before);
         Assert.Equal(sentinel, core.ReadArch(0, observedRegister));
         Assert.Contains(mnemonic, carrier.GetDescription(), StringComparison.Ordinal);
-        Assert.Contains("direct execution is unsupported", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("backend execution", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("staged write publication", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("architectural rd writeback", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -68,17 +80,14 @@ public sealed class L7SdcPhase10GateTests
         string source = ReadRepoFile(
             "HybridCPU_ISE/Core/Pipeline/MicroOps/SystemDeviceCommandMicroOp.cs");
 
-        Assert.Contains("WritesRegister = false;", source, StringComparison.Ordinal);
-        Assert.Contains("WriteRegisters = Array.Empty<int>();", source, StringComparison.Ordinal);
-        Assert.Contains("direct execution is unsupported", source, StringComparison.Ordinal);
+        Assert.Contains(nameof(ExternalAcceleratorRuntime), source, StringComparison.Ordinal);
+        Assert.Contains(nameof(AcceleratorRegisterAbi), source, StringComparison.Ordinal);
+        Assert.Contains("Runtime-owned L7-SDC lane7 system-device command carrier", source, StringComparison.Ordinal);
+        Assert.Contains("descriptorless raw factory execution remains fail-closed", source, StringComparison.Ordinal);
 
-        Assert.DoesNotContain(nameof(AcceleratorRegisterAbi), source, StringComparison.Ordinal);
-        Assert.DoesNotContain(nameof(AcceleratorTokenStore), source, StringComparison.Ordinal);
-        Assert.DoesNotContain(nameof(AcceleratorCommandQueue), source, StringComparison.Ordinal);
-        Assert.DoesNotContain(nameof(AcceleratorFenceCoordinator), source, StringComparison.Ordinal);
-        Assert.DoesNotContain(nameof(IExternalAcceleratorBackend), source, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(FakeMatMulExternalAcceleratorBackend), source, StringComparison.Ordinal);
-        Assert.DoesNotContain(nameof(AcceleratorCommitCoordinator), source, StringComparison.Ordinal);
+        Assert.DoesNotContain("ICustomAccelerator", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("VectorALU", source, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -112,6 +121,18 @@ public sealed class L7SdcPhase10GateTests
         Assert.Empty(submitCarrier.WriteRegisters);
         Assert.Empty(pollCarrier.WriteRegisters);
         Assert.Empty(queryCapsCarrier.WriteRegisters);
+
+        var submitWithRd = new AcceleratorSubmitMicroOp(9, fixture.Descriptor);
+        var pollWithRd = new AcceleratorPollMicroOp(10, 9);
+        var queryCapsWithRd = new AcceleratorQueryCapsMicroOp(11);
+
+        Assert.True(submitWithRd.WritesRegister);
+        Assert.True(pollWithRd.WritesRegister);
+        Assert.True(queryCapsWithRd.WritesRegister);
+        Assert.Equal(new[] { 9 }, submitWithRd.WriteRegisters);
+        Assert.Equal(new[] { 9 }, pollWithRd.ReadRegisters);
+        Assert.Equal(new[] { 10 }, pollWithRd.WriteRegisters);
+        Assert.Equal(new[] { 11 }, queryCapsWithRd.WriteRegisters);
     }
 
     [Fact]
@@ -205,7 +226,7 @@ public sealed class L7SdcPhase10GateTests
     }
 
     [Fact]
-    public void Phase10_TokenQueueAndFenceApisAreModelSurfacesNotInstructionExecution()
+    public void Phase10_TokenQueueFenceModelsRemainGuardedWhileMicroOpsUseRuntimeOwner()
     {
         L7SdcPhase07Fixture fixture =
             L7SdcPhase07TestFactory.CreateAcceptedToken();
@@ -237,10 +258,15 @@ public sealed class L7SdcPhase10GateTests
         Assert.Equal(AcceleratorTokenState.Queued, fixture.Token.State);
 
         var core = new Processor.CPU_Core(0);
-        Assert.Throws<InvalidOperationException>(
-            () => new AcceleratorPollMicroOp().Execute(ref core));
-        Assert.Throws<InvalidOperationException>(
-            () => new AcceleratorFenceMicroOp().Execute(ref core));
+        var pollCarrier = new AcceleratorPollMicroOp(5, 4);
+        var fenceCarrier = new AcceleratorFenceMicroOp(6, 4);
+
+        Assert.True(pollCarrier.Execute(ref core));
+        Assert.True(fenceCarrier.Execute(ref core));
+        Assert.True(pollCarrier.LastTokenLookup!.IsRejected);
+        Assert.True(fenceCarrier.LastCommandResult!.FenceResult!.IsRejected);
+        Assert.False(pollCarrier.UsedLegacyCustomAcceleratorFallback);
+        Assert.False(fenceCarrier.UsedLegacyCustomAcceleratorFallback);
     }
 
     [Fact]
@@ -267,13 +293,32 @@ public sealed class L7SdcPhase10GateTests
             compiledProgram.LoweredBundleAnnotations[0],
             slotIndex: 7);
         AcceleratorSubmitMicroOp submit = Assert.IsType<AcceleratorSubmitMicroOp>(projected);
-        Assert.False(submit.WritesRegister);
-        Assert.Empty(submit.WriteRegisters);
+        Assert.True(submit.WritesRegister);
+        Assert.Equal(new[] { 9 }, submit.WriteRegisters);
 
-        var core = new Processor.CPU_Core(0);
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => submit.Execute(ref core));
-        Assert.Contains("fallback routing", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Processor.MainMemoryArea previousMemory = Processor.MainMemory;
+        try
+        {
+            L7SdcPhase07TestFactory.InitializeMainMemory(0x10000);
+            L7SdcPhase07TestFactory.WriteMainMemory(0x1000, L7SdcPhase07TestFactory.Fill(0x18, 0x40));
+            byte[] destination = L7SdcPhase07TestFactory.Fill(0xAA, 0x40);
+            L7SdcPhase07TestFactory.WriteMainMemory(0x9000, destination);
+
+            var core = new Processor.CPU_Core(0);
+            Assert.True(submit.Execute(ref core));
+            Assert.NotNull(submit.LastSubmitAdmission);
+            Assert.True(submit.LastSubmitAdmission!.IsAccepted, submit.LastSubmitAdmission.Message);
+            Assert.True(submit.TryGetPrimaryWriteBackResult(out ulong tokenHandle));
+            Assert.NotEqual(0UL, tokenHandle);
+            Assert.False(submit.UsedLegacyCustomAcceleratorFallback);
+            Assert.False(submit.UsedArithmeticExecutionPlane);
+            Assert.Equal(destination, L7SdcPhase07TestFactory.ReadMainMemory(0x9000, destination.Length));
+        }
+        finally
+        {
+            Processor.MainMemory = previousMemory;
+            Processor.Memory = null;
+        }
 
         string compilerSource = ReadCombinedSources("HybridCPU_Compiler");
         Assert.DoesNotContain(nameof(AcceleratorTokenStore), compilerSource, StringComparison.Ordinal);

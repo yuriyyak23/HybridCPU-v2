@@ -9,8 +9,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Folder Include="Refactoring\Phases Base Plan\" />
-	  <Folder Include="Refactoring\Phases Ex1\" />
+	  <Compile Remove="Refactoring\**" />
+	  <EmbeddedResource Remove="Refactoring\**" />
+	  <None Remove="Refactoring\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Folder Include="Stream WhiteBook\StreamEngine DmaStreamCompute\" />
 	</ItemGroup>
 

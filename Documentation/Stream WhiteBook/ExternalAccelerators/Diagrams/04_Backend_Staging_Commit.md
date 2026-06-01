@@ -1,10 +1,11 @@
 # Backend Staging Commit
 
-This is an explicit model/helper contour. It is not direct `ACCEL_SUBMIT`
-execution and rejected model commits do not publish current retire exceptions.
-Fake/test backend completion, staged data, commit coordination, rollback, and
-SRF/cache invalidation are model evidence; they are not production protocol,
-pipeline retire publication, global coherency, or executable L7 evidence.
+This is the staged backend and commit contour behind the current scoped L7
+runtime. `ACCEL_SUBMIT` admits and stages work; it does not directly publish
+memory. Rejected commits do not publish current retire exceptions. Fake/test
+backend completion, staged data, commit coordination, rollback, and SRF/cache
+invalidation prove only the tested contour; they are not a universal production
+protocol, pipeline retire publication model, or global coherency model.
 
 ```mermaid
 flowchart TD
@@ -33,10 +34,10 @@ flowchart TD
 
 ## Code anchors
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Backends/ExternalAcceleratorBackends.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Memory/AcceleratorMemoryModel.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Backends/ExternalAcceleratorBackends.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Memory/AcceleratorMemoryModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcBackendTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcCommitTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcRollbackTests.cs`

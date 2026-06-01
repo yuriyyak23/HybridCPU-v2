@@ -1,7 +1,8 @@
 # Compiler To ISE Transport
 
-This diagram shows sideband preservation and carrier projection. It is not
-production executable lowering; Phase11/Phase12/Phase13 keep production lowering
+This diagram shows sideband preservation and carrier projection into the current
+scoped L7 runtime contour. It is not broad production executable lowering;
+Phase11/Phase12/Phase13 keep production lowering beyond the tested commands
 last-mile and gated by executable semantics plus conformance.
 
 ```mermaid
@@ -20,18 +21,19 @@ flowchart TD
     K --> L["VliwDecoderV4 validates carrier and sideband"]
     L --> M["DecodedBundleTransportProjector"]
     M --> N["AcceleratorSubmitMicroOp"]
-    N --> O["WritesRegister=false; Execute throws fail-closed"]
+    N --> O["WritesRegister when rd present; Execute dispatches scoped runtime"]
 ```
 
-Emitted sideband does not make `ACCEL_SUBMIT` executable and does not create
-architectural `rd` writeback in the current implementation.
+Emitted sideband admits only the current guarded SDC1 submit contour. It does
+not create unconditional architectural `rd` writeback, arbitrary backend
+execution, or production compiler/backend lowering.
 
 ## Code anchors
 
 - `HybridCPU_Compiler/Core/IR/Model/IrAcceleratorModels.cs`
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
 - `HybridCPU_Compiler/Core/IR/Bundling/HybridCpuBundleLowerer.cs`
-- `HybridCPU_ISE/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
-- `HybridCPU_ISE/Core/Decoder/DecodedBundleTransportProjector.cs`
+- `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
 - `HybridCPU_ISE.Tests/CompilerTests/L7SdcCompilerPhase12Tests.cs`

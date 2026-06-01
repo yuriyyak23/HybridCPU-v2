@@ -703,8 +703,7 @@ namespace HybridCPU_ISE.Tests.Phase04
         {
             var csr = new CsrFile();
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: csr,
-                vmxUnit: new VmxExecutionUnit(csr, new VmcsManager()));
+                csrFile: csr);
             var state = new FakeCpuState();
             var ir = IrBuilder.Make(op);
 
@@ -843,4 +842,3 @@ namespace HybridCPU_ISE.Tests.Phase04
         }
     }
 }
-

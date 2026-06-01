@@ -35,11 +35,11 @@ flowchart LR
 
 ## Code anchors
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Telemetry/AcceleratorTelemetry.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenHandle.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Capabilities/AcceleratorCapabilityRegistry.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Telemetry/AcceleratorTelemetry.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenHandle.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Capabilities/AcceleratorCapabilityRegistry.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcEvidenceIsNotAuthorityTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTelemetryTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcCapabilityIsNotAuthorityTests.cs`

@@ -15,6 +15,7 @@ public sealed class Phase09DedicatedVectorCarrierReachabilityProofTests
         string productionRoot = Path.Combine(repoRoot, "HybridCPU_ISE");
         string helperPath = Path.Combine(
             productionRoot,
+            "NonRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Vector.cs");
@@ -24,15 +25,23 @@ public sealed class Phase09DedicatedVectorCarrierReachabilityProofTests
             "VectorBinaryOpMicroOp",
             "VectorComparisonMicroOp",
             "VectorDotProductMicroOp",
+            "VectorDotWideMicroOp",
             "VectorFmaMicroOp",
             "VectorMaskOpMicroOp",
             "VectorMaskPopCountMicroOp",
+            "VectorPermute2MicroOp",
             "VectorPermutationMicroOp",
             "VectorPredicativeMovementMicroOp",
             "VectorReductionMicroOp",
+            "VectorSaturatingAddMicroOp",
             "VectorSlideMicroOp",
+            "VectorSlideOneDownMicroOp",
+            "VectorSlideOneUpMicroOp",
+            "VectorScanSumMicroOp",
+            "VectorTransposeMicroOp",
             "VectorTransferMicroOp",
-            "VectorUnaryOpMicroOp"
+            "VectorUnaryOpMicroOp",
+            "VectorZeroExtendMicroOp"
         };
 
         var discoveredTypes = new SortedSet<string>(StringComparer.Ordinal);

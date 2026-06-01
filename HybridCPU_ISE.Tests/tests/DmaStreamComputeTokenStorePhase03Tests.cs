@@ -45,9 +45,8 @@ public sealed class DmaStreamComputeTokenStorePhase03Tests
         Assert.Equal(6, admission.Entry.Metadata.SlotIndex);
         Assert.Equal(6, admission.Entry.Metadata.LaneIndex);
 
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
-        var core = new Processor.CPU_Core(0);
-        Assert.Throws<InvalidOperationException>(() => microOp.Execute(ref core));
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.Null(microOp.LastExecutionResult);
     }
 
     [Fact]
@@ -337,7 +336,7 @@ public sealed class DmaStreamComputeTokenStorePhase03Tests
     }
 
     [Fact]
-    public void TokenStore_DoesNotWireDecodeExecuteRuntimeOrParserGate()
+    public void TokenStore_WiresOnlyMaterializedMicroOpRuntimeAndNotCompilerFallback()
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
         string microOpText = File.ReadAllText(Path.Combine(
@@ -350,30 +349,23 @@ public sealed class DmaStreamComputeTokenStorePhase03Tests
         string runtimeText = File.ReadAllText(Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Execution",
             "DmaStreamCompute",
             "DmaStreamComputeRuntime.cs"));
 
-        Assert.DoesNotContain("DmaStreamComputeRuntime.ExecuteToCommitPending", microOpText, StringComparison.Ordinal);
-        Assert.DoesNotContain("DmaStreamComputeTokenStore", runtimeText, StringComparison.Ordinal);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.Contains("ExecuteMaterializedMicroOpToCommitPending", microOpText, StringComparison.Ordinal);
+        Assert.Contains("DmaStreamComputeTokenStore", runtimeText, StringComparison.Ordinal);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
-        string[] unexpectedStoreReferences = CompatFreezeScanner.ScanProductionFilesForPatterns(
+        string[] unexpectedCompilerStoreReferences = CompatFreezeScanner.ScanProductionFilesForPatterns(
             repoRoot,
             new[] { "DmaStreamComputeTokenStore" },
-            new[]
-            {
-                Path.Combine(
-                    "HybridCPU_ISE",
-                    "Core",
-                    "Execution",
-                    "DmaStreamCompute",
-                    "DmaStreamComputeTokenStore.cs")
-            },
-            new[] { "HybridCPU_ISE" });
+            Array.Empty<string>(),
+            new[] { "HybridCPU_Compiler" });
 
-        Assert.Empty(unexpectedStoreReferences);
+        Assert.Empty(unexpectedCompilerStoreReferences);
     }
 
     private static DmaStreamComputeIssueAdmissionResult AllocateStoreToken(

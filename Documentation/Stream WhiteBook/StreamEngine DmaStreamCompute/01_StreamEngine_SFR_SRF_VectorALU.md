@@ -357,9 +357,11 @@ bypass structure. VectorALU is a typed compute helper. Together they provide
 stream/vector execution, but they do not grant descriptor-backed lane6 authority.
 When lane6 descriptor-backed compute is requested, the `DmaStreamCompute` typed
 sideband carrier plus explicit runtime/helper path is the only implemented
-model contour, and direct micro-op execution remains fail-closed.
+contour. Direct micro-op execution is open only for the current Phase 06 DSC1
+materialized path and remains fail-closed outside that contour.
 
 Ex1 Phase13 treats StreamEngine, SRF, assist, cache/prefetch, IOMMU warm, and
 DMA helper evidence as downstream or adjacent evidence only. None of these
-surfaces can close upstream executable DSC/L7/DSC2, async overlap, coherent
-DMA/cache, or production compiler/backend lowering gates.
+surfaces can close upstream gates for expansion beyond current lane6 DSC1,
+current scoped L7 commands, DSC2, async overlap, coherent DMA/cache, or
+production compiler/backend lowering.

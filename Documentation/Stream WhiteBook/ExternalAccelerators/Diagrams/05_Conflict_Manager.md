@@ -32,9 +32,9 @@ flowchart TD
 
 ## Code anchors
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Fences/AcceleratorFenceModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Fences/AcceleratorFenceModel.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcConflictManagerTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcDmaStreamComputeConflictTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcSrfAssistConflictTests.cs`

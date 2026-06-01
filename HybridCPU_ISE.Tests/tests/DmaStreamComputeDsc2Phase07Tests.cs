@@ -31,7 +31,7 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
         Assert.Equal(DmaStreamComputeRangeEncoding.InlineContiguous, valid.Descriptor.RangeEncoding);
         Assert.Equal(DmaStreamComputePartialCompletionPolicy.AllOrNone, valid.Descriptor.PartialCompletionPolicy);
         Assert.Equal(DmaStreamComputeShapeKind.Contiguous1D, valid.Descriptor.Shape);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
         byte[] reserved = DmaStreamComputeTestDescriptorFactory.BuildDescriptor();
         WriteUInt32(reserved, HeaderFlagsOffset, 1);
@@ -340,15 +340,20 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
     }
 
     [Fact]
-    public void Phase07_CurrentExecutableBoundariesRemainFailClosedAndPhase06ResolverIsNotWiredIntoRuntime()
+    public void Phase07_Dsc1ExecutesWhileDsc2AndControlBoundariesRemainClosed()
     {
+        DmaStreamComputeTelemetryTests.InitializeMainMemory(0x10000);
+        DmaStreamComputeTelemetryTests.WriteMemory(0x1000, DmaStreamComputeTelemetryTests.Fill(0x01, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x2000, DmaStreamComputeTelemetryTests.Fill(0x02, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x9000, DmaStreamComputeTelemetryTests.Fill(0x00, 16));
         DmaStreamComputeDescriptor dsc1Descriptor =
             DmaStreamComputeTestDescriptorFactory.CreateDescriptor();
         var core = new Processor.CPU_Core(0);
 
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
-        Assert.Throws<InvalidOperationException>(
-            () => new DmaStreamComputeMicroOp(dsc1Descriptor).Execute(ref core));
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        var dsc1Carrier = new DmaStreamComputeMicroOp(dsc1Descriptor);
+        Assert.True(dsc1Carrier.Execute(ref core));
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, dsc1Carrier.LastExecutionToken!.State);
 
         SystemDeviceCommandMicroOp[] l7Carriers =
         {
@@ -363,13 +368,22 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
         foreach (SystemDeviceCommandMicroOp carrier in l7Carriers)
         {
             Assert.False(carrier.WritesRegister);
-            Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            if (carrier.CommandKind == SystemDeviceCommandKind.Submit)
+            {
+                Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            }
+            else
+            {
+                Assert.True(carrier.Execute(ref core));
+                Assert.NotNull(carrier.LastCommandResult);
+            }
         }
 
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
         string runtimeText = File.ReadAllText(Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Execution",
             "DmaStreamCompute",

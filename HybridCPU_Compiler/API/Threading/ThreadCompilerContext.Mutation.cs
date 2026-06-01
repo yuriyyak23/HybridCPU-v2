@@ -26,6 +26,7 @@ namespace HybridCPU.Compiler.Core.Threading
             ValidateNoDirectSystemDeviceCommandEmission(opCode);
             ValidateInsertionIndex(instructionIndex, nameof(instructionIndex));
             EnsureInstructionCapacity();
+            uint encodedStreamLength = RequireVliwUInt32(streamLength, nameof(streamLength));
             int oldInstructionCount = _instructionCount;
 
             for (int index = _instructionCount; index > instructionIndex; index--)
@@ -42,7 +43,7 @@ namespace HybridCPU.Compiler.Core.Threading
                 Immediate = immediate,
                 DestSrc1Pointer = destSrc1,
                 Src2Pointer = src2,
-                StreamLength = (uint)streamLength,
+                StreamLength = encodedStreamLength,
                 Stride = stride
             };
             _instructionSlotMetadata[instructionIndex] = new InstructionSlotMetadata(

@@ -266,16 +266,20 @@ public sealed class DmaStreamComputeAllOrNonePhase08Tests
     }
 
     [Fact]
-    public void Phase08_ExecutableBoundariesRemainFailClosed()
+    public void Phase08_Dsc1ExecutableButQueueAndControlBoundariesRemainFailClosed()
     {
+        InitializeMainMemory(0x10000);
+        WriteMemory(0x1000, Fill(0x01, 16));
+        WriteMemory(0x2000, Fill(0x02, 16));
+        WriteMemory(0x9000, Fill(0x00, 16));
         DmaStreamComputeDescriptor descriptor =
             DmaStreamComputeTestDescriptorFactory.CreateDescriptor();
         var core = new Processor.CPU_Core(0);
 
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
-        InvalidOperationException dmaEx = Assert.Throws<InvalidOperationException>(
-            () => new DmaStreamComputeMicroOp(descriptor).Execute(ref core));
-        Assert.Contains("fail closed", dmaEx.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        var dmaCarrier = new DmaStreamComputeMicroOp(descriptor);
+        Assert.True(dmaCarrier.Execute(ref core));
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, dmaCarrier.LastExecutionToken!.State);
 
         SystemDeviceCommandMicroOp[] carriers =
         {
@@ -291,7 +295,15 @@ public sealed class DmaStreamComputeAllOrNonePhase08Tests
         {
             Assert.False(carrier.WritesRegister);
             Assert.Empty(carrier.WriteRegisters);
-            Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            if (carrier.CommandKind == SystemDeviceCommandKind.Submit)
+            {
+                Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            }
+            else
+            {
+                Assert.True(carrier.Execute(ref core));
+                Assert.NotNull(carrier.LastCommandResult);
+            }
         }
     }
 

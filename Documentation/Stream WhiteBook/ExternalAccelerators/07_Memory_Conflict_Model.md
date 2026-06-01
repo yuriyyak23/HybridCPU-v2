@@ -22,8 +22,8 @@ that installed authority.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Commit/AcceleratorCommitModel.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcConflictManagerTests.cs`
 
 ## Overlap classes
@@ -42,7 +42,7 @@ The v1 conflict classes include:
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcDmaStreamComputeConflictTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcSrfAssistConflictTests.cs`
 
@@ -65,9 +65,9 @@ lowering gates.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStore.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Fences/AcceleratorFenceModel.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Tokens/AcceleratorTokenStore.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Fences/AcceleratorFenceModel.cs`
 
 WhiteBook / Ex1 anchors:
 

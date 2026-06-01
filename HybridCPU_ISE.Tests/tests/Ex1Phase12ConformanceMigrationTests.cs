@@ -182,22 +182,37 @@ public sealed class Ex1Phase12ConformanceMigrationTests
     }
 
     [Fact]
-    public void Phase12_FailClosedCompatibilityEvidenceRemainsActiveWhileCurrentContractHolds()
+    public void Phase12_CompatibilityEvidenceKeepsDmaStreamScopedAndL7CurrentRuntimeOwned()
     {
         DmaStreamComputeDescriptor descriptor =
             DmaStreamComputeTestDescriptorFactory.CreateDescriptor();
         var core = new Processor.CPU_Core(0);
 
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        DmaStreamComputeTelemetryTests.InitializeMainMemory(0x10000);
+        DmaStreamComputeTelemetryTests.WriteMemory(0x1000, DmaStreamComputeTelemetryTests.Fill(0x01, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x2000, DmaStreamComputeTelemetryTests.Fill(0x02, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x9000, DmaStreamComputeTelemetryTests.Fill(0x00, 16));
+
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
         Assert.False(new DmaStreamComputeMicroOp(descriptor).WritesRegister);
-        Assert.Throws<InvalidOperationException>(
-            () => new DmaStreamComputeMicroOp(descriptor).Execute(ref core));
+        var dmaCarrier = new DmaStreamComputeMicroOp(descriptor);
+        Assert.True(dmaCarrier.Execute(ref core));
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, dmaCarrier.LastExecutionToken!.State);
 
         foreach (SystemDeviceCommandMicroOp carrier in CreateL7Carriers())
         {
             Assert.False(carrier.WritesRegister);
             Assert.Empty(carrier.WriteRegisters);
-            Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            if (carrier.CommandKind == SystemDeviceCommandKind.Submit)
+            {
+                Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            }
+            else
+            {
+                Assert.True(carrier.Execute(ref core));
+                Assert.NotNull(carrier.LastCommandResult);
+                Assert.False(carrier.UsedLegacyCustomAcceleratorFallback);
+            }
         }
 
         string repoRoot = CompatFreezeScanner.FindRepoRoot();

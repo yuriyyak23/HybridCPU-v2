@@ -74,7 +74,7 @@ comparison log still holds the older successful `200` / `10` profile without
 ## Rollback Rules
 
 - Do not revert unrelated dirty worktree files.
-- Do not delete transitional fail-closed seams.
+- Do not delete adjacent fail-closed seams.
 - Do not weaken owner/domain guards.
 - Do not reinterpret telemetry/replay/certificates/tokens as authority.
 - If validation exposes execution risk, disable the risky execution path while preserving
@@ -89,9 +89,11 @@ comparison log still holds the older successful `200` / `10` profile without
 - `DmaStreamCompute` succeeds through custom accelerator registry.
 - Raw reserved bits or raw VT hints become authority.
 - Direct DMA destination writes become commit.
-- `DmaStreamComputeMicroOp.Execute(...)` stops throwing fail-closed.
-- `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` is wired into the
-  canonical micro-op execution path without an explicit architecture decision.
+- `DmaStreamComputeMicroOp.Execute(...)` accepts descriptors outside the current
+  Phase 06 DSC1 contour.
+- `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` replaces
+  `ExecuteMaterializedMicroOpToCommitPending(...)` as the canonical micro-op
+  execution path without an explicit architecture decision.
 - Runtime/helper memory stops using exact physical main memory bounds checks.
 - DSC2 parser-only evidence is described as executable DSC2, token issue,
   memory publication, IOMMU-backed execution, or production compiler/backend

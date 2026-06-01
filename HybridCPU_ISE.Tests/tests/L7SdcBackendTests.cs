@@ -263,24 +263,37 @@ public sealed class L7SdcBackendTests
     }
 
     [Fact]
-    public void L7SdcBackend_NoFallbackAndDirectSystemDeviceMicroOpExecuteRemainsFailClosed()
+    public void L7SdcBackend_NoFallbackAndSystemDeviceSubmitStagesOnlyUntilFence()
     {
         Processor.MainMemoryArea previousMemory = Processor.MainMemory;
         try
         {
-            if (Processor.MainMemory is null)
-            {
-                L7SdcPhase07TestFactory.InitializeMainMemory(0x10000);
-            }
+            L7SdcPhase07TestFactory.InitializeMainMemory(0x10000);
+            L7SdcPhase07TestFactory.WriteMainMemory(
+                0x1000,
+                L7SdcPhase07TestFactory.Fill(0x42, 0x40));
+            byte[] originalDestination =
+                L7SdcPhase07TestFactory.Fill(0xE3, 0x40);
+            L7SdcPhase07TestFactory.WriteMainMemory(0x9000, originalDestination);
 
             L7SdcPhase07Fixture fixture =
                 L7SdcPhase07TestFactory.CreateAcceptedToken();
             var core = new Processor.CPU_Core(0);
+            var submit = new AcceleratorSubmitMicroOp(9, fixture.Descriptor);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-                () => new AcceleratorSubmitMicroOp(fixture.Descriptor).Execute(ref core));
-
-            Assert.Contains("direct execution is unsupported", ex.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.True(submit.Execute(ref core));
+            Assert.NotNull(submit.LastSubmitAdmission);
+            Assert.True(submit.LastSubmitAdmission!.IsAccepted, submit.LastSubmitAdmission.Message);
+            Assert.NotNull(submit.LastCommandResult!.BackendSubmitResult);
+            Assert.NotNull(submit.LastCommandResult.BackendTickResult);
+            Assert.True(submit.LastCommandResult.BackendTickResult!.IsAccepted, submit.LastCommandResult.BackendTickResult.Message);
+            Assert.Equal(AcceleratorTokenState.DeviceComplete, submit.LastSubmitAdmission.Token!.State);
+            Assert.False(submit.LastCommandResult.BackendTickResult.CanPublishArchitecturalMemory);
+            Assert.False(submit.LastCommandResult.BackendTickResult.UserVisiblePublicationAllowed);
+            Assert.False(submit.UsedLegacyCustomAcceleratorFallback);
+            Assert.Equal(
+                originalDestination,
+                L7SdcPhase07TestFactory.ReadMainMemory(0x9000, originalDestination.Length));
         }
         finally
         {

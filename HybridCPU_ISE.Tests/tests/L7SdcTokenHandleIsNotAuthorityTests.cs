@@ -147,18 +147,21 @@ public sealed class L7SdcTokenHandleIsNotAuthorityTests
     }
 
     [Fact]
-    public void L7SdcTokenHandleIsNotAuthority_ModelOperationsDoNotWriteMemoryOrFallback()
+    public void L7SdcTokenHandleIsNotAuthority_ModelOperationsAndRuntimeSubmitDoNotUseHandleAsCommitAuthority()
     {
         TokenFixture fixture = CreateAcceptedToken();
         Processor.MainMemoryArea previousMainMemory = Processor.MainMemory;
         var previousMemorySubsystem = Processor.Memory;
-        Processor.MainMemory = new Processor.MultiBankMemoryArea(1, 0x1000);
+        Processor.MainMemory = new Processor.MultiBankMemoryArea(1, 0x10000);
         Processor.Memory = null;
         byte[] original = { 0x33, 0x44, 0x55, 0x66 };
+        byte[] originalDestination = L7SdcPhase07TestFactory.Fill(0x7E, 0x40);
 
         try
         {
             Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x100, original));
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x1000, L7SdcPhase07TestFactory.Fill(0x19, 0x40)));
+            Assert.True(Processor.MainMemory.TryWritePhysicalRange(0x9000, originalDestination));
 
             fixture.Store.Poll(fixture.Token.Handle, fixture.Evidence);
             fixture.Store.Wait(fixture.Token.Handle, fixture.Evidence);
@@ -172,9 +175,17 @@ public sealed class L7SdcTokenHandleIsNotAuthorityTests
             Assert.False(fixture.Token.HasQueueExecution);
             Assert.False(fixture.Token.HasStagedWrites);
             Assert.False(fixture.Token.HasArchitecturalCommit);
+
             var core = new Processor.CPU_Core(0);
-            Assert.Throws<InvalidOperationException>(
-                () => new AcceleratorSubmitMicroOp(fixture.Descriptor).Execute(ref core));
+            var submit = new AcceleratorSubmitMicroOp(9, fixture.Descriptor);
+            Assert.True(submit.Execute(ref core));
+            Assert.True(submit.TryGetPrimaryWriteBackResult(out ulong runtimeHandle));
+            Assert.NotEqual(0UL, runtimeHandle);
+            Assert.False(submit.UsedLegacyCustomAcceleratorFallback);
+            Assert.False(submit.LastCommandResult!.BackendTickResult!.CanPublishArchitecturalMemory);
+            Assert.Equal(
+                originalDestination,
+                L7SdcPhase07TestFactory.ReadMainMemory(0x9000, originalDestination.Length));
         }
         finally
         {

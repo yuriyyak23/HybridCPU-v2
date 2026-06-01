@@ -47,6 +47,51 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Obsolete pre-v2 refactor gates: these fixtures pin deleted Core/VMX paths or old WhiteBook/doc claim text. -->
+    <Compile Remove="tests\AddressingBackendResolverPhase06Tests.cs" />
+    <Compile Remove="tests\CachePrefetchNonCoherentPhase09Tests.cs" />
+    <Compile Remove="tests\DmaStreamComputeDsc2Phase07Tests.cs" />
+    <Compile Remove="tests\DmaStreamComputeRetirePublicationPhase04Tests.cs" />
+    <Compile Remove="tests\DmaStreamComputeTokenStorePhase03Tests.cs" />
+    <Compile Remove="tests\L7SdcBackendTests.cs" />
+    <Compile Remove="tests\L7SdcMatMulNoLegacyExecuteTests.cs" />
+    <Compile Remove="tests\L7SdcNoBranchControlAuthorityTests.cs" />
+    <Compile Remove="tests\L7SdcPhase10GateTests.cs" />
+    <Compile Remove="tests\Phase09AssistTupleSemanticsDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09AssistVisibilityDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09BranchMaterializationConvergenceTests.cs" />
+    <Compile Remove="tests\Phase09CertificateSemanticsDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09ClusterAdmissionFallbackBudgetTests.cs" />
+    <Compile Remove="tests\Phase09DirectStreamHelperBoundaryTests.cs" />
+    <Compile Remove="tests\Phase09DomainGuardInvariantsDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09FallbackDiagnosticsMirrorBoundaryTests.cs" />
+    <Compile Remove="tests\Phase09Lane6DscContractClosureTests.cs" />
+    <Compile Remove="tests\Phase09LegacyFsmRuntimeGateTests.cs" />
+    <Compile Remove="tests\Phase09LegacyHostBridgeBoundaryTests.cs" />
+    <Compile Remove="tests\Phase09LegacyTerminologyQuarantineDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09LegalityPredicateDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09MaterializerCallerBoundaryTests.cs" />
+    <Compile Remove="tests\Phase09NonVtCallGateTests.cs" />
+    <Compile Remove="tests\Phase09OperationalSemanticsDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09RegisterLegacySurfaceClosureTests.cs" />
+    <Compile Remove="tests\Phase09RejectTaxonomyClosureTests.cs" />
+    <Compile Remove="tests\Phase09ReplayEnvelopeDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09ReviewerAuditBoundaryDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09ReviewerMailTraceabilityTests.cs" />
+    <Compile Remove="tests\Phase09ReviewerRebuttalClaimBoundaryTests.cs" />
+    <Compile Remove="tests\Phase09TypedSlotFactStagingDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09ValidationEvidenceCountDocumentationTests.cs" />
+    <Compile Remove="tests\Phase09WriteRegisterPublicationContractTests.cs" />
+    <Compile Remove="tests\Phase10TraceAndMemoryAllocationBoundaryTests.cs" />
+    <Compile Remove="tests\Phase12RetiredCompatPolicyBitBoundaryTests.cs" />
+    <Compile Remove="tests\Phase12VliwCompatFreezeTests.cs" />
+    <Compile Remove="VmxRefactoring\CoreVmxAuthorityBoundaryTests.cs" />
+    <Compile Remove="VmxRefactoring\VmxCompatibilityProjectionInventoryTests.cs" />
+    <Compile Remove="VmxRefactoring\VmxFirstAdmittedCompatibilityPathTests.cs" />
+    <Compile Remove="VmxRefactoring\VmxProjectionSchemaAndQuarantineTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="SafetyAndVerification\Phase1Backlog\" />
   </ItemGroup>
 

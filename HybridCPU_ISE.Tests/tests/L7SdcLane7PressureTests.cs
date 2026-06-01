@@ -21,7 +21,7 @@ public sealed class L7SdcLane7PressureTests
         AcceleratorLane7PressureResult submit1 =
             throttle.TryAdmit(SystemDeviceCommandKind.Submit);
         AcceleratorLane7PressureResult rejected =
-            throttle.TryAdmit(SystemDeviceCommandKind.Poll);
+            throttle.TryAdmit(SystemDeviceCommandKind.Status);
 
         Assert.True(submit0.Accepted, submit0.Message);
         Assert.True(poll0.Accepted, poll0.Message);
@@ -48,6 +48,8 @@ public sealed class L7SdcLane7PressureTests
         Assert.True(throttle.TryAdmit(SystemDeviceCommandKind.Submit).Accepted);
         Assert.True(throttle.TryAdmit(SystemDeviceCommandKind.Poll).Rejected);
 
+        AcceleratorLane7PressureResult status =
+            throttle.TryAdmit(SystemDeviceCommandKind.Status);
         AcceleratorLane7PressureResult wait =
             throttle.TryAdmit(SystemDeviceCommandKind.Wait);
         AcceleratorLane7PressureResult fence =
@@ -55,6 +57,7 @@ public sealed class L7SdcLane7PressureTests
         AcceleratorLane7PressureResult progress =
             throttle.RecordBranchOrSystemProgress();
 
+        Assert.True(status.Rejected);
         Assert.True(wait.Accepted, wait.Message);
         Assert.True(fence.Accepted, fence.Message);
         Assert.True(progress.Accepted, progress.Message);
@@ -62,7 +65,7 @@ public sealed class L7SdcLane7PressureTests
         Assert.True(fence.BranchOrSystemProgressPreserved);
         Assert.True(progress.BranchOrSystemProgressPreserved);
         Assert.Equal(1, throttle.SubmitPollCount);
-        Assert.Equal(1, throttle.ThrottleRejectCount);
+        Assert.Equal(2, throttle.ThrottleRejectCount);
     }
 
     [Fact]
@@ -72,6 +75,7 @@ public sealed class L7SdcLane7PressureTests
         {
             new AcceleratorSubmitMicroOp(),
             new AcceleratorPollMicroOp(),
+            new AcceleratorStatusMicroOp(),
             new AcceleratorWaitMicroOp(),
             new AcceleratorCancelMicroOp(),
             new AcceleratorFenceMicroOp()

@@ -3,6 +3,7 @@ using Xunit.Abstractions;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Memory;
 using HybridCPU_ISE.Tests.TestHelpers;
+using HybridCPU_ISE.CloseToRTL.Memory.DMA;
 
 namespace HybridCPU_ISE.Tests
 {

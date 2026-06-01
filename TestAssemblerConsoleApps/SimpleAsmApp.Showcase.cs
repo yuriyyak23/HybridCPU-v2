@@ -7,6 +7,7 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers;
+using YAKSys_Hybrid_CPU.Core.Vmcs.V2;
 
 namespace YAKSys_Hybrid_CPU.DiagnosticsConsole;
 
@@ -32,7 +33,6 @@ internal sealed partial class SimpleAsmApp
         core.Csr.HardwareWrite(CsrAddresses.VmxEnable, 0UL);
         core.Csr.HardwareWrite(CsrAddresses.VmxExitReason, 0UL);
         core.Csr.HardwareWrite(CsrAddresses.VmExitCnt, 0UL);
-        core.Vmcs.Clear(ShowcaseVmcsPointer);
         core.WriteVirtualThreadPipelineState(0, PipelineState.Task);
 
         var traceSink = new TraceSink(TraceFormat.JSON, filePath: "simpleasm-showcase.trace");
@@ -43,7 +43,6 @@ internal sealed partial class SimpleAsmApp
         var queue = new CapturingPipelineEventQueue();
         var dispatcher = new ExecutionDispatcherV4(
             csrFile: core.Csr,
-            vmxUnit: core.VmxUnit,
             traceSink: traceSink,
             telemetry: telemetry,
             pipelineEventQueue: queue);
@@ -353,8 +352,10 @@ internal sealed partial class SimpleAsmApp
             CoversCsr: csrTraceCount > 0 && core.Csr.DirectRead(ShowcaseScratchCsr) == 7UL,
             CoversSystem: coversSystem,
             CoversVmx:
-                core.Csr.DirectRead(CsrAddresses.VmxExitReason) == (ulong)VmExitReason.VmxOff &&
-                core.Csr.DirectRead(CsrAddresses.VmExitCnt) > 0,
+                coversSurfaceContract &&
+                VerifyVmReadProjectionAdmissionPath() &&
+                core.Csr.DirectRead(CsrAddresses.VmxEnable) == 0UL &&
+                core.Csr.DirectRead(CsrAddresses.VmExitCnt) == 0UL,
             CoversObservability: traceEventCount > 0 && fsmTransitionCount > 0,
             AssistRuntimeStatus: ShowcaseAssistStatus,
             TraceEventCount: traceEventCount,
@@ -467,21 +468,21 @@ internal sealed partial class SimpleAsmApp
             rs1: 7,
             imm: ShowcaseScratchCsr);
 
-        var dispatcherWithoutVmx = new ExecutionDispatcherV4(csrFile: core.Csr);
-        var dispatcherWithVmx = new ExecutionDispatcherV4(csrFile: core.Csr, vmxUnit: core.VmxUnit);
+        var dispatcherWithoutCsr = new ExecutionDispatcherV4();
+        var dispatcherWithCsr = new ExecutionDispatcherV4(csrFile: core.Csr);
         var state = core.CreateLiveCpuStateAdapter(0);
         state.SetCurrentPipelineState(PipelineState.Task);
 
         try
         {
             core.TestApplyExecutionDispatcherRetireWindowPublications(
-                dispatcherWithoutVmx,
+                dispatcherWithCsr,
                 fenceInstruction,
                 state,
                 bundleSerial: 1,
                 vtId: 0);
             core.TestApplyExecutionDispatcherRetireWindowPublications(
-                dispatcherWithoutVmx,
+                dispatcherWithCsr,
                 streamWaitInstruction,
                 state,
                 bundleSerial: 2,
@@ -489,23 +490,65 @@ internal sealed partial class SimpleAsmApp
 
             core.Csr.HardwareWrite(CsrAddresses.VmxEnable, 0UL);
             core.TestApplyExecutionDispatcherRetireWindowPublications(
-                dispatcherWithVmx,
+                dispatcherWithCsr,
                 vmxInstruction,
                 state,
                 bundleSerial: 3,
                 vtId: 0);
 
-            return !dispatcherWithoutVmx.CanRouteToConfiguredExecutionSurface(vmxInstruction)
-                && !dispatcherWithVmx.CanRouteToConfiguredExecutionSurface(vmxInstruction)
-                && !dispatcherWithoutVmx.CanRouteToConfiguredExecutionSurface(fenceInstruction)
-                && !dispatcherWithoutVmx.CanRouteToConfiguredExecutionSurface(streamWaitInstruction)
-                && dispatcherWithoutVmx.CanRouteToConfiguredExecutionSurface(csrInstruction)
-                && core.Csr.DirectRead(CsrAddresses.VmxEnable) != 0UL;
+            return !dispatcherWithoutCsr.CanRouteToConfiguredExecutionSurface(vmxInstruction)
+                && !dispatcherWithCsr.CanRouteToConfiguredExecutionSurface(vmxInstruction)
+                && !dispatcherWithCsr.CanRouteToConfiguredExecutionSurface(fenceInstruction)
+                && !dispatcherWithCsr.CanRouteToConfiguredExecutionSurface(streamWaitInstruction)
+                && dispatcherWithCsr.CanRouteToConfiguredExecutionSurface(csrInstruction)
+                && core.Csr.DirectRead(CsrAddresses.VmxEnable) == 0UL
+                && VerifyVmReadProjectionAdmissionPath();
         }
         catch
         {
             return false;
         }
+    }
+
+    private static bool VerifyVmReadProjectionAdmissionPath()
+    {
+        var service = new VmxCompatibilityAdmissionService();
+        VmxCompatibilityVmReadAdmissionResult result = service.AdmitVmReadProjection(
+            new VmxCompatibilityVmReadAdmissionRequest(
+                Context: new DomainRuntimeContext(
+                    execution: new ExecutionDomainDescriptor(),
+                    memory: new MemoryDomainDescriptor(),
+                    io: new IoDomainDescriptor(),
+                    capabilities: new CapabilityDescriptorSet(
+                        globalHardwareCaps: 0,
+                        runtimeEnabledCaps: 0,
+                        domainGrantedCaps: 0)),
+                RootAuthority: new RootAuthorityDescriptor(
+                    RootAuthorityClass.RuntimeRoot,
+                    authorityEpoch: 1,
+                    grantedCapabilityMask: 0,
+                    allowCompatibilityFrontendActivation: true,
+                    allowAuthoritativeStateMutation: false),
+                EvidencePolicy: new EvidencePolicyDescriptor(
+                    allowCompatibilityAliases: true,
+                    allowGuestArchitecturalState: false,
+                    allowMigrationSerializableState: false),
+                Descriptor: VmcsV2Descriptor.CreateDefault(),
+                FieldId: (ushort)VmcsField.GuestPc,
+                DestinationRegister: 8,
+                FieldSelectorRegister: 1,
+                ReservedRegister: 0,
+                DescriptorValidated: true,
+                CapabilityValidated: true,
+                SchedulingValidated: true,
+                NoEmissionValidated: true,
+                ProjectionEvidenceValidated: true));
+
+        return result.RuntimeAdmissionAllowed &&
+            result.Decision == VmxCompatibilityVmReadAdmissionDecision.ReadOnlyProjectionDenied &&
+            result.Decode.Payload.OperandForm == Core.Vmx.VmxOperandForm.FieldSelectorToRegister &&
+            result.VmcsValidation.Code == VmcsV2ValidationCode.AccessDenied &&
+            result.Value == 0;
     }
 
     private static ReplayPhaseBenchmarkResult RunReplayPhaseBenchmarkScenario(bool reuseStablePhase, ulong iterations)

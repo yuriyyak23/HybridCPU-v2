@@ -392,20 +392,33 @@ public sealed class AddressingBackendResolverPhase06Tests
     }
 
     [Fact]
-    public void Phase06_CurrentExecutableBoundariesRemainClosedAndCompilerLoweringForbidden()
+    public void Phase06_Dsc1ExecutesWhileCompilerLoweringAndControlBoundariesRemainClosed()
     {
+        DmaStreamComputeTelemetryTests.InitializeMainMemory(0x10000);
+        DmaStreamComputeTelemetryTests.WriteMemory(0x1000, DmaStreamComputeTelemetryTests.Fill(0x01, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x2000, DmaStreamComputeTelemetryTests.Fill(0x02, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x9000, DmaStreamComputeTelemetryTests.Fill(0x00, 16));
         DmaStreamComputeDescriptor descriptor =
             DmaStreamComputeTestDescriptorFactory.CreateDescriptor();
         var core = new Processor.CPU_Core(0);
 
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
-        Assert.Throws<InvalidOperationException>(
-            () => new DmaStreamComputeMicroOp(descriptor).Execute(ref core));
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        var dscCarrier = new DmaStreamComputeMicroOp(descriptor);
+        Assert.True(dscCarrier.Execute(ref core));
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, dscCarrier.LastExecutionToken!.State);
 
         foreach (SystemDeviceCommandMicroOp carrier in CreateL7Carriers())
         {
             Assert.False(carrier.WritesRegister);
-            Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            if (carrier.CommandKind == SystemDeviceCommandKind.Submit)
+            {
+                Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref core));
+            }
+            else
+            {
+                Assert.True(carrier.Execute(ref core));
+                Assert.NotNull(carrier.LastCommandResult);
+            }
         }
 
         byte[] descriptorBytes = DmaStreamComputeTestDescriptorFactory.BuildDescriptor();

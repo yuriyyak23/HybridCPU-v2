@@ -30,7 +30,8 @@ public enum CompilerBackendLoweringRequirement : ulong
     ResultPublication = 1UL << 4,
     ProductionBackendProtocol = 1UL << 5,
     QueueTokenFenceContract = 1UL << 6,
-    StagedCommitBoundary = 1UL << 7
+    StagedCommitBoundary = 1UL << 7,
+    VirtualHandleContract = 1UL << 8
 }
 
 public sealed record CompilerBackendLoweringRequest
@@ -47,6 +48,8 @@ public sealed record CompilerBackendLoweringRequest
     public bool UsesParserValidationOnly { get; init; }
 
     public bool UsesModelOrTestHelper { get; init; }
+
+    public bool UsesRuntimeTokenOrVirtualHandleEvidence { get; init; }
 
     public bool AssumesHardwareCoherence { get; init; }
 
@@ -100,6 +103,7 @@ public static class CompilerBackendLoweringContract
     public static CompilerBackendLoweringRequirement FutureDscRequiredRequirements =>
         CompilerBackendLoweringRequirement.ExecutableCarrier |
         CompilerBackendLoweringRequirement.BackendAddressSpace |
+        CompilerBackendLoweringRequirement.QueueTokenFenceContract |
         CompilerBackendLoweringRequirement.OrderCacheFaultContract |
         CompilerBackendLoweringRequirement.AllOrNoneRetirePublication |
         CompilerBackendLoweringRequirement.StagedCommitBoundary;
@@ -109,6 +113,7 @@ public static class CompilerBackendLoweringContract
         CompilerBackendLoweringRequirement.ResultPublication |
         CompilerBackendLoweringRequirement.ProductionBackendProtocol |
         CompilerBackendLoweringRequirement.QueueTokenFenceContract |
+        CompilerBackendLoweringRequirement.VirtualHandleContract |
         CompilerBackendLoweringRequirement.OrderCacheFaultContract |
         CompilerBackendLoweringRequirement.StagedCommitBoundary;
 
@@ -177,6 +182,22 @@ public static class CompilerBackendLoweringContract
             return CompilerBackendLoweringDecision.Reject(
                 requiredRequirements,
                 $"{surfaceName} production lowering cannot route through model or test helper surfaces.");
+        }
+
+        if (request.UsesRuntimeTokenOrVirtualHandleEvidence)
+        {
+            CompilerBackendLoweringRequirement tokenHandleRequirements =
+                requiredRequirements &
+                (CompilerBackendLoweringRequirement.QueueTokenFenceContract |
+                 CompilerBackendLoweringRequirement.VirtualHandleContract);
+            if (tokenHandleRequirements == CompilerBackendLoweringRequirement.None)
+            {
+                tokenHandleRequirements = CompilerBackendLoweringRequirement.QueueTokenFenceContract;
+            }
+
+            return CompilerBackendLoweringDecision.Reject(
+                tokenHandleRequirements,
+                $"{surfaceName} production lowering cannot treat runtime token or virtual-handle evidence as compiler ABI authority.");
         }
 
         if (request.AssumesHardwareCoherence)

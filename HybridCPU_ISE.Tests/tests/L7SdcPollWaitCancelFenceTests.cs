@@ -367,25 +367,31 @@ public sealed class L7SdcPollWaitCancelFenceTests
     }
 
     [Fact]
-    public void L7SdcPollWaitCancelFence_ModelFenceSuccessDoesNotMakeAccelFenceExecutable()
+    public void L7SdcPollWaitCancelFence_AccelFenceExecutesThroughRuntimeAndRejectsInvalidHandleWithoutWriteback()
     {
         AcceleratorFenceResult modelFence =
             new AcceleratorFenceCoordinator().TryFence(
                 new AcceleratorTokenStore(),
                 AcceleratorFenceScope.ForTokens(Array.Empty<AcceleratorTokenHandle>()),
                 currentGuardEvidence: null);
-        var carrier = new AcceleratorFenceMicroOp();
+        var carrier = new AcceleratorFenceMicroOp(5, 4);
         var core = new Processor.CPU_Core(0);
 
         Assert.True(modelFence.Succeeded, modelFence.Message);
-        Assert.False(carrier.WritesRegister);
-        Assert.Empty(carrier.WriteRegisters);
+        Assert.True(carrier.WritesRegister);
+        Assert.Equal(new[] { 4 }, carrier.ReadRegisters);
+        Assert.Equal(new[] { 5 }, carrier.WriteRegisters);
 
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => carrier.Execute(ref core));
+        Assert.True(carrier.Execute(ref core));
+        Assert.NotNull(carrier.LastCommandResult);
+        Assert.True(carrier.LastCommandResult!.FenceResult!.IsRejected);
+        Assert.False(carrier.UsedLegacyCustomAcceleratorFallback);
 
-        Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("architectural rd writeback", ex.Message, StringComparison.OrdinalIgnoreCase);
+        var records = new YAKSys_Hybrid_CPU.Core.Registers.Retire.RetireRecord[1];
+        int recordCount = 0;
+        carrier.EmitWriteBackRetireRecords(ref core, records, ref recordCount);
+        Assert.Equal(0, recordCount);
+        Assert.Equal(0UL, core.ReadArch(0, 5));
     }
 
     [Fact]

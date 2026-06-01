@@ -8,10 +8,8 @@ public sealed class Phase09LegacyVectorMemoryCarrierReachabilityTests
     {
         "LoadSegmentMicroOp",
         "Load2DMicroOp",
-        "GatherMicroOp",
         "StoreSegmentMicroOp",
-        "Store2DMicroOp",
-        "StoreScatterMicroOp"
+        "Store2DMicroOp"
     };
 
     [Fact]

@@ -85,31 +85,52 @@ public sealed class L7SdcOpcodeSurfaceTests
 
     [Theory]
     [MemberData(nameof(L7SdcPhase03TestCases.AllOpcodes), MemberType = typeof(L7SdcPhase03TestCases))]
-    public void L7SdcOpcodeSurface_AllCarriersRemainNoWriteAndFailClosedOnExecute(
+    public void L7SdcOpcodeSurface_CurrentCommandsPublishLane7ControlPlaneMetadata(
         InstructionsEnum opcode,
         ushort _,
         string mnemonic,
         SerializationClass _2,
         Type _3)
     {
+        DecoderContext context = L7SdcPhase03TestCases.CreateRegisterResultContext(opcode);
         MicroOp carrier = InstructionRegistry.CreateMicroOp(
             (uint)opcode,
-            new DecoderContext { OpCode = (uint)opcode });
-        var core = new Processor.CPU_Core(0);
-
-        Assert.False(carrier.WritesRegister);
-        Assert.Empty(carrier.WriteRegisters);
-
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => carrier.Execute(ref core));
+            context);
+        SystemDeviceCommandMicroOp command =
+            Assert.IsAssignableFrom<SystemDeviceCommandMicroOp>(carrier);
 
         Assert.Contains(mnemonic, OpcodeRegistry.GetMnemonicOrHex((uint)opcode), StringComparison.Ordinal);
-        Assert.Contains("lane7", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("runtime-side APIs", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("backend execution", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("staged write publication", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("architectural rd writeback", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fallback routing", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(SlotClass.SystemSingleton, command.Placement.RequiredSlotClass);
+        Assert.Equal(SlotPinningKind.HardPinned, command.Placement.PinningKind);
+        Assert.Equal(7, command.Placement.PinnedLaneId);
+        Assert.True(command.HasSideEffects);
+        Assert.False(command.IsMemoryOp);
+        Assert.False(command.IsControlFlow);
+        Assert.True(command.WritesRegister);
+        Assert.Equal(new[] { 5 }, command.WriteRegisters);
+        Assert.False(command.UsedLegacyCustomAcceleratorFallback);
+        Assert.False(command.UsedArithmeticExecutionPlane);
+
+        if (command.CommandKind is SystemDeviceCommandKind.Poll
+            or SystemDeviceCommandKind.Status
+            or SystemDeviceCommandKind.Wait
+            or SystemDeviceCommandKind.Cancel
+            or SystemDeviceCommandKind.Fence)
+        {
+            Assert.Equal(new[] { 4 }, command.ReadRegisters);
+        }
+        else
+        {
+            Assert.Empty(command.ReadRegisters);
+        }
+
+        if (command.CommandKind == SystemDeviceCommandKind.Submit)
+        {
+            var core = new Processor.CPU_Core(0);
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+                () => command.Execute(ref core));
+            Assert.Contains("descriptorless raw factory execution remains fail-closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [Fact]
@@ -174,6 +195,13 @@ public static class L7SdcPhase03TestCases
             SerializationClass.FullSerial,
             typeof(AcceleratorFenceMicroOp)
         },
+        {
+            InstructionsEnum.ACCEL_STATUS,
+            266,
+            "ACCEL_STATUS",
+            SerializationClass.CsrOrdered,
+            typeof(AcceleratorStatusMicroOp)
+        },
     };
 
     public static IReadOnlyList<(InstructionsEnum Opcode, ushort Value, string Mnemonic, SerializationClass Serialization, Type CarrierType)> Cases =>
@@ -221,6 +249,13 @@ public static class L7SdcPhase03TestCases
                 SerializationClass.FullSerial,
                 typeof(AcceleratorFenceMicroOp)
             ),
+            (
+                InstructionsEnum.ACCEL_STATUS,
+                (ushort)266,
+                "ACCEL_STATUS",
+                SerializationClass.CsrOrdered,
+                typeof(AcceleratorStatusMicroOp)
+            ),
         };
 
     public static ushort GetIsaOpcodeValue(InstructionsEnum opcode) => opcode switch
@@ -231,6 +266,7 @@ public static class L7SdcPhase03TestCases
         InstructionsEnum.ACCEL_WAIT => IsaOpcodeValues.ACCEL_WAIT,
         InstructionsEnum.ACCEL_CANCEL => IsaOpcodeValues.ACCEL_CANCEL,
         InstructionsEnum.ACCEL_FENCE => IsaOpcodeValues.ACCEL_FENCE,
+        InstructionsEnum.ACCEL_STATUS => IsaOpcodeValues.ACCEL_STATUS,
         _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Not an L7-SDC opcode.")
     };
 
@@ -250,5 +286,23 @@ public static class L7SdcPhase03TestCases
             Stride = 0,
             VirtualThreadId = 0
         };
+    }
+
+    public static DecoderContext CreateRegisterResultContext(InstructionsEnum opcode)
+    {
+        DecoderContext context = new()
+        {
+            OpCode = (uint)opcode,
+            Reg1ID = 5,
+            Reg2ID = opcode is InstructionsEnum.ACCEL_POLL
+                or InstructionsEnum.ACCEL_STATUS
+                or InstructionsEnum.ACCEL_WAIT
+                or InstructionsEnum.ACCEL_CANCEL
+                or InstructionsEnum.ACCEL_FENCE
+                    ? (ushort)4
+                    : (ushort)0,
+            Reg3ID = 0
+        };
+        return context;
     }
 }

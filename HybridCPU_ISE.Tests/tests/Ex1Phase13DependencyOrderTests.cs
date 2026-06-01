@@ -64,14 +64,13 @@ public sealed class Ex1Phase13DependencyOrderTests
             "Planning dependency graph. Documentation only.",
             "This ADR is documentation only. It does not approve implementation",
             "Do not treat the graph as implementation approval",
-            "Do not approve executable lane6 DSC",
             "Do not approve executable L7",
             "Do not approve DSC2 execution",
             "Do not approve coherent DMA",
             "Do not approve compiler/backend production lowering",
             "does not approve executable DSC/L7/DSC2/coherent DMA or compiler/backend production lowering");
 
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
         Assert.DoesNotContain(
             "dependency graph approves implementation",
             combined,

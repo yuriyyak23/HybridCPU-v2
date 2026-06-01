@@ -5,13 +5,16 @@
 `DmaStreamCompute` is the lane6 descriptor carrier plus explicit runtime/helper
 token model for descriptor-backed stream compute. It has its own DSC1 descriptor
 ABI, guard, replay evidence, token, commit, and telemetry contour. Its micro-op
-uses `SlotClass.DmaStreamClass` and lane6 class placement; direct micro-op
-execution remains fail-closed.
+uses `SlotClass.DmaStreamClass` and lane6 class placement. Current direct
+micro-op execution is open only for the Phase 06 DSC1 production contour through
+`DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`; DSC2,
+queue/async, broad lowering, and StreamEngine/DMAController fallback remain
+fail-closed.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Pipeline/MicroOps/DmaStreamComputeMicroOp.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/*`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/*`
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
 - `HybridCPU_ISE.Tests/tests/DmaStreamCompute*.cs`
 - `HybridCPU_ISE.Tests/CompilerTests/DmaStreamComputeCompilerContractTests.cs`
@@ -57,7 +60,7 @@ Code anchors:
 
 Conflict evidence:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcDmaStreamComputeConflictTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcSrfAssistConflictTests.cs`
 
@@ -74,15 +77,16 @@ Stale anchors may appear only as stale examples, not current roots:
 
 - `DMA`: separate memory transfer controller and channel API.
 - `StreamEngine`: in-core stream/vector execution module.
-- `DmaStreamCompute`: lane6 descriptor carrier plus explicit runtime helper and
-  token model.
-- `ExternalAccelerator`: lane7 L7-SDC carrier/model subsystem.
-- `backend`: runtime/model executor, not automatic pipeline execution.
+- `DmaStreamCompute`: lane6 descriptor carrier plus scoped Phase 06 runtime and
+  token/commit contour.
+- `ExternalAccelerator`: lane7 L7-SDC scoped command runtime subsystem.
+- `backend`: runtime executor behind guarded contours, not automatic fallback
+  execution.
 - `token`: model state and commit container; not authority by itself.
 - `commit`: explicit publication operation; not always retire.
 - `retire`: pipeline publication/exception boundary.
-- `fence`: model API unless an executable instruction path is approved and
-  implemented.
+- `fence`: scoped L7 runtime command for current tokens; broader/global fence
+  semantics remain gated.
 - `queue`: model queue unless a pipeline/device protocol is approved and
   implemented.
 
@@ -90,13 +94,14 @@ Stale anchors may appear only as stale examples, not current roots:
 
 The following remain downstream evidence only:
 
-- lane6 DSC parser/helper/token/retire observations;
+- lane6 DSC parser/helper/token/retire observations outside Phase 06 DSC1;
 - L7 fake backend, capability registry, queue, fence, token, register ABI, and
-  commit model APIs;
+  commit APIs outside the current scoped command contour;
 - IOMMU backend infrastructure and no-fallback resolver decisions;
 - conflict/cache observers and explicit non-coherent invalidation fan-out;
 - compiler sideband emission, descriptor preservation, and carrier projection.
 
-They cannot close upstream gates for executable lane6 DSC, executable L7, DSC2
-execution, async overlap, IOMMU-backed execution, coherent DMA/cache, successful
-partial completion, or production compiler/backend lowering.
+They cannot close upstream gates for expansion beyond current executable lane6
+DSC1 Phase 06 or current L7 Phase 08 / Phase 08A commands, DSC2 execution,
+async overlap, IOMMU-backed execution, coherent DMA/cache, successful partial
+completion, or production compiler/backend lowering.

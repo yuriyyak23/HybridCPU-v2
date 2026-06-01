@@ -211,6 +211,7 @@ public sealed class DmaStreamComputeRetirePublicationPhase04Tests
     [Fact]
     public void Phase04_PublicationSurfaceRemainsExplicitFutureSeamNotNormalLane6Path()
     {
+        DmaStreamComputeTelemetryTests.InitializeMainMemory(0x10000);
         DmaStreamComputeActiveTokenEntry entry = AllocateEntry();
         DmaStreamComputeRetireObservation observation =
             DmaStreamComputeRetirePublication.ObserveFutureRetire(
@@ -252,11 +253,24 @@ public sealed class DmaStreamComputeRetirePublicationPhase04Tests
         Assert.DoesNotContain("DmaStreamComputeRuntime.ExecuteToCommitPending", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamComputeTokenStore", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamComputeRetirePublication.", compilerText, StringComparison.Ordinal);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
+        DmaStreamComputeTelemetryTests.WriteMemory(0x1000, DmaStreamComputeTelemetryTests.Fill(0x01, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x2000, DmaStreamComputeTelemetryTests.Fill(0x02, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x9000, DmaStreamComputeTelemetryTests.Fill(0x00, 16));
         var core = new Processor.CPU_Core(0);
         var microOp = new DmaStreamComputeMicroOp(entry.Token.Descriptor);
-        Assert.Throws<InvalidOperationException>(() => microOp.Execute(ref core));
+        Assert.True(microOp.Execute(ref core));
+        DmaStreamComputeRetireObservation productionObservation =
+            DmaStreamComputeRetirePublication.ObserveProductionRetire(
+                microOp.LastExecutionResult!.IssueAdmission!.Entry!,
+                architecturalInstructionAge: 2);
+        Assert.True(productionObservation.IsNormalPipelineExecutableLane6Path);
+        Assert.Equal(
+            DmaStreamComputeRetirePublicationSurfaceKind.ProductionLane6RuntimeRetire,
+            productionObservation.SurfaceKind);
+        microOp.Commit(ref core);
+        Assert.Equal(DmaStreamComputeTokenState.Committed, microOp.LastExecutionToken!.State);
 
         string[] unexpectedPublicationCallSites = CompatFreezeScanner.ScanProductionFilesForPatterns(
             repoRoot,

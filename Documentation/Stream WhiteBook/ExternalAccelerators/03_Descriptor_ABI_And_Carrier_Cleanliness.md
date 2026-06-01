@@ -9,9 +9,9 @@ source/destination/scratch ranges, and partial completion policy.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorCommandDescriptor.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
-- `HybridCPU_ISE/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorCommandDescriptor.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
+- `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
 - `HybridCPU_Compiler/Core/IR/Model/IrSlotMetadata.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcDescriptorParserTests.cs`
 
@@ -39,11 +39,13 @@ The implemented SDC1 descriptor ABI is exactly:
   payload when supplied through the sideband reference.
 
 SDC1 does not define a universal external accelerator command protocol. It is a
-guarded descriptor ABI for the current L7-SDC model surfaces.
+guarded descriptor ABI for the current scoped L7-SDC runtime contour.
 
-Descriptor acceptance is model-only under the current contract. It does not make
-`ACCEL_*` executable, does not publish architectural `rd`, does not dispatch a
-production backend, and does not authorize compiler/backend production lowering.
+Descriptor acceptance can admit the current `ACCEL_SUBMIT` execution path when
+the carrier, guard, capability, feature-switch, and footprint checks also pass.
+It does not by itself publish architectural `rd`, dispatch arbitrary production
+backends, authorize compiler/backend production lowering, or expand the command
+set beyond the current contour.
 
 ## Parse, accept, reject contour
 
@@ -55,8 +57,8 @@ hash, and normalized footprint hash.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcOwnerDomainGuardTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcMappingEpochGuardTests.cs`
 
@@ -67,15 +69,17 @@ policy gap bits, raw VT hints, raw `Src2`, descriptor reference identities, regi
 identities, and telemetry correlation data are not descriptor ABI and are not authority.
 Dirty carriers fail before projector materialization.
 
-Carrier cleanliness does not make the command executable: direct
-`SystemDeviceCommandMicroOp.Execute(...)` remains fail-closed, and `ACCEL_*`
-carriers do not write architectural `rd`.
+Carrier cleanliness does not by itself grant execution authority. Current
+`SystemDeviceCommandMicroOp.Execute(...)` still requires the scoped runtime
+checks for each command, and register writeback occurs only through the runtime
+ABI result plus a carrier destination register. Dirty carriers, descriptorless
+submit, and unsupported expansion paths fail closed.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
-- `HybridCPU_ISE/Core/Decoder/DecodedBundleTransportProjector.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNativeCarrierValidationTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcInstructionTransportSidebandTests.cs`
 

@@ -1,14 +1,187 @@
 using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using Xunit;
 using YAKSys_Hybrid_CPU;
+using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Registers;
 
 namespace HybridCPU_ISE.Tests.MemoryAccelerators;
 
 public sealed class DmaStreamComputeExecutionTests
 {
+    [Theory]
+    [MemberData(nameof(Phase06DirectMicroOpCases))]
+    public void DmaStreamComputeMicroOpExecute_Phase06Dsc1OpsStageAndRetire(
+        DmaStreamComputeOperationKind operation,
+        DmaStreamComputeShapeKind shape,
+        DmaStreamComputeMemoryRange[] readRanges,
+        DmaStreamComputeMemoryRange[] writeRanges,
+        uint[] expected)
+    {
+        InitializeMainMemory(0x10000);
+        WriteUInt32Array(0x1000, 1, 2, 3, 4);
+        WriteUInt32Array(0x2000, 10, 20, 30, 40);
+        WriteUInt32Array(0x3000, 7, 8, 9, 10);
+        WriteUInt32Array(0x9000, 0xDEAD0001, 0xDEAD0002, 0xDEAD0003, 0xDEAD0004);
+
+        DmaStreamComputeDescriptor descriptor = CreateDescriptor(
+            operation,
+            shape,
+            readRanges,
+            writeRanges);
+        var microOp = new DmaStreamComputeMicroOp(descriptor);
+        var core = new Processor.CPU_Core(0);
+
+        Assert.True(microOp.Execute(ref core));
+
+        DmaStreamComputeExecutionResult execution = Assert.IsType<DmaStreamComputeExecutionResult>(
+            microOp.LastExecutionResult);
+        Assert.True(execution.IsStoreTracked);
+        Assert.False(execution.TokenHandle.IsDefault);
+        Assert.Equal(1, microOp.ActiveTokenCount);
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, execution.Token.State);
+        Assert.Equal(
+            operation == DmaStreamComputeOperationKind.Reduce
+                ? new uint[] { 0xDEAD0001 }
+                : new uint[] { 0xDEAD0001, 0xDEAD0002, 0xDEAD0003, 0xDEAD0004 },
+            ReadUInt32Array(0x9000, expected.Length));
+        Assert.True(execution.Telemetry.UsedLane6Backend);
+        Assert.Equal(0, execution.Telemetry.AluLaneOccupancyDelta);
+        Assert.Equal(0, execution.Telemetry.DirectDestinationWriteCount);
+        Assert.True(microOp.LastExecutionReplayEvidence.IsComplete);
+        Assert.Equal(
+            DmaStreamComputeTokenState.CommitPending,
+            microOp.LastExecutionReplayEvidence.TokenLifecycleEvidence.State);
+        Assert.True(microOp.LastExecutionReplayEvidence.LanePlacementEvidence.IsComplete);
+
+        microOp.Commit(ref core);
+
+        Assert.True(microOp.LastRetireCommitResult!.Succeeded);
+        Assert.Equal(DmaStreamComputeTokenState.Committed, execution.Token.State);
+        Assert.Equal(expected, ReadUInt32Array(0x9000, expected.Length));
+    }
+
+    [Fact]
+    public void DmaStreamComputeMicroOpExecute_UnsupportedDescriptorFailsClosedWithoutFallback()
+    {
+        InitializeMainMemory(0x10000);
+        WriteUInt32Array(0x1000, 1, 2, 3, 4);
+        WriteUInt32Array(0x2000, 10, 20, 30, 40);
+        WriteUInt32Array(0x9000, 0xCAFE0001, 0xCAFE0002, 0xCAFE0003, 0xCAFE0004);
+
+        DmaStreamComputeDescriptor descriptor = CreateDescriptor(
+            DmaStreamComputeOperationKind.Add,
+            shape: DmaStreamComputeShapeKind.FixedReduce);
+        var microOp = new DmaStreamComputeMicroOp(descriptor);
+        var core = new Processor.CPU_Core(0);
+
+        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+            () => microOp.Execute(ref core));
+
+        Assert.Contains("Phase 06 DSC1 contour", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("fails closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(0, microOp.ActiveTokenCount);
+        Assert.Null(microOp.LastExecutionResult);
+        Assert.Equal(new uint[] { 0xCAFE0001, 0xCAFE0002, 0xCAFE0003, 0xCAFE0004 }, ReadUInt32Array(0x9000, 4));
+    }
+
+    [Fact]
+    public void LegacyVmcsManager_Lane6GuestCompatibilityExecutionFailsClosedBeforeTokenOrWrite()
+    {
+        InitializeMainMemory(0x10000);
+        WriteUInt32Array(0x1000, 1, 2, 3, 4);
+        WriteUInt32Array(0x9000, 0xCAFE0001, 0xCAFE0002, 0xCAFE0003, 0xCAFE0004);
+
+        DmaStreamComputeDescriptor descriptor = CreateDescriptor(
+            DmaStreamComputeOperationKind.Copy);
+        var microOp = new DmaStreamComputeMicroOp(descriptor);
+        var core = new Processor.CPU_Core(0);
+        core.Csr.Write(CsrAddresses.VmxEnable, 1, PrivilegeLevel.Machine);
+        core.WriteVirtualThreadPipelineState(1, PipelineState.GuestExecution);
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => microOp.Execute(ref core));
+
+        Assert.Contains("Guest Lane6 compatibility execution is fail-closed", exception.Message);
+        Assert.Equal(0, microOp.ActiveTokenCount);
+        Assert.Null(microOp.LastExecutionResult);
+        Assert.Equal(
+            new uint[] { 0xCAFE0001, 0xCAFE0002, 0xCAFE0003, 0xCAFE0004 },
+            ReadUInt32Array(0x9000, 4));
+    }
+
+    [Fact]
+    public void DmaStreamComputeMicroOpExecute_RevalidatesOwnerDomainGuardAtRetire()
+    {
+        InitializeMainMemory(0x10000);
+        WriteUInt32Array(0x1000, 1, 2, 3, 4);
+        WriteUInt32Array(0x9000, 0xFACE0001, 0xFACE0002, 0xFACE0003, 0xFACE0004);
+
+        DmaStreamComputeDescriptor descriptor = CreateDescriptor(
+            DmaStreamComputeOperationKind.Copy,
+            readRanges: new[] { new DmaStreamComputeMemoryRange(0x1000, 16) });
+        var microOp = new DmaStreamComputeMicroOp(descriptor);
+        var core = new Processor.CPU_Core(0);
+
+        Assert.True(microOp.Execute(ref core));
+        DmaStreamComputeOwnerGuardDecision staleCommitGuard =
+            DmaStreamComputeOwnerGuardDecision.Allow(
+                descriptor.OwnerBinding,
+                descriptor.OwnerGuardDecision.RuntimeOwnerContext with { OwnerDomainTag = 0x4000 },
+                "stale guard must be revalidated before retire publication");
+
+        DomainFaultException ex = Assert.Throws<DomainFaultException>(
+            () => core.TestApplyDmaStreamComputeTokenCommit(
+                microOp.LastExecutionToken!,
+                staleCommitGuard));
+
+        Assert.Equal((int)descriptor.OwnerBinding.OwnerVirtualThreadId, ex.VirtualThreadId);
+        Assert.Equal(DmaStreamComputeTokenFaultKind.DomainViolation, microOp.LastExecutionToken!.LastFault!.FaultKind);
+        Assert.Equal(new uint[] { 0xFACE0001, 0xFACE0002, 0xFACE0003, 0xFACE0004 }, ReadUInt32Array(0x9000, 4));
+    }
+
+    [Fact]
+    public void DmaStreamComputeMicroOpExecute_ReplayDiscardRollsBackStagedBytes()
+    {
+        InitializeMainMemory(0x10000);
+        WriteUInt32Array(0x1000, 1, 2, 3, 4);
+        WriteUInt32Array(0x9000, 0xABCD0001, 0xABCD0002, 0xABCD0003, 0xABCD0004);
+
+        DmaStreamComputeDescriptor descriptor = CreateDescriptor(
+            DmaStreamComputeOperationKind.Copy,
+            readRanges: new[] { new DmaStreamComputeMemoryRange(0x1000, 16) });
+        var microOp = new DmaStreamComputeMicroOp(descriptor);
+        var core = new Processor.CPU_Core(0);
+
+        Assert.True(microOp.Execute(ref core));
+        DmaStreamComputeReplayEvidence beforeCancel = microOp.LastExecutionReplayEvidence;
+        microOp.LastExecutionToken!.Cancel(DmaStreamComputeTokenCancelReason.ReplayDiscard);
+        DmaStreamComputeCommitResult canceled =
+            core.TestApplyDmaStreamComputeTokenCommit(
+                microOp.LastExecutionToken,
+                descriptor.OwnerGuardDecision);
+        DmaStreamComputeReplayEvidence afterCancel = microOp.ExportReplayEvidence(
+            microOp.LastExecutionToken.ExportLifecycleEvidence(),
+            DmaStreamComputeLanePlacementEvidence.MaterializedLane6(
+                selectedLane: 6,
+                freeLaneMask: SlotClassLaneMap.GetLaneMask(SlotClass.DmaStreamClass),
+                stableDonorMask: 0,
+                replayActive: true));
+        DmaStreamComputeReplayEvidenceComparison comparison =
+            DmaStreamComputeReplayEvidenceComparer.Compare(beforeCancel, afterCancel);
+
+        Assert.True(canceled.IsCanceled);
+        Assert.False(canceled.RequiresRetireExceptionPublication);
+        Assert.False(comparison.CanReuse);
+        Assert.Equal(
+            ReplayPhaseInvalidationReason.DmaStreamComputeTokenEvidenceMismatch,
+            comparison.InvalidationReason);
+        Assert.Equal(new uint[] { 0xABCD0001, 0xABCD0002, 0xABCD0003, 0xABCD0004 }, ReadUInt32Array(0x9000, 4));
+    }
+
     [Fact]
     public void DmaStreamComputeExecution_Copy_StagesTransferAndPublishesOnlyAtTokenCommit()
     {
@@ -206,6 +379,63 @@ public sealed class DmaStreamComputeExecutionTests
     }
 
     private const ulong IdentityHash = 0xF007000000000001UL;
+
+    public static IEnumerable<object[]> Phase06DirectMicroOpCases()
+    {
+        yield return new object[]
+        {
+            DmaStreamComputeOperationKind.Copy,
+            DmaStreamComputeShapeKind.Contiguous1D,
+            new[] { new DmaStreamComputeMemoryRange(0x1000, 16) },
+            new[] { new DmaStreamComputeMemoryRange(0x9000, 16) },
+            new uint[] { 1, 2, 3, 4 }
+        };
+        yield return new object[]
+        {
+            DmaStreamComputeOperationKind.Add,
+            DmaStreamComputeShapeKind.Contiguous1D,
+            new[]
+            {
+                new DmaStreamComputeMemoryRange(0x1000, 16),
+                new DmaStreamComputeMemoryRange(0x2000, 16)
+            },
+            new[] { new DmaStreamComputeMemoryRange(0x9000, 16) },
+            new uint[] { 11, 22, 33, 44 }
+        };
+        yield return new object[]
+        {
+            DmaStreamComputeOperationKind.Mul,
+            DmaStreamComputeShapeKind.Contiguous1D,
+            new[]
+            {
+                new DmaStreamComputeMemoryRange(0x1000, 16),
+                new DmaStreamComputeMemoryRange(0x2000, 16)
+            },
+            new[] { new DmaStreamComputeMemoryRange(0x9000, 16) },
+            new uint[] { 10, 40, 90, 160 }
+        };
+        yield return new object[]
+        {
+            DmaStreamComputeOperationKind.Fma,
+            DmaStreamComputeShapeKind.Contiguous1D,
+            new[]
+            {
+                new DmaStreamComputeMemoryRange(0x1000, 16),
+                new DmaStreamComputeMemoryRange(0x2000, 16),
+                new DmaStreamComputeMemoryRange(0x3000, 16)
+            },
+            new[] { new DmaStreamComputeMemoryRange(0x9000, 16) },
+            new uint[] { 17, 48, 99, 170 }
+        };
+        yield return new object[]
+        {
+            DmaStreamComputeOperationKind.Reduce,
+            DmaStreamComputeShapeKind.FixedReduce,
+            new[] { new DmaStreamComputeMemoryRange(0x1000, 16) },
+            new[] { new DmaStreamComputeMemoryRange(0x9000, 4) },
+            new uint[] { 10 }
+        };
+    }
 
     private static void InitializeMainMemory(ulong bytes)
     {

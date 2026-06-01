@@ -13,6 +13,7 @@ public sealed class Phase10TraceAndMemoryAllocationBoundaryTests
         string traceSinkPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Diagnostics",
             "TraceSink.cs");
@@ -26,6 +27,7 @@ public sealed class Phase10TraceAndMemoryAllocationBoundaryTests
         string pipelineExecutionTracePath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Pipeline",
             "Core",

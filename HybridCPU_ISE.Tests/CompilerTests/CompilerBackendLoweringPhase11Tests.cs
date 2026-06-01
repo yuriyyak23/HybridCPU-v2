@@ -5,6 +5,7 @@ using System.Linq;
 using HybridCPU.Compiler.Core.IR;
 using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.Tests.MemoryAccelerators;
 using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
@@ -106,7 +107,7 @@ public sealed class CompilerBackendLoweringPhase11Tests
             out InstructionSlotMetadata metadata));
         Assert.Same(descriptor, metadata.DmaStreamComputeDescriptor);
         Assert.Null(metadata.AcceleratorCommandDescriptor);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
         MicroOp projected = L7SdcCompilerEmissionTests.DecodeAndProjectSingleCarrier(
             compiledProgram.LoweredBundles[0],
@@ -116,10 +117,14 @@ public sealed class CompilerBackendLoweringPhase11Tests
         Assert.False(carrier.WritesRegister);
         Assert.Empty(carrier.WriteRegisters);
 
+        DmaStreamComputeTelemetryTests.InitializeMainMemory(0x10000);
+        DmaStreamComputeTelemetryTests.WriteMemory(0x1000, DmaStreamComputeTelemetryTests.Fill(0x01, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x2000, DmaStreamComputeTelemetryTests.Fill(0x02, 16));
+        DmaStreamComputeTelemetryTests.WriteMemory(0x9000, DmaStreamComputeTelemetryTests.Fill(0x00, 16));
         var core = new Processor.CPU_Core(0);
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => carrier.Execute(ref core));
-        Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.True(carrier.Execute(ref core));
+        Assert.True(carrier.LastExecutionResult!.IsStoreTracked);
+        Assert.Equal(DmaStreamComputeTokenState.CommitPending, carrier.LastExecutionToken!.State);
     }
 
     [Fact]
@@ -164,14 +169,28 @@ public sealed class CompilerBackendLoweringPhase11Tests
             compiledProgram.LoweredBundleAnnotations[0],
             slotIndex: 7);
         AcceleratorSubmitMicroOp carrier = Assert.IsType<AcceleratorSubmitMicroOp>(projected);
-        Assert.False(carrier.WritesRegister);
-        Assert.Empty(carrier.WriteRegisters);
+        Assert.True(carrier.WritesRegister);
+        Assert.Equal(new[] { 9 }, carrier.WriteRegisters);
 
-        var core = new Processor.CPU_Core(0);
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-            () => carrier.Execute(ref core));
-        Assert.Contains("direct execution is unsupported", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fallback routing", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Processor.MainMemoryArea previousMemory = Processor.MainMemory;
+        try
+        {
+            L7SdcPhase07TestFactory.InitializeMainMemory(0x10000);
+            L7SdcPhase07TestFactory.WriteMainMemory(0x1000, L7SdcPhase07TestFactory.Fill(0x31, 0x40));
+            L7SdcPhase07TestFactory.WriteMainMemory(0x9000, L7SdcPhase07TestFactory.Fill(0x91, 0x40));
+            var core = new Processor.CPU_Core(0);
+
+            Assert.True(carrier.Execute(ref core));
+            Assert.NotNull(carrier.LastSubmitAdmission);
+            Assert.True(carrier.LastSubmitAdmission!.IsAccepted, carrier.LastSubmitAdmission.Message);
+            Assert.False(carrier.UsedLegacyCustomAcceleratorFallback);
+            Assert.False(carrier.UsedArithmeticExecutionPlane);
+        }
+        finally
+        {
+            Processor.MainMemory = previousMemory;
+            Processor.Memory = null;
+        }
     }
 
     [Fact]
@@ -190,7 +209,7 @@ public sealed class CompilerBackendLoweringPhase11Tests
                 reference);
 
         Assert.True(result.IsValid, result.Message);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
         CompilerBackendLoweringDecision productionDecision =
             CompilerBackendLoweringContract.EvaluateProductionDscLowering(
@@ -263,6 +282,89 @@ public sealed class CompilerBackendLoweringPhase11Tests
 
         Assert.False(decision.IsAllowed);
         Assert.True((decision.MissingRequirements & missingRequirement) != 0);
+    }
+
+    [Fact]
+    public void Phase04_FutureDscProductionLoweringRequiresQueueTokenFenceContract()
+    {
+        Assert.True(
+            (CompilerBackendLoweringContract.FutureDscRequiredRequirements &
+             CompilerBackendLoweringRequirement.QueueTokenFenceContract) != 0);
+
+        CompilerBackendLoweringDecision decision =
+            CompilerBackendLoweringContract.EvaluateProductionDscLowering(
+                new CompilerBackendLoweringRequest
+                {
+                    Surface = CompilerBackendLoweringSurface.Lane6DmaStreamCompute,
+                    State = CompilerBackendCapabilityState.ProductionExecutable,
+                    AvailableRequirements =
+                        CompilerBackendLoweringContract.FutureDscRequiredRequirements &
+                        ~CompilerBackendLoweringRequirement.QueueTokenFenceContract
+                });
+
+        Assert.False(decision.IsAllowed);
+        Assert.True(
+            (decision.MissingRequirements &
+             CompilerBackendLoweringRequirement.QueueTokenFenceContract) != 0);
+        Assert.Contains(nameof(CompilerBackendLoweringRequirement.QueueTokenFenceContract), decision.Reason, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Phase05_FutureL7ProductionLoweringRequiresTokenVirtualHandleAndBackendContracts()
+    {
+        Assert.True(
+            (CompilerBackendLoweringContract.FutureL7RequiredRequirements &
+             CompilerBackendLoweringRequirement.QueueTokenFenceContract) != 0);
+        Assert.True(
+            (CompilerBackendLoweringContract.FutureL7RequiredRequirements &
+             CompilerBackendLoweringRequirement.VirtualHandleContract) != 0);
+        Assert.True(
+            (CompilerBackendLoweringContract.FutureL7RequiredRequirements &
+             CompilerBackendLoweringRequirement.ProductionBackendProtocol) != 0);
+        Assert.True(
+            (CompilerBackendLoweringContract.FutureL7RequiredRequirements &
+             CompilerBackendLoweringRequirement.ResultPublication) != 0);
+
+        CompilerBackendLoweringDecision missingHandleDecision =
+            CompilerBackendLoweringContract.EvaluateProductionL7Lowering(
+                new CompilerBackendLoweringRequest
+                {
+                    Surface = CompilerBackendLoweringSurface.Lane7SystemDeviceCommand,
+                    State = CompilerBackendCapabilityState.ProductionExecutable,
+                    AvailableRequirements =
+                        CompilerBackendLoweringContract.FutureL7RequiredRequirements &
+                        ~CompilerBackendLoweringRequirement.VirtualHandleContract
+                });
+
+        Assert.False(missingHandleDecision.IsAllowed);
+        Assert.True(
+            (missingHandleDecision.MissingRequirements &
+             CompilerBackendLoweringRequirement.VirtualHandleContract) != 0);
+        Assert.Contains(
+            nameof(CompilerBackendLoweringRequirement.VirtualHandleContract),
+            missingHandleDecision.Reason,
+            StringComparison.Ordinal);
+
+        CompilerBackendLoweringDecision runtimeEvidenceDecision =
+            CompilerBackendLoweringContract.EvaluateProductionL7Lowering(
+                new CompilerBackendLoweringRequest
+                {
+                    Surface = CompilerBackendLoweringSurface.Lane7SystemDeviceCommand,
+                    State = CompilerBackendCapabilityState.ProductionExecutable,
+                    AvailableRequirements = CompilerBackendLoweringContract.FutureL7RequiredRequirements,
+                    UsesRuntimeTokenOrVirtualHandleEvidence = true
+                });
+
+        Assert.False(runtimeEvidenceDecision.IsAllowed);
+        Assert.True(
+            (runtimeEvidenceDecision.MissingRequirements &
+             CompilerBackendLoweringRequirement.QueueTokenFenceContract) != 0);
+        Assert.True(
+            (runtimeEvidenceDecision.MissingRequirements &
+             CompilerBackendLoweringRequirement.VirtualHandleContract) != 0);
+        Assert.Contains("token", runtimeEvidenceDecision.Reason, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("virtual-handle", runtimeEvidenceDecision.Reason, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("compiler ABI authority", runtimeEvidenceDecision.Reason, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]
@@ -360,6 +462,7 @@ public sealed class CompilerBackendLoweringPhase11Tests
     {
         yield return new object[] { CompilerBackendLoweringRequirement.ExecutableCarrier };
         yield return new object[] { CompilerBackendLoweringRequirement.BackendAddressSpace };
+        yield return new object[] { CompilerBackendLoweringRequirement.QueueTokenFenceContract };
         yield return new object[] { CompilerBackendLoweringRequirement.OrderCacheFaultContract };
         yield return new object[] { CompilerBackendLoweringRequirement.AllOrNoneRetirePublication };
         yield return new object[] { CompilerBackendLoweringRequirement.StagedCommitBoundary };
@@ -371,6 +474,7 @@ public sealed class CompilerBackendLoweringPhase11Tests
         yield return new object[] { CompilerBackendLoweringRequirement.ResultPublication };
         yield return new object[] { CompilerBackendLoweringRequirement.ProductionBackendProtocol };
         yield return new object[] { CompilerBackendLoweringRequirement.QueueTokenFenceContract };
+        yield return new object[] { CompilerBackendLoweringRequirement.VirtualHandleContract };
         yield return new object[] { CompilerBackendLoweringRequirement.OrderCacheFaultContract };
         yield return new object[] { CompilerBackendLoweringRequirement.StagedCommitBoundary };
     }

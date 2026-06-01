@@ -1,3 +1,4 @@
+using HybridCPU_ISE.CloseToRTL.Memory.DMA;
 using System;
 using System.Collections.Generic;
 using Xunit;

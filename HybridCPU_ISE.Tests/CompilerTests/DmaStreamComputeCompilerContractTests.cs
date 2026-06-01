@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using HybridCPU.Compiler.Core;
 using HybridCPU.Compiler.Core.IR;
 using HybridCPU.Compiler.Core.Threading;
@@ -111,6 +113,68 @@ public sealed class DmaStreamComputeCompilerContractTests
     }
 
     [Fact]
+    public void CompilerLane6StatusQueryQueueTokenFenceAndRuntimeFallbackSurfaces_RemainNoEmission()
+    {
+        string[] threadMethods = typeof(HybridCpuThreadCompilerContext)
+            .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+            .Where(static method => !method.IsSpecialName)
+            .Select(static method => method.Name)
+            .ToArray();
+
+        Assert.Equal(
+            [nameof(HybridCpuThreadCompilerContext.CompileDmaStreamCompute),
+             nameof(HybridCpuThreadCompilerContext.CompileDmaStreamComputeDescriptor)],
+            threadMethods
+                .Where(static name => name.Contains("DmaStreamCompute", StringComparison.Ordinal))
+                .Distinct(StringComparer.Ordinal)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
+
+        string[] forbiddenMethodFragments =
+        [
+            "Dsc",
+            "DmaStreamStatus",
+            "DmaStreamQuery",
+            "DmaStreamQueue",
+            "DmaStreamToken",
+            "DmaStreamFence",
+            "DmaStreamBackend",
+            "DmaStreamFallback",
+            "DmaStreamRuntime",
+            "Production"
+        ];
+        foreach (string fragment in forbiddenMethodFragments)
+        {
+            Assert.DoesNotContain(
+                threadMethods,
+                methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+        }
+
+        string compilerSource = ReadAllCompilerSource();
+        string[] forbiddenSourceFragments =
+        [
+            "DSC_STATUS",
+            "DSC_QUERY_CAPS",
+            "DmaStreamComputeStatus",
+            "DmaStreamComputeQueryCaps",
+            "DmaStreamComputeTokenStore",
+            "DmaStreamComputeRuntime",
+            "DmaStreamComputeQueue",
+            "DmaStreamComputeFence",
+            "CompileDsc",
+            "CompileDmaStreamStatus",
+            "CompileDmaStreamQuery",
+            "CompileDmaStreamQueue",
+            "CompileDmaStreamToken",
+            "CompileDmaStreamFence"
+        ];
+        foreach (string fragment in forbiddenSourceFragments)
+        {
+            Assert.DoesNotContain(fragment, compilerSource, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public void CompilerDescriptorEmission_RejectsUnguardedDescriptorInsteadOfFallback()
     {
         byte[] descriptorBytes = DmaStreamComputeTestDescriptorFactory.BuildDescriptor();
@@ -156,5 +220,19 @@ public sealed class DmaStreamComputeCompilerContractTests
                 descriptor,
                 (DmaStreamComputeCompilerAdoptionMode)0x7F));
         Assert.Equal(0, context.GetCompiledInstructions().Length);
+    }
+
+    private static string ReadAllCompilerSource()
+    {
+        string compilerDirectory = Path.Combine(
+            CompatFreezeScanner.FindRepoRoot(),
+            "HybridCPU_Compiler");
+
+        return string.Join(
+            Environment.NewLine,
+            Directory
+                .EnumerateFiles(compilerDirectory, "*.cs", SearchOption.AllDirectories)
+                .Where(static path => !CompatFreezeScanner.IsGeneratedPath(path))
+                .Select(File.ReadAllText));
     }
 }

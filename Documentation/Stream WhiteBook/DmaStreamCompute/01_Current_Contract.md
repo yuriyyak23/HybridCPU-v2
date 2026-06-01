@@ -1,19 +1,20 @@
 # DmaStreamCompute Current Contract
 
-Current implementation, model/runtime-side APIs, fail-closed carrier surfaces,
+Current implementation, model/runtime-side APIs, fail-closed adjacent surfaces,
 and future design are separate. Future architecture is not implemented behavior.
 
 ## Current Implemented Contract
 
-- `DmaStreamComputeMicroOp` is a lane6 typed-slot descriptor/decode carrier.
-- Phase 3 selects Option A: keep `DmaStreamComputeMicroOp` as a fail-closed
-  carrier, not an executable DMA micro-op.
-- Direct `DmaStreamComputeMicroOp.Execute(ref Processor.CPU_Core core)` is
-  disabled and throws fail-closed.
-- `DmaStreamComputeDescriptorParser.ExecutionEnabled` is `false`.
+- `DmaStreamComputeMicroOp` is a lane6 typed-slot descriptor/decode carrier with
+  a current Phase 06 DSC1 materialized execution contour.
+- `DmaStreamComputeMicroOp.Execute(ref Processor.CPU_Core core)` is enabled only
+  for the Phase 06 DSC1 contour. It rejects unsupported descriptor shapes and
+  operations without StreamEngine or DMAController fallback.
+- `DmaStreamComputeDescriptorParser.ExecutionEnabled` is `true` for DSC1.
 - `DmaStreamComputeRuntime` is an explicit runtime helper;
-  `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` is not canonical
-  micro-op execution and is not called by `DmaStreamComputeMicroOp.Execute(...)`.
+  `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` is the retained direct
+  helper, while canonical materialized micro-op execution enters through
+  `ExecuteMaterializedMicroOpToCommitPending(...)`.
 - Helper/runtime tokens, retire-style fault records, commit-pending observations,
   progress diagnostics, and parser/model APIs are not executable ISA evidence.
 - Compiler/backend code may preserve and validate DSC1 descriptor sideband, but
@@ -23,7 +24,7 @@ and future design are separate. Future architecture is not implemented behavior.
 - `DmaStreamComputeMicroOp.WritesRegister` is `false`; the carrier has no
   architectural register read/write contract.
 
-## Model-Only And Runtime-Side APIs
+## Runtime-Side APIs
 
 `DmaStreamComputeRuntime` can execute a guard-accepted descriptor in tests or
 explicit runtime orchestration by:
@@ -34,14 +35,15 @@ explicit runtime orchestration by:
 4. moving the token to `CommitPending`;
 5. publishing bytes only when `DmaStreamComputeToken.Commit(...)` is called.
 
-This helper is intentionally outside the canonical micro-op `Execute` path.
-It does not call `StreamEngine` and does not call `DMAController`.
+The direct `ExecuteToCommitPending(...)` helper remains outside the canonical
+micro-op path. The canonical micro-op path uses
+`ExecuteMaterializedMicroOpToCommitPending(...)` so issue/admission owns token
+allocation. Neither path calls `StreamEngine` or `DMAController`.
 
 ## Unsupported / Fail-Closed Behavior
 
 Current code does not implement:
 
-- executable lane6 `DmaStreamComputeMicroOp.Execute(...)`;
 - async DmaStreamCompute queue, scheduler, overlap, pause, resume, cancel,
   reset, or fence ISA controls;
 - virtual/IOMMU-backed or cache-coherent DmaStreamCompute runtime memory;
@@ -58,8 +60,8 @@ of being normalized into an executable operation.
 
 Code evidence:
 
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptor.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptor.cs`
 
 The implemented descriptor ABI is exactly:
 
@@ -141,8 +143,6 @@ completion is future-gated and rejected for DSC1.
 The following require explicit architecture approval before they can move into
 the current contract:
 
-- executable lane6 micro-op semantics;
-- pipeline token allocation for lane6 DSC;
 - production compiler/backend executable DSC lowering;
 - async DmaStreamCompute scheduler/queue/completion;
 - pause/resume/cancel/reset/fence ISA controls;
@@ -153,11 +153,11 @@ the current contract:
 
 The Ex1 dependency order is:
 
-1. Phase02 executable lane6 DSC ADR approval.
-2. Phase03 token store and issue/admission allocation.
-3. Phase04 precise retire fault publication.
-4. Phase05 ordering/conflict service.
-5. Phase06 explicit physical/IOMMU backend selection with no fallback.
+1. Phase02 executable lane6 DSC ADR approval: closed for current DSC1 contour.
+2. Phase03 token store and issue/admission allocation: closed for current DSC1 contour.
+3. Phase04 precise retire fault publication: closed for current DSC1 contour.
+4. Phase05 ordering/conflict service: closed for current DSC1 contour.
+5. Phase06 explicit physical backend selection with no StreamEngine/DMAController fallback.
 6. Phase07 DSC2/capability executable-use gate for any new descriptor feature.
 7. Phase08 all-or-none/progress and any later partial-success ADR.
 8. Phase09 explicit non-coherent cache flush/invalidate protocol; coherent DMA
@@ -171,11 +171,11 @@ backend/compiler evidence must not satisfy upstream execution gates.
 
 ## Code Evidence Links
 
-- `HybridCPU_ISE/Core/Pipeline/MicroOps/DmaStreamComputeMicroOp.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeRuntime.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamAcceleratorBackend.cs`
-- `HybridCPU_ISE/Core/Execution/DmaStreamCompute/DmaStreamComputeToken.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeRuntime.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamAcceleratorBackend.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeToken.cs`
 - `HybridCPU_ISE/Processor/Memory/Processor.Memory.cs`
 - `HybridCPU_ISE.Tests/tests/DmaStreamCompute*.cs`
 - `HybridCPU_ISE.Tests/CompilerTests/DmaStreamComputeCompilerContractTests.cs`

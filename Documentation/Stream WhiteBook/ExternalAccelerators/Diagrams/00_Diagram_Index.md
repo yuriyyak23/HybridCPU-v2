@@ -1,9 +1,10 @@
 # Diagram Index
 
 Each diagram is a Mermaid diagram with code anchors under the diagram. The
-diagrams describe current fail-closed carriers, explicit model/helper surfaces,
-or future-gated planning evidence; none of them is implementation approval for
-executable L7, executable lane6 DSC, DSC2 execution, async overlap,
+diagrams describe the current scoped executable contours, adjacent fail-closed
+surfaces, explicit helper surfaces, or future-gated planning evidence; none of
+them is implementation approval for expansion beyond current L7 Phase 08 /
+Phase 08A commands, current lane6 Phase 06 DSC1, DSC2 execution, async overlap,
 IOMMU-backed execution, coherent DMA/cache, or production compiler/backend
 lowering.
 
@@ -19,9 +20,9 @@ lowering.
 
 Global code anchors:
 
-- `HybridCPU_ISE/Core/Execution/ExternalAccelerators/*`
-- `HybridCPU_ISE/Core/Pipeline/MicroOps/SystemDeviceCommandMicroOp.cs`
-- `HybridCPU_ISE/Core/Decoder/VliwDecoderV4.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/*`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_Compiler/Core/IR/Model/IrAcceleratorModels.cs`
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
 - `HybridCPU_ISE.Tests/tests/L7Sdc*.cs`

@@ -44,6 +44,7 @@ public sealed class Phase09VtScopedStateOwnershipTests
         Assert.Equal(currentPc, csr.Read(CsrAddresses.Mepc, PrivilegeLevel.Machine));
     }
 
+#if false // Retired VMCS state-movement authority behavior; manager removed without replacement in task 190.
     [Fact]
     public void VmcsManager_RestoreGuestState_UsesVtScopedPcAndRegisterWrites()
     {
@@ -99,6 +100,7 @@ public sealed class Phase09VtScopedStateOwnershipTests
         Assert.Equal(2, registerWrite.RegId);
         Assert.Equal(hostSp, registerWrite.Value);
     }
+#endif
 
     [Fact]
     public void LiveCpuStateAdapter_ApplyTo_DoesNotAutoCommitActiveFrontendPcWithoutExplicitPcWrite()
@@ -244,4 +246,3 @@ public sealed class Phase09VtScopedStateOwnershipTests
             _pipelineState = PipelineFsmGuard.Transition(_pipelineState, trigger);
     }
 }
-

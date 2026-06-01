@@ -638,6 +638,7 @@ namespace HybridCPU_ISE.Tests
         public void VmcsField_HasEptViolationQualification_Value113()
             => Assert.Equal(113, (ushort)VmcsField.EptViolationQualification);
 
+#if false // Retired writable VMCS storage behavior; manager removed without replacement in task 190.
         [Fact]
         public void VmcsManager_CanReadWrite_EptPointer()
         {
@@ -655,6 +656,7 @@ namespace HybridCPU_ISE.Tests
             mgr.WriteField(VmcsField.Vpid, 42L);
             Assert.Equal(42L, mgr.ReadField(VmcsField.Vpid));
         }
+#endif
     }
 
     // ─────────────────────────────────────────────────────────────────────────

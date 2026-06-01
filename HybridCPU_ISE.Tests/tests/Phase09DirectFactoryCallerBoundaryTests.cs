@@ -13,9 +13,10 @@ public sealed class Phase09DirectFactoryCallerBoundaryTests
         string repoRoot = FindRepoRoot();
         string runtimeRoot = Path.Combine(repoRoot, "HybridCPU_ISE");
         string compilerRoot = Path.Combine(repoRoot, "HybridCPU_Compiler");
-        string diagnosticsRoot = Path.Combine(runtimeRoot, "Core", "Diagnostics");
+        string diagnosticsRoot = Path.Combine(runtimeRoot, "NonRTL", "Core", "Diagnostics");
         string allowedProjectorPath = Path.Combine(
             runtimeRoot,
+            "NonRTL",
             "Core",
             "Decoder",
             "DecodedBundleTransportProjector.cs");
@@ -60,6 +61,7 @@ public sealed class Phase09DirectFactoryCallerBoundaryTests
         string helperPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Core.cs");
@@ -86,12 +88,14 @@ public sealed class Phase09DirectFactoryCallerBoundaryTests
         string coreHelperPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Core.cs");
         string csrHelperPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
+            "NonRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Csr.cs");

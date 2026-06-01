@@ -169,7 +169,7 @@ public sealed class CachePrefetchNonCoherentPhase09Tests
     }
 
     [Fact]
-    public void Phase09_DmaStreamCommitObserverInvalidatesDataCacheAndKeepsExecutionGatesClosed()
+    public void Phase09_DmaStreamCommitObserverInvalidatesDataCacheAndKeepsPhase06ExecutionScoped()
     {
         Processor.MainMemoryArea previousMemory = Processor.MainMemory;
         try
@@ -193,12 +193,13 @@ public sealed class CachePrefetchNonCoherentPhase09Tests
             Assert.True(result.Succeeded);
             Assert.Equal(DmaStreamComputeTokenState.Committed, token.State);
             Assert.Equal(0UL, core.L1_Data[0].DataCache_DataLenght);
-            Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+            Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
             var executeCore = new Processor.CPU_Core(0);
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
-                () => new DmaStreamComputeMicroOp(descriptor).Execute(ref executeCore));
-            Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
+            var carrier = new DmaStreamComputeMicroOp(descriptor);
+            Assert.True(carrier.Execute(ref executeCore));
+            Assert.Equal(DmaStreamComputeTokenState.CommitPending, carrier.LastExecutionToken!.State);
+            Assert.Equal(Fill(0xA1, 16), DmaStreamComputeTelemetryTests.ReadMemory(0x9000, 16));
         }
         finally
         {
@@ -259,7 +260,15 @@ public sealed class CachePrefetchNonCoherentPhase09Tests
             {
                 Assert.False(carrier.WritesRegister);
                 Assert.Empty(carrier.WriteRegisters);
-                Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref executeCore));
+                if (carrier.CommandKind == SystemDeviceCommandKind.Submit)
+                {
+                    Assert.Throws<InvalidOperationException>(() => carrier.Execute(ref executeCore));
+                }
+                else
+                {
+                    Assert.True(carrier.Execute(ref executeCore));
+                    Assert.NotNull(carrier.LastCommandResult);
+                }
             }
         }
         finally
@@ -384,7 +393,7 @@ public sealed class CachePrefetchNonCoherentPhase09Tests
         dscContext.CompileDmaStreamCompute(
             DmaStreamComputeTestDescriptorFactory.CreateDescriptor());
         Assert.Equal(1, dscContext.InstructionCount);
-        Assert.False(DmaStreamComputeDescriptorParser.ExecutionEnabled);
+        Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
         var l7Context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
         AcceleratorCommandDescriptor l7Descriptor =

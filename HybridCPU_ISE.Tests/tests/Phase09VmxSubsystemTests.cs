@@ -189,6 +189,7 @@ namespace HybridCPU_ISE.Tests.Phase09
     // 4. VmcsManager вЂ” VMCS Lifecycle Management
     // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 
+#if false // Retired VMCS lifecycle authority behavior; manager removed without replacement in task 190.
     public sealed class VmcsManagerTests
     {
         [Fact]
@@ -319,6 +320,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             Assert.Equal(100, mgr.ReadField(VmcsField.GuestPc));
         }
     }
+#endif
 
     // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
     // 5. NullVmxEventSink вЂ” Default No-Op Trace
@@ -367,6 +369,7 @@ namespace HybridCPU_ISE.Tests.Phase09
     // 7. VmxExecutionUnit вЂ” VMXON / VMXOFF Cycle
     // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 
+#if false // Retired behavior tests for the removed VmxExecutionUnit constructor/opcode shell.
     public sealed class VmxOnOffCycleTests
     {
         private readonly CsrFile _csr = new();
@@ -1098,5 +1101,5 @@ namespace HybridCPU_ISE.Tests.Phase09
             return outcome;
         }
     }
+#endif
 }
-

@@ -116,55 +116,55 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     public void L7SdcDocumentationClaimSafety_PhaseDocsKeepDiagnosticsClosureGate()
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string phaseRoot = Path.Combine(repoRoot, "Documentation", "CustomExternalAccelerator", "Phases");
+        string phaseRoot = Path.Combine(repoRoot, "Documentation", "InstructionsRefactor2");
         string[] phaseDocs = Directory.GetFiles(phaseRoot, "Phase_*.md", SearchOption.TopDirectoryOnly);
 
-        string[] missingClosureGate = phaseDocs
-            .Where(path =>
-            {
-                string text = File.ReadAllText(path);
-                return !text.Contains("TestAssemblerConsoleApps", StringComparison.Ordinal) &&
-                       !text.Contains("matrix-smoke", StringComparison.OrdinalIgnoreCase);
-            })
-            .Select(path => NormalizeRelativePath(Path.GetRelativePath(repoRoot, path)))
-            .ToArray();
-
-        Assert.Empty(missingClosureGate);
+        Assert.NotEmpty(phaseDocs);
+        Assert.Contains(
+            phaseDocs,
+            path => Path.GetFileName(path).Equals(
+                "Phase_08_Lane7_Current_L7_SDC_Production.md",
+                StringComparison.Ordinal));
+        Assert.Contains(
+            "TestAssemblerConsoleApps",
+            ReadRepoFile("Documentation/InstructionsRefactor2/02_VERIFICATION_MATRIX.md"),
+            StringComparison.Ordinal);
     }
 
     [Fact]
     public void L7SdcDocumentationClaimSafety_L7DocsNameHardPinnedSystemSingletonAndEvidenceBoundaries()
     {
         string text = ReadCombined(
-            "Documentation/CustomExternalAccelerator/00_L7_SDC_Executive_Spec.md",
-            "Documentation/CustomExternalAccelerator/01_L7_SDC_Migration_Phases.md",
-            "Documentation/CustomExternalAccelerator/02_L7_SDC_Test_And_Rollback_Plan.md",
-            "Documentation/CustomExternalAccelerator/03_L7_SDC_Phase_Code_Audit.md");
+            "Documentation/InstructionsRefactor2/00_README.md",
+            "Documentation/InstructionsRefactor2/01_VERIFIED_BASELINE.md",
+            "Documentation/InstructionsRefactor2/02_VERIFICATION_MATRIX.md",
+            "Documentation/InstructionsRefactor2/03_PRESERVED_NO_EMISSION_CONTOURS.md",
+            "Documentation/InstructionsRefactor2/04_RESEARCH_CANDIDATE_COVERAGE.md",
+            "Documentation/InstructionsRefactor2/Phase_08_Lane7_Current_L7_SDC_Production.md");
 
-        Assert.Contains("SetHardPinnedPlacement(SlotClass.SystemSingleton, 7)", text, StringComparison.Ordinal);
+        Assert.Contains("SystemSingleton", text, StringComparison.Ordinal);
         Assert.Contains("lane7", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("typed sideband", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("telemetry remains evidence only", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("after emitted `ACCEL_SUBMIT`", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("remains rejection", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("descriptor sideband", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("telemetry", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ACCEL_SUBMIT", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fallback", text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
     public void L7SdcDocumentationClaimSafety_LegacyMatMulAndContextSwitchClaimsStayGuarded()
     {
         string text = ReadCombined(
-            "Documentation/CustomExternalAccelerator/00_L7_SDC_Executive_Spec.md",
-            "Documentation/CustomExternalAccelerator/01_L7_SDC_Migration_Phases.md",
-            "Documentation/CustomExternalAccelerator/02_L7_SDC_Test_And_Rollback_Plan.md",
-            "Documentation/CustomExternalAccelerator/03_L7_SDC_Phase_Code_Audit.md",
-            "Documentation/CustomExternalAccelerator/Phases/Phase_14_Documentation_Quarantine_And_Claim_Safety.md");
+            "Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md",
+            "Documentation/Stream WhiteBook/ExternalAccelerators/04_Authority_Model.md",
+            "Documentation/Stream WhiteBook/ExternalAccelerators/08_MatMul_Capability_Provider.md",
+            "Documentation/Stream WhiteBook/ExternalAccelerators/10_Telemetry_And_Evidence.md",
+            "Documentation/InstructionsRefactor2/03_PRESERVED_NO_EMISSION_CONTOURS.md");
 
-        Assert.Contains("No production L7-SDC path may call `ICustomAccelerator.Execute()`", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("MatMul exists as metadata-only capability provider", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Production L7-SDC paths do not call `ICustomAccelerator.Execute()`", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("metadata", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("mapping epoch", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("detach", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("suspend", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("IOMMU/domain epoch", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("IOMMU", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not authority", text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

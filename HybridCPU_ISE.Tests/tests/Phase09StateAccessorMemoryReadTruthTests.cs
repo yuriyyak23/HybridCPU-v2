@@ -1,4 +1,6 @@
 using System;
+using HybridCPU_ISE.CloseToRTL.Memory.Banks;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 using HybridCPU_ISE.Legacy;
 using Xunit;
 using YAKSys_Hybrid_CPU;
@@ -36,13 +38,13 @@ public sealed class Phase09StateAccessorMemoryReadTruthTests
     [Fact]
     public void ReadMemory_WhenUnderlyingReadFails_ThrowsExplicitFailureInsteadOfZeroFilledBuffer()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
         Processor.MainMemory.WriteToPosition(BitConverter.GetBytes(0x1122_3344U), 0x100);
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -57,7 +59,7 @@ public sealed class Phase09StateAccessorMemoryReadTruthTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
     }

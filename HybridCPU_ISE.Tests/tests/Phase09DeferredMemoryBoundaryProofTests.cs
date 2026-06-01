@@ -8,6 +8,9 @@ using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Execution;
 using YAKSys_Hybrid_CPU.Memory;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.CloseToRTL.Memory.Banks;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToRTL.Memory.DMA;
 
 namespace HybridCPU_ISE.Tests.Phase09;
 
@@ -318,14 +321,14 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     [Fact]
     public void MainMemoryReadFromPosition_WhenPhysicalReadIsSilentlySquashed_ThenFailsClosed()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
         byte[] seed = BitConverter.GetBytes(0x1122_3344U);
         Processor.MainMemory.WriteToPosition(seed, 0x100);
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -335,7 +338,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
     }
@@ -343,15 +346,15 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     [Fact]
     public void MainMemoryVirtualRead_WhenPhysicalReadIsSilentlySquashed_ThenFailsClosed()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
         byte[] seed = BitConverter.GetBytes(0x1122_3344U);
         Processor.MainMemory.WriteToPosition(seed, 0x100);
         Processor.MainMemory.Position = 0x100;
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -361,7 +364,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
     }
@@ -369,12 +372,12 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     [Fact]
     public void MainMemoryWriteToPosition_WhenPhysicalWriteIsSilentlySquashed_ThenFailsClosed()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -384,7 +387,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
     }
@@ -392,13 +395,13 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     [Fact]
     public void MainMemoryVirtualWrite_WhenPhysicalWriteIsSilentlySquashed_ThenFailsClosed()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
         Processor.MainMemory.Position = 0x100;
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -408,7 +411,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
     }
@@ -416,7 +419,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     [Fact]
     public void IommuBurstAndDma_WhenDomainRejectsOrSilentSquashOccurs_ThenSurfaceFailedReadWriteTruth()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
 
         byte[] seed = BitConverter.GetBytes(0x1122_3344U);
@@ -426,9 +429,9 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         Assert.False(IOMMU.ReadBurst(threadId: 1, ioVirtualAddress: 0x100, readBuffer, checkDomain: true));
         Assert.False(IOMMU.WriteBurst(threadId: 1, ioVirtualAddress: 0x100, seed, checkDomain: true));
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -437,7 +440,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
     }
@@ -445,7 +448,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     [Fact]
     public void ExplicitPacketStoreCommit_WhenPhysicalWriteIsSilentlySquashed_ThenFailsClosedBeforeMemoryVisibleSuccess()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
         InitializeMemorySubsystem();
 
@@ -461,9 +464,9 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
             accessSize: 4,
             vtId: 1);
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -473,7 +476,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
 
@@ -483,7 +486,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     [Fact]
     public void ExplicitPacketAtomicCommit_WhenPhysicalAccessIsSilentlySquashed_ThenFailsClosedBeforeReplayVisibleCommit()
     {
-        Processor.MainMemory = new YAKSys_Hybrid_CPU.MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
+        Processor.MainMemory = new MultiBankMemoryArea(bankCount: 4, bankSize: 0x1000UL);
         InitializeCpuMainMemoryIdentityMap(0x1000, preserveCurrentMainMemory: true);
         InitializeMemorySubsystem();
 
@@ -517,9 +520,9 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
             pc: 0x3500,
             vtId);
 
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea memory = Assert.IsType<YAKSys_Hybrid_CPU.MultiBankMemoryArea>(Processor.MainMemory);
+        MultiBankMemoryArea memory = Assert.IsType<MultiBankMemoryArea>(Processor.MainMemory);
         memory.SetBankDomainCapability(0, 0x1UL);
-        YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
+        MultiBankMemoryArea.SetAccessDomainTag(0x2UL);
 
         try
         {
@@ -528,7 +531,7 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
         finally
         {
-            YAKSys_Hybrid_CPU.MultiBankMemoryArea.SetAccessDomainTag(0);
+            MultiBankMemoryArea.SetAccessDomainTag(0);
             memory.SetBankDomainCapability(0, 0);
         }
 

@@ -106,6 +106,7 @@ namespace HybridCPU.Compiler.Core.Threading
             StealabilityPolicy stealabilityPolicy)
         {
             ValidateNoDirectSystemDeviceCommandEmission(opCode);
+            uint encodedStreamLength = RequireVliwUInt32(streamLength, nameof(streamLength));
             if (_instructionCount >= MAX_INSTRUCTIONS_PER_THREAD)
                 throw new InvalidOperationException($"VT-{_virtualThreadId.Value}: Instruction buffer overflow (max {MAX_INSTRUCTIONS_PER_THREAD})");
 
@@ -117,7 +118,7 @@ namespace HybridCPU.Compiler.Core.Threading
                 Immediate = immediate,
                 DestSrc1Pointer = destSrc1,
                 Src2Pointer = src2,
-                StreamLength = (uint)streamLength,
+                StreamLength = encodedStreamLength,
                 Stride = stride
             };
 
@@ -328,6 +329,19 @@ namespace HybridCPU.Compiler.Core.Threading
                 throw new InvalidOperationException(
                     "L7-SDC system-device opcodes require explicit accelerator intent; use CompileAcceleratorSubmit with typed descriptor sideband.");
             }
+        }
+
+        private static uint RequireVliwUInt32(ulong value, string parameterName)
+        {
+            if (value > uint.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(
+                    parameterName,
+                    value,
+                    "VLIW carrier field is 32 bits; silent truncation is forbidden.");
+            }
+
+            return (uint)value;
         }
 
         private static MicroOpAdmissionMetadata BuildAdmissionMetadata(

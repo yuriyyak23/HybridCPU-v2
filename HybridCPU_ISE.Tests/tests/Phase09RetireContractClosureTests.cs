@@ -14,6 +14,7 @@ using YAKSys_Hybrid_CPU.Memory;
 using HybridCPU_ISE.Tests.TestHelpers;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 
 namespace HybridCPU_ISE.Tests.Phase09
 {
@@ -669,6 +670,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             Assert.Contains("multiple singleton typed effects", ex.Message, StringComparison.Ordinal);
         }
 
+#if false // Retired VMCS success and VM-transition behavior; frozen VMX frontend is fail closed after task 190.
         [Fact]
         public void VmxRead_RetiresRegisterWriteThroughWriteBackCarrier()
         {
@@ -1284,6 +1286,8 @@ namespace HybridCPU_ISE.Tests.Phase09
             Assert.Equal(0UL, control.ScalarLanesRetired);
             Assert.Equal(1UL, control.NonScalarLanesRetired);
         }
+
+#endif
 
         [Fact]
         public void Mret_RetiresCommittedPcThroughWriteBackCarrier()
@@ -3408,6 +3412,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             Assert.Equal(retiredPc, core.ReadActiveLivePc());
         }
 
+#if false // Retired direct-compat VMCS success behavior; manager removed without replacement in task 190.
         [Fact]
         public void DirectCompatVmxTransaction_AppliesOnRealCore()
         {
@@ -3437,8 +3442,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             core.Vmcs.WriteFieldValue(VmcsField.HostSp, unchecked((long)hostSp));
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
             var ir = new InstructionIR
             {
@@ -3498,8 +3502,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             long serializingEpochCountBefore = scheduler.SerializingEpochCount;
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
 
             var transaction = ResolveAndApplyDispatcherRetireWindowPublication(
@@ -3540,8 +3543,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             core.Csr.Write(CsrAddresses.VmxEnable, 1, PrivilegeLevel.Machine);
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
 
             var transaction = ResolveAndApplyDispatcherRetireWindowPublication(
@@ -3594,8 +3596,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             core.Vmcs.WriteFieldValue(VmcsField.GuestSp, unchecked((long)guestSp));
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
 
             var transaction = ResolveAndApplyDispatcherRetireWindowPublication(
@@ -3646,8 +3647,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             core.Vmcs.WriteFieldValue(VmcsField.GuestSp, unchecked((long)guestSp));
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
 
             var transaction = ResolveAndApplyDispatcherRetireWindowPublication(
@@ -3698,8 +3698,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             core.WriteCommittedArch(vtId, fieldSelectorRegister, (ulong)VmcsField.HostPc);
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
 
             var transaction = ResolveAndApplyDispatcherRetireWindowPublication(
@@ -3746,8 +3745,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             core.WriteCommittedArch(vtId, valueRegister, vmwriteValue);
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
 
             var transaction = ResolveAndApplyDispatcherRetireWindowPublication(
@@ -3801,8 +3799,7 @@ namespace HybridCPU_ISE.Tests.Phase09
             core.WriteCommittedArch(vtId, pointerRegister, vmcsPointer);
 
             var dispatcher = new ExecutionDispatcherV4(
-                csrFile: core.Csr,
-                vmxUnit: new VmxExecutionUnit(core.Csr, core.Vmcs));
+                csrFile: core.Csr);
             var state = core.CreateLiveCpuStateAdapter(vtId);
 
             var transaction = ResolveAndApplyDispatcherRetireWindowPublication(
@@ -3831,6 +3828,8 @@ namespace HybridCPU_ISE.Tests.Phase09
                 Assert.False(core.Vmcs.HasLaunchedVmcs);
             }
         }
+
+#endif
 
         [Fact]
         public void DirectCompatSystemTransaction_AppliesMretOnRealCore()
@@ -8187,6 +8186,4 @@ namespace HybridCPU_ISE.Tests.Phase09
         }
     }
 }
-
-
 

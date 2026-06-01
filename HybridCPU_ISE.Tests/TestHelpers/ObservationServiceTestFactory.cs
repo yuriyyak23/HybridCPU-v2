@@ -1,5 +1,5 @@
 using System;
-using HybridCPU_ISE;
+using HybridCPU_ISE.Machine;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Diagnostics;

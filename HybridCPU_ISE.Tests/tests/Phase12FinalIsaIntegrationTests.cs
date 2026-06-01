@@ -553,10 +553,7 @@ namespace HybridCPU_ISE.Tests.Phase12
         public void Vmx_EagerExecuteRejectsWithoutTracePublication(InstructionsEnum opcode)
         {
             var sink = new CapturingSink();
-            var csr = new CsrFile();
-            var vmcs = new VmcsManager();
             var dispatcher = new ExecutionDispatcherV4(
-                vmxUnit: new VmxExecutionUnit(csr, vmcs),
                 traceSink: sink);
             var state = new P12CpuState();
 
@@ -731,10 +728,7 @@ namespace HybridCPU_ISE.Tests.Phase12
         {
             var sink = new CapturingSink();
             var telemetry = new TelemetryCounters();
-            var csr = new CsrFile();
-            var vmcs = new VmcsManager();
             var dispatcher = new ExecutionDispatcherV4(
-                vmxUnit: new VmxExecutionUnit(csr, vmcs),
                 traceSink: sink,
                 telemetry: telemetry);
             var state = new P12CpuState();
@@ -936,4 +930,3 @@ namespace HybridCPU_ISE.Tests.Phase12
         }
     }
 }
-

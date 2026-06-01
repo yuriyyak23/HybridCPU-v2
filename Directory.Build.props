@@ -4,6 +4,13 @@
     <DefineTestSupport Condition="'$(DefineTestSupport)' == '' and '$(Configuration)' == 'Debug'">true</DefineTestSupport>
     <HybridCpuIseProjectReferenceProperties>DefineTestSupport=$(DefineTestSupport)</HybridCpuIseProjectReferenceProperties>
     <HybridCpuIseProjectReferenceProperties Condition="'$(DefineTestSupport)' == 'true'">DefineTestSupport=$(DefineTestSupport);BaseIntermediateOutputPath=obj\testsupport\;MSBuildProjectExtensionsPath=obj\;OutputPath=bin\$(Configuration)\testsupport\</HybridCpuIseProjectReferenceProperties>
+    <DisableImplicitFrameworkReferences>false</DisableImplicitFrameworkReferences>
+    <NoStdLib>false</NoStdLib>
+    <EnableVmxProjectionLineageCheck Condition="'$(EnableVmxProjectionLineageCheck)' == ''">false</EnableVmxProjectionLineageCheck>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
+    <FrameworkReference Include="Microsoft.NETCore.App" />
+  </ItemGroup>
 
 </Project>

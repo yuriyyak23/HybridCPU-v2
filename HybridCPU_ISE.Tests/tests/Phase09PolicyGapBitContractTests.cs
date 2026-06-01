@@ -78,8 +78,8 @@ public sealed class Phase09PolicyGapBitContractTests
     public void PolicyGapBitZero_CompatContractDocsFreezeTransportHintWording()
     {
         string repoRoot = FindRepoRoot();
-        string compatLayoutPath = Path.Combine(repoRoot, "HybridCPU_ISE", "Arch", "Compat", "VLIW_Instruction.Layout.cs");
-        string compilerContractPath = Path.Combine(repoRoot, "HybridCPU_ISE", "Core", "Contracts", "CompilerContract.cs");
+        string compatLayoutPath = Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Arch", "Compat", "VLIW_Instruction.Layout.cs");
+        string compilerContractPath = Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Core", "Contracts", "CompilerContract.cs");
 
         string compatLayout = File.ReadAllText(compatLayoutPath);
         string compilerContract = File.ReadAllText(compilerContractPath);

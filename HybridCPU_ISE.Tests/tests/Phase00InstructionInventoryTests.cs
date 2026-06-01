@@ -1,10 +1,10 @@
 using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.CloseToRTL.Memory.MMU;
 using System;
 using System.Linq;
 using System.Reflection;
 using Xunit;
-using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Decoder;
@@ -464,17 +464,20 @@ public sealed class CanonicalDecoderAcceptanceInventoryTests
     [Theory]
     [InlineData(InstructionsEnum.VGATHER, "VGATHER")]
     [InlineData(InstructionsEnum.VSCATTER, "VSCATTER")]
-    public void VectorGatherScatter_DecodeAcceptedButRemainDescriptorOnlyWithoutFactory(
+    public void VectorGatherScatter_StatusMatchesOpenedIndexedMemoryContours(
         InstructionsEnum opcode,
         string mnemonic)
     {
         InstructionSupportStatus status = InstructionSupportStatusCatalog.GetStatus(mnemonic);
-        Assert.Equal(IsaInstructionStatus.DescriptorOnly, status.Status);
-        Assert.Equal(RuntimeInstructionEvidence.DecoderAccepted, status.RuntimeEvidence);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
+        Assert.Equal(RuntimeInstructionEvidence.ConformanceTested, status.RuntimeEvidence);
+        Assert.True(status.HasRegistryFactory);
+        Assert.True(status.HasExecutionSemantics);
+        Assert.True(status.IsExecutableClaim);
 
         Assert.NotNull(OpcodeRegistry.GetInfo((uint)opcode));
         Assert.NotNull(InstructionRegistry.GetDescriptor((uint)opcode));
-        Assert.False(InstructionRegistry.IsRegistered((uint)opcode));
+        Assert.True(InstructionRegistry.IsRegistered((uint)opcode));
 
         var decoder = new VliwDecoderV4();
         VLIW_Instruction instruction = InstructionEncoder.EncodeVector1D(
@@ -493,30 +496,34 @@ public sealed class CanonicalDecoderAcceptanceInventoryTests
 public sealed class InstructionRegistryFactoryCoverageTests
 {
     [Theory]
-    [InlineData("VGATHER", InstructionsEnum.VGATHER, RuntimeInstructionEvidence.DecoderAccepted, false)]
-    [InlineData("VSCATTER", InstructionsEnum.VSCATTER, RuntimeInstructionEvidence.DecoderAccepted, false)]
-    [InlineData("DmaStreamCompute", InstructionsEnum.DmaStreamCompute, RuntimeInstructionEvidence.DescriptorProjected, true)]
-    [InlineData("ACCEL_SUBMIT", InstructionsEnum.ACCEL_SUBMIT, RuntimeInstructionEvidence.DescriptorProjected, true)]
-    public void DescriptorOnlySupportStatus_MatchesPublishedRegistryMaterializationBoundary(
-        string mnemonic,
+    [MemberData("AllOpcodes", MemberType = typeof(HybridCPU_ISE.Tests.MemoryAccelerators.L7SdcPhase03TestCases))]
+    public void CurrentL7SdcSupportStatus_MatchesPublishedRuntimeOwnedBoundary(
         InstructionsEnum opcode,
-        RuntimeInstructionEvidence expectedEvidence,
-        bool expectedRegistryFactory)
+        ushort _,
+        string mnemonic,
+        SerializationClass expectedSerialization,
+        Type _2)
     {
         InstructionSupportStatus status = InstructionSupportStatusCatalog.GetStatus(mnemonic);
 
-        Assert.Equal(IsaInstructionStatus.DescriptorOnly, status.Status);
-        Assert.Equal(expectedEvidence, status.RuntimeEvidence);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
+        Assert.Equal(RuntimeInstructionEvidence.ConformanceTested, status.RuntimeEvidence);
+        Assert.Equal("Lane7L7SDC", status.ExtensionName);
         Assert.True(status.HasNumericOpcode);
         Assert.True(status.HasRuntimeOpcodeMetadata);
         Assert.True(status.HasCanonicalDecoderAcceptance);
-        Assert.Equal(expectedRegistryFactory, status.HasRegistryFactory);
-        Assert.False(status.HasExecutionSemantics);
-        Assert.False(status.IsExecutableClaim);
+        Assert.True(status.HasRegistryFactory);
+        Assert.True(status.HasExecutionSemantics);
+        Assert.True(status.IsExecutableClaim);
 
         Assert.NotNull(OpcodeRegistry.GetInfo((uint)opcode));
         Assert.NotNull(InstructionRegistry.GetDescriptor((uint)opcode));
-        Assert.Equal(expectedRegistryFactory, InstructionRegistry.IsRegistered((uint)opcode));
+        Assert.True(InstructionRegistry.IsRegistered((uint)opcode));
+        Assert.Contains(mnemonic, IsaV4Surface.SystemDeviceCommandOpcodes);
+        Assert.Contains(mnemonic, IsaV4Surface.OptionalEnabledOpcodes);
+        Assert.DoesNotContain(mnemonic, IsaV4Surface.CarrierOnlyOpcodes);
+        Assert.DoesNotContain(mnemonic, IsaV4Surface.DescriptorOnlyOpcodes);
+        Assert.Equal((InstructionClass.System, expectedSerialization), InstructionClassifier.Classify(opcode));
     }
 
     [Fact]
@@ -556,43 +563,17 @@ public sealed class InstructionRegistryFactoryCoverageTests
         Assert.False(HasEnumOrRegistryMnemonic(mnemonic));
     }
 
-    [Theory]
-    [InlineData(InstructionsEnum.VGATHER)]
-    [InlineData(InstructionsEnum.VSCATTER)]
-    public void RegistrySupportedDescriptorOnlyVectorMemory_HasDescriptorButNoMicroOpMaterializer(
-        InstructionsEnum opcode)
-    {
-        Assert.NotNull(OpcodeRegistry.GetInfo((uint)opcode));
-        Assert.NotNull(InstructionRegistry.GetDescriptor((uint)opcode));
-        Assert.False(InstructionRegistry.IsRegistered((uint)opcode));
-
-        var context = new DecoderContext
-        {
-            OpCode = (uint)opcode,
-            HasDataType = true,
-            DataType = (byte)DataTypeEnum.INT32,
-            HasVectorAddressingContour = true,
-            HasVectorPayload = true,
-            VectorPrimaryPointer = 0x1000,
-            VectorSecondaryPointer = 0x2000,
-            VectorStreamLength = 4,
-            VectorStride = 4
-        };
-
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-            () => InstructionRegistry.CreateMicroOp((uint)opcode, context));
-        Assert.Contains("Unsupported instruction opcode", exception.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
-    public void DmaStreamCompute_RawRegistryFactoryRemainsFailClosedDescriptorOnlyBoundary()
+    public void DmaStreamCompute_RawRegistryFactoryRemainsFailClosedWhileTypedSidebandIsExecutable()
     {
         InstructionSupportStatus status = InstructionSupportStatusCatalog.GetStatus("DmaStreamCompute");
-        Assert.Equal(IsaInstructionStatus.DescriptorOnly, status.Status);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
         Assert.True(status.HasRegistryFactory);
-        Assert.False(status.HasExecutionSemantics);
-        Assert.False(status.IsExecutableClaim);
+        Assert.True(status.HasExecutionSemantics);
+        Assert.True(status.IsExecutableClaim);
         Assert.True(InstructionRegistry.IsRegistered((uint)InstructionsEnum.DmaStreamCompute));
+        Assert.Contains("DmaStreamCompute", IsaV4Surface.OptionalEnabledOpcodes);
+        Assert.DoesNotContain("DmaStreamCompute", IsaV4Surface.DescriptorOnlyOpcodes);
 
         var context = new DecoderContext
         {
@@ -608,61 +589,65 @@ public sealed class InstructionRegistryFactoryCoverageTests
     }
 
     [Fact]
-    public void AccelSubmit_RawRegistryFactoryMaterializesOnlyFailClosedSystemDeviceCarrier()
+    public void AccelSubmit_RawRegistryFactoryRemainsDescriptorlessFailClosedInsideRuntimeOwnedContour()
     {
         InstructionSupportStatus status = InstructionSupportStatusCatalog.GetStatus("ACCEL_SUBMIT");
-        Assert.Equal(IsaInstructionStatus.DescriptorOnly, status.Status);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
         Assert.True(status.HasRegistryFactory);
-        Assert.False(status.HasExecutionSemantics);
-        Assert.False(status.IsExecutableClaim);
+        Assert.True(status.HasExecutionSemantics);
+        Assert.True(status.IsExecutableClaim);
         Assert.True(InstructionRegistry.IsRegistered((uint)InstructionsEnum.ACCEL_SUBMIT));
 
         var context = new DecoderContext
         {
             OpCode = (uint)InstructionsEnum.ACCEL_SUBMIT,
             HasDataType = true,
-            DataType = (byte)DataTypeEnum.INT32
+            DataType = (byte)DataTypeEnum.INT32,
+            Reg1ID = 5,
+            Reg2ID = 0,
+            Reg3ID = 0
         };
 
         MicroOp microOp = InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.ACCEL_SUBMIT, context);
         SystemDeviceCommandMicroOp systemDeviceCommand = Assert.IsType<AcceleratorSubmitMicroOp>(microOp);
         Assert.Equal(SystemDeviceCommandKind.Submit, systemDeviceCommand.CommandKind);
-        Assert.False(systemDeviceCommand.WritesRegister);
+        Assert.True(systemDeviceCommand.WritesRegister);
+        Assert.Equal(new[] { 5 }, systemDeviceCommand.WriteRegisters);
 
         var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
         InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
             () => systemDeviceCommand.Execute(ref core));
-        Assert.Contains("direct execution is unsupported and must fail closed", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("fallback routing are not implemented", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("descriptorless raw factory execution remains fail-closed", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]
-    [InlineData("ACCEL_QUERY_CAPS", InstructionsEnum.ACCEL_QUERY_CAPS, RuntimeInstructionEvidence.Materialized, SerializationClass.CsrOrdered, SystemDeviceCommandKind.QueryCaps)]
-    [InlineData("ACCEL_POLL", InstructionsEnum.ACCEL_POLL, RuntimeInstructionEvidence.Materialized, SerializationClass.CsrOrdered, SystemDeviceCommandKind.Poll)]
-    [InlineData("ACCEL_WAIT", InstructionsEnum.ACCEL_WAIT, RuntimeInstructionEvidence.Materialized, SerializationClass.FullSerial, SystemDeviceCommandKind.Wait)]
-    [InlineData("ACCEL_CANCEL", InstructionsEnum.ACCEL_CANCEL, RuntimeInstructionEvidence.Materialized, SerializationClass.FullSerial, SystemDeviceCommandKind.Cancel)]
-    [InlineData("ACCEL_FENCE", InstructionsEnum.ACCEL_FENCE, RuntimeInstructionEvidence.Materialized, SerializationClass.FullSerial, SystemDeviceCommandKind.Fence)]
-    public void L7SdcCarrierOnlyStatus_MatchesPublishedFailClosedCarrierBoundary(
+    [InlineData("ACCEL_QUERY_CAPS", InstructionsEnum.ACCEL_QUERY_CAPS, SerializationClass.CsrOrdered, SystemDeviceCommandKind.QueryCaps)]
+    [InlineData("ACCEL_POLL", InstructionsEnum.ACCEL_POLL, SerializationClass.CsrOrdered, SystemDeviceCommandKind.Poll)]
+    [InlineData("ACCEL_WAIT", InstructionsEnum.ACCEL_WAIT, SerializationClass.FullSerial, SystemDeviceCommandKind.Wait)]
+    [InlineData("ACCEL_CANCEL", InstructionsEnum.ACCEL_CANCEL, SerializationClass.FullSerial, SystemDeviceCommandKind.Cancel)]
+    [InlineData("ACCEL_FENCE", InstructionsEnum.ACCEL_FENCE, SerializationClass.FullSerial, SystemDeviceCommandKind.Fence)]
+    [InlineData("ACCEL_STATUS", InstructionsEnum.ACCEL_STATUS, SerializationClass.CsrOrdered, SystemDeviceCommandKind.Status)]
+    public void L7SdcCurrentStatus_MatchesPublishedRuntimeOwnedBoundary(
         string mnemonic,
         InstructionsEnum opcode,
-        RuntimeInstructionEvidence expectedEvidence,
         SerializationClass expectedSerialization,
         SystemDeviceCommandKind expectedKind)
     {
         InstructionSupportStatus status = InstructionSupportStatusCatalog.GetStatus(mnemonic);
 
-        Assert.Equal(IsaInstructionStatus.CarrierOnly, status.Status);
-        Assert.Equal(expectedEvidence, status.RuntimeEvidence);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
+        Assert.Equal(RuntimeInstructionEvidence.ConformanceTested, status.RuntimeEvidence);
         Assert.Equal("Lane7L7SDC", status.ExtensionName);
         Assert.True(status.HasNumericOpcode);
         Assert.True(status.HasRuntimeOpcodeMetadata);
         Assert.True(status.HasCanonicalDecoderAcceptance);
         Assert.True(status.HasRegistryFactory);
-        Assert.False(status.HasExecutionSemantics);
-        Assert.False(status.IsExecutableClaim);
+        Assert.True(status.HasExecutionSemantics);
+        Assert.True(status.IsExecutableClaim);
 
         Assert.Contains(mnemonic, IsaV4Surface.SystemDeviceCommandOpcodes);
-        Assert.Contains(mnemonic, IsaV4Surface.CarrierOnlyOpcodes);
+        Assert.Contains(mnemonic, IsaV4Surface.OptionalEnabledOpcodes);
+        Assert.DoesNotContain(mnemonic, IsaV4Surface.CarrierOnlyOpcodes);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.MandatoryCoreOpcodes);
         Assert.NotNull(OpcodeRegistry.GetInfo((uint)opcode));
         Assert.NotNull(InstructionRegistry.GetDescriptor((uint)opcode));
@@ -684,14 +669,27 @@ public sealed class InstructionRegistryFactoryCoverageTests
     [InlineData(InstructionsEnum.ACCEL_WAIT, SystemDeviceCommandKind.Wait, SerializationClass.FullSerial)]
     [InlineData(InstructionsEnum.ACCEL_CANCEL, SystemDeviceCommandKind.Cancel, SerializationClass.FullSerial)]
     [InlineData(InstructionsEnum.ACCEL_FENCE, SystemDeviceCommandKind.Fence, SerializationClass.FullSerial)]
-    public void L7SdcCarrierOnlyRegistryFactoryMaterializesNoWriteFailClosedCarrier(
+    [InlineData(InstructionsEnum.ACCEL_STATUS, SystemDeviceCommandKind.Status, SerializationClass.CsrOrdered)]
+    public void L7SdcCurrentRegistryFactoryMaterializesLane7ControlPlaneCarrier(
         InstructionsEnum opcode,
         SystemDeviceCommandKind expectedKind,
         SerializationClass expectedSerialization)
     {
         MicroOp microOp = InstructionRegistry.CreateMicroOp(
             (uint)opcode,
-            new DecoderContext { OpCode = (uint)opcode });
+            new DecoderContext
+            {
+                OpCode = (uint)opcode,
+                Reg1ID = 5,
+                Reg2ID = opcode is InstructionsEnum.ACCEL_POLL
+                    or InstructionsEnum.ACCEL_STATUS
+                    or InstructionsEnum.ACCEL_WAIT
+                    or InstructionsEnum.ACCEL_CANCEL
+                    or InstructionsEnum.ACCEL_FENCE
+                        ? (ushort)4
+                        : (ushort)0,
+                Reg3ID = 0
+            });
         SystemDeviceCommandMicroOp carrier = Assert.IsAssignableFrom<SystemDeviceCommandMicroOp>(microOp);
 
         Assert.Equal(expectedKind, carrier.CommandKind);
@@ -703,21 +701,30 @@ public sealed class InstructionRegistryFactoryCoverageTests
         Assert.False(carrier.IsMemoryOp);
         Assert.False(carrier.IsControlFlow);
         Assert.True(carrier.HasSideEffects);
-        Assert.False(carrier.WritesRegister);
-        Assert.Empty(carrier.ReadRegisters);
-        Assert.Empty(carrier.WriteRegisters);
+        Assert.True(carrier.WritesRegister);
+        if (expectedKind is SystemDeviceCommandKind.Poll
+            or SystemDeviceCommandKind.Status
+            or SystemDeviceCommandKind.Wait
+            or SystemDeviceCommandKind.Cancel
+            or SystemDeviceCommandKind.Fence)
+        {
+            Assert.Equal(new[] { 4 }, carrier.ReadRegisters);
+        }
+        else
+        {
+            Assert.Empty(carrier.ReadRegisters);
+        }
+
+        Assert.Equal(new[] { 5 }, carrier.WriteRegisters);
         Assert.Empty(carrier.ReadMemoryRanges);
         Assert.Empty(carrier.WriteMemoryRanges);
-        Assert.Equal(ResourceBitset.Zero, carrier.ResourceMask);
+        Assert.NotEqual(ResourceBitset.Zero, carrier.ResourceMask);
 
         var core = new YAKSys_Hybrid_CPU.Processor.CPU_Core(0);
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-            () => carrier.Execute(ref core));
-        Assert.Contains("direct execution is unsupported and must fail closed", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("backend execution", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("staged write publication", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("architectural rd writeback", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("fallback routing are not implemented", exception.Message, StringComparison.Ordinal);
+        Assert.True(carrier.Execute(ref core));
+        Assert.NotNull(carrier.LastCommandResult);
+        Assert.False(carrier.UsedLegacyCustomAcceleratorFallback);
+        Assert.False(carrier.UsedArithmeticExecutionPlane);
     }
 
     [Theory]
@@ -2648,6 +2655,8 @@ public sealed class InstructionRegistryFactoryCoverageTests
             InstructionsEnum.VCOMPRESS => IsaOpcodeValues.VCOMPRESS,
             InstructionsEnum.VEXPAND => IsaOpcodeValues.VEXPAND,
             InstructionsEnum.VPERMUTE => IsaOpcodeValues.VPERMUTE,
+            InstructionsEnum.VPERM2 => IsaOpcodeValues.VPERM2,
+            InstructionsEnum.VTRANSPOSE => IsaOpcodeValues.VTRANSPOSE,
             InstructionsEnum.VRGATHER => IsaOpcodeValues.VRGATHER,
             InstructionsEnum.VSLIDEUP => IsaOpcodeValues.VSLIDEUP,
             InstructionsEnum.VSLIDEDOWN => IsaOpcodeValues.VSLIDEDOWN,
@@ -2664,6 +2673,7 @@ public sealed class InstructionRegistryFactoryCoverageTests
             InstructionsEnum.VREDAND => IsaOpcodeValues.VREDAND,
             InstructionsEnum.VREDOR => IsaOpcodeValues.VREDOR,
             InstructionsEnum.VREDXOR => IsaOpcodeValues.VREDXOR,
+            InstructionsEnum.VSCAN_SUM => IsaOpcodeValues.VSCAN_SUM,
             InstructionsEnum.VDOT => IsaOpcodeValues.VDOT,
             InstructionsEnum.VDOTU => IsaOpcodeValues.VDOTU,
             InstructionsEnum.VDOTF => IsaOpcodeValues.VDOTF,
@@ -2871,11 +2881,12 @@ public sealed class EncoderDecoderDeclaredRoundtripInventoryTests
 public sealed class CompilerLowererOpcodeEmissionInventoryTests
 {
     [Fact]
-    public void CompilerBackendContract_RejectsDescriptorOnlyLane6AsProductionLowering()
+    public void CompilerBackendContract_RejectsLane6DescriptorCarrierApiAsProductionLowering()
     {
         InstructionSupportStatus status =
             InstructionSupportStatusCatalog.GetStatus("DmaStreamCompute");
-        Assert.Equal(IsaInstructionStatus.DescriptorOnly, status.Status);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
+        Assert.True(status.HasExecutionSemantics);
 
         CompilerBackendLoweringDecision decision =
             CompilerBackendLoweringContract.EvaluateProductionDscLowering(
@@ -2895,7 +2906,8 @@ public sealed class CompilerLowererOpcodeEmissionInventoryTests
     {
         InstructionSupportStatus status =
             InstructionSupportStatusCatalog.GetStatus("ACCEL_SUBMIT");
-        Assert.Equal(IsaInstructionStatus.DescriptorOnly, status.Status);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
+        Assert.True(status.HasExecutionSemantics);
 
         CompilerBackendLoweringDecision decision =
             CompilerBackendLoweringContract.EvaluateProductionL7Lowering(

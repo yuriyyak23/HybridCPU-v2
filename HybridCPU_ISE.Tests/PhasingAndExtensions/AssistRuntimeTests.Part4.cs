@@ -120,6 +120,7 @@ namespace HybridCPU_ISE.Tests
             Assert.Equal(AssistInvalidationReason.Fence, scheduler.LastAssistInvalidationReason);
         }
 
+#if false // Retired successful VM-transition assist invalidation through VMCS state; manager removed in task 190.
         [Fact]
         public void ApplyRetiredVmxEffectForTesting_OnInactiveGuestVt_InvalidatesAssistRuntimeWithVmTransition()
         {
@@ -160,6 +161,8 @@ namespace HybridCPU_ISE.Tests
             Assert.Equal(assistInvalidationsBefore + 1, scheduler.AssistInvalidations);
             Assert.Equal(AssistInvalidationReason.VmTransition, scheduler.LastAssistInvalidationReason);
         }
+
+#endif
 
         [Fact]
         public void ExecuteAssistMicroOp_WhenTargetLeavesForeground_InvalidatesAssistRuntimeWithOwnerReason()

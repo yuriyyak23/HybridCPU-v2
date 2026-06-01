@@ -32,12 +32,22 @@ public sealed class Phase09VectorLegalityMatrixTests
 
     [Theory]
     [MemberData(nameof(CurrentVectorMatrixOpcodeRows))]
-    public void RuntimeVectorLegalityMatrix_CurrentIndexedAnd2DAddressingContoursRemainNonExecutable(
+    public void RuntimeVectorLegalityMatrix_CurrentIndexedAnd2DAddressingContoursMatchPublishedExecutionBoundary(
         InstructionsEnum opcode)
     {
-        Assert.NotEqual(
-            VectorContourLegalityStatus.Executable,
-            VectorLegalityMatrix.GetAddressingStatus(opcode, indexed: true, is2D: false));
+        if (opcode is InstructionsEnum.VGATHER or InstructionsEnum.VSCATTER)
+        {
+            Assert.Equal(
+                VectorContourLegalityStatus.Executable,
+                VectorLegalityMatrix.GetAddressingStatus(opcode, indexed: true, is2D: false));
+        }
+        else
+        {
+            Assert.NotEqual(
+                VectorContourLegalityStatus.Executable,
+                VectorLegalityMatrix.GetAddressingStatus(opcode, indexed: true, is2D: false));
+        }
+
         Assert.NotEqual(
             VectorContourLegalityStatus.Executable,
             VectorLegalityMatrix.GetAddressingStatus(opcode, indexed: false, is2D: true));
@@ -73,44 +83,40 @@ public sealed class Phase09VectorLegalityMatrixTests
     [Theory]
     [InlineData(InstructionsEnum.VGATHER)]
     [InlineData(InstructionsEnum.VSCATTER)]
-    public void GatherScatterPolicy_RemainsDescriptorOnlyAndCarrierlessInRuntimeMatrix(
+    public void GatherScatterPolicy_TracksOpenedGatherAndClosedScatterInRuntimeMatrix(
         InstructionsEnum opcode)
     {
         VectorLegalityMatrixRow row = VectorLegalityMatrix.GetRow(opcode);
         InstructionSupportStatus supportStatus =
             InstructionSupportStatusCatalog.GetStatus(opcode.ToString());
 
-        Assert.Equal("VectorIndexedMemory", row.FamilyName);
-        Assert.Equal(VectorContourLegalityStatus.DescriptorOnly, row.OneDimensional);
-        Assert.Equal(VectorContourLegalityStatus.DescriptorOnly, row.IndexedAddressing);
-        Assert.Equal(VectorContourLegalityStatus.FailClosed, row.TwoDimensionalAddressing);
-        Assert.Equal(VectorContourLegalityStatus.DescriptorOnly, row.DescriptorBacked);
-        Assert.False(VectorLegalityMatrix.AllowsAddressingExecution(opcode, indexed: true, is2D: false));
+        if (opcode == InstructionsEnum.VGATHER)
+        {
+            Assert.Equal("VectorIndexedGatherMemory", row.FamilyName);
+            Assert.Equal(VectorContourLegalityStatus.FailClosed, row.OneDimensional);
+            Assert.Equal(VectorContourLegalityStatus.Executable, row.IndexedAddressing);
+            Assert.Equal(VectorContourLegalityStatus.FailClosed, row.TwoDimensionalAddressing);
+            Assert.Equal(VectorContourLegalityStatus.Executable, row.DescriptorBacked);
+            Assert.True(VectorLegalityMatrix.AllowsAddressingExecution(opcode, indexed: true, is2D: false));
 
-        Assert.Equal(IsaInstructionStatus.DescriptorOnly, supportStatus.Status);
-        Assert.False(supportStatus.IsExecutableClaim);
+            Assert.Equal(IsaInstructionStatus.OptionalEnabled, supportStatus.Status);
+            Assert.True(supportStatus.IsExecutableClaim);
+            Assert.True(InstructionRegistry.IsRegistered((uint)opcode));
+            return;
+        }
+
+        Assert.Equal("VectorIndexedScatterMemory", row.FamilyName);
+        Assert.Equal(VectorContourLegalityStatus.FailClosed, row.OneDimensional);
+        Assert.Equal(VectorContourLegalityStatus.Executable, row.IndexedAddressing);
+        Assert.Equal(VectorContourLegalityStatus.FailClosed, row.TwoDimensionalAddressing);
+        Assert.Equal(VectorContourLegalityStatus.Executable, row.DescriptorBacked);
+        Assert.True(VectorLegalityMatrix.AllowsAddressingExecution(opcode, indexed: true, is2D: false));
+
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, supportStatus.Status);
+        Assert.True(supportStatus.IsExecutableClaim);
         Assert.NotNull(OpcodeRegistry.GetInfo((uint)opcode));
         Assert.NotNull(InstructionRegistry.GetDescriptor((uint)opcode));
-        Assert.False(InstructionRegistry.IsRegistered((uint)opcode));
-
-        var context = new DecoderContext
-        {
-            OpCode = (uint)opcode,
-            HasDataType = true,
-            DataType = (byte)DataTypeEnum.INT32,
-            HasVectorAddressingContour = true,
-            IndexedAddressing = true,
-            HasVectorPayload = true,
-            VectorPrimaryPointer = 0x1000,
-            VectorSecondaryPointer = 0x2000,
-            VectorStreamLength = 4,
-            VectorStride = 4,
-            PredicateMask = 0xFF
-        };
-
-        System.InvalidOperationException exception = Assert.Throws<System.InvalidOperationException>(
-            () => InstructionRegistry.CreateMicroOp((uint)opcode, context));
-        Assert.Contains("Unsupported instruction opcode", exception.Message, System.StringComparison.Ordinal);
+        Assert.True(InstructionRegistry.IsRegistered((uint)opcode));
     }
 
     public static IEnumerable<object[]> CurrentVectorMatrixOpcodeRows()

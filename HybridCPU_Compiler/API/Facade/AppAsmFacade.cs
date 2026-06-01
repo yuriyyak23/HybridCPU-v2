@@ -20,6 +20,7 @@ public class AppAsmFacade : IAppAsmFacade
 {
     private readonly int _coreId;
     private readonly HybridCpuThreadCompilerContext _context;
+    private readonly CompilerNonVmxScalarCapabilityModel _scalarCapabilities;
     private const byte DefaultScalarPredicateMask = 0xFF;
     private const byte ScalarDataType = 0;
     private const byte ScalarPredicateMask = 0;
@@ -31,10 +32,23 @@ public class AppAsmFacade : IAppAsmFacade
     /// Creates an AppAsmFacade bound to a specific core and thread compiler context.
     /// </summary>
     public AppAsmFacade(int coreId, HybridCpuThreadCompilerContext context)
+        : this(coreId, context, CompilerNonVmxScalarCapabilityModel.Default)
+    {
+    }
+
+    /// <summary>
+    /// Creates an AppAsmFacade with an explicit compiler-visible scalar capability model.
+    /// </summary>
+    public AppAsmFacade(
+        int coreId,
+        HybridCpuThreadCompilerContext context,
+        CompilerNonVmxScalarCapabilityModel scalarCapabilities)
     {
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(scalarCapabilities);
         _coreId = coreId;
         _context = context;
+        _scalarCapabilities = scalarCapabilities;
     }
 
     /// <summary>Resolves facade register to flat architectural register identity.</summary>
@@ -48,6 +62,9 @@ public class AppAsmFacade : IAppAsmFacade
 
     /// <summary>Provides the core ID for derived facades.</summary>
     protected int CoreId => _coreId;
+
+    protected void RequireScalarFeature(CompilerNonVmxScalarFeature feature, string mnemonic) =>
+        _scalarCapabilities.Require(feature, mnemonic);
 
     /// <summary>Emits a scalar immediate instruction using packed register operands.</summary>
     protected void EmitScalarImmediate(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src, short immediate)
@@ -118,6 +135,24 @@ public class AppAsmFacade : IAppAsmFacade
             0,
             ScalarStreamLength,
             ScalarStride,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
+    }
+
+    /// <summary>Emits a canonical XLEN=64 scalar unary instruction using packed architectural registers.</summary>
+    protected void EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src)
+    {
+        Context.CompileInstruction(
+            (uint)opcode,
+            (byte)DataTypeEnum.UINT64,
+            ScalarPredicateMask,
+            0,
+            VLIW_Instruction.PackArchRegs(
+                Resolve(dest).Value,
+                Resolve(src).Value,
+                ZeroArchReg),
+            0,
+            0,
+            0,
             stealabilityPolicy: StealabilityPolicy.NotStealable);
     }
 
@@ -232,6 +267,21 @@ public class AppAsmFacade : IAppAsmFacade
 
     public void RemainderUnsignedWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.REMUW, dest, src1, src2);
+
+    public void CountLeadingZeros(AsmRegister dest, AsmRegister src) =>
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.CLZ, dest, src);
+
+    public void CountTrailingZeros(AsmRegister dest, AsmRegister src)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "CTZ");
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.CTZ, dest, src);
+    }
+
+    public void CountSetBits(AsmRegister dest, AsmRegister src)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "CPOP");
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.CPOP, dest, src);
+    }
 
     public void SignExtendWord(AsmRegister dest, AsmRegister src) =>
         EmitScalarWordUnary(Processor.CPU_Core.InstructionsEnum.SEXT_W, dest, src);
