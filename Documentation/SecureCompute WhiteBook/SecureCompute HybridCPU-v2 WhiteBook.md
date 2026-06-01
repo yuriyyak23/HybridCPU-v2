@@ -297,5 +297,3 @@ It is not safe to claim:
 - VMX activation of SecureCompute;
 - `VmxCaps` authority;
 - CHERI ISA, tagged memory, capability registers or capability-aware memory execution.
-
-The next architectural decision boundary is Plan2: whether and how to open positive secure backend runtime execution through a separate approved RFC/ADR, phase plan, neutral runtime owner implementation, proof chain and new negative conformance tests. Until then, backend execution stays closed.
