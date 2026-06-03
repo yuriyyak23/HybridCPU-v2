@@ -38,7 +38,6 @@ The instruction-side closure overlay and the Stream WhiteBook paths are current 
 
 | Area | Start here | Claim boundary |
 |---|---|---|
-| Instruction-side closure | [Instructions Refactor WhiteBook](Documentation/InstructionsRefactor/WhiteBook/00_README.md) | Current bounded runtime ISA closure overlay for scalar, atomic, fence, vector, lane6, lane7, and risk-closure evidence. |
 | Virtualization | [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md) | Current neutral-runtime virtualization record: VMX is a frozen compatibility frontend/projection surface, not the authority owner. |
 | SecureCompute | [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md) | Neutral secure-domain descriptor/admission model with policy evidence, VMX denial/projection fences, and no production secure backend execution claim. |
 | StreamEngine / VectorALU / SRF / BurstIO | [StreamEngine, SFR/SRF, And VectorALU](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/01_StreamEngine_SFR_SRF_VectorALU.md) | Live StreamEngine stream/vector behavior plus helper/data-ingress caveats; not DSC or L7 evidence. |
