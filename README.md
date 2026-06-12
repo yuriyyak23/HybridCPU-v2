@@ -1,3 +1,6 @@
+# Base research paper
+[https://zenodo.org/records/20137443](https://doi.org/10.5281/zenodo.20137443)
+
 # Now In-Progress: 
 
 1) New Instructions to ISA
