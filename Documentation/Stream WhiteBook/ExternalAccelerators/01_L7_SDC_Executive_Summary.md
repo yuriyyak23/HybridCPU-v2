@@ -26,7 +26,7 @@ branch-control authority surface.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Pipeline/Scheduling/SlotClassDefinitions.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/Scheduling/SlotLegality/SlotClassDefinitions.cs`
 - `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
 - `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/ExternalAcceleratorRuntime.cs`
 - `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
@@ -42,10 +42,10 @@ The L7-SDC path is separate native ISA transport plus explicit guard and commit 
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Diagnostics/InstructionRegistry.Accelerators.cs`
-- `HybridCPU_ISE/Core/Diagnostics/InstructionRegistry.Types.cs`
-- `HybridCPU_ISE/Core/Execution/BurstIO/AcceleratorRuntimeFailClosed.cs`
-- `HybridCPU_ISE/Core/Accelerators/MatMulAccelerator.cs`
+- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Accelerators.cs`
+- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Types.cs`
+- `HybridCPU_ISE/NonRTL/Core/Execution/BurstIO/AcceleratorRuntimeFailClosed.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Execution/ExternalAccelerators/Backends/MatMulAccelerator.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcLegacyQuarantineTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcMatMulNoLegacyExecuteTests.cs`
 

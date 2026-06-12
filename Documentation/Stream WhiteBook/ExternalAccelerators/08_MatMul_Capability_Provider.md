@@ -9,8 +9,8 @@ production L7-SDC backends do not call `ICustomAccelerator.Execute()`.
 Code anchors:
 
 - `HybridCPU_ISE/Core/Accelerators/MatMulAccelerator.cs`
-- `HybridCPU_ISE/Core/Diagnostics/InstructionRegistry.Types.cs`
-- `HybridCPU_ISE/Core/Diagnostics/InstructionRegistry.Accelerators.cs`
+- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Types.cs`
+- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Accelerators.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcLegacyQuarantineTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcMatMulNoLegacyExecuteTests.cs`
 

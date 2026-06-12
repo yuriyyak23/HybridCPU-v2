@@ -16,7 +16,7 @@ hidden process-wide manager.
 
 Under Ex1 Phase05, this is absent/passive/current-non-authority behavior.
 Executable overlap requires a future mandatory `GlobalMemoryConflictService`
-with CPU load/store/atomic, DSC, DMA, StreamEngine/SRF/assist, L7, fence/wait,
+with CPU load/store/atomic, DSC, DMA, StreamEngine/SFR/assist, L7, fence/wait,
 poll, cache, and cancellation hook points. The current conflict manager is not
 that installed authority.
 
@@ -33,7 +33,7 @@ The v1 conflict classes include:
 - CPU load/store overlap with accelerator writes.
 - CPU store overlap with accelerator reads.
 - DmaStreamCompute overlap with accelerator writes.
-- Accelerator write overlap with SRF warmed windows.
+- Accelerator write overlap with SFR warmed windows.
 - Assist ingress overlap with accelerator writes.
 - Accelerator write/write overlap.
 - Fence or serializing boundary while a token is active.
@@ -49,7 +49,7 @@ Code anchors:
 ## Three validation points
 
 Submit-time reservation rejects incomplete footprint truth and active write/write
-overlap. Execution-time notification serializes or rejects CPU, DmaStreamCompute, SRF,
+overlap. Execution-time notification serializes or rejects CPU, DmaStreamCompute, SFR,
 assist, and mapping conflicts against active reservations. Commit-time validation checks
 that the active footprint still matches the token-bound descriptor and that recorded
 conflict evidence does not invalidate the commit.

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using HybridCPU.Compiler.Core.IR;
 
 namespace HybridCPU.Compiler.Core.API.Facade;
 
@@ -22,10 +23,47 @@ public interface IAppAsmFacade
     void Mod(AsmRegister dest, AsmRegister src1, AsmRegister src2);
     void RemainderWord(AsmRegister dest, AsmRegister src1, AsmRegister src2);
     void RemainderUnsignedWord(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void SetBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index);
+    void ClearBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index);
+    void InvertBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index);
+    void ExtractBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index);
+    void SetBitImmediate(AsmRegister dest, AsmRegister src, int index);
+    void ClearBitImmediate(AsmRegister dest, AsmRegister src, int index);
+    void InvertBitImmediate(AsmRegister dest, AsmRegister src, int index);
+    void ExtractBitImmediate(AsmRegister dest, AsmRegister src, int index);
+    void AndWithInvertedSecond(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void OrWithInvertedSecond(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void ExclusiveNor(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void ScalarMinSigned(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void ScalarMaxSigned(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void ScalarMinUnsigned(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void ScalarMaxUnsigned(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void BinaryPolynomialProductLow(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void BinaryPolynomialProductHigh(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void BinaryPolynomialProductReverse(AsmRegister dest, AsmRegister src1, AsmRegister src2);
+    void ZeroIfConditionEqualZero(AsmRegister dest, AsmRegister src, AsmRegister condition);
+    void ZeroIfConditionNotEqualZero(AsmRegister dest, AsmRegister src, AsmRegister condition);
+    void AddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend);
+    void ShiftLeftOneAndAdd(AsmRegister dest, AsmRegister src, AsmRegister addend);
+    void ShiftLeftTwoAndAdd(AsmRegister dest, AsmRegister src, AsmRegister addend);
+    void ShiftLeftThreeAndAdd(AsmRegister dest, AsmRegister src, AsmRegister addend);
+    void ShiftLeftOneAndAddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend);
+    void ShiftLeftTwoAndAddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend);
+    void ShiftLeftThreeAndAddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend);
+    void ShiftLeftUnsignedWordByImmediate(AsmRegister dest, AsmRegister src, int shift);
+    void RotateLeftRegister(AsmRegister dest, AsmRegister src, AsmRegister shift);
+    void RotateRightRegister(AsmRegister dest, AsmRegister src, AsmRegister shift);
+    void RotateLeftByImmediate(AsmRegister dest, AsmRegister src, int shift);
+    void RotateRightByImmediate(AsmRegister dest, AsmRegister src, int shift);
     void CountLeadingZeros(AsmRegister dest, AsmRegister src);
     void CountTrailingZeros(AsmRegister dest, AsmRegister src);
     void CountSetBits(AsmRegister dest, AsmRegister src);
+    void ReverseByteOrder(AsmRegister dest, AsmRegister src);
+    void ReverseBitsInEachByte(AsmRegister dest, AsmRegister src);
+    void SignExtendByte(AsmRegister dest, AsmRegister src);
+    void SignExtendHalf(AsmRegister dest, AsmRegister src);
     void SignExtendWord(AsmRegister dest, AsmRegister src);
+    void ZeroExtendHalf(AsmRegister dest, AsmRegister src);
     void ZeroExtendWord(AsmRegister dest, AsmRegister src);
     void Sqrt(AsmRegister dest, AsmRegister src);
     void Fmac(AsmRegister acc, AsmRegister src1, AsmRegister src2);
@@ -54,6 +92,29 @@ public interface IAppAsmFacade
     void Load(ulong address, AsmRegister dest);
     void Store(AsmRegister src, ulong address);
     void Move(AsmRegister src, AsmRegister dest);
+
+    void MtileLoad(
+        CompilerMatrixTileTileOperand destinationTile,
+        CompilerMatrixTileDescriptorAbi descriptor,
+        CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi);
+
+    void MtileStore(
+        CompilerMatrixTileTileOperand sourceTile,
+        CompilerMatrixTileDescriptorAbi descriptor,
+        CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi);
+
+    void MtileMacc(
+        CompilerMatrixTileTileOperand leftSourceTile,
+        CompilerMatrixTileTileOperand rightSourceTile,
+        CompilerMatrixTileTileOperand accumulatorTile,
+        CompilerMatrixTileDescriptorAbi leftSourceDescriptor,
+        CompilerMatrixTileAccumulatorPolicyAbi accumulatorPolicyAbi);
+
+    void Mtranspose(
+        CompilerMatrixTileTileOperand sourceTile,
+        CompilerMatrixTileTileOperand destinationTile,
+        CompilerMatrixTileDescriptorAbi sourceDescriptor,
+        CompilerMatrixTileTransposePolicyAbi transposePolicyAbi);
 
     // ── Control flow ──
     AsmControlTarget DefineEntryPoint(string name);

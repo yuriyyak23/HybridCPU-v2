@@ -378,6 +378,10 @@
 		<Folder Include="CloseToRTL\Core\Virtualization\Sideband\CompletionTransport\" />
 		<Folder Include="CloseToRTL\Core\Virtualization\Sideband\DescriptorTransport\" />
 		<Folder Include="CloseToRTL\Core\Virtualization\Sideband\EvidenceTransport\" />
+		<Folder Include="docs\ref2\VirtualiztionRefactoringNew\" />
+		<Folder Include="docs\ref2\SecureComputerefactoringNew\" />
+		<Folder Include="docs\ref2\SecureComputeActivationPlan\" />
+		<Folder Include="docs\ref2\VirtualizationActivationPlan\" />
 		<Folder Include="docs\VMXRefactoring\SuccessClosed\" />
 		<Folder Include="Legacy\Obsolete\" />
 		<Folder Include="NonRTL\Arch\Compat\" />
@@ -397,7 +401,7 @@
 		<Error Condition="'$(Configuration)' == 'Release' and '$(EnableInternalTestHooks)' == 'true'" Text="Release build cannot enable internal test hooks. Build Debug testsupport artifacts instead or disable EnableInternalTestHooks/DefineTestSupport." />
 	</Target>
 
-	<Target Name="VerifyVmxProjectionLineage" BeforeTargets="CoreCompile" Condition="'$(EnableVmxProjectionLineageCheck)' == 'true' and Exists('$(MSBuildProjectDirectory)\tools\VMXProjectionLineage\VerifyProjectionLineage.ps1')">
+	<Target Name="VerifyVmxProjectionLineage" BeforeTargets="CoreCompile" Condition="'$(EnableVmxProjectionLineageCheck)' == 'true'">
 		<Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\tools\VMXProjectionLineage\VerifyProjectionLineage.ps1&quot; -ProjectRoot &quot;$(MSBuildProjectDirectory)&quot; -OutputRoot &quot;$(IntermediateOutputPath)VmxProjectionLineage&quot;" />
 	</Target>
 

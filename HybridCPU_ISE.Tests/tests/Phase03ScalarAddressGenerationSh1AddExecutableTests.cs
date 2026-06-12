@@ -400,7 +400,7 @@ public sealed class ScalarAddressGenerationSh1AddExecutableTests
     }
 
     [Fact]
-    public void Sh1Add_AdjacentScalarSystemVectorAndCompilerContours_RemainClosed()
+    public void Sh1Add_AddressGenerationCompilerHelpersOpenWhileAdjacentContoursRemainClosed()
     {
         string[] scalarClosed =
         [
@@ -426,10 +426,24 @@ public sealed class ScalarAddressGenerationSh1AddExecutableTests
             Assert.False(status.IsExecutableClaim, mnemonic);
         }
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("Sh1Add", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Sh2Add", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Sh3Add", compilerSource, StringComparison.OrdinalIgnoreCase);
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.SH1ADD", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.SH2ADD", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.SH3ADD", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.ADD_UW", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.SH1ADD_UW", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.SH2ADD_UW", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.SH3ADD_UW", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.SLLI_UW", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ShiftLeftOneAndAdd", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ShiftLeftTwoAndAdd", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ShiftLeftThreeAndAdd", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("AddUnsignedWord", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ShiftLeftOneAndAddUnsignedWord", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ShiftLeftTwoAndAddUnsignedWord", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ShiftLeftThreeAndAddUnsignedWord", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ShiftLeftUnsignedWordByImmediate", compilerSource, StringComparison.Ordinal);
+
         Assert.DoesNotContain("AddUw", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Sh1AddUw", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Sh2AddUw", compilerSource, StringComparison.OrdinalIgnoreCase);
@@ -568,13 +582,4 @@ public sealed class ScalarAddressGenerationSh1AddExecutableTests
         return hasEnum || hasRegistryMnemonic;
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
-    }
 }

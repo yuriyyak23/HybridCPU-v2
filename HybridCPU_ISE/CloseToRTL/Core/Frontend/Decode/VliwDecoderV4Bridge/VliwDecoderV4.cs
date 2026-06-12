@@ -5,6 +5,7 @@ using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Auth;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
+using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
@@ -208,6 +209,11 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 : (long)(short)instruction.Immediate;
             VectorInstructionPayload? vectorPayload =
                 CreateVectorPayloadIfRequired(in instruction, opcode);
+            MatrixTileInstructionIrProjection? matrixTileProjection =
+                CreateMatrixTileProjectionIfRequired(
+                    opcode,
+                    vectorPayload,
+                    imm);
 
             // Build canonical IR record.
             return new InstructionIR
@@ -224,6 +230,7 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 AcquireOrdering = instruction.Acquire,
                 ReleaseOrdering = instruction.Release,
                 VectorPayload = vectorPayload,
+                MatrixTileProjection = matrixTileProjection,
                 DmaStreamComputeDescriptorReference =
                     dmaStreamComputeDescriptor?.DescriptorReference,
                 DmaStreamComputeDescriptor = dmaStreamComputeDescriptor,
@@ -231,6 +238,24 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                     acceleratorCommandDescriptor?.DescriptorReference,
                 AcceleratorCommandDescriptor = acceleratorCommandDescriptor,
             };
+        }
+
+        private static MatrixTileInstructionIrProjection? CreateMatrixTileProjectionIfRequired(
+            ushort opcode,
+            VectorInstructionPayload? vectorPayload,
+            long immediate)
+        {
+            var typedOpcode = (InstructionsEnum)opcode;
+            if (!MatrixTileRuntimeOwnedVlmRows.IsMatrixTileOpcode(typedOpcode) ||
+                !vectorPayload.HasValue)
+            {
+                return null;
+            }
+
+            return MatrixTileIrProjectionAndMaterializer.ProjectDecodedVectorPayload(
+                typedOpcode,
+                vectorPayload.Value,
+                immediate);
         }
 
         private static VectorInstructionPayload? CreateVectorPayloadIfRequired(
@@ -612,7 +637,11 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
 
             if (admissionMetadata.Equals(MicroOpAdmissionMetadata.Default))
             {
-                return;
+                throw new InvalidOpcodeException(
+                    $"Slot {slotIndex}: ACCEL_SUBMIT typed sideband requires explicit slot metadata; default admission metadata is not accepted.",
+                    opcodeIdentifier: opcodeName,
+                    slotIndex: slotIndex,
+                    isProhibited: false);
             }
 
             SlotPlacementMetadata placement = admissionMetadata.Placement;
@@ -717,28 +746,6 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 throw new InvalidOpcodeException(
                     $"Opcode '{opcodeName}' (slot {slotIndex}) uses unsupported retained Move DT=5 triple-destination contour. " +
                     "Canonical decode must fail closed instead of publishing scalar success.",
-                    opcodeIdentifier: opcodeName,
-                    slotIndex: slotIndex,
-                    isProhibited: false);
-            }
-
-            if (rawOpcode == Processor.CPU_Core.IsaOpcodeValues.MTILE_MACC ||
-                rawOpcode == Processor.CPU_Core.IsaOpcodeValues.MTRANSPOSE)
-            {
-                throw new InvalidOpcodeException(
-                    $"Opcode '{opcodeName}' (slot {slotIndex}) uses unsupported optional matrix contour. " +
-                    "Canonical decode must fail closed instead of publishing scalar ALU register truth without an authoritative matrix carrier/materializer follow-through.",
-                    opcodeIdentifier: opcodeName,
-                    slotIndex: slotIndex,
-                    isProhibited: false);
-            }
-
-            if (rawOpcode == Processor.CPU_Core.IsaOpcodeValues.MTILE_LOAD ||
-                rawOpcode == Processor.CPU_Core.IsaOpcodeValues.MTILE_STORE)
-            {
-                throw new InvalidOpcodeException(
-                    $"Opcode '{opcodeName}' (slot {slotIndex}) uses unsupported optional matrix memory contour. " +
-                    "Canonical decode must fail closed instead of publishing memory placement/register truth without an authoritative matrix load/store carrier/materializer follow-through.",
                     opcodeIdentifier: opcodeName,
                     slotIndex: slotIndex,
                     isProhibited: false);

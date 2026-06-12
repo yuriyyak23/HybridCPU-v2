@@ -61,9 +61,6 @@ public sealed class CompilerNoEmissionBoundaryTests
         "SextB",
         "SextH",
         "ZextH",
-        "SignExtendByte",
-        "SignExtendHalf",
-        "ZeroExtendHalf",
         "Bset",
         "Bclr",
         "Binv",
@@ -77,9 +74,6 @@ public sealed class CompilerNoEmissionBoundaryTests
         "BitInvert",
         "BitExtract",
         "Bitfield",
-        "Sh1Add",
-        "Sh2Add",
-        "Sh3Add",
         "AddUw",
         "Sh1AddUw",
         "Sh2AddUw",
@@ -216,126 +210,49 @@ public sealed class CompilerNoEmissionBoundaryTests
     [
         ("VGATHER",
             ["VGather", "VectorGather", "GatherIndexed", "IndexedGather"],
-            ["InstructionsEnum.VGATHER", "IsaOpcodeValues.VGATHER", "OpcodeValues.VGATHER", "VGATHER", "VectorGather", "GatherIndexed"]),
+            ["InstructionsEnum.VGATHER", "IsaOpcodeValues.VGATHER", "OpcodeValues.VGATHER", "CompileVGather", "EmitVGather", "CompileVectorGather", "EmitVectorGather", "CompileGatherIndexed", "EmitGatherIndexed"]),
         ("VSCATTER",
             ["VScatter", "VectorScatter", "ScatterIndexed", "IndexedScatter"],
-            ["InstructionsEnum.VSCATTER", "IsaOpcodeValues.VSCATTER", "OpcodeValues.VSCATTER", "VSCATTER", "VectorScatter", "ScatterIndexed"]),
+            ["InstructionsEnum.VSCATTER", "IsaOpcodeValues.VSCATTER", "OpcodeValues.VSCATTER", "CompileVScatter", "EmitVScatter", "CompileVectorScatter", "EmitVectorScatter", "CompileScatterIndexed", "EmitScatterIndexed"]),
         ("VMSBF",
             ["Vmsbf", "VectorMaskPrefix", "MaskPrefix", "MaskSetBeforeFirst"],
-            ["InstructionsEnum.VMSBF", "IsaOpcodeValues.VMSBF", "OpcodeValues.VMSBF", "VMSBF", "VectorMaskPrefix", "MaskSetBeforeFirst"]),
+            ["InstructionsEnum.VMSBF", "IsaOpcodeValues.VMSBF", "OpcodeValues.VMSBF", "CompileVmsbf", "EmitVmsbf", "CompileVectorMaskPrefix", "EmitVectorMaskPrefix", "CompileMaskSetBeforeFirst", "EmitMaskSetBeforeFirst"]),
         ("VZEXT",
             ["Vzext", "VectorZeroExtend", "VectorWiden", "VectorNarrow", "VectorConvert"],
-            ["InstructionsEnum.VZEXT", "IsaOpcodeValues.VZEXT", "OpcodeValues.VZEXT", "VZEXT", "VectorZeroExtend", "VectorWiden", "VectorNarrow", "VectorConvert"]),
+            ["InstructionsEnum.VZEXT", "IsaOpcodeValues.VZEXT", "OpcodeValues.VZEXT", "CompileVzext", "EmitVzext", "CompileVectorZeroExtend", "EmitVectorZeroExtend", "CompileVectorWiden", "CompileVectorNarrow", "CompileVectorConvert"]),
         ("VSCAN.SUM",
             ["Vscan", "VscanSum", "VectorScanSum", "ScanSum"],
-            ["InstructionsEnum.VSCAN_SUM", "IsaOpcodeValues.VSCAN_SUM", "OpcodeValues.VSCAN_SUM", "VSCAN.SUM", "VSCAN_SUM", "VectorScanSum", "ScanSum"]),
+            ["InstructionsEnum.VSCAN_SUM", "IsaOpcodeValues.VSCAN_SUM", "OpcodeValues.VSCAN_SUM", "CompileVscanSum", "EmitVscanSum", "CompileVectorScanSum", "EmitVectorScanSum"]),
         ("VADD.SAT",
             ["VaddSat", "VectorAddSaturating", "SaturatingAdd", "SaturatingVectorAdd"],
-            ["VADD.SAT", "VaddSat", "VectorAddSaturating", "SaturatingAdd", "SaturatingVectorAdd"]),
+            ["InstructionsEnum.VADD_SAT", "IsaOpcodeValues.VADD_SAT", "OpcodeValues.VADD_SAT", "CompileVaddSat", "EmitVaddSat", "CompileVectorAddSaturating", "EmitVectorAddSaturating", "SaturatingVectorAdd"]),
         ("VSLIDE1UP",
             ["Vslide1Up", "Slide1Up", "SlideOneUp", "VectorSlide1Up"],
-            ["InstructionsEnum.VSLIDE1UP", "IsaOpcodeValues.VSLIDE1UP", "OpcodeValues.VSLIDE1UP", "VSLIDE1UP", "SlideOneUp", "VectorSlide1Up"]),
+            ["InstructionsEnum.VSLIDE1UP", "IsaOpcodeValues.VSLIDE1UP", "OpcodeValues.VSLIDE1UP", "CompileVslide1Up", "EmitVslide1Up", "CompileSlideOneUp", "EmitSlideOneUp", "CompileVectorSlide1Up", "EmitVectorSlide1Up"]),
         ("VDOT.WIDE",
             ["VdotWide", "DotWide", "VectorDotWide", "MixedPrecisionDot", "BlockScaledDot"],
-            ["InstructionsEnum.VDOT_WIDE", "IsaOpcodeValues.VDOT_WIDE", "OpcodeValues.VDOT_WIDE", "VDOT.WIDE", "VDOT_WIDE", "DotWide", "MixedPrecisionDot", "BlockScaledDot"]),
+            ["InstructionsEnum.VDOT_WIDE", "IsaOpcodeValues.VDOT_WIDE", "OpcodeValues.VDOT_WIDE", "CompileVdotWide", "EmitVdotWide", "CompileDotWide", "EmitDotWide", "CompileMixedPrecisionDot", "CompileBlockScaledDot"]),
         ("VDOT.BLOCKSCALE",
             ["VdotBlockscale", "VdotBlockScale", "BlockscaleDot", "BlockScaledDot"],
-            ["VDOT.BLOCKSCALE", "VDOT_BLOCKSCALE", "VdotBlockscale", "VdotBlockScale", "BlockscaleDot", "BlockScaledDot"]),
+            ["InstructionsEnum.VDOT_BLOCKSCALE", "IsaOpcodeValues.VDOT_BLOCKSCALE", "OpcodeValues.VDOT_BLOCKSCALE", "CompileVdotBlockscale", "EmitVdotBlockscale", "CompileBlockscaleDot", "CompileBlockScaledDot"]),
         ("VDOT.ACCUM",
             ["VdotAccum", "DotAccum", "VectorDotAccum"],
-            ["VDOT.ACCUM", "VDOT_ACCUM", "VdotAccum", "DotAccum", "VectorDotAccum"]),
+            ["InstructionsEnum.VDOT_ACCUM", "IsaOpcodeValues.VDOT_ACCUM", "OpcodeValues.VDOT_ACCUM", "CompileVdotAccum", "EmitVdotAccum", "CompileDotAccum", "CompileVectorDotAccum"]),
         ("VDOT.WIDE.I16",
             ["VdotWideI16", "DotWideI16", "VectorDotWideI16"],
-            ["VDOT.WIDE.I16", "VDOT_WIDE_I16", "VdotWideI16", "DotWideI16", "VectorDotWideI16"]),
+            ["InstructionsEnum.VDOT_WIDE_I16", "IsaOpcodeValues.VDOT_WIDE_I16", "OpcodeValues.VDOT_WIDE_I16", "CompileVdotWideI16", "EmitVdotWideI16", "CompileDotWideI16", "CompileVectorDotWideI16"]),
         ("VDOT.WIDE.I32",
             ["VdotWideI32", "DotWideI32", "VectorDotWideI32"],
-            ["VDOT.WIDE.I32", "VDOT_WIDE_I32", "VdotWideI32", "DotWideI32", "VectorDotWideI32"]),
+            ["InstructionsEnum.VDOT_WIDE_I32", "IsaOpcodeValues.VDOT_WIDE_I32", "OpcodeValues.VDOT_WIDE_I32", "CompileVdotWideI32", "EmitVdotWideI32", "CompileDotWideI32", "CompileVectorDotWideI32"]),
         ("VSLIDE1DOWN",
             ["Vslide1Down", "Slide1Down", "SlideOneDown", "VectorSlide1Down"],
-            ["InstructionsEnum.VSLIDE1DOWN", "IsaOpcodeValues.VSLIDE1DOWN", "OpcodeValues.VSLIDE1DOWN", "VSLIDE1DOWN", "SlideOneDown", "VectorSlide1Down"]),
+            ["InstructionsEnum.VSLIDE1DOWN", "IsaOpcodeValues.VSLIDE1DOWN", "OpcodeValues.VSLIDE1DOWN", "CompileVslide1Down", "EmitVslide1Down", "CompileSlideOneDown", "EmitSlideOneDown", "CompileVectorSlide1Down", "EmitVectorSlide1Down"]),
         ("VPERM2",
             ["Vperm2", "Perm2", "VectorPermute2", "Permute2"],
-            ["InstructionsEnum.VPERM2", "IsaOpcodeValues.VPERM2", "OpcodeValues.VPERM2", "VPERM2", "VectorPermute2", "Permute2"]),
+            ["InstructionsEnum.VPERM2", "IsaOpcodeValues.VPERM2", "OpcodeValues.VPERM2", "CompileVperm2", "EmitVperm2", "CompileVectorPermute2", "EmitVectorPermute2"]),
         ("VTRANSPOSE",
             ["Vtranspose", "VectorTranspose", "Transpose"],
-            ["InstructionsEnum.VTRANSPOSE", "IsaOpcodeValues.VTRANSPOSE", "OpcodeValues.VTRANSPOSE", "VTRANSPOSE", "VectorTranspose"])
-    ];
-
-    private static readonly (string ContourName, string[] PublicHelperFragments, string[] CompilerSourceFragments)[] RuntimeOnlyLane6DescriptorContours =
-    [
-        ("DmaStreamCompute.SUB",
-            ["DscSub", "DmaStreamComputeSub"],
-            ["DmaStreamCompute.SUB", "DmaStreamCompute_SUB", "DscSub", "DmaStreamComputeSub"]),
-        ("DmaStreamCompute.MIN",
-            ["DscMin", "DmaStreamComputeMin"],
-            ["DmaStreamCompute.MIN", "DmaStreamCompute_MIN", "DscMin", "DmaStreamComputeMin"]),
-        ("DmaStreamCompute.MAX",
-            ["DscMax", "DmaStreamComputeMax"],
-            ["DmaStreamCompute.MAX", "DmaStreamCompute_MAX", "DscMax", "DmaStreamComputeMax"]),
-        ("DmaStreamCompute.ABSDIFF",
-            ["DscAbsDiff", "DmaStreamComputeAbsDiff"],
-            ["DmaStreamCompute.ABSDIFF", "DmaStreamCompute_ABSDIFF", "DscAbsDiff", "DmaStreamComputeAbsDiff"]),
-        ("DmaStreamCompute.CLAMP",
-            ["DscClamp", "DmaStreamComputeClamp"],
-            ["DmaStreamCompute.CLAMP", "DmaStreamCompute_CLAMP", "DscClamp", "DmaStreamComputeClamp"]),
-        ("DmaStreamCompute.CONVERT",
-            ["DscConvert", "DmaStreamComputeConvert"],
-            ["DmaStreamCompute.CONVERT", "DmaStreamCompute_CONVERT", "DscConvert", "DmaStreamComputeConvert"]),
-        ("DmaStreamCompute.COMPARE",
-            ["DscCompare", "DmaStreamComputeCompare"],
-            ["DmaStreamCompute.COMPARE", "DmaStreamCompute_COMPARE", "DscCompare", "DmaStreamComputeCompare"]),
-        ("DmaStreamCompute.SELECT",
-            ["DscSelect", "DmaStreamComputeSelect"],
-            ["DmaStreamCompute.SELECT", "DmaStreamCompute_SELECT", "DscSelect", "DmaStreamComputeSelect"]),
-        ("DmaStreamCompute.REDUCE_SUM",
-            ["DscReduceSum", "DmaStreamComputeReduceSum"],
-            ["DmaStreamCompute.REDUCE_SUM", "DmaStreamCompute_REDUCE_SUM", "DscReduceSum", "DmaStreamComputeReduceSum"]),
-        ("DmaStreamCompute.REDUCE_MIN",
-            ["DscReduceMin", "DmaStreamComputeReduceMin"],
-            ["DmaStreamCompute.REDUCE_MIN", "DmaStreamCompute_REDUCE_MIN", "DscReduceMin", "DmaStreamComputeReduceMin"]),
-        ("DmaStreamCompute.REDUCE_MAX",
-            ["DscReduceMax", "DmaStreamComputeReduceMax"],
-            ["DmaStreamCompute.REDUCE_MAX", "DmaStreamCompute_REDUCE_MAX", "DscReduceMax", "DmaStreamComputeReduceMax"]),
-        ("DmaStreamCompute.REDUCE_AND",
-            ["DscReduceAnd", "DmaStreamComputeReduceAnd"],
-            ["DmaStreamCompute.REDUCE_AND", "DmaStreamCompute_REDUCE_AND", "DscReduceAnd", "DmaStreamComputeReduceAnd"]),
-        ("DmaStreamCompute.REDUCE_OR",
-            ["DscReduceOr", "DmaStreamComputeReduceOr"],
-            ["DmaStreamCompute.REDUCE_OR", "DmaStreamCompute_REDUCE_OR", "DscReduceOr", "DmaStreamComputeReduceOr"]),
-        ("DmaStreamCompute.REDUCE_XOR",
-            ["DscReduceXor", "DmaStreamComputeReduceXor"],
-            ["DmaStreamCompute.REDUCE_XOR", "DmaStreamCompute_REDUCE_XOR", "DscReduceXor", "DmaStreamComputeReduceXor"]),
-        ("DSC_SHAPE_*",
-            ["DscShape", "DscStrided", "DscTiled", "DscScatterGather", "DscMultiRange"],
-            ["DSC_SHAPE_", "DscShape", "DscStrided", "DscTiled", "DscScatterGather", "DscMultiRange"])
-    ];
-
-    private static readonly (string ContourName, string[] PublicHelperFragments, string[] CompilerSourceFragments)[] RuntimeOnlyLane6QueueQueryDsc2Contours =
-    [
-        ("DSC_POLL",
-            ["DscPoll", "DmaStreamComputePoll"],
-            ["DSC_POLL", "DscPoll", "DmaStreamComputePoll"]),
-        ("DSC_WAIT",
-            ["DscWait", "DmaStreamComputeWait"],
-            ["DSC_WAIT", "DscWait", "DmaStreamComputeWait"]),
-        ("DSC_CANCEL",
-            ["DscCancel", "DmaStreamComputeCancel"],
-            ["DSC_CANCEL", "DscCancel", "DmaStreamComputeCancel"]),
-        ("DSC_FENCE",
-            ["DscFence", "DmaStreamComputeFence"],
-            ["DSC_FENCE", "DscFence", "DmaStreamComputeFence"]),
-        ("DSC_COMMIT",
-            ["DscCommit", "DmaStreamComputeCommit"],
-            ["DSC_COMMIT", "DscCommit", "DmaStreamComputeCommit"]),
-        ("DSC_QUERY_BACKEND",
-            ["DscQueryBackend", "DmaStreamComputeQueryBackend"],
-            ["DSC_QUERY_BACKEND", "DscQueryBackend", "DmaStreamComputeQueryBackend"]),
-        ("DSC_QUERY_SHAPE",
-            ["DscQueryShape", "DmaStreamComputeQueryShape"],
-            ["DSC_QUERY_SHAPE", "DscQueryShape", "DmaStreamComputeQueryShape"]),
-        ("DSC2",
-            ["Dsc2", "DmaStreamComputeDsc2"],
-            ["DSC2", "Dsc2", "DmaStreamComputeDsc2"])
+            ["InstructionsEnum.VTRANSPOSE", "IsaOpcodeValues.VTRANSPOSE", "OpcodeValues.VTRANSPOSE", "CompileVtranspose", "EmitVtranspose", "CompileVectorTranspose", "EmitVectorTranspose"])
     ];
 
     [Fact]
@@ -351,6 +268,11 @@ public sealed class CompilerNoEmissionBoundaryTests
 
         foreach (string methodName in publicFacadeMethods.Distinct(StringComparer.Ordinal))
         {
+            if (CompilerMatrixTilePositiveEmissionAbiContract.PublicHelperNames.Contains(methodName))
+            {
+                continue;
+            }
+
             Assert.DoesNotContain(
                 ClosedHelperNameFragments,
                 fragment => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
@@ -389,7 +311,7 @@ public sealed class CompilerNoEmissionBoundaryTests
                 methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
         }
 
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
         string[] forbiddenCompilerFragments =
         [
             "POPCNT",
@@ -397,7 +319,11 @@ public sealed class CompilerNoEmissionBoundaryTests
             "PopulationCount",
             "SEQZ",
             "SNEZ",
-            "CSEL"
+            "InstructionsEnum.CSEL",
+            "IsaOpcodeValues.CSEL",
+            "OpcodeValues.CSEL",
+            "CompileCsel",
+            "EmitCsel"
         ];
         foreach (string fragment in forbiddenCompilerFragments)
         {
@@ -518,20 +444,24 @@ public sealed class CompilerNoEmissionBoundaryTests
             {
                 Assert.DoesNotContain(
                     publicCompilerMethods,
-                    methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+                    methodName =>
+                        !CompilerMatrixTilePositiveEmissionAbiContract.PublicHelperNames.Contains(methodName) &&
+                        methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
             }
 
             Assert.DoesNotContain(
                 publicCompilerMethods,
-                methodName => methodName.Contains($"{contourName}Backend", StringComparison.OrdinalIgnoreCase) ||
-                              methodName.Contains($"{contourName}Fallback", StringComparison.OrdinalIgnoreCase));
+                methodName =>
+                    !CompilerMatrixTilePositiveEmissionAbiContract.PublicHelperNames.Contains(methodName) &&
+                    (methodName.Contains($"{contourName}Backend", StringComparison.OrdinalIgnoreCase) ||
+                     methodName.Contains($"{contourName}Fallback", StringComparison.OrdinalIgnoreCase)));
         }
     }
 
     [Fact]
     public void CompilerSources_DoNotReferenceRuntimeOnlyVectorContoursAsLoweringAuthority()
     {
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
 
         foreach ((_, _, string[] compilerSourceFragments) in RuntimeOnlyVectorContours)
         {
@@ -546,6 +476,239 @@ public sealed class CompilerNoEmissionBoundaryTests
     }
 
     [Fact]
+    public void PlanningOnlyFixedPointSaturationRows_DoNotPublishTypedCompilerHelpersOrLoweringAuthority()
+    {
+        string[] publicCompilerMethods =
+        [
+            .. PublicMethodNames(typeof(IAppAsmFacade)),
+            .. PublicMethodNames(typeof(AppAsmFacade)),
+            .. PublicMethodNames(typeof(IPlatformAsmFacade)),
+            .. PublicMethodNames(typeof(PlatformAsmFacade)),
+            .. PublicMethodNames(typeof(HybridCpuThreadCompilerContext))
+        ];
+        string compilerEmissionSurfaceSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+
+        foreach (CompilerFailClosedEmissionRow contour in CompilerFailClosedEmissionInventory.VectorFixedPointSaturationRows)
+        {
+            CompilerVectorVlmBlockedAbiContract contract = Assert.Single(
+                CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows,
+                row => row.Mnemonic == contour.Mnemonic);
+            Assert.True(contract.IsFixedPointSaturation);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.False(contract.CompilerHelperAllowed);
+            Assert.False(contract.TypedFacadeAllowed);
+            Assert.False(contract.TypedHelperAllowed);
+            Assert.True(contract.RequiresSignednessWidthClampPolicy);
+            Assert.True(contract.RequiresStagedPublicationRetirePolicy);
+            Assert.True(contract.RequiresReplayRollbackGoldenEvidence);
+            Assert.True(contract.NoVaddSatFallback);
+            Assert.True(contract.NoBaseVectorArithmeticFallback);
+            Assert.True(contract.NoBaseVectorShiftFallback);
+            Assert.True(contract.NoScalarHelperFallback);
+            Assert.True(contract.NoLane6StreamFallback);
+            Assert.True(contract.NoLane7AcceleratorFallback);
+            Assert.True(contract.NoVmxSpecificPathFallback);
+            Assert.True(contract.NoExecutableRowAliasPromotion);
+
+            foreach (string fragment in contour.PublicHelperFragments)
+            {
+                Assert.DoesNotContain(
+                    publicCompilerMethods,
+                    methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+            }
+
+            foreach (string fragment in contour.CompilerSourceFragments)
+            {
+                Assert.DoesNotContain(
+                    fragment,
+                    compilerEmissionSurfaceSource,
+                    StringComparison.Ordinal);
+            }
+        }
+    }
+
+    [Fact]
+    public void PlanningOnlyFixedPointAverageClipRows_DoNotPublishTypedCompilerHelpersOrLoweringAuthority()
+    {
+        string[] publicCompilerMethods =
+        [
+            .. PublicMethodNames(typeof(IAppAsmFacade)),
+            .. PublicMethodNames(typeof(AppAsmFacade)),
+            .. PublicMethodNames(typeof(IPlatformAsmFacade)),
+            .. PublicMethodNames(typeof(PlatformAsmFacade)),
+            .. PublicMethodNames(typeof(HybridCpuThreadCompilerContext))
+        ];
+        string compilerEmissionSurfaceSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+
+        foreach (CompilerFailClosedEmissionRow contour in CompilerFailClosedEmissionInventory.VectorFixedPointAverageClipRows)
+        {
+            CompilerVectorVlmBlockedAbiContract contract = Assert.Single(
+                CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows,
+                row => row.Mnemonic == contour.Mnemonic);
+            Assert.True(contract.IsFixedPointAverageClip);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.False(contract.CompilerHelperAllowed);
+            Assert.False(contract.TypedFacadeAllowed);
+            Assert.False(contract.TypedHelperAllowed);
+            Assert.True(contract.RequiresRoundingTruncationPolicyAbi);
+            Assert.True(contract.RequiresStagedPublicationRetirePolicy);
+            Assert.True(contract.RequiresReplayRollbackGoldenEvidence);
+            Assert.True(contract.NoVaddSatFallback);
+            Assert.True(contract.NoFixedPointSaturationFallback);
+            Assert.True(contract.NoBaseVectorArithmeticFallback);
+            Assert.True(contract.NoBaseVectorShiftFallback);
+            Assert.True(contract.NoNarrowWidenConvertFallback);
+            Assert.True(contract.NoScalarHelperFallback);
+            Assert.True(contract.NoLane6StreamFallback);
+            Assert.True(contract.NoLane7AcceleratorFallback);
+            Assert.True(contract.NoVmxSpecificPathFallback);
+            Assert.True(contract.NoExecutableRowAliasPromotion);
+
+            foreach (string fragment in contour.PublicHelperFragments)
+            {
+                Assert.DoesNotContain(
+                    publicCompilerMethods,
+                    methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+            }
+
+            foreach (string fragment in contour.CompilerSourceFragments)
+            {
+                Assert.DoesNotContain(
+                    fragment,
+                    compilerEmissionSurfaceSource,
+                    StringComparison.Ordinal);
+            }
+        }
+    }
+
+    [Fact]
+    public void PlanningOnlyDotTileVariantRows_DoNotPublishTypedCompilerHelpersOrLoweringAuthority()
+    {
+        string[] publicCompilerMethods =
+        [
+            .. PublicMethodNames(typeof(IAppAsmFacade)),
+            .. PublicMethodNames(typeof(AppAsmFacade)),
+            .. PublicMethodNames(typeof(IPlatformAsmFacade)),
+            .. PublicMethodNames(typeof(PlatformAsmFacade)),
+            .. PublicMethodNames(typeof(HybridCpuThreadCompilerContext))
+        ];
+        string compilerEmissionSurfaceSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+
+        foreach (CompilerFailClosedEmissionRow contour in CompilerFailClosedEmissionInventory.VectorDotTileVariantRows)
+        {
+            CompilerVectorVlmBlockedAbiContract contract = Assert.Single(
+                CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows,
+                row => row.Mnemonic == contour.Mnemonic);
+            Assert.True(contract.IsDotTileVariant);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.False(contract.CompilerHelperAllowed);
+            Assert.False(contract.TypedFacadeAllowed);
+            Assert.False(contract.TypedHelperAllowed);
+            Assert.True(contract.RequiresDotVariantAbi);
+            Assert.True(contract.RequiresDotTileHelperAbi);
+            Assert.True(contract.RequiresAccumulatorResultFootprintAbi);
+            Assert.True(contract.RequiresDeterministicOrderingReplayPolicy);
+            Assert.True(contract.RequiresStagedPublicationRetirePolicy);
+            Assert.True(contract.RequiresReplayRollbackGoldenEvidence);
+            Assert.True(contract.NoScopedVdotWideFallback);
+            Assert.True(contract.NoNameOnlyVdotWideExtension);
+            Assert.True(contract.NoBaseDotProductFallback);
+            Assert.True(contract.NoWideningFmaFallback);
+            Assert.True(contract.NoLane6DescriptorFallback);
+            Assert.True(contract.NoMatrixTileFallback);
+            Assert.True(contract.NoScalarHelperFallback);
+            Assert.True(contract.NoLane6StreamFallback);
+            Assert.True(contract.NoLane7AcceleratorFallback);
+            Assert.True(contract.NoVmxSpecificPathFallback);
+            Assert.True(contract.NoExecutableRowAliasPromotion);
+            Assert.True(contract.NoHostOwnedEvidencePublication);
+
+            foreach (string fragment in contour.PublicHelperFragments)
+            {
+                Assert.DoesNotContain(
+                    publicCompilerMethods,
+                    methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+            }
+
+            foreach (string fragment in contour.CompilerSourceFragments)
+            {
+                Assert.DoesNotContain(
+                    fragment,
+                    compilerEmissionSurfaceSource,
+                    StringComparison.Ordinal);
+            }
+        }
+    }
+
+    [Fact]
+    public void Phase13MatrixTileRuntimePromotion_OpensOnlyExplicitCompilerOwnedMatrixTileEmission()
+    {
+        string[] publicCompilerMethods =
+        [
+            .. PublicMethodNames(typeof(IAppAsmFacade)),
+            .. PublicMethodNames(typeof(AppAsmFacade)),
+            .. PublicMethodNames(typeof(IPlatformAsmFacade)),
+            .. PublicMethodNames(typeof(PlatformAsmFacade)),
+            .. PublicMethodNames(typeof(HybridCpuThreadCompilerContext))
+        ];
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        string compilerEmissionSurfaceSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+
+        Assert.Empty(CompilerFailClosedEmissionInventory.MatrixTileOptionalDisabledRows);
+        Assert.True(CompilerMatrixTilePositiveEmissionAbiContract.HasCurrentCompilerImplementation);
+        Assert.True(CompilerMatrixTilePositiveEmissionAbiContract.HasCurrentCompilerHelper);
+        Assert.True(CompilerMatrixTilePositiveEmissionAbiContract.HasCurrentCompilerEmission);
+        Assert.True(CompilerMatrixTilePositiveEmissionAbiContract.UsesPhase13RuntimeHandoff);
+        Assert.True(CompilerMatrixTilePositiveEmissionAbiContract.RuntimeOwnedLegalityIsFinal);
+        Assert.False(CompilerMatrixTilePositiveEmissionAbiContract.AllowsCompilerToOverrideRuntimeLegality);
+        Assert.False(CompilerMatrixTilePositiveEmissionAbiContract.UsesOldOptionalDisabledMetadataAsAuthority);
+        Assert.False(CompilerMatrixTilePositiveEmissionAbiContract.UsesFallbackPath);
+        Assert.False(CompilerMatrixTilePositiveEmissionAbiContract.UsesAliasPromotion);
+
+        Assert.Contains(
+            CompilerMatrixTilePositiveEmissionAbiContract.CompilerPositiveEmissionDecision,
+            compilerSource,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            CompilerMatrixTilePositiveEmissionAbiContract.RuntimeHandoffAuthorityDecision,
+            compilerSource,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            CompilerMatrixTilePositiveEmissionAbiContract.LegacyOptionalDisabledBoundaryDecision,
+            compilerSource,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            CompilerMatrixTilePositiveEmissionAbiContract.NoFallbackDecision,
+            compilerSource,
+            StringComparison.Ordinal);
+
+        foreach (CompilerMatrixTilePositiveEmissionRow row in CompilerMatrixTilePositiveEmissionAbiContract.Rows)
+        {
+            InstructionSupportStatus runtimeStatus = InstructionSupportStatusCatalog.GetStatus(row.Mnemonic);
+            Assert.Equal(IsaInstructionStatus.OptionalEnabled, runtimeStatus.Status);
+            Assert.Equal(RuntimeInstructionEvidence.ConformanceTested, runtimeStatus.RuntimeEvidence);
+            Assert.True(runtimeStatus.HasRuntimeOpcodeMetadata);
+            Assert.True(runtimeStatus.HasCanonicalDecoderAcceptance);
+            Assert.True(runtimeStatus.HasRegistryFactory);
+            Assert.True(runtimeStatus.HasExecutionSemantics);
+            Assert.True(runtimeStatus.IsExecutableClaim);
+            Assert.Equal(row.Opcode, Enum.Parse<InstructionsEnum>(row.Mnemonic));
+            Assert.Equal((ushort)row.Opcode, row.NumericOpcode);
+            Assert.True(row.UsesPhase13RuntimeHandoff);
+            Assert.True(row.RuntimeOwnedLegalityIsFinal);
+            Assert.True(row.EmitsDirectMatrixTileOpcode);
+            Assert.False(row.UsesFallbackPath);
+            Assert.False(row.UsesAliasPromotion);
+            Assert.False(string.IsNullOrWhiteSpace(row.RequiredTypedOperandContract));
+
+            CompilerMatrixTilePositiveEmissionAbiContract.RequireRuntimeHandoffAuthority(row.Mnemonic);
+            Assert.Contains(row.HelperName, publicCompilerMethods);
+            Assert.Contains(row.HelperName, compilerEmissionSurfaceSource, StringComparison.Ordinal);
+            Assert.Contains($"InstructionsEnum.{row.Opcode}", compilerEmissionSurfaceSource, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public void RuntimeOnlyLane6DescriptorContours_DoNotPublishTypedCompilerHelpersOrLoweringAuthority()
     {
         string[] publicCompilerMethods =
@@ -556,18 +719,19 @@ public sealed class CompilerNoEmissionBoundaryTests
             .. PublicMethodNames(typeof(PlatformAsmFacade)),
             .. PublicMethodNames(typeof(HybridCpuThreadCompilerContext))
         ];
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
 
-        foreach ((_, string[] publicHelperFragments, string[] compilerSourceFragments) in RuntimeOnlyLane6DescriptorContours)
+        foreach (CompilerFailClosedEmissionRow contour in CompilerFailClosedEmissionInventory.Lane6DescriptorRows
+                     .Concat(CompilerFailClosedEmissionInventory.Lane6ShapeRows))
         {
-            foreach (string fragment in publicHelperFragments)
+            foreach (string fragment in contour.PublicHelperFragments)
             {
                 Assert.DoesNotContain(
                     publicCompilerMethods,
                     methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
             }
 
-            foreach (string fragment in compilerSourceFragments)
+            foreach (string fragment in contour.CompilerSourceFragments)
             {
                 Assert.DoesNotContain(
                     fragment,
@@ -588,18 +752,18 @@ public sealed class CompilerNoEmissionBoundaryTests
             .. PublicMethodNames(typeof(PlatformAsmFacade)),
             .. PublicMethodNames(typeof(HybridCpuThreadCompilerContext))
         ];
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
 
-        foreach ((_, string[] publicHelperFragments, string[] compilerSourceFragments) in RuntimeOnlyLane6QueueQueryDsc2Contours)
+        foreach (CompilerFailClosedEmissionRow contour in CompilerFailClosedEmissionInventory.Lane6QueueQueryDsc2Rows)
         {
-            foreach (string fragment in publicHelperFragments)
+            foreach (string fragment in contour.PublicHelperFragments)
             {
                 Assert.DoesNotContain(
                     publicCompilerMethods,
                     methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
             }
 
-            foreach (string fragment in compilerSourceFragments)
+            foreach (string fragment in contour.CompilerSourceFragments)
             {
                 Assert.DoesNotContain(
                     fragment,
@@ -612,7 +776,7 @@ public sealed class CompilerNoEmissionBoundaryTests
     [Fact]
     public void CompilerSources_DoNotReferenceLane7RuntimeOnlyTaxonomyOrBackendSurfacesAsAuthority()
     {
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
         string[] forbiddenFragments =
         [
             "ACCEL_QUERY_CAPS",
@@ -623,10 +787,7 @@ public sealed class CompilerNoEmissionBoundaryTests
             "ACCEL_STATUS",
             "ACCEL_GET_RESULT",
             "ACCEL_RESET",
-            "ACCEL_QUERY_ABI",
-            "ACCEL_QUERY_TOPOLOGY",
-            "ACCEL_BIND_QUEUE",
-            "ACCEL_UNBIND_QUEUE",
+            .. CompilerFailClosedEmissionInventory.Lane7AcceleratorControlCompilerSourceFragments,
             "ACCEL_FFT",
             "ACCEL_CRYPTO",
             "ACCEL_HASH",
@@ -641,7 +802,6 @@ public sealed class CompilerNoEmissionBoundaryTests
             "FakeMatMulExternalAcceleratorBackend",
             "TensorMetadata",
             "TensorContract",
-            "TopologyQueue",
             "FftMetadata",
             "CryptoHashMetadata",
             "SparseGraphMetadata"
@@ -800,7 +960,7 @@ public sealed class CompilerNoEmissionBoundaryTests
     [Fact]
     public void CompilerSources_DoNotPublishVmxPhase8GuestAbiOrHostEvidenceHelpers()
     {
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
         string[] forbiddenFragments =
         [
             "VMDIRTYLOG",
@@ -852,13 +1012,6 @@ public sealed class CompilerNoEmissionBoundaryTests
             .ToArray();
 
         Assert.NotEmpty(closedRows);
-        Assert.Contains(
-            closedRows,
-            static status =>
-                status.HasNumericOpcode ||
-                status.HasRuntimeOpcodeMetadata ||
-                status.HasCanonicalDecoderAcceptance ||
-                status.HasRegistryFactory);
 
         foreach (InstructionSupportStatus status in closedRows)
         {
@@ -940,20 +1093,6 @@ public sealed class CompilerNoEmissionBoundaryTests
             .Where(static method => !method.IsSpecialName)
             .Select(static method => method.Name)
             .ToArray();
-    }
-
-    private static string ReadAllCompilerSource()
-    {
-        string compilerDirectory = Path.Combine(
-            CompatFreezeScanner.FindRepoRoot(),
-            "HybridCPU_Compiler");
-
-        return string.Join(
-            Environment.NewLine,
-            Directory
-                .EnumerateFiles(compilerDirectory, "*.cs", SearchOption.AllDirectories)
-                .Where(static path => !CompatFreezeScanner.IsGeneratedPath(path))
-                .Select(File.ReadAllText));
     }
 
     private static bool IsNoEmissionStatus(IsaInstructionStatus status) =>

@@ -481,15 +481,26 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
     }
 
     [Fact]
-    public void BitfieldImmediate_CompilerHelpersHiddenLoweringAndVmxSpecificPath_RemainFailClosed()
+    public void BitfieldImmediate_CompilerHelpersOpenWithoutAliasesOrVmxSpecificPath()
     {
-        string compilerSource = ReadCompilerSource();
-        foreach (string forbidden in new[]
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        foreach (string required in new[]
         {
             "InstructionsEnum.BSETI",
             "InstructionsEnum.BCLRI",
             "InstructionsEnum.BINVI",
             "InstructionsEnum.BEXTI",
+            "SetBitImmediate",
+            "ClearBitImmediate",
+            "InvertBitImmediate",
+            "ExtractBitImmediate"
+        })
+        {
+            Assert.Contains(required, compilerSource, StringComparison.Ordinal);
+        }
+
+        foreach (string forbidden in new[]
+        {
             "Bseti",
             "Bclri",
             "Binvi",
@@ -617,17 +628,6 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
                 .Select(static vector => (vector.Source, vector.Immediate6, vector.Expected)),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar bitfield-immediate opcode.")
         };
-    }
-
-    private static string ReadCompilerSource()
-    {
-        string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string compilerRoot = Path.Combine(repoRoot, "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(

@@ -1,14 +1,14 @@
 // MIN production path:
-// - HybridCPU ISE\HybridCPU_ISE\Core\Common\CPU_Core.Enums.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
-// - HybridCPU ISE\HybridCPU_ISE\Core\Decoder\VliwDecoderV4.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
-// - HybridCPU ISE\HybridCPU_ISE\Core\ALU\ScalarAluOps.cs
-// - HybridCPU ISE\HybridCPU_ISE\Core\Execution\ExecutionDispatcherV4.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxPhase01ScalarMinMaxExecutableTests.cs
+// - \HybridCPU_ISE\Core\Common\CPU_Core.Enums.cs
+// - \HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
+// - \HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
+// - \HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
+// - \HybridCPU_ISE\Core\Decoder\VliwDecoderV4.cs
+// - \HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
+// - \HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
+// - \HybridCPU_ISE\Core\ALU\ScalarAluOps.cs
+// - \HybridCPU_ISE\Core\Execution\ExecutionDispatcherV4.Scalar.cs
+// - \HybridCPU_ISE.Tests\tests\NonVmxPhase01ScalarMinMaxExecutableTests.cs
 // MIN production metadata anchor: scalar signed min is runtime-owned by the scalar ALU evidence chain.
 // It is distinct from vector, AMO, and Lane6 descriptor min/max surfaces; no VMX-specific path is added.
 namespace YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax;

@@ -388,7 +388,7 @@ public sealed class ScalarSystemCounterRdcycleExecutableTests
     }
 
     [Fact]
-    public void Rdcycle_PreservedNoEmissionAndAdjacentContoursRemainClosed()
+    public void Rdcycle_CompilerEmissionOpensCycleCounterWhileAdjacentContoursRemainClosed()
     {
         string[] scalarClosed =
         [
@@ -414,13 +414,27 @@ public sealed class ScalarSystemCounterRdcycleExecutableTests
             Assert.False(status.IsExecutableClaim, mnemonic);
         }
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("RDCYCLE", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("CompileRdCycle", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("EmitRdCycle", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("RdTime", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("RdInstret", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Pause", compilerSource, StringComparison.OrdinalIgnoreCase);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerSystemCounterAbiContract", compilerSource, StringComparison.Ordinal);
+
+        string compilerEmissionSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.RDCYCLE", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("ReadSystemCycleCounter", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("ScalarSystemCounter", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ScalarSystemCounter", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileRdCycle", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitRdCycle", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.RDTIME", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.RDINSTRET", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileRdTime", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitRdTime", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileRdInstret", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitRdInstret", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ReadSystemTimeCounter", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ReadRetiredInstructionCounter", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.PAUSE", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompilePause", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitPause", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
     }
 
     private static CsrReadCounterMicroOp DecodeAndMaterializeCounter(
@@ -499,13 +513,4 @@ public sealed class ScalarSystemCounterRdcycleExecutableTests
         return hasEnum || hasRegistryMnemonic;
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
-    }
 }

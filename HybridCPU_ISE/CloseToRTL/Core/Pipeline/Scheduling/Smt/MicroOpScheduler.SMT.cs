@@ -511,6 +511,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 AluClassInjects = AluClassInjects,
                 LsuClassInjects = LsuClassInjects,
                 DmaStreamClassInjects = DmaStreamClassInjects,
+                MatrixTileStreamClassInjects = MatrixTileStreamClassInjects,
                 BranchControlInjects = BranchControlInjects,
                 HardPinnedInjects = HardPinnedInjects,
                 ClassFlexibleInjects = ClassFlexibleInjects,
@@ -534,6 +535,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 SmtLegalityRejectByAluClass = SmtLegalityRejectByAluClass,
                 SmtLegalityRejectByLsuClass = SmtLegalityRejectByLsuClass,
                 SmtLegalityRejectByDmaStreamClass = SmtLegalityRejectByDmaStreamClass,
+                SmtLegalityRejectByMatrixTileStreamClass = SmtLegalityRejectByMatrixTileStreamClass,
                 SmtLegalityRejectByBranchControl = SmtLegalityRejectByBranchControl,
                 SmtLegalityRejectBySystemSingleton = SmtLegalityRejectBySystemSingleton,
                 ClassTemplateDomainInvalidations = ClassTemplateDomainInvalidations,
@@ -541,6 +543,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 CertificateRejectByAluClass = CertificateRejectByAluClass,
                 CertificateRejectByLsuClass = CertificateRejectByLsuClass,
                 CertificateRejectByDmaStreamClass = CertificateRejectByDmaStreamClass,
+                CertificateRejectByMatrixTileStreamClass = CertificateRejectByMatrixTileStreamClass,
                 CertificateRejectByBranchControl = CertificateRejectByBranchControl,
                 CertificateRejectBySystemSingleton = CertificateRejectBySystemSingleton,
                 CertificateRegGroupConflictVT0 = CertificateRegGroupConflictVT0,
@@ -847,6 +850,9 @@ namespace YAKSys_Hybrid_CPU.Core
                 case SlotClass.DmaStreamClass:
                     CertificateRejectByDmaStreamClass++;
                     break;
+                case SlotClass.MatrixTileStreamClass:
+                    CertificateRejectByMatrixTileStreamClass++;
+                    break;
                 case SlotClass.BranchControl:
                     CertificateRejectByBranchControl++;
                     break;
@@ -869,6 +875,9 @@ namespace YAKSys_Hybrid_CPU.Core
                     break;
                 case SlotClass.DmaStreamClass:
                     SmtLegalityRejectByDmaStreamClass++;
+                    break;
+                case SlotClass.MatrixTileStreamClass:
+                    SmtLegalityRejectByMatrixTileStreamClass++;
                     break;
                 case SlotClass.BranchControl:
                     SmtLegalityRejectByBranchControl++;
@@ -1047,6 +1056,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 case SlotClass.AluClass:       AluClassInjects++; break;
                 case SlotClass.LsuClass:       LsuClassInjects++; break;
                 case SlotClass.DmaStreamClass: DmaStreamClassInjects++; break;
+                case SlotClass.MatrixTileStreamClass: MatrixTileStreamClassInjects++; break;
                 case SlotClass.BranchControl:  BranchControlInjects++; break;
             }
         }

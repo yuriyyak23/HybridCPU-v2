@@ -426,7 +426,7 @@ public sealed class NonVmxIteration03CRotateExecutableTests
     }
 
     [Fact]
-    public void Rotate_AdjacentContoursAndCompilerHelpers_RemainFailClosed()
+    public void Rotate_RegisterCompilerHelpersOpenAlongsideImmediateRowsWithoutPopcntAliasOrImmediateAliases()
     {
         string[] closed =
         [
@@ -446,13 +446,21 @@ public sealed class NonVmxIteration03CRotateExecutableTests
             Assert.False(HasEnumOrRegistryMnemonic(mnemonic), mnemonic);
         }
 
-        string compilerSource = ReadCompilerSource();
-        Assert.DoesNotContain("InstructionsEnum.ROL", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("InstructionsEnum.ROR", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("RotateLeft", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("RotateRight", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("Rol", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("Ror", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.ROL", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.ROR", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.ROLI", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.RORI", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("RotateLeftRegister", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("RotateRightRegister", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("RotateLeftByImmediate", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("RotateRightByImmediate", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("RotateLeftImmediate", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("RotateRightImmediate", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("void Rol(", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("void Ror(", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("AppAsmFacade.Rol", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("AppAsmFacade.Ror", compilerSource, StringComparison.Ordinal);
     }
 
     private static ushort ResolveOpcodeValue(InstructionsEnum opcode) =>
@@ -507,17 +515,6 @@ public sealed class NonVmxIteration03CRotateExecutableTests
         bool hasRegistryMnemonic = OpcodeRegistry.Opcodes.Any(info =>
             string.Equals(info.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
         return hasEnum || hasRegistryMnemonic;
-    }
-
-    private static string ReadCompilerSource()
-    {
-        string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string compilerRoot = Path.Combine(repoRoot, "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(

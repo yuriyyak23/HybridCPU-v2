@@ -35,11 +35,14 @@ public sealed class Phase03DirectFactoryVectorTransferPublicationTailTests
 
         Assert.Same(microOp, slot.MicroOp);
         Assert.True(slot.IsVectorOp);
+        Assert.False(slot.IsMemoryOp);
         Assert.False(slot.WritesRegister);
         Assert.Empty(slot.WriteRegisters);
         Assert.Empty(microOp.AdmissionMetadata.WriteRegisters);
+        Assert.Equal(MicroOpClass.Lsu, microOp.Class);
         Assert.Equal(info.Value.InstructionClass, microOp.InstructionClass);
         Assert.Equal(info.Value.SerializationClass, microOp.SerializationClass);
+        Assert.Equal(SlotClass.LsuClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
         Assert.Equal(microOp.AdmissionMetadata.Placement.RequiredSlotClass, slot.Placement.RequiredSlotClass);
         Assert.Equal(microOp.AdmissionMetadata.Placement.PinningKind, slot.Placement.PinningKind);
 
@@ -93,4 +96,3 @@ public sealed class Phase03DirectFactoryVectorTransferPublicationTailTests
         };
     }
 }
-

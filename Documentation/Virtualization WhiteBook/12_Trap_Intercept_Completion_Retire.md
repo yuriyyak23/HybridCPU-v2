@@ -67,7 +67,15 @@ Current production VMCALL passes `HypercallBackendAdmissionRequest.MissingNeutra
 
 `TrapCompletionRouteService` lives under neutral completion routing. It can represent a runtime-owned publication route, but the VMX compatibility frontend currently uses `TrapCompletionRouteDescriptor.ProjectionOnlyDenied`.
 
-`TrapCompletionRouteDescriptor.RuntimeOwnedPublication` is a neutral contract for future work. It is not used by the current VMX frontend and must not be treated as backend success.
+The runtime route descriptors are intentionally distinct:
+
+- `ProjectionOnlyDenied`: completion false, retire false; current VMX frontend path.
+- `RuntimeOwnedCompletionPublication`: completion route flag true, retire false; future-gated split descriptor introduced by `ISE-COMP-ROUTE-01`.
+- `RuntimeOwnedPublication`: completion true, retire true; coupled future descriptor that also requires the Phase 09 retire gate.
+
+`TrapCompletionRouteResult.CompletionPublicationAuthorizedOnly` identifies the split route result. `IsFullyRetirable` identifies the coupled completion+retire result. `IsAllowed` remains equivalent to fully retirable and must not be used to describe completion-only route authorization.
+
+Neither runtime-owned positive descriptor is used by the current VMX frontend. A descriptor is route policy, not backend success and not publication by itself.
 
 ## Completion Publication Fence
 
@@ -88,6 +96,8 @@ Denied decisions include:
 
 Allowed publication creates a neutral `CompletionRecord`. The admitted VMCALL path intentionally uses `DeniedBackendExecution`.
 
+The current fence remains stricter than the new route split: when the route authorizes completion but denies retire, the fence returns `DeniedRetirePublication` and keeps `CompletionRecord.None`. Therefore `ISE-COMP-ROUTE-01` proves route-level separation only. Completion-record publication without retire remains future-gated under `ISE-COMP-FENCE-02`.
+
 ## Completion Projection
 
 `CompletionRecord` is neutral runtime data. `CompletionProjectionService` maps compatible completion records into `VmxCompletionProjection`. `CompletionRecord.FromCompatibilityExit` and `TryFromCompatibilityExit` require a publication fence result. This prevents arbitrary VMX exit records from bypassing the neutral fence.
@@ -104,6 +114,14 @@ VMX projection exists
 retire publication allowed
 ```
 
+Likewise:
+
+```text
+completion route flag authorized
+  does not imply
+completion record published
+```
+
 ## Forbidden Leakage
 
 The following are forbidden as runtime authority:
@@ -112,4 +130,5 @@ The following are forbidden as runtime authority:
 - storing trap authority in `TrapDecision`;
 - creating completion records from VMX exit values without the neutral publication fence;
 - using `VmxRetireEffect.InterceptExit` as success evidence without publication authorization;
+- treating `RuntimeOwnedCompletionPublication` as completion-record or retire publication;
 - treating admitted-denied VMCALL projection as backend execution.

@@ -52,6 +52,24 @@ public sealed class L7SdcNativeCarrierValidationTests
     }
 
     [Fact]
+    public void L7SdcNativeCarrierValidation_DefaultSlotMetadataDoesNotBypassLane7PlacementChecks()
+    {
+        AcceleratorCommandDescriptor descriptor =
+            L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        var rawSlots = new VLIW_Instruction[BundleMetadata.BundleSlotCount];
+        rawSlots[7] = L7SdcPhase03TestCases.CreateNativeInstruction(InstructionsEnum.ACCEL_SUBMIT);
+
+        InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
+            () => new VliwDecoderV4().DecodeInstructionBundle(
+                rawSlots,
+                CreateAnnotations(7, descriptor, SlotMetadata.Default),
+                bundleAddress: 0xA018));
+
+        Assert.Contains("explicit slot metadata", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("default admission metadata", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void L7SdcNativeCarrierValidation_SidebandOnWrongLane_Rejects()
     {
         AcceleratorCommandDescriptor descriptor =

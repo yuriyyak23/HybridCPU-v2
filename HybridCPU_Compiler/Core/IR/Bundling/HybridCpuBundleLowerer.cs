@@ -121,6 +121,20 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static VLIW_Instruction LowerInstruction(IrInstruction instruction)
         {
+            if (instruction.MatrixTileEmission is { } matrixTileEmission)
+            {
+                VLIW_Instruction matrixTileInstruction = matrixTileEmission.EncodedInstruction;
+                matrixTileInstruction.VirtualThreadId = instruction.VirtualThreadId;
+                return matrixTileInstruction;
+            }
+
+            if (instruction.VectorTransferEmission is { } vectorTransferEmission)
+            {
+                VLIW_Instruction vectorTransferInstruction = vectorTransferEmission.EncodedInstruction;
+                vectorTransferInstruction.VirtualThreadId = instruction.VirtualThreadId;
+                return vectorTransferInstruction;
+            }
+
             // Preserve only the surviving legacy-compatible VT hint in word3.
             // Stealability policy no longer round-trips through the encoded VLIW payload.
             var loweredInstruction = new VLIW_Instruction
@@ -255,8 +269,16 @@ namespace HybridCPU.Compiler.Core.IR
             out ulong packedRegisters)
         {
             byte firstRegister = VLIW_Instruction.NoArchReg;
-            byte secondRegister = VLIW_Instruction.NoArchReg;
-            byte thirdRegister = UsesCanonicalScalarZeroRs2(instruction.Opcode, firstName, secondName, thirdName)
+            bool usesCanonicalRdOnlyCounterPayload = UsesCanonicalRdOnlyCounterPayload(
+                instruction.Opcode,
+                firstName,
+                secondName,
+                thirdName);
+            byte secondRegister = usesCanonicalRdOnlyCounterPayload
+                ? (byte)0
+                : VLIW_Instruction.NoArchReg;
+            byte thirdRegister = usesCanonicalRdOnlyCounterPayload ||
+                                 UsesCanonicalScalarZeroRs2(instruction.Opcode, firstName, secondName, thirdName)
                 ? (byte)0
                 : VLIW_Instruction.NoArchReg;
             bool hasAnyRegister = false;
@@ -313,11 +335,35 @@ namespace HybridCPU.Compiler.Core.IR
                        Processor.CPU_Core.InstructionsEnum.SLLIW or
                        Processor.CPU_Core.InstructionsEnum.SRLIW or
                        Processor.CPU_Core.InstructionsEnum.SRAIW or
+                       Processor.CPU_Core.InstructionsEnum.ROLI or
+                       Processor.CPU_Core.InstructionsEnum.RORI or
+                       Processor.CPU_Core.InstructionsEnum.BSETI or
+                       Processor.CPU_Core.InstructionsEnum.BCLRI or
+                       Processor.CPU_Core.InstructionsEnum.BINVI or
+                       Processor.CPU_Core.InstructionsEnum.BEXTI or
+                       Processor.CPU_Core.InstructionsEnum.SLLI_UW or
                        Processor.CPU_Core.InstructionsEnum.SEXT_W or
                        Processor.CPU_Core.InstructionsEnum.ZEXT_W or
                        Processor.CPU_Core.InstructionsEnum.CLZ or
                        Processor.CPU_Core.InstructionsEnum.CTZ or
-                       Processor.CPU_Core.InstructionsEnum.CPOP;
+                       Processor.CPU_Core.InstructionsEnum.CPOP or
+                       Processor.CPU_Core.InstructionsEnum.SEXT_B or
+                       Processor.CPU_Core.InstructionsEnum.SEXT_H or
+                       Processor.CPU_Core.InstructionsEnum.ZEXT_H or
+                       Processor.CPU_Core.InstructionsEnum.REV8 or
+                       Processor.CPU_Core.InstructionsEnum.BREV8;
+        }
+
+        private static bool UsesCanonicalRdOnlyCounterPayload(
+            Processor.CPU_Core.InstructionsEnum opcode,
+            string firstName,
+            string secondName,
+            string thirdName)
+        {
+            return string.Equals(firstName, "rd", StringComparison.Ordinal) &&
+                   string.Equals(secondName, "rs1", StringComparison.Ordinal) &&
+                   string.Equals(thirdName, "rs2", StringComparison.Ordinal) &&
+                   opcode is Processor.CPU_Core.InstructionsEnum.RDCYCLE;
         }
     }
 }

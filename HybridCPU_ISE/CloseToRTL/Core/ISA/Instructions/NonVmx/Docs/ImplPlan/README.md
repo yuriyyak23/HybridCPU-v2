@@ -66,40 +66,40 @@ them.
 
 ### Scalar ALU / Bitmanip / Facade-Hardware Rows
 
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\...\<Instruction>.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\...\<Instruction>.LocalSemantics.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Common\CPU_Core.Enums.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionEncoder.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Decoder\VliwDecoderV4.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\InstructionIR.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Decoder\DecodedBundleTransportProjector.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Core.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\InternalOp.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\MicroOp.Compute.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ALU\ScalarAluOps.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4.Scalar.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Registers\Retire\RetireRecord.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\Core\CPU_Core.PipelineExecution.Retire.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\ReplayToken.cs`
-- `HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxPhaseXX<Instruction>ExecutableTests.cs`
-- `HybridCPU ISE\HybridCPU_ISE.Tests\CompilerTests\CompilerNoEmissionBoundaryTests.cs`
-- Deferred guardrails in `HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxIteration*Deferred*Tests.cs` and adjacent fail-closed scalar tests must remove the promoted mnemonic from deferred lists.
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\...\<Instruction>.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\...\<Instruction>.LocalSemantics.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Common\CPU_Core.Enums.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionEncoder.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Decoder\VliwDecoderV4.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\InstructionIR.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Decoder\DecodedBundleTransportProjector.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Core.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\InternalOp.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\MicroOp.Compute.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ALU\ScalarAluOps.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4.Scalar.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Registers\Retire\RetireRecord.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\Core\CPU_Core.PipelineExecution.Retire.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\ReplayToken.cs`
+- `\HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxPhaseXX<Instruction>ExecutableTests.cs`
+- `\HybridCPU ISE\HybridCPU_ISE.Tests\CompilerTests\CompilerNoEmissionBoundaryTests.cs`
+- Deferred guardrails in `\HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxIteration*Deferred*Tests.cs` and adjacent fail-closed scalar tests must remove the promoted mnemonic from deferred lists.
 
 ### Vector / VLM / Vector Memory Rows
 
 - All scalar/common catalog paths above where applicable.
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Vector.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\VectorLegalityMatrix.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Vector.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Vector.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\VectorMicroOps*.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4*.cs`
-- Vector legality, direct-factory, carrier projection, retire/replay, and golden tests under `HybridCPU ISE\HybridCPU_ISE.Tests\tests\Phase*Vector*Tests.cs`.
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Vector.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\VectorLegalityMatrix.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Vector.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Vector.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\VectorMicroOps*.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4*.cs`
+- Vector legality, direct-factory, carrier projection, retire/replay, and golden tests under `\HybridCPU ISE\HybridCPU_ISE.Tests\tests\Phase*Vector*Tests.cs`.
 
 ### Lane6 Descriptor / Queue / DSC Carrier Rows
 
@@ -114,38 +114,38 @@ them.
   rows, while `DSC2` remains parser-only declared evidence; neither `DSC_STATUS`,
   `DSC_QUERY_CAPS`, generic `DmaStreamCompute`, nor Phase 10 descriptor-only
   declarations authorize execution.
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lane06DmaStream\...`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Decoder\VliwDecoderV4.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\DmaStreamComputeMicroOp.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\DmaStreamComputeStatusMicroOp.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\DmaStreamComputeQueryCapsMicroOp.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Execution\DmaStreamCompute\*.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Accelerators.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\Core\CPU_Core.PipelineExecution.Retire.cs`
-- Lane6 queue/token/descriptor/conformance tests under `HybridCPU ISE\HybridCPU_ISE.Tests\tests\Phase09Lane6*Tests.cs`, `Phase09StreamEngine*Tests.cs`, and `L7Sdc*Tests.cs` when applicable.
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lane06DmaStream\...`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Decoder\VliwDecoderV4.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\DmaStreamComputeMicroOp.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\DmaStreamComputeStatusMicroOp.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\DmaStreamComputeQueryCapsMicroOp.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Execution\DmaStreamCompute\*.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Accelerators.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\Core\CPU_Core.PipelineExecution.Retire.cs`
+- Lane6 queue/token/descriptor/conformance tests under `\HybridCPU ISE\HybridCPU_ISE.Tests\tests\Phase09Lane6*Tests.cs`, `Phase09StreamEngine*Tests.cs`, and `L7Sdc*Tests.cs` when applicable.
 
 ### Lane7 System / Control-Plane Rows
 
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lane07SystemControl\...`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Common\CPU_Core.Enums.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs`
-- `HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.System.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Decoder\VliwDecoderV4.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4.System.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4.CsrAndSmtVt.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\MicroOp.System.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\SystemDeviceCommandMicroOp.cs`
-- `HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Events\Traps\*.cs` when the row creates a typed trap/event surface.
-- Lane7/counter/control-plane tests under `HybridCPU ISE\HybridCPU_ISE.Tests\tests\Lane7*Tests.cs`, `L7Sdc*Tests.cs`, and relevant conformance suites.
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lane07SystemControl\...`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Common\CPU_Core.Enums.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.System.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Decoder\VliwDecoderV4.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4.System.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\ExecutionDispatcherV4.CsrAndSmtVt.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\MicroOp.System.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\SystemDeviceCommandMicroOp.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Events\Traps\*.cs` when the row creates a typed trap/event surface.
+- Lane7/counter/control-plane tests under `\HybridCPU ISE\HybridCPU_ISE.Tests\tests\Lane7*Tests.cs`, `L7Sdc*Tests.cs`, and relevant conformance suites.
 
 ### Compiler And VMX Boundary
 
 - Compiler helper emission is closed unless the phase explicitly opens helper
   authority. If opened, update compiler facade/helper ABI under
-  `HybridCPU ISE\HybridCPU_Compiler\...` and
+  `\HybridCPU ISE\HybridCPU_Compiler\...` and
   replace no-emission assertions with explicit helper authority tests.
 - Do not update VMX frontend, VMCS manager, `VmxCaps`, VM-exit, VMREAD/VMWRITE,
   or VMX-specific handlers for ordinary Non-VMX rows.

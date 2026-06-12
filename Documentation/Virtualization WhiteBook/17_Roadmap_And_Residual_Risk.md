@@ -7,10 +7,11 @@ Future work must continue the neutral-owner-first rule. No future VMX feature sh
 The following items are no longer open as generic roadmap bullets:
 
 - runtime-owned trap completion route design is closed as a neutral route policy, with the VMX frontend still using projection-only denial;
+- `ISE-COMP-ROUTE-01` is closed: `RuntimeOwnedCompletionPublication` separates completion route authorization from retire authorization without opening publication;
 - generated read-only VMREAD value projection is partially implemented through explicit neutral owners;
 - descriptor readiness policy is closed fail-closed and does not derive from VMREAD values;
 - migration/evidence proof for recomputed completion-owned fields is closed;
-- VMCALL backend admission policy exists, but production VMCALL remains `MissingNeutralOwner`.
+- the draft VMCALL owner skeleton exists only as a denied proof object; production VMCALL remains `MissingNeutralOwner`.
 
 ## Next Heavy Steps
 
@@ -18,10 +19,12 @@ Recommended next heavy steps:
 
 1. Continue VMREAD field-by-field only when a new explicit neutral owner/value source exists.
 2. Design neutral privileged execution-state semantics before opening `GuestCr0` or `GuestCr4`; otherwise keep them denied.
-3. Materialize a real neutral hypercall backend owner only when concrete runtime hypercall semantics, typed capability, and evidence policy exist.
-4. Use `TrapCompletionRouteDescriptor.RuntimeOwnedPublication` only after a neutral backend owner authorizes backend execution.
-5. Design neutral nested child-intent owner only for a real admitted nested path; do not use mutable shadow VMCS state as authority.
-6. Keep SecureCompute/VMX compatibility as projection/denial unless SecureCompute runtime descriptors and policy explicitly authorize a read-only projection.
+3. Complete `ISE-COMP-FENCE-02` as a separate contract before claiming completion-record publication without retire.
+4. Keep Phase 06B/07 blocked until neutral runtime owners accept an owner-specific RFC/ADR with exact leaf, owner service, executor result, capability/evidence/migration policy, denial reasons, and adjacent denials.
+5. Use `TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication` only after neutral backend execution authorization and the Phase 08 fence contract.
+6. Use `TrapCompletionRouteDescriptor.RuntimeOwnedPublication` only when Phase 09 explicitly authorizes retire.
+7. Design neutral nested child-intent owner only for a real admitted nested path; do not use mutable shadow VMCS state as authority.
+8. Keep SecureCompute/VMX compatibility as projection/denial unless SecureCompute runtime descriptors and policy explicitly authorize a read-only projection.
 
 ## Successful VMCALL Future Shape
 
@@ -34,14 +37,14 @@ VMCALL
   -> neutral trap result
   -> neutral hypercall backend owner
   -> typed capability grant and evidence policy
-  -> TrapCompletionRouteService with runtime-owned publication route
-  -> neutral completion record
-  -> TrapCompletionPublicationFence allowed
-  -> retire publication allowed
+  -> TrapCompletionRouteService with completion-only or coupled runtime route
+  -> TrapCompletionPublicationFence
+  -> neutral completion record only when the fence permits
+  -> explicit retire policy and retire publication
   -> VMX-compatible completion projection
 ```
 
-The path must not use `VmExitReason.VmCall` as the proof that a hypercall is authorized. Current production VMCALL intentionally stops at missing neutral backend owner.
+The path must not use `VmExitReason.VmCall` as the proof that a hypercall is authorized. Backend success is not completion publication, and completion publication is not retire publication. Current production VMCALL intentionally stops at missing neutral backend owner.
 
 ## VMREAD Expansion Shape
 
@@ -115,6 +118,7 @@ Stop a change immediately if it:
 - adds active VMCS pointer state;
 - uses `VmExitReason` inside neutral runtime policy;
 - constructs compatibility completion without a neutral fence;
+- treats `RuntimeOwnedCompletionPublication` as proof that a completion record was published or retired;
 - uses `TrapCompletionRouteDescriptor.RuntimeOwnedPublication` without a real backend owner;
 - treats a `TrapDecision` as runtime policy;
 - turns VMX no-emission tests into production backend emission;

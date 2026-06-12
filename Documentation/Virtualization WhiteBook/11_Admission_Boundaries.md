@@ -55,6 +55,8 @@ Current admitted VMREAD values come only from:
 
 The final admitted-denied decision is `TrapProjectionDeniedBackend`.
 
+The existence of `RuntimeOwnedCompletionPublication` does not change this production chain. It is a future-gated runtime route descriptor and is not selected by the VMX frontend.
+
 ## Runtime-Owned Policy Requirements
 
 For trap projection, the runtime policy descriptor must:

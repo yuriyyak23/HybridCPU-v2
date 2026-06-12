@@ -4,6 +4,7 @@ using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers;
+using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using global::YAKSys_Hybrid_CPU.Core;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
@@ -31,6 +32,7 @@ namespace YAKSys_Hybrid_CPU.Core.Legality
             byte aluClassMask = 0;
             byte lsuClassMask = 0;
             byte dmaStreamClassMask = 0;
+            byte matrixTileStreamClassMask = 0;
             byte branchControlMask = 0;
             byte systemSingletonMask = 0;
             byte unclassifiedMask = 0;
@@ -75,6 +77,9 @@ namespace YAKSys_Hybrid_CPU.Core.Legality
                     case SlotClass.DmaStreamClass:
                         dmaStreamClassMask |= slotBit;
                         break;
+                    case SlotClass.MatrixTileStreamClass:
+                        matrixTileStreamClassMask |= slotBit;
+                        break;
                     case SlotClass.BranchControl:
                         branchControlMask |= slotBit;
                         break;
@@ -110,6 +115,7 @@ namespace YAKSys_Hybrid_CPU.Core.Legality
                 aluClassMask,
                 lsuClassMask,
                 dmaStreamClassMask,
+                matrixTileStreamClassMask,
                 branchControlMask,
                 systemSingletonMask,
                 unclassifiedMask,
@@ -277,6 +283,18 @@ namespace YAKSys_Hybrid_CPU.Core.Legality
 
         private static SlotClass ClassifySlotClass(InstructionIR instruction)
         {
+            if (MatrixTileResourceContour.IsMatrixTileMemoryOpcode(
+                    unchecked((uint)(ushort)instruction.CanonicalOpcode)))
+            {
+                return SlotClass.MatrixTileStreamClass;
+            }
+
+            if (MatrixTileResourceContour.IsMatrixTileComputeOpcode(
+                    unchecked((uint)(ushort)instruction.CanonicalOpcode)))
+            {
+                return SlotClass.AluClass;
+            }
+
             if (IsCurrentLane6DmaStreamContour(instruction))
                 return SlotClass.DmaStreamClass;
 
@@ -727,6 +745,21 @@ namespace YAKSys_Hybrid_CPU.Core.Legality
             if (!slot.IsMemoryOp)
                 return ResourceBitset.Zero;
 
+            if (MatrixTileResourceContour.IsMatrixTileMemoryOpcode(slot.OpCode))
+            {
+                ResourceBitset mask =
+                    ResourceMaskBuilder.ForMemoryDomain(slot.OwnerThreadId) |
+                    ResourceMaskBuilder.ForStreamEngine(MatrixTileResourceContour.StreamEngineChannel) |
+                    ResourceMaskBuilder.ForMatrixTileStreamWindow();
+                return slot.OpCode == (uint)InstructionsEnum.MTILE_STORE
+                    ? mask | ResourceMaskBuilder.ForStore() |
+                        ResourceMaskBuilder.ForMatrixTileEgress() |
+                        ResourceMaskBuilder.ForMatrixTileStateRead()
+                    : mask | ResourceMaskBuilder.ForLoad() |
+                        ResourceMaskBuilder.ForMatrixTileIngress() |
+                        ResourceMaskBuilder.ForMatrixTileStateWrite();
+            }
+
             OpcodeInfo? opcodeInfo = OpcodeRegistry.GetInfo(slot.OpCode);
             if (opcodeInfo.HasValue)
             {
@@ -757,6 +790,7 @@ namespace YAKSys_Hybrid_CPU.Core.Legality
                 SlotClass.BranchControl => 7,
                 SlotClass.SystemSingleton => 7,
                 SlotClass.DmaStreamClass => 6,
+                SlotClass.MatrixTileStreamClass => 6,
                 _ => 0,
             };
         }

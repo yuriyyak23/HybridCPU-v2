@@ -60,7 +60,7 @@ public sealed class Phase12FacadeFamilyDeprecationTests
     public void FacadeInterfaces_NoNewProductionMentionsOutsideFacadeBoundary()
     {
         string repoRoot = FindRepoRoot();
-        string[] allowedPaths =
+        string[] facadeBoundaryPaths =
         [
             Path.Combine(repoRoot, "HybridCPU_Compiler", "API", "Facade", "IAppAsmFacade.cs"),
             Path.Combine(repoRoot, "HybridCPU_Compiler", "API", "Facade", "IPlatformAsmFacade.cs"),
@@ -69,10 +69,33 @@ public sealed class Phase12FacadeFamilyDeprecationTests
             Path.Combine(repoRoot, "HybridCPU_Compiler", "API", "Facade", "PlatformAsmFacade.cs"),
             Path.Combine(repoRoot, "HybridCPU_Compiler", "API", "Facade", "ExpertBackendFacade.cs"),
         ];
+        string[] appFacadeAllowedPaths =
+        [
+            .. facadeBoundaryPaths,
+            Path.Combine(
+                repoRoot,
+                "HybridCPU_Compiler",
+                "Core",
+                "IR",
+                "Model",
+                "CompilerMatrixTilePositiveEmissionAbiContract.cs"),
+        ];
 
-        string[] unexpectedIAppCallSites = FindUnexpectedCallSites(repoRoot, "IAppAsmFacade", allowedPaths);
-        string[] unexpectedIPlatformCallSites = FindUnexpectedCallSites(repoRoot, "IPlatformAsmFacade", allowedPaths);
-        string[] unexpectedIExpertCallSites = FindUnexpectedCallSites(repoRoot, "IExpertBackendFacade", allowedPaths);
+        string[] platformFacadeAllowedPaths =
+        [
+            .. facadeBoundaryPaths,
+            Path.Combine(
+                repoRoot,
+                "HybridCPU_Compiler",
+                "Core",
+                "IR",
+                "Model",
+                "CompilerVectorTransferPositiveEmissionAbiContract.cs"),
+        ];
+
+        string[] unexpectedIAppCallSites = FindUnexpectedCallSites(repoRoot, "IAppAsmFacade", appFacadeAllowedPaths);
+        string[] unexpectedIPlatformCallSites = FindUnexpectedCallSites(repoRoot, "IPlatformAsmFacade", platformFacadeAllowedPaths);
+        string[] unexpectedIExpertCallSites = FindUnexpectedCallSites(repoRoot, "IExpertBackendFacade", facadeBoundaryPaths);
 
         Assert.Empty(unexpectedIAppCallSites);
         Assert.Empty(unexpectedIPlatformCallSites);

@@ -758,9 +758,9 @@ namespace YAKSys_Hybrid_CPU.Core
         {
             if (_storeBuffer == null)
             {
-                // No data to store, operation complete
-                _state = ExecutionState.Complete;
-                return true;
+                throw new InvalidOperationException(
+                    "StoreSegmentMicroOp.Execute() rejected missing store buffer on the authoritative vector store contour. " +
+                    "A store carrier must fail closed instead of silently completing without architectural writes.");
             }
 
             if (_state == ExecutionState.NotStarted)
@@ -847,8 +847,9 @@ namespace YAKSys_Hybrid_CPU.Core
         {
             if (_storeBuffer == null)
             {
-                _state = ExecutionState.Complete;
-                return true;
+                throw new InvalidOperationException(
+                    "Store2DMicroOp.Execute() rejected missing store buffer on the authoritative 2D vector store contour. " +
+                    "A store carrier must fail closed instead of silently completing without architectural writes.");
             }
 
             if (_state == ExecutionState.NotStarted)

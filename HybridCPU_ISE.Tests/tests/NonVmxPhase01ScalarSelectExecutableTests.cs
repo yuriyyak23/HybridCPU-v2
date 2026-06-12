@@ -413,16 +413,27 @@ public sealed class NonVmxPhase01ScalarSelectExecutableTests
     }
 
     [Fact]
-    public void ScalarSelect_CompilerAndVmxGates_RemainGenericNoEmission()
+    public void ScalarSelect_CompilerEmission_OpensConditionalZeroRowsWhileCselAndVmxRemainGated()
     {
-        string compilerSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
+        string compilerMetadataSource = CompilerSourceScanner.ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         string vmxSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_ISE", "Core", "VMX"));
 
-        Assert.DoesNotContain("CZERO_NEZ", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("CZERO.NEZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.CZERO_EQZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.CZERO_NEZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("CZERO.EQZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("CZERO.NEZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ZeroIfConditionEqualZero", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ZeroIfConditionNotEqualZero", compilerSource, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("CzeroEqz", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("CzeroNez", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Csel", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ConditionalSelect", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ScalarSelectAbiDeferredNoEmission", compilerMetadataSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.CSEL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.CSEL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.CSEL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileCsel", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitCsel", compilerSource, StringComparison.OrdinalIgnoreCase);
 
         Assert.DoesNotContain("CZERO_NEZ", vmxSource, StringComparison.Ordinal);
         Assert.DoesNotContain("CZERO.NEZ", vmxSource, StringComparison.Ordinal);

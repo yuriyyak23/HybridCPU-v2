@@ -11,6 +11,10 @@ public enum HypercallBackendAdmissionDecision : byte
     DeniedCapability = 6,
     DeniedEvidence = 7,
     DeniedNeutralBackendOwnerMissing = 8,
+    DeniedNeutralBackendOwnerAuthority = 9,
+    DeniedNeutralBackendOwnerRfcAdr = 10,
+    DeniedNeutralBackendOwnerShape = 11,
+    DeniedNeutralBackendOwnerProof = 12,
 }
 
 public enum HypercallBackendAuthority : byte
@@ -38,12 +42,30 @@ public sealed partial class HypercallBackendDescriptor
         EvidenceBoundaryRequirement evidenceRequirement,
         bool requiresValidatedDomain,
         bool neutralBackendOwnerMaterialized)
+        : this(
+            authority,
+            capabilityRequirement,
+            evidenceRequirement,
+            requiresValidatedDomain,
+            neutralBackendOwnerMaterialized,
+            neutralBackendOwner: null)
+    {
+    }
+
+    public HypercallBackendDescriptor(
+        HypercallBackendAuthority authority,
+        CapabilityBoundaryRequirement capabilityRequirement,
+        EvidenceBoundaryRequirement evidenceRequirement,
+        bool requiresValidatedDomain,
+        bool neutralBackendOwnerMaterialized,
+        NeutralHypercallBackendOwnerDescriptor? neutralBackendOwner)
     {
         Authority = authority;
         CapabilityRequirement = capabilityRequirement;
         EvidenceRequirement = evidenceRequirement;
         RequiresValidatedDomain = requiresValidatedDomain;
         NeutralBackendOwnerMaterialized = neutralBackendOwnerMaterialized;
+        NeutralBackendOwner = neutralBackendOwner;
     }
 
     public static HypercallBackendDescriptor RuntimeOwnedDesignFence(
@@ -56,6 +78,18 @@ public sealed partial class HypercallBackendDescriptor
             requiresValidatedDomain: true,
             neutralBackendOwnerMaterialized: false);
 
+    public static HypercallBackendDescriptor RuntimeOwnedDraftOwnerFence(
+        CapabilityBoundaryRequirement capabilityRequirement,
+        EvidenceBoundaryRequirement evidenceRequirement,
+        NeutralHypercallBackendOwnerDescriptor neutralBackendOwner) =>
+        new(
+            HypercallBackendAuthority.Runtime,
+            capabilityRequirement,
+            evidenceRequirement,
+            requiresValidatedDomain: true,
+            neutralBackendOwnerMaterialized: true,
+            neutralBackendOwner);
+
     public HypercallBackendAuthority Authority { get; }
 
     public CapabilityBoundaryRequirement CapabilityRequirement { get; }
@@ -65,6 +99,8 @@ public sealed partial class HypercallBackendDescriptor
     public bool RequiresValidatedDomain { get; }
 
     public bool NeutralBackendOwnerMaterialized { get; }
+
+    public NeutralHypercallBackendOwnerDescriptor? NeutralBackendOwner { get; }
 
     public bool IsRuntimeAuthoritative =>
         Authority == HypercallBackendAuthority.Runtime;
@@ -198,10 +234,51 @@ public sealed class HypercallBackendAdmissionService
                 "Hypercall backend execution remains denied: neutral backend owner semantics are not materialized.");
         }
 
+        if (descriptor.NeutralBackendOwner is not { } owner ||
+            !owner.IsMaterialized)
+        {
+            return Deny(
+                HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerMissing,
+                request,
+                "Hypercall backend execution remains denied: no neutral backend owner descriptor is materialized.");
+        }
+
+        if (!owner.IsNeutralRuntimeOwner)
+        {
+            return Deny(
+                HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerAuthority,
+                request,
+                "Hypercall backend execution remains denied: compatibility projection cannot source neutral backend owner authority.");
+        }
+
+        if (!owner.IsCandidateDraft)
+        {
+            return Deny(
+                HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerRfcAdr,
+                request,
+                "Hypercall backend execution remains denied: owner-specific RFC/ADR packet is missing or not the VMCALL no-state draft.");
+        }
+
+        if (!owner.HasNoStateCandidateShape)
+        {
+            return Deny(
+                HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerShape,
+                request,
+                "Hypercall backend execution remains denied: owner descriptor is not the no-state, no-payload, domain-local draft shape.");
+        }
+
+        if (!owner.NegativeTestsPresent)
+        {
+            return Deny(
+                HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerProof,
+                request,
+                "Hypercall backend execution remains denied: owner-specific negative conformance proof is missing.");
+        }
+
         return Deny(
-            HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerMissing,
+            HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerRfcAdr,
             request,
-            "Hypercall backend execution remains denied until a neutral execution owner is explicitly admitted.");
+            "Hypercall backend execution remains denied: RFC-HV-VMCALL-NO-STATE-OWNER-0001 is draft only and has no accepted owner semantics.");
     }
 
     private static HypercallBackendAdmissionResult Deny(

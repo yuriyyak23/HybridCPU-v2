@@ -54,7 +54,7 @@ These rows are ordinary Non-VMX Lane7 metadata anchors. VMX is not a point of in
 Expected focused verification:
 
 ```powershell
-dotnet build "HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-restore
-dotnet test "HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-build --filter "FullyQualifiedName~NonVmxIteration04BDeferredTemplateSurfaceTests|FullyQualifiedName~CompilerNoEmissionBoundaryTests|FullyQualifiedName~Phase03ScalarSystemCounterRdcycleExecutableTests|FullyQualifiedName~OpcodeRegistryCoverageTests|FullyQualifiedName~OpcodeEnumValueParityTests"
+dotnet build "\HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-restore
+dotnet test "\HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-build --filter "FullyQualifiedName~NonVmxIteration04BDeferredTemplateSurfaceTests|FullyQualifiedName~CompilerNoEmissionBoundaryTests|FullyQualifiedName~Phase03ScalarSystemCounterRdcycleExecutableTests|FullyQualifiedName~OpcodeRegistryCoverageTests|FullyQualifiedName~OpcodeEnumValueParityTests"
 git diff --check -- "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx" "HybridCPU_ISE.Tests/tests/NonVmxIteration04BDeferredTemplateSurfaceTests.cs" "Documentation/InstructionsRefactor2/OpenTasks/NON_VMX_MISSING_INSTRUCTIONS_CURRENT_SHORTLIST_2026-05-25.md"
 ```

@@ -16,6 +16,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
             RegisterScalarArithmeticInstructions();
             RegisterVectorInstructions();
+            RegisterMatrixTileInstructions();
             RegisterBaseInstructionSet();
         }
 

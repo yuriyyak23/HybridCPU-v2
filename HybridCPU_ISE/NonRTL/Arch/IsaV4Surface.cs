@@ -285,14 +285,14 @@ namespace YAKSys_Hybrid_CPU.Arch
             "VDOTU",
             "VDOTF",
             "VDOT_FP8",
-        };
-
-        public static readonly IReadOnlySet<string> OptionalDisabledOpcodes = new HashSet<string>
-        {
             "MTILE_LOAD",
             "MTILE_STORE",
             "MTILE_MACC",
             "MTRANSPOSE",
+        };
+
+        public static readonly IReadOnlySet<string> OptionalDisabledOpcodes = new HashSet<string>
+        {
         };
 
         public static readonly IReadOnlySet<string> ReservedOpcodes = new HashSet<string>

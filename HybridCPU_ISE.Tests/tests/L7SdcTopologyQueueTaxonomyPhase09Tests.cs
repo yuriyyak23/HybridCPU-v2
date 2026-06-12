@@ -285,21 +285,11 @@ public sealed class L7SdcTopologyQueueTaxonomyPhase09Tests
         Assert.DoesNotContain(threadMethods, name => name.Contains("BindQueue", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(threadMethods, name => name.Contains("Open", StringComparison.OrdinalIgnoreCase));
 
-        string compilerText = ReadAllSourceText(Path.Combine(
-            CompatFreezeScanner.FindRepoRoot(),
-            "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("ACCEL_QUERY_TOPOLOGY", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("ACCEL_OPEN", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("ACCEL_BIND_QUEUE", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(TopologyQueueMetadataCapabilityProvider), compilerText, StringComparison.Ordinal);
     }
 
-    private static string ReadAllSourceText(string root)
-    {
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(file => !CompatFreezeScanner.IsGeneratedPath(file))
-                .Select(File.ReadAllText));
-    }
 }

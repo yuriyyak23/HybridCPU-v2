@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
@@ -20,34 +22,11 @@ namespace HybridCPU_ISE.Tests.Phase14;
 
 public sealed class Phase14Lane7AcceleratorControlFailClosedTests
 {
-    private static readonly string[] AcceleratorControlMnemonics =
-    [
-        "ACCEL_QUERY_ABI",
-        "ACCEL_QUERY_TOPOLOGY",
-        "ACCEL_OPEN",
-        "ACCEL_CLOSE",
-        "ACCEL_BIND_QUEUE",
-        "ACCEL_UNBIND_QUEUE"
-    ];
+    private static IReadOnlyList<string> AcceleratorControlMnemonics =>
+        CompilerFailClosedEmissionInventory.Lane7AcceleratorControlMnemonics;
 
-    private static readonly string[] CompilerForbiddenTokens =
-    [
-        "ACCEL_QUERY_ABI",
-        "ACCEL_QUERY_TOPOLOGY",
-        "ACCEL_OPEN",
-        "ACCEL_CLOSE",
-        "ACCEL_BIND_QUEUE",
-        "ACCEL_UNBIND_QUEUE",
-        "AccelQueryAbi",
-        "AccelQueryTopology",
-        "AccelOpen",
-        "AccelClose",
-        "AccelBindQueue",
-        "AccelUnbindQueue",
-        "Lane7AcceleratorControlHelper",
-        "AcceleratorTopologyHelper",
-        "AcceleratorQueueBindingHelper"
-    ];
+    private static IReadOnlyList<string> CompilerForbiddenTokens =>
+        CompilerFailClosedEmissionInventory.Lane7AcceleratorControlCompilerSourceFragments;
 
     private static readonly string[] VmxForbiddenTokens =
     [
@@ -205,7 +184,7 @@ public sealed class Phase14Lane7AcceleratorControlFailClosedTests
     public void CompilerFacade_DoesNotExposePhase14HelpersOrHiddenLowering()
     {
         List<string> failures = [];
-        foreach (string path in EnumerateCompilerSources())
+        foreach (string path in CompilerSourceScanner.EnumerateCompilerSourceFiles())
         {
             string source = File.ReadAllText(path);
             foreach (string token in CompilerForbiddenTokens)
@@ -222,6 +201,178 @@ public sealed class Phase14Lane7AcceleratorControlFailClosedTests
             "Phase 14 compiler helpers and hidden lowering must remain closed:" +
             Environment.NewLine +
             string.Join(Environment.NewLine, failures));
+    }
+
+    [Fact]
+    public void CompilerDeferredAbi_RecordsAcceleratorControlPolicyWithoutEmissionAuthority()
+    {
+        CompilerLane7DeferredAbiContract[] rows =
+        [
+            .. CompilerLane7DeferredAbiContract.AcceleratorControlRows
+        ];
+
+        Assert.Equal(
+            [
+                "ACCEL_BIND_QUEUE",
+                "ACCEL_CLOSE",
+                "ACCEL_OPEN",
+                "ACCEL_QUERY_ABI",
+                "ACCEL_QUERY_TOPOLOGY",
+                "ACCEL_UNBIND_QUEUE"
+            ],
+            rows.Select(static row => row.Mnemonic).Order(StringComparer.Ordinal).ToArray());
+
+        foreach (CompilerLane7DeferredAbiContract contract in rows)
+        {
+            CompilerLane7DeferredAbiAssertions.AssertNoEmissionAuthority(
+                contract,
+                contract.Mnemonic,
+                contract.AbiClass,
+                "Lane7TopologyQueue",
+                "Lane7AcceleratorControlDeferred");
+            Assert.True(contract.RequiresOwnerDomainGuard);
+            Assert.True(contract.RequiresCommandQueueSemantics);
+            Assert.True(contract.RequiresNoHostEvidenceLeak);
+            Assert.True(contract.RequiresMigrationCheckpointPolicy);
+            Assert.True(contract.RequiresFutureVirtualizationBoundaryPolicy);
+            Assert.True(contract.VmxMigrationCheckpointEvidenceIsInsufficient);
+            Assert.True(contract.ExistingAccelSubmitEvidenceIsInsufficient);
+            Assert.True(contract.ExistingAccelQueryCapsEvidenceIsInsufficient);
+            Assert.True(contract.ExistingTopologyQueueTaxonomyEvidenceIsInsufficient);
+            Assert.True(contract.ExistingLane7ControlPlaneEvidenceIsInsufficient);
+            CompilerLane7DeferredAbiAssertions.AssertHiddenLoweringBlocked(contract);
+            Assert.True(contract.NoGenericSystemOpFallback);
+            Assert.True(contract.NoLane6DmaFallback);
+            Assert.True(contract.NoLane7SubmitFallback);
+            Assert.True(contract.NoExternalBackendFallback);
+            CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                contract,
+                "OwnerDomainGuard",
+                "CommandQueueSemantics",
+                "MigrationCheckpointPolicy",
+                "FutureVirtualizationBoundaryPolicy");
+
+            switch (contract.AbiClass)
+            {
+                case CompilerLane7DeferredAbiClass.AcceleratorCapability:
+                    Assert.True(contract.IsAcceleratorCapabilityQuery);
+                    Assert.False(contract.IsAcceleratorLifecycleControl);
+                    Assert.False(contract.IsAcceleratorQueueBindingControl);
+                    Assert.True(contract.RequiresCapabilityAuthority);
+                    Assert.True(contract.RequiresResultScrubbingPolicy);
+                    Assert.True(contract.RequiresRetireOwnedPublication);
+                    Assert.True(contract.RequiresReplayStableCapabilityModel);
+                    Assert.True(contract.RequiresBackendCapabilityAuthority);
+                    Assert.True(contract.RequiresGuestVisibleCapabilityPolicy);
+                    Assert.True(contract.VmxCapabilityEvidenceIsInsufficient);
+                    Assert.True(contract.NoCapabilityPublicationBeforeAuthority);
+                    CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                        contract,
+                        "CapabilityAuthority",
+                        "ResultScrubbingPolicy",
+                        "RetireOwnedPublication",
+                        "ReplayStableCapabilityModel",
+                        "BackendCapabilityAuthority",
+                        "GuestVisibleCapabilityPolicy",
+                        "NoCapabilityPublicationBeforeAuthority");
+
+                    if (contract.Mnemonic == "ACCEL_QUERY_ABI")
+                    {
+                        Assert.True(contract.RequiresAcceleratorAbiQueryContract);
+                        Assert.False(contract.RequiresAcceleratorTopologyAbi);
+                        Assert.True(contract.RequiresBoundedCapabilityResultFootprint);
+                        Assert.False(contract.RequiresBoundedTopologyResultFootprint);
+                        CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                            contract,
+                            "AcceleratorAbiQueryContract",
+                            "BoundedCapabilityResultFootprint");
+                    }
+                    else
+                    {
+                        Assert.False(contract.RequiresAcceleratorAbiQueryContract);
+                        Assert.True(contract.RequiresAcceleratorTopologyAbi);
+                        Assert.False(contract.RequiresBoundedCapabilityResultFootprint);
+                        Assert.True(contract.RequiresBoundedTopologyResultFootprint);
+                        CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                            contract,
+                            "AcceleratorTopologyAbi",
+                            "BoundedTopologyResultFootprint");
+                    }
+
+                    break;
+                case CompilerLane7DeferredAbiClass.AcceleratorLifecycle:
+                    Assert.False(contract.IsAcceleratorCapabilityQuery);
+                    Assert.True(contract.IsAcceleratorLifecycleControl);
+                    Assert.False(contract.IsAcceleratorQueueBindingControl);
+                    Assert.True(contract.RequiresAcceleratorRuntimeAuthority);
+                    Assert.True(contract.RequiresDeviceAuthority);
+                    Assert.True(contract.RequiresTokenAuthority);
+                    Assert.True(contract.RequiresHandleNamespaceAbi);
+                    Assert.True(contract.RequiresOpenCloseLifecycleAbi);
+                    Assert.True(contract.RequiresReplayStableLifecycleModel);
+                    Assert.True(contract.RequiresRetireOwnedSideEffectPublication);
+                    Assert.True(contract.VmxBackendAuthorityEvidenceIsInsufficient);
+                    Assert.True(contract.NoLifecycleStatePublicationBeforeRetire);
+                    Assert.True(contract.NoBackendAdmissionBeforeAuthority);
+                    CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                        contract,
+                        "AcceleratorRuntimeAuthority",
+                        "DeviceAuthority",
+                        "TokenAuthority",
+                        "HandleNamespaceAbi",
+                        "OpenCloseLifecycleAbi",
+                        "ReplayStableLifecycleModel",
+                        "RetireOwnedSideEffectPublication",
+                        "NoLifecycleStatePublicationBeforeRetire",
+                        "NoBackendAdmissionBeforeAuthority");
+                    break;
+                case CompilerLane7DeferredAbiClass.AcceleratorQueueBinding:
+                    Assert.False(contract.IsAcceleratorCapabilityQuery);
+                    Assert.False(contract.IsAcceleratorLifecycleControl);
+                    Assert.True(contract.IsAcceleratorQueueBindingControl);
+                    Assert.True(contract.RequiresAcceleratorRuntimeAuthority);
+                    Assert.True(contract.RequiresQueueAuthority);
+                    Assert.True(contract.RequiresTokenAuthority);
+                    Assert.True(contract.RequiresLane6TokenAuthorityGate);
+                    Assert.True(contract.RequiresBindUnbindQueueAbi);
+                    Assert.True(contract.RequiresQueueOwnershipModel);
+                    Assert.True(contract.RequiresReplayStableQueueBindingModel);
+                    Assert.True(contract.RequiresQueueBindUnbindOrderingModel);
+                    Assert.True(contract.RequiresRetireOwnedSideEffectPublication);
+                    Assert.True(contract.VmxBackendAuthorityEvidenceIsInsufficient);
+                    Assert.True(contract.ExistingLane6DmaEvidenceIsInsufficient);
+                    Assert.True(contract.NoQueueBindingPublicationBeforeRetire);
+                    Assert.True(contract.NoQueueBindingBeforeTokenAuthority);
+                    CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                        contract,
+                        "AcceleratorRuntimeAuthority",
+                        "QueueAuthority",
+                        "TokenAuthority",
+                        "Lane6TokenAuthorityGate",
+                        "BindUnbindQueueAbi",
+                        "QueueOwnershipModel",
+                        "ReplayStableQueueBindingModel",
+                        "QueueBindUnbindOrderingModel",
+                        "RetireOwnedSideEffectPublication",
+                        "NoQueueBindingPublicationBeforeRetire",
+                        "NoQueueBindingBeforeTokenAuthority");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(contract.AbiClass), contract.AbiClass, "Unsupported accelerator-control ABI class.");
+            }
+
+            CompilerLane7DeferredAbiAssertions.AssertEmissionAuthorityThrows(contract);
+        }
+
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        CompilerLane7DeferredAbiAssertions.AssertCompilerSourceCarriesMetadataButNoEmission(
+            compilerSource,
+            ("ACCEL_QUERY_ABI", "AccelQueryAbi"),
+            ("ACCEL_QUERY_TOPOLOGY", "AccelQueryTopology"),
+            ("ACCEL_OPEN", "AccelOpen"),
+            ("ACCEL_CLOSE", "AccelClose"),
+            ("ACCEL_BIND_QUEUE", "AccelBindQueue"),
+            ("ACCEL_UNBIND_QUEUE", "AccelUnbindQueue"));
     }
 
     [Fact]
@@ -334,23 +485,6 @@ public sealed class Phase14Lane7AcceleratorControlFailClosedTests
             ?? throw new InvalidOperationException($"{type.FullName}.{name} was not found.");
         Assert.True(field.IsLiteral, $"{type.FullName}.{name} must remain a const template marker.");
         return Assert.IsType<T>(field.GetRawConstantValue());
-    }
-
-    private static IEnumerable<string> EnumerateCompilerSources()
-    {
-        string root = FindRepositoryRoot();
-        string[] candidateRoots =
-        [
-            Path.Combine(root, "HybridCPU_Compiler"),
-            Path.Combine(root, "HybridCPU_ISE", "Compiler")
-        ];
-
-        return candidateRoots
-            .Where(Directory.Exists)
-            .SelectMany(path => Directory.EnumerateFiles(path, "*.cs", SearchOption.AllDirectories))
-            .Where(path => !path.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
-            .Where(path => !path.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
-            .OrderBy(path => path, StringComparer.Ordinal);
     }
 
     private static IEnumerable<string> EnumerateVmxProductionSources()

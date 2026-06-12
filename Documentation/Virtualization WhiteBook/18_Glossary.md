@@ -24,6 +24,10 @@ VMX control-field compatibility alias owned by neutral compatibility-control des
 
 Neutral runtime completion record. VMX-compatible completion projection may be derived from it only through the appropriate projection service and publication fence.
 
+## CompletionPublicationAuthorizedOnly
+
+`TrapCompletionRouteResult` state where the neutral route authorizes the completion route flag but does not authorize retire. It is not a published `CompletionRecord` and is not architectural retirement.
+
 ## ExecutionDomainReadOnlyStateView
 
 Neutral execution-domain snapshot that can expose `GuestPc`, `GuestSp`, and `GuestFlags` for read-only projection when materialized. It is not a source for `GuestCr0`, `GuestCr4`, or host execution state.
@@ -70,7 +74,15 @@ Projection/denial surface that keeps VMX from becoming SecureCompute authority. 
 
 ## TrapCompletionRouteService
 
-Neutral completion-routing policy that must authorize route publication before a trap/intercept can become a published completion or retire effect. The current VMX frontend uses projection-only denial.
+Neutral completion-routing policy that must authorize route publication before a trap/intercept can become a published completion or retire effect. It distinguishes projection-only denial, completion-only route authorization, and coupled completion+retire authorization. The current VMX frontend uses projection-only denial.
+
+## RuntimeOwnedCompletionPublication
+
+Future-gated neutral route descriptor with completion route permission enabled and retire permission disabled. It separates route semantics but does not itself publish a completion record.
+
+## IsFullyRetirable
+
+`TrapCompletionRouteResult` predicate requiring an allowed route with both completion and retire permissions. `IsAllowed` currently has the same full-retire meaning.
 
 ## RuntimeBoundaryAdmissionService
 

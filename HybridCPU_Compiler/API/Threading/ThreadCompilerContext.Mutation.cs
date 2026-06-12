@@ -24,6 +24,8 @@ namespace HybridCPU.Compiler.Core.Threading
             StealabilityPolicy stealabilityPolicy)
         {
             ValidateNoDirectSystemDeviceCommandEmission(opCode);
+            ValidateNoDirectMatrixTileEmission(opCode);
+            ValidateNoDirectVectorTransferEmission(opCode);
             ValidateInsertionIndex(instructionIndex, nameof(instructionIndex));
             EnsureInstructionCapacity();
             uint encodedStreamLength = RequireVliwUInt32(streamLength, nameof(streamLength));

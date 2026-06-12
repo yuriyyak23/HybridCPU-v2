@@ -2,6 +2,7 @@ using HybridCPU_ISE.Arch;
 using System;
 using System.Collections.Generic;
 using YAKSys_Hybrid_CPU.Arch;
+using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU.Compiler.Core.IR
@@ -95,9 +96,23 @@ namespace HybridCPU.Compiler.Core.IR
             OpcodeInfo? opcodeInfo = HybridCpuOpcodeSemantics.GetOpcodeInfo(opcode);
             ValidateExplicitAcceleratorIntent(opcode, slotMetadata);
             ValidateCanonicalScalarZeroRs2Payload(opcode, instruction);
-            var operands = BuildOperands(opcode, instruction);
-            var defs = BuildDefs(opcode, instruction);
-            var uses = BuildUses(opcode, instruction);
+            CompilerMatrixTileEmissionPlan? matrixTileEmission =
+                CompilerMatrixTileEmissionLowerer.TryRecoverFromInstruction(
+                    opcode,
+                    in instruction,
+                    out CompilerMatrixTileEmissionPlan? recoveredMatrixTileEmission)
+                    ? recoveredMatrixTileEmission
+                    : null;
+            CompilerVectorTransferEmissionPlan? vectorTransferEmission =
+                CompilerVectorTransferEmissionLowerer.TryRecoverFromInstruction(
+                    opcode,
+                    in instruction,
+                    out CompilerVectorTransferEmissionPlan? recoveredVectorTransferEmission)
+                    ? recoveredVectorTransferEmission
+                    : null;
+            var operands = BuildOperands(opcode, instruction, matrixTileEmission, vectorTransferEmission);
+            var defs = BuildDefs(opcode, instruction, matrixTileEmission, vectorTransferEmission);
+            var uses = BuildUses(opcode, instruction, matrixTileEmission, vectorTransferEmission);
             IrOpcodeExecutionProfile executionProfile = HybridCpuHazardModel.GetExecutionProfile(opcode);
             slotMetadata = slotMetadata.WithAdmissionDescriptor(executionProfile);
             IrTypedSlotAdmissionDescriptor admissionDescriptor = slotMetadata.AdmissionDescriptor!.Value;
@@ -111,11 +126,11 @@ namespace HybridCPU.Compiler.Core.IR
                 StructuralResources: executionProfile.StructuralResources,
                 ControlFlowKind: ClassifyControlFlow(opcode),
                 IsBarrierLike: IsBarrierLike(opcode),
-                MayTrap: MayTrap(opcode, opcodeInfo),
+                MayTrap: MayTrap(opcode, opcodeInfo, vectorTransferEmission),
                 EncodedBranchTarget: GetEncodedBranchTarget(opcode, instruction),
                 ResolvedBranchTargetInstructionIndex: null,
-                MemoryReadRegion: BuildMemoryRegion(opcode, instruction, isWrite: false, opcodeInfo),
-                MemoryWriteRegion: BuildMemoryRegion(opcode, instruction, isWrite: true, opcodeInfo),
+                MemoryReadRegion: BuildMemoryRegion(opcode, instruction, isWrite: false, opcodeInfo, matrixTileEmission, vectorTransferEmission),
+                MemoryWriteRegion: BuildMemoryRegion(opcode, instruction, isWrite: true, opcodeInfo, matrixTileEmission, vectorTransferEmission),
                 Defs: defs,
                 Uses: uses,
                 RequiredSlotClass: admissionDescriptor.RequiredSlotClass,
@@ -148,6 +163,8 @@ namespace HybridCPU.Compiler.Core.IR
                 SerializationClass = serializationClass,
                 DmaStreamComputeDescriptor = slotMetadata.DmaStreamComputeDescriptor,
                 AcceleratorCommandDescriptor = slotMetadata.AcceleratorCommandDescriptor,
+                MatrixTileEmission = matrixTileEmission,
+                VectorTransferEmission = vectorTransferEmission,
             };
         }
 
@@ -203,11 +220,25 @@ namespace HybridCPU.Compiler.Core.IR
             }
         }
 
-        private static IReadOnlyList<IrOperand> BuildOperands(InstructionsEnum opcode, VLIW_Instruction instruction)
+        private static IReadOnlyList<IrOperand> BuildOperands(
+            InstructionsEnum opcode,
+            VLIW_Instruction instruction,
+            CompilerMatrixTileEmissionPlan? matrixTileEmission = null,
+            CompilerVectorTransferEmissionPlan? vectorTransferEmission = null)
         {
             if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
             {
                 return Array.Empty<IrOperand>();
+            }
+
+            if (matrixTileEmission is not null)
+            {
+                return BuildMatrixTileOperands(matrixTileEmission);
+            }
+
+            if (vectorTransferEmission is not null)
+            {
+                return BuildVectorTransferOperands(vectorTransferEmission);
             }
 
             var operands = new List<IrOperand>(8);
@@ -259,11 +290,25 @@ namespace HybridCPU.Compiler.Core.IR
             return operands;
         }
 
-        private static IReadOnlyList<IrOperand> BuildDefs(InstructionsEnum opcode, VLIW_Instruction instruction)
+        private static IReadOnlyList<IrOperand> BuildDefs(
+            InstructionsEnum opcode,
+            VLIW_Instruction instruction,
+            CompilerMatrixTileEmissionPlan? matrixTileEmission = null,
+            CompilerVectorTransferEmissionPlan? vectorTransferEmission = null)
         {
             if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
             {
                 return Array.Empty<IrOperand>();
+            }
+
+            if (matrixTileEmission is not null)
+            {
+                return BuildMatrixTileDefs(matrixTileEmission);
+            }
+
+            if (vectorTransferEmission is not null)
+            {
+                return BuildVectorTransferDefs(vectorTransferEmission);
             }
 
             var defs = new List<IrOperand>(1);
@@ -288,11 +333,25 @@ namespace HybridCPU.Compiler.Core.IR
             return defs;
         }
 
-        private static IReadOnlyList<IrOperand> BuildUses(InstructionsEnum opcode, VLIW_Instruction instruction)
+        private static IReadOnlyList<IrOperand> BuildUses(
+            InstructionsEnum opcode,
+            VLIW_Instruction instruction,
+            CompilerMatrixTileEmissionPlan? matrixTileEmission = null,
+            CompilerVectorTransferEmissionPlan? vectorTransferEmission = null)
         {
             if (HybridCpuOpcodeSemantics.IsDmaStreamComputeOpcode(opcode))
             {
                 return Array.Empty<IrOperand>();
+            }
+
+            if (matrixTileEmission is not null)
+            {
+                return BuildMatrixTileUses(matrixTileEmission);
+            }
+
+            if (vectorTransferEmission is not null)
+            {
+                return BuildVectorTransferUses(vectorTransferEmission);
             }
 
             var uses = new List<IrOperand>(6);
@@ -343,6 +402,152 @@ namespace HybridCPU.Compiler.Core.IR
             return uses;
         }
 
+        private static IReadOnlyList<IrOperand> BuildMatrixTileOperands(
+            CompilerMatrixTileEmissionPlan matrixTileEmission)
+        {
+            var operands = new List<IrOperand>(8);
+            CompilerMatrixTileEmissionRequest request = matrixTileEmission.Request;
+            switch (request.Kind)
+            {
+                case CompilerMatrixTilePositiveEmissionKind.MtileLoad:
+                    operands.Add(CreateMemoryAddressOperand("tileMemoryBase", request.MemoryFaultAbi!.Value.BaseAddress));
+                    operands.Add(CreateTileOperand("tileDestination", request.DestinationTile.TileId));
+                    break;
+                case CompilerMatrixTilePositiveEmissionKind.MtileStore:
+                    operands.Add(CreateTileOperand("tileSource", request.PrimaryTile.TileId));
+                    operands.Add(CreateMemoryAddressOperand("tileMemoryBase", request.MemoryFaultAbi!.Value.BaseAddress));
+                    break;
+                case CompilerMatrixTilePositiveEmissionKind.MtileMacc:
+                    operands.Add(CreateTileOperand("tileLeftSource", request.PrimaryTile.TileId));
+                    operands.Add(CreateTileOperand("tileRightSource", request.SecondaryTile.TileId));
+                    operands.Add(CreateTileOperand("tileAccumulator", request.DestinationTile.TileId));
+                    break;
+                case CompilerMatrixTilePositiveEmissionKind.Mtranspose:
+                    operands.Add(CreateTileOperand("tileSource", request.PrimaryTile.TileId));
+                    operands.Add(CreateTileOperand("tileDestination", request.DestinationTile.TileId));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(matrixTileEmission),
+                        request.Kind,
+                        "Unknown MTILE compiler helper kind.");
+            }
+
+            MatrixTileCanonicalDescriptorAbi descriptor =
+                request.Descriptor.CanonicalDescriptor;
+            operands.Add(new IrOperand(IrOperandKind.StreamLength, matrixTileEmission.EncodedInstruction.StreamLength, "tileElementCount"));
+            operands.Add(new IrOperand(IrOperandKind.Immediate, descriptor.Columns, "tileColumns"));
+            operands.Add(new IrOperand(IrOperandKind.RowStride, descriptor.StrideBytes, "tileRowStrideBytes"));
+            return operands;
+        }
+
+        private static IReadOnlyList<IrOperand> BuildMatrixTileDefs(
+            CompilerMatrixTileEmissionPlan matrixTileEmission)
+        {
+            CompilerMatrixTileEmissionRequest request = matrixTileEmission.Request;
+            return request.Kind switch
+            {
+                CompilerMatrixTilePositiveEmissionKind.MtileLoad =>
+                    [CreateTileOperand("tileDestination", request.DestinationTile.TileId)],
+                CompilerMatrixTilePositiveEmissionKind.MtileStore =>
+                    Array.Empty<IrOperand>(),
+                CompilerMatrixTilePositiveEmissionKind.MtileMacc =>
+                    [CreateTileOperand("tileAccumulator", request.DestinationTile.TileId)],
+                CompilerMatrixTilePositiveEmissionKind.Mtranspose =>
+                    [CreateTileOperand("tileDestination", request.DestinationTile.TileId)],
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(matrixTileEmission),
+                    request.Kind,
+                    "Unknown MTILE compiler helper kind.")
+            };
+        }
+
+        private static IReadOnlyList<IrOperand> BuildMatrixTileUses(
+            CompilerMatrixTileEmissionPlan matrixTileEmission)
+        {
+            CompilerMatrixTileEmissionRequest request = matrixTileEmission.Request;
+            return request.Kind switch
+            {
+                CompilerMatrixTilePositiveEmissionKind.MtileLoad =>
+                    [CreateMemoryAddressOperand("tileMemoryBase", request.MemoryFaultAbi!.Value.BaseAddress)],
+                CompilerMatrixTilePositiveEmissionKind.MtileStore =>
+                    [
+                        CreateTileOperand("tileSource", request.PrimaryTile.TileId),
+                        CreateMemoryAddressOperand("tileMemoryBase", request.MemoryFaultAbi!.Value.BaseAddress)
+                    ],
+                CompilerMatrixTilePositiveEmissionKind.MtileMacc =>
+                    [
+                        CreateTileOperand("tileLeftSource", request.PrimaryTile.TileId),
+                        CreateTileOperand("tileRightSource", request.SecondaryTile.TileId),
+                        CreateTileOperand("tileAccumulator", request.DestinationTile.TileId)
+                    ],
+                CompilerMatrixTilePositiveEmissionKind.Mtranspose =>
+                    [CreateTileOperand("tileSource", request.PrimaryTile.TileId)],
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(matrixTileEmission),
+                    request.Kind,
+                    "Unknown MTILE compiler helper kind.")
+            };
+        }
+
+        private static IReadOnlyList<IrOperand> BuildVectorTransferOperands(
+            CompilerVectorTransferEmissionPlan vectorTransferEmission)
+        {
+            CompilerVectorTransferEmissionRequest request = vectorTransferEmission.Request;
+            var operands = new List<IrOperand>(5);
+            switch (request.Kind)
+            {
+                case CompilerVectorTransferPositiveEmissionKind.Vload:
+                    operands.Add(CreateMemoryAddressOperand("vectorDestinationBase", request.Destination.BaseAddress));
+                    operands.Add(CreateMemoryAddressOperand("vectorSourceBase", request.Source.BaseAddress));
+                    break;
+                case CompilerVectorTransferPositiveEmissionKind.Vstore:
+                    operands.Add(CreateMemoryAddressOperand("vectorSourceBase", request.Source.BaseAddress));
+                    operands.Add(CreateMemoryAddressOperand("vectorDestinationBase", request.Destination.BaseAddress));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(vectorTransferEmission),
+                        request.Kind,
+                        "Unknown vector transfer compiler helper kind.");
+            }
+
+            operands.Add(new IrOperand(IrOperandKind.StreamLength, request.Shape.ElementCount, "vectorElementCount"));
+            operands.Add(new IrOperand(IrOperandKind.Stride, request.Shape.StrideBytes, "vectorStrideBytes"));
+            if (request.Shape.PredicateMask != 0)
+            {
+                operands.Add(new IrOperand(IrOperandKind.PredicateMask, request.Shape.PredicateMask, "vectorPredicateMask"));
+            }
+
+            return operands;
+        }
+
+        private static IReadOnlyList<IrOperand> BuildVectorTransferDefs(
+            CompilerVectorTransferEmissionPlan vectorTransferEmission)
+        {
+            CompilerVectorTransferEmissionRequest request = vectorTransferEmission.Request;
+            return
+            [
+                CreateMemoryAddressOperand("vectorDestinationBase", request.Destination.BaseAddress)
+            ];
+        }
+
+        private static IReadOnlyList<IrOperand> BuildVectorTransferUses(
+            CompilerVectorTransferEmissionPlan vectorTransferEmission)
+        {
+            CompilerVectorTransferEmissionRequest request = vectorTransferEmission.Request;
+            return
+            [
+                CreateMemoryAddressOperand("vectorSourceBase", request.Source.BaseAddress)
+            ];
+        }
+
+        private static IrOperand CreateTileOperand(string name, ushort tileId) =>
+            new(IrOperandKind.Tile, tileId, name);
+
+        private static IrOperand CreateMemoryAddressOperand(string name, ulong address) =>
+            new(IrOperandKind.MemoryAddress, address, name);
+
         private static bool HasFallthroughEdge(IrControlFlowKind controlFlowKind)
         {
             return controlFlowKind == IrControlFlowKind.None || controlFlowKind == IrControlFlowKind.ConditionalBranch;
@@ -382,10 +587,14 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static DecodedRegisterTuple DecodeWord1Registers(InstructionsEnum opcode, VLIW_Instruction instruction)
         {
+            bool usesPackedWord1 =
+                UsesCanonicalRdOnlyCounterPayload(opcode) ||
+                OpcodeRegistry.UsesPackedArchRegisterWord1(opcode);
+
             if (opcode == InstructionsEnum.Move ||
                 HybridCpuOpcodeSemantics.TryResolveRetainedCompatibilityScalarMemoryDirection(opcode, out _) ||
-                !OpcodeRegistry.UsesPackedArchRegisterWord1(opcode) ||
-                !HasPackedArchRegisterTuple(instruction.Word1) ||
+                !usesPackedWord1 ||
+                (!UsesCanonicalRdOnlyCounterPayload(opcode) && !HasPackedArchRegisterTuple(instruction.Word1)) ||
                 !VLIW_Instruction.TryUnpackArchRegs(instruction.Word1, out byte rd, out byte rs1, out byte rs2))
             {
                 return default;
@@ -393,7 +602,10 @@ namespace HybridCPU.Compiler.Core.IR
 
             return new DecodedRegisterTuple(
                 CreateArchitecturalRegisterOperand("rd", rd),
-                CreateArchitecturalRegisterOperand("rs1", rs1),
+                UsesCanonicalRdOnlyCounterPayload(opcode)
+                    ? null
+                    : CreateArchitecturalRegisterOperand("rs1", rs1),
+                UsesCanonicalRdOnlyCounterPayload(opcode) ||
                 UsesCanonicalScalarZeroRs2(opcode)
                     ? null
                     : CreateArchitecturalRegisterOperand("rs2", rs2));
@@ -423,6 +635,24 @@ namespace HybridCPU.Compiler.Core.IR
             InstructionsEnum opcode,
             VLIW_Instruction instruction)
         {
+            if (UsesCanonicalRdOnlyCounterPayload(opcode))
+            {
+                if (!VLIW_Instruction.TryUnpackArchRegs(
+                        instruction.Word1,
+                        out _,
+                        out byte counterRs1,
+                        out byte counterRs2) ||
+                    counterRs1 != 0 ||
+                    counterRs2 != 0 ||
+                    instruction.Immediate != 0)
+                {
+                    throw new InvalidOperationException(
+                        $"{opcode} compiler emission requires canonical counter Word1=(rd, x0, x0) and Immediate=0.");
+                }
+
+                return;
+            }
+
             if (!UsesCanonicalScalarZeroRs2(opcode))
             {
                 return;
@@ -432,8 +662,8 @@ namespace HybridCPU.Compiler.Core.IR
                     instruction.Word1,
                     out _,
                     out _,
-                    out byte rs2) ||
-                rs2 != 0)
+                    out byte scalarRs2) ||
+                scalarRs2 != 0)
             {
                 throw new InvalidOperationException(
                     $"{opcode} compiler emission requires canonical scalar Word1=(rd, rs1, x0).");
@@ -449,16 +679,26 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static bool UsesCanonicalScalarZeroRs2(InstructionsEnum opcode)
         {
-            return UsesCanonicalScalarWordImmediateZeroRs2(opcode) ||
+            return UsesCanonicalScalarImmediateZeroRs2(opcode) ||
                    UsesCanonicalScalarUnaryZeroRs2(opcode);
         }
 
-        private static bool UsesCanonicalScalarWordImmediateZeroRs2(InstructionsEnum opcode) =>
+        private static bool UsesCanonicalRdOnlyCounterPayload(InstructionsEnum opcode) =>
+            opcode is InstructionsEnum.RDCYCLE;
+
+        private static bool UsesCanonicalScalarImmediateZeroRs2(InstructionsEnum opcode) =>
             opcode is
                 InstructionsEnum.ADDIW or
                 InstructionsEnum.SLLIW or
                 InstructionsEnum.SRLIW or
-                InstructionsEnum.SRAIW;
+                InstructionsEnum.SRAIW or
+                InstructionsEnum.ROLI or
+                InstructionsEnum.RORI or
+                InstructionsEnum.BSETI or
+                InstructionsEnum.BCLRI or
+                InstructionsEnum.BINVI or
+                InstructionsEnum.BEXTI or
+                InstructionsEnum.SLLI_UW;
 
         private static bool UsesCanonicalScalarUnaryZeroRs2(InstructionsEnum opcode) =>
             opcode is
@@ -466,7 +706,12 @@ namespace HybridCPU.Compiler.Core.IR
                 InstructionsEnum.ZEXT_W or
                 InstructionsEnum.CLZ or
                 InstructionsEnum.CTZ or
-                InstructionsEnum.CPOP;
+                InstructionsEnum.CPOP or
+                InstructionsEnum.SEXT_B or
+                InstructionsEnum.SEXT_H or
+                InstructionsEnum.ZEXT_H or
+                InstructionsEnum.REV8 or
+                InstructionsEnum.BREV8;
 
         private static IrResourceClass ClassifyResource(InstructionsEnum opcode)
         {
@@ -742,9 +987,23 @@ namespace HybridCPU.Compiler.Core.IR
             return HybridCpuOpcodeSemantics.IsBarrierLike(opcode);
         }
 
-        private static bool MayTrap(InstructionsEnum opcode, OpcodeInfo? opcodeInfo)
+        private static bool MayTrap(
+            InstructionsEnum opcode,
+            OpcodeInfo? opcodeInfo,
+            CompilerVectorTransferEmissionPlan? vectorTransferEmission = null)
         {
             OpcodeInfo? resolvedOpcodeInfo = opcodeInfo ?? HybridCpuOpcodeSemantics.GetOpcodeInfo(opcode);
+            if (CompilerMatrixTilePositiveEmissionAbiContract.IsMatrixTilePositiveOpcode(opcode))
+            {
+                return opcode is InstructionsEnum.MTILE_LOAD or InstructionsEnum.MTILE_STORE;
+            }
+
+            if (vectorTransferEmission is not null ||
+                CompilerVectorTransferPositiveEmissionAbiContract.IsVectorTransferPositiveOpcode(opcode))
+            {
+                return true;
+            }
+
             if (HybridCpuOpcodeSemantics.IsLoadStoreOpcode(opcode, resolvedOpcodeInfo))
             {
                 return true;
@@ -775,8 +1034,20 @@ namespace HybridCPU.Compiler.Core.IR
             InstructionsEnum opcode,
             VLIW_Instruction instruction,
             bool isWrite,
-            OpcodeInfo? opcodeInfo)
+            OpcodeInfo? opcodeInfo,
+            CompilerMatrixTileEmissionPlan? matrixTileEmission = null,
+            CompilerVectorTransferEmissionPlan? vectorTransferEmission = null)
         {
+            if (matrixTileEmission is not null)
+            {
+                return BuildMatrixTileMemoryRegion(matrixTileEmission, isWrite);
+            }
+
+            if (vectorTransferEmission is not null)
+            {
+                return BuildVectorTransferMemoryRegion(vectorTransferEmission, isWrite);
+            }
+
             bool hasRequiredDirection = isWrite
                 ? HybridCpuOpcodeSemantics.UsesLoadStoreWritePath(opcode, opcodeInfo)
                 : HybridCpuOpcodeSemantics.UsesLoadStoreReadPath(opcode, opcodeInfo);
@@ -804,6 +1075,48 @@ namespace HybridCPU.Compiler.Core.IR
             ulong logicalLength = instruction.StreamLength == 0 ? 1UL : instruction.StreamLength;
             ulong bytes = logicalLength * (ulong)DataTypeUtils.SizeOf(instruction.DataTypeValue);
             return bytes > uint.MaxValue ? uint.MaxValue : (uint)bytes;
+        }
+
+        private static IrMemoryRegion? BuildMatrixTileMemoryRegion(
+            CompilerMatrixTileEmissionPlan matrixTileEmission,
+            bool isWrite)
+        {
+            CompilerMatrixTileEmissionRequest request = matrixTileEmission.Request;
+            bool isLoad = request.Kind == CompilerMatrixTilePositiveEmissionKind.MtileLoad;
+            bool isStore = request.Kind == CompilerMatrixTilePositiveEmissionKind.MtileStore;
+            if ((!isWrite && !isLoad) ||
+                (isWrite && !isStore))
+            {
+                return null;
+            }
+
+            MatrixTileMemoryShapeValidationResult validation =
+                matrixTileEmission.MemoryValidation
+                ?? throw new InvalidOperationException(
+                    $"{request.Mnemonic} compiler memory region requires runtime tile memory/fault validation.");
+            ulong length = validation.TotalByteFootprint == 0
+                ? 1UL
+                : validation.TotalByteFootprint;
+            return new IrMemoryRegion(
+                request.MemoryFaultAbi!.Value.BaseAddress,
+                length > uint.MaxValue ? uint.MaxValue : (uint)length,
+                isWrite);
+        }
+
+        private static IrMemoryRegion? BuildVectorTransferMemoryRegion(
+            CompilerVectorTransferEmissionPlan vectorTransferEmission,
+            bool isWrite)
+        {
+            CompilerVectorTransferEmissionRequest request = vectorTransferEmission.Request;
+            ulong address = isWrite
+                ? request.Destination.BaseAddress
+                : request.Source.BaseAddress;
+
+            ulong length = request.Shape.EffectiveByteLength;
+            return new IrMemoryRegion(
+                address,
+                length > uint.MaxValue ? uint.MaxValue : (uint)length,
+                isWrite);
         }
 
         private static bool IsVectorInstruction(InstructionsEnum opcode)

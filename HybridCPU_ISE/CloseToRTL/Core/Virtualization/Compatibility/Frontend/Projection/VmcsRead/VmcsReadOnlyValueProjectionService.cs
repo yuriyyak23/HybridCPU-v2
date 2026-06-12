@@ -31,7 +31,12 @@ public readonly record struct VmcsReadOnlyValueProjectionRequest(
     bool DescriptorValidated,
     ExecutionDomainDescriptor? Execution,
     MemoryDomainDescriptor? Memory,
-    CompletionRecord? Completion);
+    CompletionRecord? Completion,
+    PrivilegedExecutionStateDescriptor? PrivilegedExecutionState = null,
+    ulong RuntimeDomainTag = 0,
+    ulong RuntimeAddressSpaceTag = 0,
+    PrivilegedExecutionStateEpoch CurrentPrivilegedExecutionStateEpoch = default,
+    bool PrivilegedExecutionStateConformanceProven = false);
 
 public readonly record struct VmcsReadOnlyValueProjectionResult(
     VmcsReadOnlyValueProjectionDecision Decision,
@@ -42,6 +47,8 @@ public readonly record struct VmcsReadOnlyValueProjectionResult(
     long Value,
     string Reason)
 {
+    public PrivilegedExecutionStateProjectionResult PrivilegedProjection { get; init; }
+
     public bool IsProjected =>
         Decision == VmcsReadOnlyValueProjectionDecision.ReadOnlyValueProjected &&
         Validation.Succeeded;
@@ -51,18 +58,34 @@ public sealed class VmcsReadOnlyValueProjectionService
 {
     private readonly VmcsFieldAliasProjection _aliasProjection;
     private readonly CompletionProjectionService _completionProjection;
+    private readonly PrivilegedExecutionStateProjectionService _privilegedProjection;
 
     public VmcsReadOnlyValueProjectionService()
-        : this(new VmcsFieldAliasProjection(), new CompletionProjectionService())
+        : this(
+            new VmcsFieldAliasProjection(),
+            new CompletionProjectionService(),
+            new PrivilegedExecutionStateProjectionService())
     {
     }
 
     public VmcsReadOnlyValueProjectionService(
         VmcsFieldAliasProjection aliasProjection,
         CompletionProjectionService completionProjection)
+        : this(
+            aliasProjection,
+            completionProjection,
+            new PrivilegedExecutionStateProjectionService())
+    {
+    }
+
+    public VmcsReadOnlyValueProjectionService(
+        VmcsFieldAliasProjection aliasProjection,
+        CompletionProjectionService completionProjection,
+        PrivilegedExecutionStateProjectionService privilegedProjection)
     {
         _aliasProjection = aliasProjection ?? throw new ArgumentNullException(nameof(aliasProjection));
         _completionProjection = completionProjection ?? throw new ArgumentNullException(nameof(completionProjection));
+        _privilegedProjection = privilegedProjection ?? throw new ArgumentNullException(nameof(privilegedProjection));
     }
 
     public VmcsReadOnlyValueProjectionResult Project(
@@ -304,7 +327,7 @@ public sealed class VmcsReadOnlyValueProjectionService
             "Generated read-only VMREAD value came from the neutral MemoryDomainDescriptor translation view.");
     }
 
-    private static VmcsReadOnlyValueProjectionResult ProjectExecutionOwnedValue(
+    private VmcsReadOnlyValueProjectionResult ProjectExecutionOwnedValue(
         VmcsReadOnlyValueProjectionRequest request,
         VmcsField field,
         VmcsFieldProjectionSchemaEntry entry,
@@ -323,13 +346,49 @@ public sealed class VmcsReadOnlyValueProjectionService
 
         if (entry.Field is VmcsField.GuestCr0 or VmcsField.GuestCr4)
         {
-            return Denied(
-                VmcsReadOnlyValueProjectionDecision.PrivilegedExecutionStateProjectionDenied,
+            PrivilegedControlRegisterKind register =
+                entry.Field == VmcsField.GuestCr0
+                    ? PrivilegedControlRegisterKind.GuestCr0
+                    : PrivilegedControlRegisterKind.GuestCr4;
+            PrivilegedExecutionStateProjectionResult privilegedProjection =
+                _privilegedProjection.Project(
+                    new PrivilegedExecutionStateProjectionRequest(
+                        register,
+                        request.PrivilegedExecutionState,
+                        request.RuntimeDomainTag,
+                        request.RuntimeAddressSpaceTag,
+                        request.CurrentPrivilegedExecutionStateEpoch,
+                        SecureVisibilityAllowed: alias.IsAllowed,
+                        MigrationClassified:
+                            request.PrivilegedExecutionState?.MigrationClass ==
+                            PrivilegedExecutionStateMigrationClass.RevalidatedAfterRestore,
+                        request.PrivilegedExecutionStateConformanceProven));
+
+            if (!privilegedProjection.IsAllowed)
+            {
+                return Denied(
+                    VmcsReadOnlyValueProjectionDecision.PrivilegedExecutionStateProjectionDenied,
+                    field,
+                    entry,
+                    alias,
+                    request.FieldId,
+                    privilegedProjection.Reason) with
+                {
+                    PrivilegedProjection = privilegedProjection,
+                };
+            }
+
+            return new VmcsReadOnlyValueProjectionResult(
+                VmcsReadOnlyValueProjectionDecision.ReadOnlyValueProjected,
                 field,
                 entry,
                 alias,
-                request.FieldId,
-                "Guest control-register VMREAD projection remains denied until neutral privileged execution-state semantics are materialized.");
+                VmcsV2ValidationResult.Success(request.FieldId),
+                unchecked((long)privilegedProjection.Value),
+                "Guest control-register VMREAD value came from the neutral privileged execution-state owner.") with
+            {
+                PrivilegedProjection = privilegedProjection,
+            };
         }
 
         if (request.Execution is null)

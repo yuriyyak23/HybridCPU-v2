@@ -13,10 +13,17 @@ public sealed class CompilerFacadeAbiPhase01Tests
     private static readonly string[] AppFacadeMethodNames =
     [
         nameof(IAppAsmFacade.Add),
+        nameof(IAppAsmFacade.AddUnsignedWord),
         nameof(IAppAsmFacade.AddWord),
         nameof(IAppAsmFacade.AddWordImmediate),
         nameof(IAppAsmFacade.And),
+        nameof(IAppAsmFacade.AndWithInvertedSecond),
+        nameof(IAppAsmFacade.BinaryPolynomialProductHigh),
+        nameof(IAppAsmFacade.BinaryPolynomialProductLow),
+        nameof(IAppAsmFacade.BinaryPolynomialProductReverse),
         nameof(IAppAsmFacade.Call),
+        nameof(IAppAsmFacade.ClearBitImmediate),
+        nameof(IAppAsmFacade.ClearBitRegister),
         nameof(IAppAsmFacade.CountLeadingZeros),
         nameof(IAppAsmFacade.Dec),
         nameof(IAppAsmFacade.DefineEntryPoint),
@@ -28,6 +35,10 @@ public sealed class CompilerFacadeAbiPhase01Tests
         nameof(IAppAsmFacade.CountSetBits),
         nameof(IAppAsmFacade.Inc),
         nameof(IAppAsmFacade.Init),
+        nameof(IAppAsmFacade.ExtractBitImmediate),
+        nameof(IAppAsmFacade.ExtractBitRegister),
+        nameof(IAppAsmFacade.InvertBitImmediate),
+        nameof(IAppAsmFacade.InvertBitRegister),
         nameof(IAppAsmFacade.Jump),
         nameof(IAppAsmFacade.JumpIfAbove),
         nameof(IAppAsmFacade.JumpIfBelow),
@@ -37,17 +48,40 @@ public sealed class CompilerFacadeAbiPhase01Tests
         nameof(IAppAsmFacade.MarkEntryPoint),
         nameof(IAppAsmFacade.Mod),
         nameof(IAppAsmFacade.Move),
+        nameof(IAppAsmFacade.MtileLoad),
+        nameof(IAppAsmFacade.MtileMacc),
+        nameof(IAppAsmFacade.MtileStore),
+        nameof(IAppAsmFacade.Mtranspose),
         nameof(IAppAsmFacade.Mul),
         nameof(IAppAsmFacade.MultiplyWord),
         nameof(IAppAsmFacade.Nop),
         nameof(IAppAsmFacade.Not),
         nameof(IAppAsmFacade.Or),
+        nameof(IAppAsmFacade.OrWithInvertedSecond),
         nameof(IAppAsmFacade.ParallelFor),
         nameof(IAppAsmFacade.Reduce),
         nameof(IAppAsmFacade.RemainderUnsignedWord),
         nameof(IAppAsmFacade.RemainderWord),
         nameof(IAppAsmFacade.Return),
+        nameof(IAppAsmFacade.ExclusiveNor),
+        nameof(IAppAsmFacade.ReverseByteOrder),
+        nameof(IAppAsmFacade.ReverseBitsInEachByte),
+        nameof(IAppAsmFacade.RotateLeftByImmediate),
+        nameof(IAppAsmFacade.RotateLeftRegister),
+        nameof(IAppAsmFacade.RotateRightByImmediate),
+        nameof(IAppAsmFacade.RotateRightRegister),
+        nameof(IAppAsmFacade.ScalarMaxSigned),
+        nameof(IAppAsmFacade.ScalarMaxUnsigned),
+        nameof(IAppAsmFacade.ScalarMinSigned),
+        nameof(IAppAsmFacade.ScalarMinUnsigned),
         nameof(IAppAsmFacade.ShiftLeft),
+        nameof(IAppAsmFacade.ShiftLeftOneAndAdd),
+        nameof(IAppAsmFacade.ShiftLeftOneAndAddUnsignedWord),
+        nameof(IAppAsmFacade.ShiftLeftThreeAndAdd),
+        nameof(IAppAsmFacade.ShiftLeftThreeAndAddUnsignedWord),
+        nameof(IAppAsmFacade.ShiftLeftTwoAndAdd),
+        nameof(IAppAsmFacade.ShiftLeftTwoAndAddUnsignedWord),
+        nameof(IAppAsmFacade.ShiftLeftUnsignedWordByImmediate),
         nameof(IAppAsmFacade.ShiftLeftWord),
         nameof(IAppAsmFacade.ShiftLeftWordImmediate),
         nameof(IAppAsmFacade.ShiftRight),
@@ -56,20 +90,30 @@ public sealed class CompilerFacadeAbiPhase01Tests
         nameof(IAppAsmFacade.ShiftRightArithmeticWordImmediate),
         nameof(IAppAsmFacade.ShiftRightLogicalWord),
         nameof(IAppAsmFacade.ShiftRightLogicalWordImmediate),
+        nameof(IAppAsmFacade.SetBitImmediate),
+        nameof(IAppAsmFacade.SetBitRegister),
+        nameof(IAppAsmFacade.SignExtendByte),
+        nameof(IAppAsmFacade.SignExtendHalf),
         nameof(IAppAsmFacade.SignExtendWord),
         nameof(IAppAsmFacade.Sqrt),
         nameof(IAppAsmFacade.Store),
         nameof(IAppAsmFacade.Sub),
         nameof(IAppAsmFacade.SubWord),
         nameof(IAppAsmFacade.Xor),
+        nameof(IAppAsmFacade.ZeroIfConditionEqualZero),
+        nameof(IAppAsmFacade.ZeroIfConditionNotEqualZero),
+        nameof(IAppAsmFacade.ZeroExtendHalf),
         nameof(IAppAsmFacade.ZeroExtendWord),
     ];
 
     private static readonly string[] PlatformFacadeDeclaredMethodNames =
     [
+        nameof(IPlatformAsmFacade.ReadSystemCycleCounter),
         nameof(IPlatformAsmFacade.CsrClear),
         nameof(IPlatformAsmFacade.CsrRead),
         nameof(IPlatformAsmFacade.CsrWrite),
+        nameof(IPlatformAsmFacade.VLoad),
+        nameof(IPlatformAsmFacade.VStore),
         nameof(IPlatformAsmFacade.VectorOp),
         nameof(IPlatformAsmFacade.VectorOpImm),
         nameof(IPlatformAsmFacade.VSetVli),
@@ -164,8 +208,6 @@ public sealed class CompilerFacadeAbiPhase01Tests
         "Sh3AddUw",
         "SlliUw",
         "SfenceVma",
-        "SignExtendByte",
-        "SignExtendHalf",
         "StoreConditional",
         "Tile",
         "TlbFlush",
@@ -236,7 +278,6 @@ public sealed class CompilerFacadeAbiPhase01Tests
         "Vslide1Up",
         "Vtranspose",
         "Vzext",
-        "ZeroExtendHalf",
         "ZextH",
     ];
 
@@ -250,14 +291,14 @@ public sealed class CompilerFacadeAbiPhase01Tests
     }
 
     [Fact]
-    public void AppFacadePublicAbi_StaysAtPhase01CompatibilityInventory()
+    public void AppFacadePublicAbi_StaysCompatibilityInventoryWithMatrixTilePositiveHandoff()
     {
         AssertPublicDeclaredMethodNames(typeof(IAppAsmFacade), AppFacadeMethodNames);
         AssertPublicDeclaredMethodNames(typeof(AppAsmFacade), AppFacadeMethodNames);
     }
 
     [Fact]
-    public void PlatformFacadePublicAbi_StaysRawTransportPlusScopedVsetvliAndCsrOnly()
+    public void PlatformFacadePublicAbi_IncludesTypedVectorTransferAndScopedRawTransport()
     {
         AssertPublicDeclaredMethodNames(typeof(IPlatformAsmFacade), PlatformFacadeDeclaredMethodNames);
         AssertPublicDeclaredMethodNames(typeof(PlatformAsmFacade), PlatformFacadeDeclaredMethodNames);
@@ -284,7 +325,7 @@ public sealed class CompilerFacadeAbiPhase01Tests
     }
 
     [Fact]
-    public void RawVectorTransportNames_AreTheOnlyVectorFacadeEscapeHatches()
+    public void VectorFacadeEscapeHatches_IncludeTypedTransferAndScopedRawTransport()
     {
         string[] platformMethods = PublicDeclaredMethodNames(typeof(IPlatformAsmFacade));
         string[] vectorNamedMethods = platformMethods
@@ -295,7 +336,9 @@ public sealed class CompilerFacadeAbiPhase01Tests
 
         Assert.Equal(
             [
+                nameof(IPlatformAsmFacade.VLoad),
                 nameof(IPlatformAsmFacade.VSetVli),
+                nameof(IPlatformAsmFacade.VStore),
                 nameof(IPlatformAsmFacade.VectorOp),
                 nameof(IPlatformAsmFacade.VectorOpImm),
             ],

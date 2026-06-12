@@ -1,8 +1,8 @@
 // SEQZ facade decision path:
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\FacadeCandidates\ZeroCompare\SeqzInstruction.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\FacadeCandidates\ZeroCompare\SeqzInstruction.LocalNoEmissionContract.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
-// - HybridCPU ISE\HybridCPU_ISE.Tests\CompilerTests\CompilerNoEmissionBoundaryTests.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\FacadeCandidates\ZeroCompare\SeqzInstruction.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\FacadeCandidates\ZeroCompare\SeqzInstruction.LocalNoEmissionContract.cs
+// - \HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
+// - \HybridCPU_ISE.Tests\CompilerTests\CompilerNoEmissionBoundaryTests.cs
 // SEQZ is closed as facade-only/no-emission for this Phase 01F decision. No
 // hardware opcode, decoder row, compiler helper, or hidden lowering is opened.
 // VMX observes only the generic runtime model.

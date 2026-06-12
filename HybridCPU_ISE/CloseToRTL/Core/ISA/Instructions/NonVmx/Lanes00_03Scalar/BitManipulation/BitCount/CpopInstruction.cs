@@ -1,18 +1,18 @@
 // CPOP production path:
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\CpopInstruction.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\CpopInstruction.LocalSemantics.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Architecture\Common\CPU_Core.Enums.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Frontend\Decode\VliwDecoderV4Bridge\VliwDecoderV4.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Core.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\Internal\InternalOp.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\Scalar\ALU\ScalarAluOps.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\Dispatch\ExecutionDispatcherV4.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxPhase01BitCountExecutableTests.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\CpopInstruction.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\CpopInstruction.LocalSemantics.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Architecture\Common\CPU_Core.Enums.cs
+// - \HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
+// - \HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
+// - \HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Frontend\Decode\VliwDecoderV4Bridge\VliwDecoderV4.cs
+// - \HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Core.cs
+// - \HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
+// - \HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\Internal\InternalOp.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Execution\Scalar\ALU\ScalarAluOps.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Execution\Dispatch\ExecutionDispatcherV4.Scalar.cs
+// - \HybridCPU_ISE.Tests\tests\NonVmxPhase01BitCountExecutableTests.cs
 // CPOP is the canonical XLEN=64 scalar population-count runtime mnemonic.
 // POPCNT remains a no-emission alias boundary. VMX observes this row only through
 // generic legality/projection.

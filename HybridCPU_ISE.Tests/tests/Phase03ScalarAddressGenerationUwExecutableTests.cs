@@ -487,27 +487,39 @@ public sealed class ScalarAddressGenerationUwExecutableTests
     }
 
     [Fact]
-    public void AddressGeneration_CompilerHelpersHiddenLoweringAndVmxSpecificPath_RemainFailClosed()
+    public void AddressGeneration_CompilerHelpersOpenForUwAndImmediateRowsWithoutAliases()
     {
-        string compilerSource = ReadCompilerSource();
-        foreach (string forbidden in new[]
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        foreach (string required in new[]
         {
-            "InstructionsEnum.SH2ADD",
-            "InstructionsEnum.SH3ADD",
             "InstructionsEnum.ADD_UW",
             "InstructionsEnum.SH1ADD_UW",
+            "InstructionsEnum.SH2ADD",
+            "InstructionsEnum.SH3ADD",
             "InstructionsEnum.SH2ADD_UW",
             "InstructionsEnum.SH3ADD_UW",
             "InstructionsEnum.SLLI_UW",
-            "Sh2Add",
-            "Sh3Add",
+            "AddUnsignedWord",
+            "ShiftLeftOneAndAddUnsignedWord",
+            "ShiftLeftTwoAndAdd",
+            "ShiftLeftTwoAndAddUnsignedWord",
+            "ShiftLeftThreeAndAdd",
+            "ShiftLeftThreeAndAddUnsignedWord",
+            "ShiftLeftUnsignedWordByImmediate",
+            "ADD.UW",
+            "SLLI.UW"
+        })
+        {
+            Assert.Contains(required, compilerSource, StringComparison.Ordinal);
+        }
+
+        foreach (string forbidden in new[]
+        {
             "AddUw",
             "Sh1AddUw",
             "Sh2AddUw",
             "Sh3AddUw",
-            "SlliUw",
-            "ADD.UW",
-            "SLLI.UW"
+            "SlliUw"
         })
         {
             Assert.DoesNotContain(forbidden, compilerSource, StringComparison.Ordinal);
@@ -958,13 +970,4 @@ public sealed class ScalarAddressGenerationUwExecutableTests
         return hasEnum || hasRegistryMnemonic;
     }
 
-    private static string ReadCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
-    }
 }

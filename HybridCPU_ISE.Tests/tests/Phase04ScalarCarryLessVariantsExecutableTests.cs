@@ -467,7 +467,7 @@ public sealed class ScalarCarryLessVariantsExecutableTests
     }
 
     [Fact]
-    public void CarryLessVariants_CompilerHelperAuthorityAndHiddenLowering_RemainClosed()
+    public void CarryLessVariants_CompilerEmission_OpensDirectRowsWithoutHiddenLoweringAliases()
     {
         Assert.False(CloseToRtlClmulh.CompilerHelperAllowed);
         Assert.False(CloseToRtlClmulr.CompilerHelperAllowed);
@@ -476,9 +476,12 @@ public sealed class ScalarCarryLessVariantsExecutableTests
         Assert.True(CloseToRtlClmulh.NoVmxFrontendIntegrationRequired);
         Assert.True(CloseToRtlClmulr.NoVmxFrontendIntegrationRequired);
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("CLMULH", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("CLMULR", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.CLMULH", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.CLMULR", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("BinaryPolynomialProductHigh", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("BinaryPolynomialProductReverse", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ScalarCarryLessChecksum", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("CompileClMulH", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("CompileClMulR", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("EmitClMulH", compilerSource, StringComparison.OrdinalIgnoreCase);
@@ -631,13 +634,4 @@ public sealed class ScalarCarryLessVariantsExecutableTests
         return hasEnum || hasRegistryMnemonic;
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
-    }
 }

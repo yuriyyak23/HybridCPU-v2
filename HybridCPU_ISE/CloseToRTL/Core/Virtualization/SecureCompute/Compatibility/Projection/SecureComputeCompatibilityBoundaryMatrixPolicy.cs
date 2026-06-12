@@ -1,3 +1,5 @@
+using YAKSys_Hybrid_CPU.Core.Vmcs.V2;
+
 namespace YAKSys_Hybrid_CPU.Core;
 
 public enum SecureComputeCompatibilityFieldClass : byte
@@ -28,6 +30,7 @@ public enum SecureComputeCompatibilityMatrixDecision : byte
     DeniedVmxCapsAuthority = 13,
     DeniedVmcsCheckpointAuthority = 14,
     DeniedBackendSuccess = 15,
+    DeniedUnsupportedGuestPrivilegedControlField = 16,
 }
 
 public readonly record struct SecureComputeCompatibilityReadMatrixRequest(
@@ -85,7 +88,9 @@ public sealed partial class SecureComputeCompatibilityBoundaryMatrixPolicy
                 "SecureCompute compatibility projection schema owner mismatch is denied.");
         }
 
-        SecureComputeCompatibilityMatrixResult classDecision = DenyByFieldClass(request.FieldClass);
+        SecureComputeCompatibilityMatrixResult classDecision = DenyByFieldClass(
+            request.FieldId,
+            request.FieldClass);
         if (!classDecision.IsAllowed)
         {
             return classDecision;
@@ -168,13 +173,17 @@ public sealed partial class SecureComputeCompatibilityBoundaryMatrixPolicy
     }
 
     private static SecureComputeCompatibilityMatrixResult DenyByFieldClass(
+        ulong fieldId,
         SecureComputeCompatibilityFieldClass fieldClass) =>
         fieldClass switch
         {
-            SecureComputeCompatibilityFieldClass.GuestPrivilegedControl =>
-                Deny(
-                    SecureComputeCompatibilityMatrixDecision.DeniedGuestPrivilegedControlOwnerMissing,
-                    "Guest privileged control fields require a neutral privileged execution-state owner."),
+            SecureComputeCompatibilityFieldClass.GuestPrivilegedControl
+                when fieldId is not (
+                    (ulong)VmcsField.GuestCr0 or
+                    (ulong)VmcsField.GuestCr4) =>
+                    Deny(
+                        SecureComputeCompatibilityMatrixDecision.DeniedUnsupportedGuestPrivilegedControlField,
+                        "Only GuestCr0 and GuestCr4 have a Phase 10 privileged execution-state projection contract."),
             SecureComputeCompatibilityFieldClass.HostAddressSpaceAlias =>
                 Deny(
                     SecureComputeCompatibilityMatrixDecision.DeniedHostAddressSpaceOwnerMissing,

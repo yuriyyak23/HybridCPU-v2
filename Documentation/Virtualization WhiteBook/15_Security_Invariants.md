@@ -26,6 +26,8 @@ Completion records that can later be projected to VMX must pass neutral publicat
 
 Even if completion publication is allowed, retire publication can still be denied. `VmxRetireEffect.InterceptExit` must fail closed unless the publication fence says retire publication is authorized.
 
+Route authorization is also not publication. `RuntimeOwnedCompletionPublication` may authorize only the completion route flag while retire stays false; the current fence still emits no completion record for that state.
+
 ## Invariant 7: Migration Serializes Neutral Model
 
 Migration serializes guest-visible domain model and neutral descriptors, not host caches, VMCS backing stores, or manager state. VMCS projection fields with migration policy `RecomputedCompletion` or `ProjectionOnly` are not independent migration payload authority.

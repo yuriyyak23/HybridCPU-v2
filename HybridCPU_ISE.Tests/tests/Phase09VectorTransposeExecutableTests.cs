@@ -229,7 +229,7 @@ public sealed class Phase09VectorTransposeExecutableTests
             Assert.DoesNotContain(OpcodeRegistry.Opcodes, info => info.Mnemonic == mnemonic);
         }
 
-        Assert.Equal(IsaInstructionStatus.OptionalDisabled, InstructionSupportStatusCatalog.GetStatus("MTRANSPOSE").Status);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, InstructionSupportStatusCatalog.GetStatus("MTRANSPOSE").Status);
         Assert.Throws<DecodeProjectionFaultException>(() => MaterializeVtranspose(indexed: true));
         Assert.Throws<DecodeProjectionFaultException>(() => MaterializeVtranspose(is2D: true));
         Assert.Throws<DecodeProjectionFaultException>(() => MaterializeVtranspose(indexed: true, is2D: true));
@@ -273,18 +273,33 @@ public sealed class Phase09VectorTransposeExecutableTests
             .ToArray();
 
         Assert.Contains("VectorOp", publicMethodNames);
-        Assert.DoesNotContain(publicMethodNames, name => name.Contains("Transpose", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(publicMethodNames, IsClosedVectorTransposeHelperName);
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Perm2", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("DotWide", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("QueryAbi", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Topology", StringComparison.OrdinalIgnoreCase));
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("VTRANSPOSE", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VPERM2", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("ACCEL_QUERY_ABI", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("ACCEL_QUERY_TOPOLOGY", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerVectorHelperClosedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VTRANSPOSE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.VTRANSPOSE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VTRANSPOSE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VTRANSPOSE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVtranspose", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVtranspose", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileVperm2", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVperm2", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.ACCEL_QUERY_ABI", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.ACCEL_QUERY_TOPOLOGY", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileAccelQueryAbi", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileAccelQueryTopology", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitAccelQueryAbi", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitAccelQueryTopology", compilerSource, StringComparison.OrdinalIgnoreCase);
     }
+
+    private static bool IsClosedVectorTransposeHelperName(string methodName) =>
+        methodName.Contains("Vtranspose", StringComparison.OrdinalIgnoreCase) ||
+        methodName.Contains("VectorTranspose", StringComparison.OrdinalIgnoreCase);
 
     private static VectorTransposeMicroOp MaterializeVtranspose(
         DataTypeEnum dataType = DataTypeEnum.UINT16,
@@ -409,15 +424,4 @@ public sealed class Phase09VectorTransposeExecutableTests
             .ToArray();
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        IEnumerable<string> files = Directory.EnumerateFiles(
-                compilerRoot,
-                "*.cs",
-                SearchOption.AllDirectories)
-            .Where(filePath => !CompatFreezeScanner.IsGeneratedPath(filePath));
-
-        return string.Join(Environment.NewLine, files.Select(File.ReadAllText));
-    }
 }

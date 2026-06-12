@@ -13,7 +13,9 @@ namespace HybridCPU.Compiler.Core.IR
         PredicateMask = 3,
         StreamLength = 4,
         Stride = 5,
-        RowStride = 6
+        RowStride = 6,
+        Tile = 7,
+        MemoryAddress = 8
     }
 
     /// <summary>

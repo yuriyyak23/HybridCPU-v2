@@ -5,7 +5,12 @@ namespace HybridCPU.Compiler.Core.IR;
 
 public enum CompilerNonVmxScalarFeature : byte
 {
-    ScalarBitmanipCore = 0
+    ScalarBitmanipCore = 0,
+    ScalarBitfield = 1,
+    ScalarAddressGeneration = 2,
+    ScalarSelectCzero = 3,
+    ScalarCarryLessChecksum = 4,
+    ScalarSystemCounter = 5
 }
 
 /// <summary>
@@ -23,7 +28,13 @@ public sealed class CompilerNonVmxScalarCapabilityModel
     }
 
     public static CompilerNonVmxScalarCapabilityModel Default { get; } =
-        Enable(CompilerNonVmxScalarFeature.ScalarBitmanipCore);
+        Enable(
+            CompilerNonVmxScalarFeature.ScalarBitmanipCore,
+            CompilerNonVmxScalarFeature.ScalarBitfield,
+            CompilerNonVmxScalarFeature.ScalarAddressGeneration,
+            CompilerNonVmxScalarFeature.ScalarSelectCzero,
+            CompilerNonVmxScalarFeature.ScalarCarryLessChecksum,
+            CompilerNonVmxScalarFeature.ScalarSystemCounter);
 
     public static CompilerNonVmxScalarCapabilityModel Disabled { get; } =
         Enable();

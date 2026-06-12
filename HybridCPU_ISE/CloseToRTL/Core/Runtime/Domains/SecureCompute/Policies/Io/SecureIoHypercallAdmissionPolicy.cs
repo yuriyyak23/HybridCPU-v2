@@ -35,24 +35,26 @@ public readonly record struct SecureIoHypercallAdmissionResult(
         Decision == SecureIoHypercallAdmissionDecision.AllowedAdmittedDenied &&
         !BackendExecutionAuthorized;
 
-    public static SecureIoHypercallAdmissionResult AllowedIo(
-        bool completionPublicationAuthorized,
-        bool retirePublicationAuthorized) =>
+    public bool IsPolicyAdmissionOnly =>
+        Decision == SecureIoHypercallAdmissionDecision.AllowedIo &&
+        !BackendExecutionAuthorized &&
+        !CompletionPublicationAuthorized &&
+        !RetirePublicationAuthorized;
+
+    public static SecureIoHypercallAdmissionResult AllowedIo() =>
         new(
             SecureIoHypercallAdmissionDecision.AllowedIo,
             BackendExecutionAuthorized: false,
-            completionPublicationAuthorized,
-            retirePublicationAuthorized,
-            string.Empty);
+            CompletionPublicationAuthorized: false,
+            RetirePublicationAuthorized: false,
+            "Secure I/O policy admission succeeded; backend execution and publication remain closed.");
 
-    public static SecureIoHypercallAdmissionResult AllowedAdmittedDenied(
-        bool completionPublicationAuthorized,
-        bool retirePublicationAuthorized) =>
+    public static SecureIoHypercallAdmissionResult AllowedAdmittedDenied() =>
         new(
             SecureIoHypercallAdmissionDecision.AllowedAdmittedDenied,
             BackendExecutionAuthorized: false,
-            completionPublicationAuthorized,
-            retirePublicationAuthorized,
+            CompletionPublicationAuthorized: false,
+            RetirePublicationAuthorized: false,
             "Secure hypercall admission is recognized but backend execution remains closed.");
 
     public static SecureIoHypercallAdmissionResult Denied(
@@ -106,9 +108,7 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
             return completion;
         }
 
-        return SecureIoHypercallAdmissionResult.AllowedIo(
-            completion.CompletionPublicationAuthorized,
-            completion.RetirePublicationAuthorized);
+        return SecureIoHypercallAdmissionResult.AllowedIo();
     }
 
     public SecureIoHypercallAdmissionResult AdmitHypercall(
@@ -120,7 +120,8 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
         SecureRevocationEpoch policyEpoch,
         SecureCompletionPublicationFence? publicationFence,
         bool neutralBackendOwnerMaterialized,
-        bool domainValidated)
+        bool domainValidated,
+        ulong validatedDomainTag = 0)
     {
         if (hypercallPolicy is null || !hypercallPolicy.HasPolicy)
         {
@@ -139,7 +140,11 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
         foreach (SecureHypercallArgumentDescriptor argument in hypercallPolicy.Arguments)
         {
             SecureIoHypercallAdmissionResult argumentResult =
-                AdmitArgument(argument, ioPolicy, policyEpoch);
+                AdmitArgument(
+                    argument,
+                    ioPolicy,
+                    policyEpoch,
+                    validatedDomainTag);
             if (!argumentResult.IsAllowed)
             {
                 return argumentResult;
@@ -189,9 +194,7 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
 
         if (!hypercallPolicy.AllowBackendExecution)
         {
-            return SecureIoHypercallAdmissionResult.AllowedAdmittedDenied(
-                publication.CompletionPublicationAuthorized,
-                publication.RetirePublicationAuthorized);
+            return SecureIoHypercallAdmissionResult.AllowedAdmittedDenied();
         }
 
         return Deny(
@@ -202,7 +205,8 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
     private SecureIoHypercallAdmissionResult AdmitArgument(
         SecureHypercallArgumentDescriptor argument,
         SecureIoDomainDescriptor? ioPolicy,
-        SecureRevocationEpoch policyEpoch)
+        SecureRevocationEpoch policyEpoch,
+        ulong validatedDomainTag)
     {
         if (argument.IsDeniedRawPrivatePointer)
         {
@@ -214,7 +218,7 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
         if (argument.ArgumentClass == SecureHypercallArgumentClass.OpaqueHandle)
         {
             return argument.Grant.MatchesEpoch(policyEpoch)
-                ? SecureIoHypercallAdmissionResult.AllowedIo(false, false)
+                ? SecureIoHypercallAdmissionResult.AllowedIo()
                 : Deny(
                     SecureIoHypercallAdmissionDecision.DeniedForgedOpaqueHandle,
                     "Secure hypercall opaque handles require provenance and current epoch.");
@@ -222,7 +226,7 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
 
         if (!argument.RequiresSharedBuffer)
         {
-            return SecureIoHypercallAdmissionResult.AllowedIo(false, false);
+            return SecureIoHypercallAdmissionResult.AllowedIo();
         }
 
         if (ioPolicy?.NeutralIoOwnerMaterialized != true)
@@ -232,15 +236,19 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
                 "Secure hypercall shared-buffer arguments require a neutral I/O owner.");
         }
 
-        if (!ioPolicy.AllowsSharedBuffer(argument.SharedBufferId))
+        if (!ioPolicy.TryFindCurrentSharedBuffer(
+                argument.SharedBufferId,
+                validatedDomainTag,
+                policyEpoch,
+                out _))
         {
             return Deny(
                 SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
-                "Secure hypercall shared-buffer argument must reference an explicit shared-buffer descriptor.");
+                "Secure hypercall shared-buffer argument requires an explicit descriptor with current owner, lifetime, evidence and buffer-grant epoch.");
         }
 
         return argument.Grant.MatchesEpoch(policyEpoch)
-            ? SecureIoHypercallAdmissionResult.AllowedIo(false, false)
+            ? SecureIoHypercallAdmissionResult.AllowedIo()
             : Deny(
                 SecureIoHypercallAdmissionDecision.DeniedMissingTypedGrant,
                 "Secure hypercall shared-buffer argument requires a current typed grant.");
@@ -271,7 +279,7 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
             requiredScope: CapabilityGrantScope.DomainGranted);
 
         return authority.IsAllowed
-            ? SecureIoHypercallAdmissionResult.AllowedIo(false, false)
+            ? SecureIoHypercallAdmissionResult.AllowedIo()
             : Deny(
                 SecureIoHypercallAdmissionDecision.DeniedMissingTypedGrant,
                 authority.Reason);
@@ -298,9 +306,7 @@ public sealed partial class SecureIoHypercallAdmissionPolicy
                 "Secure I/O and hypercall retire publication requires an explicit retire fence.");
         }
 
-        return SecureIoHypercallAdmissionResult.AllowedIo(
-            publicationFence?.CanPublishCompletion == true,
-            publicationFence?.CanPublishRetire == true);
+        return SecureIoHypercallAdmissionResult.AllowedIo();
     }
 
     private static SecureIoHypercallAdmissionDecision MapMemoryDecision(

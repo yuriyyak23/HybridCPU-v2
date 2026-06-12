@@ -747,10 +747,10 @@ namespace YAKSys_Hybrid_CPU.Arch
             AddOptionalEnabledVectorDotProductScalarFootprint(rows, "VDOT_FP8");
             AddOptionalEnabledVectorDotProductWideScalarFootprint(rows, "VDOT.WIDE");
 
-            AddOptionalDisabledMatrix(rows, "MTILE_LOAD");
-            AddOptionalDisabledMatrix(rows, "MTILE_STORE");
-            AddOptionalDisabledMatrix(rows, "MTILE_MACC");
-            AddOptionalDisabledMatrix(rows, "MTRANSPOSE");
+            AddOptionalEnabledMatrixProduction(rows, "MTILE_LOAD");
+            AddOptionalEnabledMatrixProduction(rows, "MTILE_STORE");
+            AddOptionalEnabledMatrixProduction(rows, "MTILE_MACC");
+            AddOptionalEnabledMatrixProduction(rows, "MTRANSPOSE");
 
             AddReservedNoAllocation(rows, "SFENCE.VMA", "CacheTlbCoherency");
             AddReservedNoAllocation(rows, "DCACHE_CLEAN", "CacheTlbCoherency");
@@ -1093,6 +1093,22 @@ namespace YAKSys_Hybrid_CPU.Arch
                 RuntimeInstructionEvidence.DeclaredOnly,
                 extensionName: "XMatrix",
                 hasNumericOpcode: true));
+        }
+
+        private static void AddOptionalEnabledMatrixProduction(
+            List<InstructionSupportStatus> rows,
+            string mnemonic)
+        {
+            rows.Add(new InstructionSupportStatus(
+                mnemonic,
+                IsaInstructionStatus.OptionalEnabled,
+                RuntimeInstructionEvidence.ConformanceTested,
+                extensionName: "XMatrix",
+                hasNumericOpcode: true,
+                hasRuntimeOpcodeMetadata: true,
+                hasCanonicalDecoderAcceptance: true,
+                hasRegistryFactory: true,
+                hasExecutionSemantics: true));
         }
 
         private static void AddCarrierOnlyL7Sdc(

@@ -53,7 +53,7 @@ Projection validation is separate from runtime admission. This allows the fronte
 The current frontend has admitted projection paths:
 
 - VMREAD projection can pass decode, alias projection, runtime admission, generated schema owner lookup, alias/evidence checks, and neutral owner value projection for the currently admitted field slices.
-- VMCALL trap projection can pass decode, alias projection, runtime admission, neutral trap policy, backend admission evaluation, and route evaluation, but backend execution and retire publication remain denied in production.
+- VMCALL trap projection can pass decode, alias projection, runtime admission, neutral trap policy, backend admission evaluation, and route evaluation, but backend execution, completion publication, and retire publication remain denied in production. The frontend continues to use `ProjectionOnlyDenied`; it does not use either runtime-owned positive route descriptor.
 
 This is intentional. It gives the project evidence that the frontend can cross the runtime boundary correctly without silently enabling a backend. VMREAD success means read-only compatibility projection from a neutral value source; it does not mean VMCS backend execution.
 

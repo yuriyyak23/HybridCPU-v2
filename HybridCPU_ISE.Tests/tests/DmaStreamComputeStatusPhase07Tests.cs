@@ -267,12 +267,7 @@ public sealed class DmaStreamComputeStatusPhase07Tests
         Assert.DoesNotContain(threadMethods, name => name.Contains("Status", StringComparison.OrdinalIgnoreCase));
 
         string repoRoot = ResolveRepoRoot();
-        string compilerText = File.ReadAllText(Path.Combine(
-            repoRoot,
-            "HybridCPU_Compiler",
-            "API",
-            "Threading",
-            "HybridCpuThreadCompilerContext.cs"));
+        string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("DSC_STATUS", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamComputeStatus", compilerText, StringComparison.Ordinal);
     }

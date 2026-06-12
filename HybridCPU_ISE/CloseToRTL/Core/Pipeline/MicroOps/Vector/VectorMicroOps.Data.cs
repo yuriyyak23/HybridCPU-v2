@@ -726,9 +726,11 @@ namespace YAKSys_Hybrid_CPU.Core
 
         public VectorTransferMicroOp()
         {
-            Class = MicroOpClass.Vector;
+            Class = MicroOpClass.Lsu;
+            IsMemoryOp = false;
             IsStealable = false;
             HasSideEffects = true;
+            SetClassFlexiblePlacement(SlotClass.LsuClass);
         }
 
         public override void InitializeMetadata()

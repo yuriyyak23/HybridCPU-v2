@@ -335,7 +335,7 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
             compilerMethods,
             static method => method.Name.Contains("Dsc2", StringComparison.OrdinalIgnoreCase));
 
-        string compilerText = ReadAllSourceText(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("DmaStreamComputeDsc2", compilerText, StringComparison.Ordinal);
     }
 
@@ -671,15 +671,6 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
         DmaStreamComputeDsc2CapabilityId capabilityId,
         byte[] payload) =>
         new((ushort)extensionType, DmaStreamComputeDsc2ExtensionFlags.Required | DmaStreamComputeDsc2ExtensionFlags.Semantic, capabilityId, payload);
-
-    private static string ReadAllSourceText(string root)
-    {
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(file => !CompatFreezeScanner.IsGeneratedPath(file))
-                .Select(File.ReadAllText));
-    }
 
     private static void WriteUInt16(byte[] bytes, int offset, ushort value) =>
         BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(offset), value);

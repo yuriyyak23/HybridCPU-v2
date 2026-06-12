@@ -4,6 +4,7 @@ using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Decoder;
+using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core.Legality;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using HybridCPU.Compiler.Core;
@@ -479,29 +480,51 @@ namespace HybridCPU_ISE.Tests
         [Theory]
         [InlineData(Processor.CPU_Core.InstructionsEnum.MTILE_MACC, 6)]
         [InlineData(Processor.CPU_Core.InstructionsEnum.MTRANSPOSE, 7)]
-        public void Decoder_UnsupportedOptionalMatrixContours_FailClosedAsInvalidOpcode(
+        public void Decoder_MatrixSemanticContours_CanonicalizeToVectorPayloadProjection(
             Processor.CPU_Core.InstructionsEnum opcode,
             int slotIndex)
         {
             var decoder = new VliwDecoderV4();
-            var inst = new VLIW_Instruction
-            {
-                OpCode = (uint)opcode,
-                DataTypeValue = DataTypeEnum.INT32,
-                PredicateMask = 0xFF,
-                DestSrc1Pointer = VLIW_Instruction.PackArchRegs(1, 2, 3),
-                Src2Pointer = 0x380,
-                StreamLength = 0,
-                Stride = 0
-            };
+            VLIW_Instruction inst = InstructionEncoder.EncodeVector2D(
+                (uint)opcode,
+                DataTypeEnum.INT32,
+                destSrc1Ptr: 0x1000,
+                src2Ptr: 0x2000,
+                streamLength: 8,
+                colStride: 4,
+                rowStride: 32,
+                rowLength: 4);
 
-            InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
-                () => decoder.Decode(in inst, slotIndex));
+            InstructionIR ir = decoder.Decode(in inst, slotIndex);
 
-            Assert.Equal(slotIndex, exception.SlotIndex);
-            Assert.False(exception.IsProhibited);
-            Assert.Contains("optional matrix contour", exception.Message);
-            Assert.Contains("scalar ALU register truth", exception.Message);
+            Assert.Equal((ushort)opcode, ir.CanonicalOpcode.Value);
+            Assert.Equal(InstructionClassifier.GetClass(opcode), ir.Class);
+            Assert.Equal(InstructionClassifier.GetSerializationClass(opcode), ir.SerializationClass);
+            Assert.True(OpcodeRegistry.RequiresVectorPayloadProjection((uint)opcode));
+            Assert.True(ir.VectorPayload.HasValue);
+            Assert.True(ir.VectorPayload.Value.Is2D);
+            Assert.True(ir.MatrixTileProjection.HasValue);
+            Assert.Equal(opcode, ir.MatrixTileProjection.Value.Opcode);
+            Assert.Equal(
+                opcode == Processor.CPU_Core.InstructionsEnum.MTILE_MACC
+                    ? MatrixTileProjectedOperationKind.Macc
+                    : MatrixTileProjectedOperationKind.Transpose,
+                ir.MatrixTileProjection.Value.OperationKind);
+            Assert.True(ir.MatrixTileProjection.Value.HasTileDescriptorProjection);
+            Assert.Equal(
+                opcode == Processor.CPU_Core.InstructionsEnum.MTILE_MACC,
+                ir.MatrixTileProjection.Value.HasAccumulatorOperandProjection);
+            Assert.Equal(
+                opcode == Processor.CPU_Core.InstructionsEnum.MTRANSPOSE,
+                ir.MatrixTileProjection.Value.HasTransposePolicyProjection);
+            Assert.False(ir.MatrixTileProjection.Value.OpensExecution);
+            Assert.False(ir.MatrixTileProjection.Value.UsesFallbackPath);
+            Assert.Equal(0x1000UL, ir.VectorPayload.Value.PrimaryPointer);
+            Assert.Equal(0x2000UL, ir.VectorPayload.Value.SecondaryPointer);
+            Assert.Equal(8U, ir.VectorPayload.Value.StreamLength);
+            Assert.Equal((ushort)4, ir.VectorPayload.Value.Stride);
+            Assert.Equal((ushort)32, ir.VectorPayload.Value.RowStride);
+            Assert.Equal(4, ir.Imm);
         }
 
         [Theory]
@@ -559,29 +582,39 @@ namespace HybridCPU_ISE.Tests
         [Theory]
         [InlineData(Processor.CPU_Core.InstructionsEnum.MTILE_LOAD, 8)]
         [InlineData(Processor.CPU_Core.InstructionsEnum.MTILE_STORE, 9)]
-        public void Decoder_UnsupportedOptionalMatrixMemoryContours_FailClosedAsInvalidOpcode(
+        public void Decoder_MatrixMemoryContours_CanonicalizeToVectorPayloadProjection(
             Processor.CPU_Core.InstructionsEnum opcode,
             int slotIndex)
         {
             var decoder = new VliwDecoderV4();
-            var inst = new VLIW_Instruction
-            {
-                OpCode = (uint)opcode,
-                DataTypeValue = DataTypeEnum.INT32,
-                PredicateMask = 0xFF,
-                DestSrc1Pointer = VLIW_Instruction.PackArchRegs(1, 2, 3),
-                Src2Pointer = 0x3C0,
-                StreamLength = 4,
-                Stride = 4
-            };
+            VLIW_Instruction inst = InstructionEncoder.EncodeVector1D(
+                (uint)opcode,
+                DataTypeEnum.INT32,
+                destSrc1Ptr: 0x1000,
+                src2Ptr: 0x2000,
+                streamLength: 4,
+                stride: 16);
 
-            InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
-                () => decoder.Decode(in inst, slotIndex));
+            InstructionIR ir = decoder.Decode(in inst, slotIndex);
 
-            Assert.Equal(slotIndex, exception.SlotIndex);
-            Assert.False(exception.IsProhibited);
-            Assert.Contains("optional matrix memory contour", exception.Message);
-            Assert.Contains("memory placement/register truth", exception.Message);
+            Assert.Equal((ushort)opcode, ir.CanonicalOpcode.Value);
+            Assert.Equal(InstructionClassifier.GetClass(opcode), ir.Class);
+            Assert.Equal(InstructionClassifier.GetSerializationClass(opcode), ir.SerializationClass);
+            Assert.True(OpcodeRegistry.RequiresVectorPayloadProjection((uint)opcode));
+            Assert.True(ir.VectorPayload.HasValue);
+            Assert.True(ir.MatrixTileProjection.HasValue);
+            Assert.Equal(opcode, ir.MatrixTileProjection.Value.Opcode);
+            Assert.True(ir.MatrixTileProjection.Value.HasMemoryOperandProjection);
+            Assert.Equal(MatrixTileIrProjectionFaultKind.None, ir.MatrixTileProjection.Value.FaultKind);
+            Assert.False(ir.MatrixTileProjection.Value.OpensExecution);
+            Assert.False(ir.MatrixTileProjection.Value.UsesFallbackPath);
+            Assert.False(ir.VectorPayload.Value.Is2D);
+            Assert.False(ir.VectorPayload.Value.Indexed);
+            Assert.Equal(0x1000UL, ir.VectorPayload.Value.PrimaryPointer);
+            Assert.Equal(0x2000UL, ir.VectorPayload.Value.SecondaryPointer);
+            Assert.Equal(4U, ir.VectorPayload.Value.StreamLength);
+            Assert.Equal((ushort)16, ir.VectorPayload.Value.Stride);
+            Assert.Equal(0, ir.Imm);
         }
 
         [Theory]
@@ -947,5 +980,3 @@ namespace HybridCPU_ISE.Tests
         #endregion
     }
 }
-
-

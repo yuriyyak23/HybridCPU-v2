@@ -18,8 +18,9 @@ Code anchors:
 - `HybridCPU_ISE.Tests/tests/L7SdcTokenLifecycleTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcCommitTests.cs`
 
-## Submit, poll, wait, cancel, fence
+## Query, Submit, Poll, Wait, Cancel, Fence, Status
 
+- Query-caps is a guarded capability/status-style observation.
 - Submit creates a nonzero opaque handle only after descriptor, capability, guard, feature
   switch, and optional conflict checks pass.
 - Poll is guarded observation.
@@ -29,14 +30,17 @@ Code anchors:
   discard `DeviceComplete` or `CommitPending` obligations.
 - Fence can observe, reject active tokens, cancel/fault active tokens by policy, or commit
   completed tokens only through `AcceleratorCommitCoordinator`.
+- Status is a guarded token/status query and remains a lane7 `SystemSingleton`
+  control-plane command, not a generic backend fallback.
 
-Current `ACCEL_QUERY_CAPS`, `ACCEL_POLL`, `ACCEL_WAIT`, `ACCEL_CANCEL`, and
-`ACCEL_FENCE` carriers execute through `ExternalAcceleratorRuntime` inside the
-current scoped contour. They can produce register ABI results when the command
-semantics and carrier destination register permit it. Staged memory publishes
-only through the guarded commit coordinator. Expansion beyond these command
-semantics requires the Ex1 Phase10 L7 gate, ordering/conflict/cache/backend/fault
-semantics, compiler/backend conformance, and Phase12 documentation migration.
+Current `ACCEL_QUERY_CAPS`, `ACCEL_SUBMIT`, `ACCEL_POLL`, `ACCEL_WAIT`,
+`ACCEL_CANCEL`, `ACCEL_FENCE`, and `ACCEL_STATUS` carriers execute through
+`ExternalAcceleratorRuntime` inside the current scoped contour. They can produce
+register ABI results when the command semantics and carrier destination register
+permit it. Staged memory publishes only through the guarded commit coordinator.
+Expansion beyond these command semantics requires the Ex1 Phase10 L7 gate,
+ordering/conflict/cache/backend/fault semantics, compiler/backend conformance,
+and Phase12 documentation migration.
 
 Code anchors:
 
@@ -67,7 +71,7 @@ architectural register write.
 
 L7-SDC model faults are guarded observations/results. They are not current
 retire exceptions; `AcceleratorCommitResult.RequiresRetireExceptionPublication`
-is `false`.
+is `false` and remains a model result property only.
 
 Code anchors:
 

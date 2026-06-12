@@ -3,7 +3,7 @@
 This is the staged backend and commit contour behind the current scoped L7
 runtime. `ACCEL_SUBMIT` admits and stages work; it does not directly publish
 memory. Rejected commits do not publish current retire exceptions. Fake/test
-backend completion, staged data, commit coordination, rollback, and SRF/cache
+backend completion, staged data, commit coordination, rollback, and SFR/cache
 invalidation prove only the tested contour; they are not a universal production
 protocol, pipeline retire publication model, or global coherency model.
 
@@ -25,7 +25,7 @@ flowchart TD
     N --> O["Write all staged bytes"]
     O --> P{"Write failure?"}
     P -- yes --> Q["Rollback snapshots and fault/reject"]
-    P -- no --> S["Validate and invalidate SRF/cache windows"]
+    P -- no --> S["Validate and invalidate SFR/cache windows"]
     S --> T{"Invalidation failure?"}
     T -- yes --> Q
     T -- no --> R["Promote Committed"]

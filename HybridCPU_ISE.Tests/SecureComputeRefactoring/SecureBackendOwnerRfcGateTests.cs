@@ -1,3 +1,4 @@
+using System.Reflection;
 using YAKSys_Hybrid_CPU.Core;
 
 namespace HybridCPU_ISE.Tests.SecureComputeRefactoring;
@@ -101,6 +102,24 @@ public sealed class SecureBackendOwnerRfcGateTests
         Assert.False(result.BackendExecutionAuthorized);
     }
 
+    [Theory]
+    [InlineData(SecureBackendOwnerSource.NeutralRuntimeService)]
+    [InlineData(SecureBackendOwnerSource.NeutralDeviceModel)]
+    [InlineData(SecureBackendOwnerSource.NeutralMigrationService)]
+    public void SecureBackendOwnerGate_AllNeutralOwnerSourcesRemainProofOnlyNoExecution(
+        SecureBackendOwnerSource source)
+    {
+        SecureBackendOwnerAdmissionResult result =
+            SecureBackendOwnerAdmissionPolicy.Default.Admit(
+                CreateRequest(owner: Owner(source: source)));
+
+        Assert.Equal(
+            SecureBackendOwnerAdmissionDecision.AllowedProofOnlyNoExecution,
+            result.Decision);
+        Assert.True(result.ProofChainAccepted);
+        Assert.False(result.BackendExecutionAuthorized);
+    }
+
     [Fact]
     public void SecureBackendOwnerGate_BackendExecutionRequestStillFailsClosed()
     {
@@ -112,6 +131,22 @@ public sealed class SecureBackendOwnerRfcGateTests
             SecureBackendOwnerAdmissionDecision.DeniedBackendExecutionClosed,
             result.Decision);
         Assert.False(result.BackendExecutionAuthorized);
+    }
+
+    [Fact]
+    public void SecureBackendOwnerGate_ResultShapeHasNoPublicationRetireOrNestedAuthorityFlags()
+    {
+        string[] resultProperties = typeof(SecureBackendOwnerAdmissionResult)
+            .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            .Select(property => property.Name)
+            .ToArray();
+
+        Assert.Contains(nameof(SecureBackendOwnerAdmissionResult.ProofChainAccepted), resultProperties);
+        Assert.Contains(nameof(SecureBackendOwnerAdmissionResult.BackendExecutionAuthorized), resultProperties);
+        Assert.DoesNotContain("CompletionPublicationAuthorized", resultProperties);
+        Assert.DoesNotContain("RetirePublicationAuthorized", resultProperties);
+        Assert.DoesNotContain("MutableNestedStateAuthorized", resultProperties);
+        Assert.DoesNotContain("NestedBackendExecutionAuthorized", resultProperties);
     }
 
     [Fact]
@@ -164,6 +199,18 @@ public sealed class SecureBackendOwnerRfcGateTests
         Assert.DoesNotContain("ReadFieldValue(", source);
         Assert.DoesNotContain("WriteFieldValue(", source);
         Assert.DoesNotContain("BackendExecutionAuthorized: true", source);
+        Assert.DoesNotContain("CompletionPublicationAuthorized: true", source);
+        Assert.DoesNotContain("RetirePublicationAuthorized: true", source);
+        Assert.DoesNotContain("SecureBackendExecutionRequest", source);
+        Assert.DoesNotContain("SecureBackendExecutionDecision", source);
+        Assert.DoesNotContain("AllowedInternalExecutionNoPublication", source);
+        Assert.DoesNotContain("AllowedCompletionRecordNoPublication", source);
+        Assert.DoesNotContain("SecureCompletionRecord", source);
+        Assert.DoesNotContain("NoSideEffectProbe", source);
+        Assert.DoesNotContain("NestedBackendExecution", source);
+        Assert.DoesNotContain("MutableNestedStateAuthorized: true", source);
+        Assert.DoesNotContain("RuntimeOwnedPublication", source);
+        Assert.DoesNotContain("TrapCompletionPublicationFence", source);
     }
 
     private const ulong HypercallGrantMask = 1UL << 46;

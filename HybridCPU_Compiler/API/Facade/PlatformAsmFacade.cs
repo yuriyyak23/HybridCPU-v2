@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
@@ -21,6 +22,35 @@ public class PlatformAsmFacade : AppAsmFacade, IPlatformAsmFacade
     public PlatformAsmFacade(int coreId, HybridCpuThreadCompilerContext context)
         : base(coreId, context)
     {
+    }
+
+    /// <summary>
+    /// Creates a PlatformAsmFacade with an explicit compiler-visible scalar capability model.
+    /// </summary>
+    public PlatformAsmFacade(
+        int coreId,
+        HybridCpuThreadCompilerContext context,
+        CompilerNonVmxScalarCapabilityModel scalarCapabilities)
+        : base(coreId, context, scalarCapabilities)
+    {
+    }
+
+    public void ReadSystemCycleCounter(AsmRegister dest)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarSystemCounter, "RDCYCLE");
+        Context.CompileInstruction(
+            (uint)Processor.CPU_Core.InstructionsEnum.RDCYCLE,
+            (byte)DataTypeEnum.UINT64,
+            0,
+            0,
+            VLIW_Instruction.PackArchRegs(
+                Resolve(dest).Value,
+                0,
+                0),
+            0,
+            0,
+            0,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
     }
 
     public void CsrRead(AsmRegister dest, ushort csrAddr)
@@ -65,6 +95,7 @@ public class PlatformAsmFacade : AppAsmFacade, IPlatformAsmFacade
         uint streamLength,
         ushort stride)
     {
+        ValidateNotVectorTransferOpcode(op);
         Context.CompileInstruction(
             (uint)op, (byte)dataType, 0, 0,
             dest, src, streamLength, stride,
@@ -80,10 +111,27 @@ public class PlatformAsmFacade : AppAsmFacade, IPlatformAsmFacade
         uint streamLength,
         ushort stride)
     {
+        ValidateNotVectorTransferOpcode(op);
         Context.CompileInstruction(
             (uint)op, (byte)dataType, 0, immediate,
             dest, src, streamLength, stride,
             stealabilityPolicy: StealabilityPolicy.NotStealable);
+    }
+
+    public void VLoad(
+        CompilerVectorTransferMemoryAddressAbi destination,
+        CompilerVectorTransferMemoryAddressAbi source,
+        CompilerVectorTransferShapeAbi shape)
+    {
+        Context.CompileVload(destination, source, shape);
+    }
+
+    public void VStore(
+        CompilerVectorTransferMemoryAddressAbi source,
+        CompilerVectorTransferMemoryAddressAbi destination,
+        CompilerVectorTransferShapeAbi shape)
+    {
+        Context.CompileVstore(source, destination, shape);
     }
 
     public void VSetVli(AsmRegister vlReg, AsmRegister avlReg, DataTypeEnum dataType)
@@ -97,5 +145,13 @@ public class PlatformAsmFacade : AppAsmFacade, IPlatformAsmFacade
             0, 1, 0,
             stealabilityPolicy: StealabilityPolicy.NotStealable);
     }
-}
 
+    private static void ValidateNotVectorTransferOpcode(Processor.CPU_Core.IsaOpcode op)
+    {
+        if (op.ToInstructionsEnum() is Processor.CPU_Core.InstructionsEnum.VLOAD or Processor.CPU_Core.InstructionsEnum.VSTORE)
+        {
+            throw new InvalidOperationException(
+                "VLOAD/VSTORE require the explicit typed vector load/store helper ABI; VectorOp transport is not emission authority.");
+        }
+    }
+}

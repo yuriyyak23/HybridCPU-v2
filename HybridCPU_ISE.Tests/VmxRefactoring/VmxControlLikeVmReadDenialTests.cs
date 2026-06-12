@@ -54,7 +54,7 @@ public sealed class VmxControlLikeVmReadDenialTests
         Assert.Equal(
             VmcsReadOnlyValueProjectionDecision.PrivilegedExecutionStateProjectionDenied,
             guestCr0.ValueProjection.Decision);
-        Assert.Contains("privileged execution-state semantics", guestCr0.Reason);
+        Assert.Contains("descriptor value source", guestCr0.Reason);
         Assert.DoesNotContain("GuestPc", guestCr0.Reason);
     }
 
@@ -67,6 +67,33 @@ public sealed class VmxControlLikeVmReadDenialTests
             Assert.True(VmcsFieldProjectionSchema.CanRead(entry));
             Assert.False(VmcsFieldProjectionSchema.CanWrite(entry));
             Assert.Equal(VmcsFieldProjectionAccessPolicy.ReadOnly, entry.AccessPolicy);
+        }
+    }
+
+    [Fact]
+    public void GuestControlRegisters_SchemaReadOnlyAndValueServicePresenceStillDenyCurrentValues()
+    {
+        var service = new VmxCompatibilityAdmissionService();
+
+        foreach (VmcsField field in new[] { VmcsField.GuestCr0, VmcsField.GuestCr4 })
+        {
+            Assert.True(VmcsFieldProjectionSchema.TryGet(field, out VmcsFieldProjectionSchemaEntry entry));
+            Assert.True(VmcsFieldProjectionSchema.CanRead(entry));
+            Assert.False(VmcsFieldProjectionSchema.CanWrite(entry));
+            Assert.Equal(VmcsFieldProjectionOwner.ExecutionDomainDescriptor, entry.Owner);
+            Assert.Equal(VmcsFieldProjectionAccessPolicy.ReadOnly, entry.AccessPolicy);
+
+            VmxCompatibilityVmReadAdmissionResult result = service.AdmitVmReadProjection(
+                CreateVmReadRequest(field));
+
+            Assert.True(result.RuntimeAdmissionAllowed);
+            Assert.Equal(VmxCompatibilityVmReadAdmissionDecision.ReadOnlyProjectionDenied, result.Decision);
+            Assert.False(result.IsReadOnlyValueProjected);
+            Assert.Equal(
+                VmcsReadOnlyValueProjectionDecision.PrivilegedExecutionStateProjectionDenied,
+                result.ValueProjection.Decision);
+            Assert.Equal(0, result.Value);
+            Assert.Contains("descriptor value source", result.Reason);
         }
     }
 

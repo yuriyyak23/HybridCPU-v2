@@ -1,197 +1,70 @@
 # DmaStreamCompute Current Contract
 
-Current implementation, model/runtime-side APIs, fail-closed adjacent surfaces,
-and future design are separate. Future architecture is not implemented behavior.
+## Implemented Contour
 
-## Current Implemented Contract
+`DmaStreamComputeMicroOp` is a typed lane6 carrier using
+`SlotClass.DmaStreamClass`.
 
-- `DmaStreamComputeMicroOp` is a lane6 typed-slot descriptor/decode carrier with
-  a current Phase 06 DSC1 materialized execution contour.
-- `DmaStreamComputeMicroOp.Execute(ref Processor.CPU_Core core)` is enabled only
-  for the Phase 06 DSC1 contour. It rejects unsupported descriptor shapes and
-  operations without StreamEngine or DMAController fallback.
-- `DmaStreamComputeDescriptorParser.ExecutionEnabled` is `true` for DSC1.
-- `DmaStreamComputeRuntime` is an explicit runtime helper;
-  `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` is the retained direct
-  helper, while canonical materialized micro-op execution enters through
-  `ExecuteMaterializedMicroOpToCommitPending(...)`.
-- Helper/runtime tokens, retire-style fault records, commit-pending observations,
-  progress diagnostics, and parser/model APIs are not executable ISA evidence.
-- Compiler/backend code may preserve and validate DSC1 descriptor sideband, but
-  must not assume executable ISA semantics from the lane6 carrier.
-- Production compiler/backend code must not lower memory compute to executable
-  DSC in the current contract.
-- `DmaStreamComputeMicroOp.WritesRegister` is `false`; the carrier has no
-  architectural register read/write contract.
+`DmaStreamComputeMicroOp.Execute(ref Processor.CPU_Core core)` enters
+`DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)` for the
+guard-accepted DSC1 contour.
+`DmaStreamComputeRuntime` is an explicit runtime helper; the direct
+orchestration/test seam remains `ExecuteToCommitPending(...)`.
 
-## Runtime-Side APIs
+Compiler helpers emit the canonical carrier and typed descriptor sideband.
+Runtime descriptor validation, owner/domain guard, placement, token allocation,
+and commit remain final authority.
 
-`DmaStreamComputeRuntime` can execute a guard-accepted descriptor in tests or
-explicit runtime orchestration by:
+## DSC1
 
-1. creating a `DmaStreamComputeToken`;
-2. reading source ranges through `DmaStreamAcceleratorBackend`;
-3. computing copy/add/mul/fma/reduce into token-owned staged buffers;
-4. moving the token to `CommitPending`;
-5. publishing bytes only when `DmaStreamComputeToken.Commit(...)` is called.
+- magic `DSC1`, ABI version 1;
+- operations Copy, Add, Mul, Fma, Reduce;
+- integer 8-64 and float 32/64 element types;
+- contiguous or fixed-reduce shape;
+- exact inline ranges;
+- `AllOrNone` completion;
+- explicit owner VT/context/core/pod/device/domain;
+- non-zero, aligned, non-overflowing ranges.
 
-The direct `ExecuteToCommitPending(...)` helper remains outside the canonical
-micro-op path. The canonical micro-op path uses
-`ExecuteMaterializedMicroOpToCommitPending(...)` so issue/admission owns token
-allocation. Neither path calls `StreamEngine` or `DMAController`.
+Unsupported or dirty fields fail closed.
 
-## Unsupported / Fail-Closed Behavior
+## Execution And Commit
 
-Current code does not implement:
+The runtime:
 
-- async DmaStreamCompute queue, scheduler, overlap, pause, resume, cancel,
-  reset, or fence ISA controls;
-- virtual/IOMMU-backed or cache-coherent DmaStreamCompute runtime memory;
-- stride, tile, 2D, scatter-gather, or partial-success DSC1 execution modes;
-- executable DSC2 token issue, runtime execution, memory publication, or
-  production compiler/backend lowering;
-- StreamEngine or DMAController fallback when DSC runtime/helper validation
-  rejects.
+1. validates descriptor, guard, owner/domain, placement, and pressure;
+2. allocates an issue-owned token;
+3. reads exact physical ranges through the DSC backend;
+4. computes into token-owned staged buffers;
+5. enters `CommitPending`;
+6. commits only after fresh guard and exact coverage validation.
 
-Unsupported descriptor fields and raw VLIW carrier attempts fail closed instead
-of being normalized into an executable operation.
+Partial physical write failure restores destination checkpoints. Token,
+certificate, replay evidence, or telemetry cannot substitute for guard
+authority.
 
-## DSC1 Descriptor ABI
+## Replay
 
-Code evidence:
+Replay binds descriptor, carrier, certificate input, footprint, owner/domain,
+token lifecycle, lane placement, and envelope hash. Missing payload,
+wrong-owner, wrong-lane, stale token, or incomplete evidence rejects reuse.
 
-- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
-- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptor.cs`
+## Explicit Non-Features
 
-The implemented descriptor ABI is exactly:
+- DSC2 is parser/capability/footprint foundation only;
+- no queue or architectural async overlap;
+- no pause/resume/reset/fence DSC ISA lifecycle;
+- no coherent DMA/cache claim;
+- no successful partial completion;
+- no StreamEngine, VectorALU, DMAController, MatrixTile, assist, or external
+  accelerator fallback.
 
-- magic: `0x31435344`, `"DSC1"` as a little-endian scalar;
-- ABI version: `1`;
-- header size: `128`;
-- range entry size: `16`;
-- supported operations: `Copy`, `Add`, `Mul`, `Fma`, `Reduce`;
-- supported element types: `UInt8`, `UInt16`, `UInt32`, `UInt64`,
-  `Float32`, `Float64`;
-- supported shapes: `Contiguous1D`; `FixedReduce` only for `Reduce`;
-- range encoding: `InlineContiguous`;
-- partial completion policy: `AllOrNone`;
-- owner binding fields: `OwnerVirtualThreadId`, `OwnerContextId`,
-  `OwnerCoreId`, `OwnerPodId`, `DeviceId`, `OwnerDomainTag`;
-- required authority: `DmaStreamComputeOwnerGuardDecision` from the guard plane;
-  replay/certificate identity cannot substitute for the guard decision;
-- range entry layout: little-endian `{ ulong address, ulong length }`;
-- range rules: non-zero length, element-size alignment, no
-  `address + length` overflow.
+The helper drives current work synchronously: no current async DMA overlap.
 
-Parser rejection surfaces include unsupported ABI/operation/type/shape,
-non-zero reserved fields, unsupported range encoding, non-`AllOrNone` policy,
-bad range-table alignment, zero length, overflow, missing guard decision, and
-owner/guard mismatch.
+## Authority Separation
 
-## DSC2 Parser-Only Boundary
+`DmaStreamCompute` is not a custom accelerator and is not MTILE. Lane6 sharing
+is a physical conflict fact only.
 
-Ex1 Phase07 adds a DSC2 parser-only/capability foundation. Current DSC2 evidence
-is limited to descriptor parsing, capability classification, and deterministic
-exact or conservative footprint normalization. It is explicitly not current
-lane6 execution.
-
-Parser-only DSC2 descriptors, capability grants, address-space descriptors,
-strided/tile/scatter-gather footprints, and normalized footprint summaries:
-
-- do not allocate pipeline tokens;
-- do not call `DmaStreamComputeRuntime`;
-- do not publish memory;
-- do not prove IOMMU-backed execution;
-- do not authorize successful partial completion;
-- do not authorize compiler/backend production lowering.
-
-## Memory, Ordering, Commit, And Fault Semantics
-
-Code evidence:
-
-- `DmaStreamAcceleratorBackend.TryReadRange(...)`
-- `DmaStreamComputeToken.Commit(...)`
-- `Processor.MainMemoryArea.TryReadPhysicalRange(...)`
-- `Processor.MainMemoryArea.TryWritePhysicalRange(...)`
-
-Current runtime/helper memory is physical main memory:
-
-- source reads use exact physical main memory ranges;
-- destination bytes are staged in token-owned buffers;
-- staged writes are not visible before token commit;
-- commit writes physical main memory only from `CommitPending` after fresh
-  owner/domain guard validation and exact staged coverage checks;
-- all-or-none commit snapshots destination bytes and rolls back any partial
-  write failure before reporting a fault;
-- bounds failures become model/token faults and can produce retire-style
-  exceptions only through explicit token commit result APIs.
-
-`IBurstBackend`, `IOMMUBurstBackend`, no-fallback resolver tests, cache
-flush/invalidate helpers, conflict/cache observers, and address-space models are
-infrastructure or model evidence. The current DSC runtime/helper path does not
-use them as executable DSC integration. There is no current virtual translation,
-IOMMU-backed DSC runtime memory, cache coherency, global CPU load/store conflict
-authority, or architectural async DMA overlap for this runtime/helper path. In
-short: no current async DMA overlap.
-
-Progress, poll, wait, fence, and retire-style diagnostics do not publish memory.
-`AllOrNone` remains the only successful completion policy; successful partial
-completion is future-gated and rejected for DSC1.
-
-## Future Design
-
-The following require explicit architecture approval before they can move into
-the current contract:
-
-- production compiler/backend executable DSC lowering;
-- async DmaStreamCompute scheduler/queue/completion;
-- pause/resume/cancel/reset/fence ISA controls;
-- virtual/IOMMU/cache-coherent runtime memory;
-- stride/tile/2D/scatter-gather descriptor forms;
-- partial completion as a successful architectural mode;
-- integration with global fences or CPU load/store conflict management.
-
-The Ex1 dependency order is:
-
-1. Phase02 executable lane6 DSC ADR approval: closed for current DSC1 contour.
-2. Phase03 token store and issue/admission allocation: closed for current DSC1 contour.
-3. Phase04 precise retire fault publication: closed for current DSC1 contour.
-4. Phase05 ordering/conflict service: closed for current DSC1 contour.
-5. Phase06 explicit physical backend selection with no StreamEngine/DMAController fallback.
-6. Phase07 DSC2/capability executable-use gate for any new descriptor feature.
-7. Phase08 all-or-none/progress and any later partial-success ADR.
-8. Phase09 explicit non-coherent cache flush/invalidate protocol; coherent DMA
-   still requires a separate ADR.
-9. Phase11 compiler/backend lowering contract.
-10. Phase12 conformance and documentation migration.
-
-Phase13 records this order as a planning/documentation gate only. It must not be
-used as implementation approval, and downstream parser/model/helper/cache/
-backend/compiler evidence must not satisfy upstream execution gates.
-
-## Code Evidence Links
-
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs`
-- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeDescriptorParser.cs`
-- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeRuntime.cs`
-- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamAcceleratorBackend.cs`
-- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeToken.cs`
-- `HybridCPU_ISE/Processor/Memory/Processor.Memory.cs`
-- `HybridCPU_ISE.Tests/tests/DmaStreamCompute*.cs`
-- `HybridCPU_ISE.Tests/CompilerTests/DmaStreamComputeCompilerContractTests.cs`
-
-## Glossary
-
-- `DMA`: separate memory transfer controller/channel API; not DSC token
-  lifecycle.
-- `StreamEngine`: in-core stream/vector executor; not DSC descriptor executor.
-- `DmaStreamCompute`: lane6 descriptor carrier plus explicit runtime helper and
-  token model.
-- `backend`: runtime/model executor used by explicit helper code.
-- `token`: staged state and commit container; evidence, not authority by itself.
-- `commit`: explicit publication operation after guard and coverage checks.
-- `retire`: pipeline publication/exception boundary; not implied by helper
-  execution.
-- `fence`: future executable semantics only unless a model helper explicitly
-  says otherwise.
-- `queue`: future DSC feature; no current lane6 ISA queue exists.
+Current anchor:
+`Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md`.

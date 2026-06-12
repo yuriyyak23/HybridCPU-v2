@@ -444,6 +444,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 SlotClass.AluClass => _aluDonorCapacity,
                 SlotClass.LsuClass => _lsuDonorCapacity,
                 SlotClass.DmaStreamClass => _dmaStreamDonorCapacity,
+                SlotClass.MatrixTileStreamClass => _dmaStreamDonorCapacity,
                 SlotClass.BranchControl => _branchControlDonorCapacity,
                 SlotClass.SystemSingleton => _systemSingletonDonorCapacity,
                 _ => 0,

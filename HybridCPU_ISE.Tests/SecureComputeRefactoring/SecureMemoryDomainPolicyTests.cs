@@ -42,6 +42,36 @@ public sealed class SecureMemoryDomainPolicyTests
     }
 
     [Fact]
+    public void SecureMemoryPolicy_MissingUnmaterializedOrStaleDescriptorDenied()
+    {
+        var policy = new SecureMemoryAdmissionPolicy();
+        var access = new SecureMemoryAccessRequest(
+            SecureMemoryAccessKind.RuntimeTouch,
+            Address: 0x4000,
+            Length: 0x20);
+        var staleRegion = new SecureMemoryRegionDescriptor(
+            SecureMemoryRegionClass.RuntimeMutable,
+            0x4000,
+            0x100,
+            SecureMemoryHostVisibility.Denied,
+            PolicyEpoch: 6,
+            SecureRuntimeMutableDirtyPolicy.TrackDirtyPages,
+            SecureRuntimeMutableMigrationClass.SealedPayloadRequired);
+
+        SecureMemoryAdmissionResult missing = policy.Admit(null, access);
+        SecureMemoryAdmissionResult unmaterialized = policy.Admit(
+            SecureMemoryDomainDescriptor.Disabled,
+            access);
+        SecureMemoryAdmissionResult stale = policy.Admit(
+            CreateMemoryDescriptor(SecureMemoryDmaPolicy.Denied, staleRegion),
+            access);
+
+        Assert.Equal(SecureMemoryAdmissionDecision.DeniedMissingDescriptor, missing.Decision);
+        Assert.Equal(SecureMemoryAdmissionDecision.DeniedUnmaterializedDescriptor, unmaterialized.Decision);
+        Assert.Equal(SecureMemoryAdmissionDecision.DeniedStalePolicyEpoch, stale.Decision);
+    }
+
+    [Fact]
     public void SecureMemoryPolicy_SharedMemoryIsExplicitOnlyForHostInspection()
     {
         var policy = new SecureMemoryAdmissionPolicy();
@@ -164,6 +194,31 @@ public sealed class SecureMemoryDomainPolicyTests
     }
 
     [Fact]
+    public void SecureMemoryPolicy_SharedDmaRequiresCurrentSharedBufferGrantEpoch()
+    {
+        SecureMemoryDomainDescriptor memory = CreateMemoryDescriptor(
+            SecureMemoryDmaPolicy.ExplicitSharedBuffersWithTypedGrant,
+            SharedRegion());
+        var access = new SecureMemoryAccessRequest(
+            SecureMemoryAccessKind.DmaWrite,
+            Address: 0x2000,
+            Length: 0x40,
+            Origin: SecureMemoryAccessOrigin.IoDma,
+            CapabilityRequirement: TypedDmaGrantRequirement(),
+            Capabilities: CreateCapabilitiesWithDmaGrant());
+
+        SecureMemoryAdmissionResult result = new SecureMemoryAdmissionPolicy().Admit(
+            memory,
+            access,
+            CreateSecureIoPolicy(SharedBuffer(
+                SecureSharedBufferDirection.DeviceToDomain,
+                grantEpoch: 6)));
+
+        Assert.False(result.IsAllowed);
+        Assert.Equal(SecureMemoryAdmissionDecision.DeniedSharedBufferBinding, result.Decision);
+    }
+
+    [Fact]
     public void SecureMemoryPolicy_SharedDmaRequiresOwnerLifetimeAndEvidenceClass()
     {
         SecureMemoryDomainDescriptor memory = CreateMemoryDescriptor(
@@ -221,6 +276,38 @@ public sealed class SecureMemoryDomainPolicyTests
     }
 
     [Fact]
+    public void SecureMemoryPolicy_MeasuredAdmissionDoesNotSatisfyPrivateDomainActivation()
+    {
+        SecureMemoryDomainDescriptor measuredMemory = CreateMemoryDescriptor(
+            SecureMemoryDmaPolicy.Denied,
+            MeasuredRegion());
+
+        SecureMemoryAdmissionResult measuredAdmission = new SecureMemoryAdmissionPolicy().Admit(
+            measuredMemory,
+            new SecureMemoryAccessRequest(
+                SecureMemoryAccessKind.Measurement,
+                Address: 0x3000,
+                Length: 0x20));
+        RuntimeBoundaryAdmissionResult privateDomainAdmission =
+            new RuntimeBoundaryAdmissionService().Validate(
+                CreateBoundaryRequest(
+                    CreateSecureDescriptor(privateMemoryRequired: true),
+                    measuredMemory,
+                    secureOperationClass: SecureDomainOperationClass.EnterSecureDomain,
+                    secureMemoryAccess: null));
+
+        Assert.True(measuredAdmission.IsAllowed);
+        Assert.False(privateDomainAdmission.IsAllowed);
+        Assert.Equal(
+            RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied,
+            privateDomainAdmission.Decision);
+        Assert.Contains(
+            "private memory policy",
+            privateDomainAdmission.Message,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void SecureMemoryDescriptor_RuntimeMutableMemoryCarriesEpochDirtyAndMigrationClassification()
     {
         SecureMemoryRegionDescriptor runtimeMutable = RuntimeMutableRegion();
@@ -263,6 +350,57 @@ public sealed class SecureMemoryDomainPolicyTests
 
         Assert.Equal(SecureMemoryAdmissionDecision.DeniedRuntimeMutableClassification, missingClassification.Decision);
         Assert.True(allowed.IsAllowed);
+    }
+
+    [Fact]
+    public void SecureMemoryPolicy_SealedPrivatePayloadContractIsValidationNotRawKeyOrTagAuthority()
+    {
+        var migration = new SecureMigrationDescriptor(
+            SecureMigrationMode.PolicyCompatible,
+            SecurePrivateMemoryMigrationPolicy.SealedEncryptedPayloadRequired,
+            new SecureRevocationEpoch(7),
+            allowGuestVisibleEvidence: false,
+            allowCompatibilityProjectionMetadata: false);
+        var completeContract = new SecurePrivateMemorySealedPayloadContract(
+            HasSealedPayload: true,
+            HasEncryptedPayload: true,
+            HasNeutralKeyOwner: true,
+            HasEvidencePolicy: true,
+            HasRestoreValidationProof: true);
+        var rawKeyContract = completeContract with
+        {
+            ContainsRawSealingKey = true,
+        };
+        var migrationPolicy = SecureMigrationAdmissionPolicy.Default;
+
+        Assert.Equal(
+            SecureMigrationAdmissionDecision.DeniedPrivateMemoryWithoutSealedEncryptedContract,
+            migrationPolicy.AdmitCheckpointPayload(
+                migration,
+                SecureCheckpointPayloadClass.SecurePrivateMemory).Decision);
+        Assert.Equal(
+            SecureMigrationAdmissionDecision.DeniedPrivateMemoryWithoutSealedEncryptedContract,
+            migrationPolicy.AdmitCheckpointPayload(
+                migration,
+                SecureCheckpointPayloadClass.SecurePrivateMemory,
+                rawKeyContract).Decision);
+        Assert.True(migrationPolicy.AdmitCheckpointPayload(
+            migration,
+            SecureCheckpointPayloadClass.SecurePrivateMemory,
+            completeContract).IsAllowed);
+        Assert.Equal(
+            SecureMigrationAdmissionDecision.DeniedRawSecret,
+            migrationPolicy.AdmitCheckpointPayload(
+                migration,
+                SecureCheckpointPayloadClass.RawSealingKey,
+                completeContract).Decision);
+        Assert.Equal(
+            SecureComputeMigrationReplayViolation.PrivateMemoryWithoutSealedPayload,
+            new SecureComputeMigrationReplayContract().Validate(
+                epochRollback: false,
+                vmcsProjectionAuthority: false,
+                compatibilityMetadataAuthority: false,
+                privateMemoryWithoutSealedPayload: true));
     }
 
     [Fact]
@@ -415,13 +553,24 @@ public sealed class SecureMemoryDomainPolicyTests
             "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs",
             "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
 
+        Assert.Contains("SecureRuntimeMutableDirtyPolicy", source);
+        Assert.Contains("SecureRuntimeMutableMigrationClass", source);
+        Assert.Contains("DeniedRuntimeMutableClassification", source);
         Assert.DoesNotContain("VmcsField.GuestCr3", source);
         Assert.DoesNotContain("VmcsField.EptPointer", source);
         Assert.DoesNotContain("VmcsField.Vpid", source);
+        Assert.DoesNotContain("VmcsField.NptPointer", source);
         Assert.DoesNotContain("VmcsField.HostCr3", source);
+        Assert.DoesNotContain("VMREAD", source);
+        Assert.DoesNotContain("VMWRITE", source);
+        Assert.DoesNotContain("VmxCaps", source);
         Assert.DoesNotContain("ReadFieldValue(", source);
         Assert.DoesNotContain("WriteFieldValue(", source);
         Assert.DoesNotContain("VmxExecutionUnit", source);
+        foreach (string token in ForbiddenMemoryIsaAndTagTokens())
+        {
+            Assert.DoesNotContain(token, source);
+        }
     }
 
     private static RuntimeBoundaryAdmissionRequest CreateBoundaryRequest(
@@ -552,7 +701,8 @@ public sealed class SecureMemoryDomainPolicyTests
         SecureSharedBufferDirection direction,
         ulong ownerDomainTag = 7,
         ulong lifetimeEpoch = 7,
-        SecureEvidenceVisibilityClass evidenceClass = SecureEvidenceVisibilityClass.HostOwnedQuarantined) =>
+        SecureEvidenceVisibilityClass evidenceClass = SecureEvidenceVisibilityClass.HostOwnedQuarantined,
+        ulong grantEpoch = 7) =>
         new(
             BufferId: 1,
             Start: 0x2000,
@@ -562,7 +712,7 @@ public sealed class SecureMemoryDomainPolicyTests
                 SecureGrantHandleKind.IoPolicy,
                 LocalId: 1,
                 ProvenanceHash: 0x51,
-                Epoch: 7),
+                Epoch: grantEpoch),
             EvidenceClass: evidenceClass,
             OwnerDomainTag: ownerDomainTag,
             LifetimeEpoch: lifetimeEpoch);
@@ -584,6 +734,33 @@ public sealed class SecureMemoryDomainPolicyTests
                 CapabilityEvidenceVisibility.HostOnly,
                 CapabilityFrontendProjectionPolicy.NeverProject),
         }));
+
+    private static string[] ForbiddenMemoryIsaAndTagTokens() =>
+        new[]
+        {
+            "MemoryTag",
+            "TagBit",
+            "TaggedMemory",
+            "CapabilityTag",
+            "HardwareTag",
+            "TagStorage",
+            "TagMigrationPayload",
+            "CapabilityLoad",
+            "CapabilityStore",
+            "CapabilityFetch",
+            "CapabilityAwareLoad",
+            "CapabilityAwareStore",
+            "CapabilityAwareFetch",
+            "LOAD_CAP",
+            "STORE_CAP",
+            "FETCH_CAP",
+            "CapabilityOperand",
+            "CapabilityRegister",
+            "CHERI",
+            "TagProvenance",
+            "ProvisionalTag",
+            "ProvenanceCheckpoint",
+        };
 
     private static string ReadProjectSource(params string[] relativePaths)
     {

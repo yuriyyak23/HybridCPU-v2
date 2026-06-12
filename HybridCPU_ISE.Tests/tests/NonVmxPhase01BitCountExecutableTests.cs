@@ -273,7 +273,9 @@ public sealed class NonVmxPhase01BitCountExecutableTests
     [Fact]
     public void Cpop_CompilerHelperOpensWithoutPopcntAliasOrVmxAuthority()
     {
-        string compilerSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
+        string repoRoot = CompatFreezeScanner.FindRepoRoot();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        string compilerEmissionSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         string vmxSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_ISE", "Core", "VMX"));
 
         Assert.Contains("InstructionsEnum.CPOP", compilerSource, StringComparison.Ordinal);
@@ -281,7 +283,7 @@ public sealed class NonVmxPhase01BitCountExecutableTests
 
         foreach (string forbidden in new[] { "Cpop", "CPop", "POPCNT", "Popcnt", "PopulationCount", "CountPopulation", "SEQZ", "SNEZ", "CSEL" })
         {
-            Assert.DoesNotContain(forbidden, compilerSource, StringComparison.Ordinal);
+            Assert.DoesNotContain(forbidden, compilerEmissionSource, StringComparison.Ordinal);
         }
 
         Assert.DoesNotContain("CPOP", vmxSource, StringComparison.Ordinal);
@@ -414,4 +416,5 @@ public sealed class NonVmxPhase01BitCountExecutableTests
                 .OrderBy(path => path, StringComparer.Ordinal)
                 .Select(File.ReadAllText));
     }
+
 }

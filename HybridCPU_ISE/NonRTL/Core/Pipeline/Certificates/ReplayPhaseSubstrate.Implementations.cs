@@ -927,6 +927,7 @@ namespace YAKSys_Hybrid_CPU.Core
         public long LsuClassInjects { get; init; }
 
         public long DmaStreamClassInjects { get; init; }
+        public long MatrixTileStreamClassInjects { get; init; }
 
         public long BranchControlInjects { get; init; }
 
@@ -973,6 +974,7 @@ namespace YAKSys_Hybrid_CPU.Core
         public long SmtLegalityRejectByLsuClass { get; init; }
 
         public long SmtLegalityRejectByDmaStreamClass { get; init; }
+        public long SmtLegalityRejectByMatrixTileStreamClass { get; init; }
 
         public long SmtLegalityRejectByBranchControl { get; init; }
 
@@ -987,6 +989,7 @@ namespace YAKSys_Hybrid_CPU.Core
         public long CertificateRejectByLsuClass { get; init; }
 
         public long CertificateRejectByDmaStreamClass { get; init; }
+        public long CertificateRejectByMatrixTileStreamClass { get; init; }
 
         public long CertificateRejectByBranchControl { get; init; }
 

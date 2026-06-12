@@ -608,7 +608,7 @@ public sealed class Phase03CarrierProjectionTransportTailTests
         Assert.Equal(7, microOp.AdmissionMetadata.Placement.PinnedLaneId);
     }
 
-    [Fact(Skip = "ISE gap: VLOAD not in OpcodeRegistry — canonical decoder rejects. See ise_issues.md")]
+    [Fact]
     public void LegacySlotCarrierMaterializer_VectorLoadProjection_PublishesTwoSurfaceTransferMemoryShape()
     {
         VLIW_Instruction[] rawSlots =
@@ -627,17 +627,18 @@ public sealed class Phase03CarrierProjectionTransportTailTests
         Assert.False(slotDescriptor.WritesRegister);
         Assert.False(microOp.IsMemoryOp);
         Assert.False(microOp.AdmissionMetadata.IsMemoryOp);
-        Assert.Equal(InstructionClass.ScalarAlu, microOp.InstructionClass);
+        Assert.Equal(MicroOpClass.Lsu, microOp.Class);
+        Assert.Equal(InstructionClass.Memory, microOp.InstructionClass);
         Assert.Equal(SerializationClass.Free, microOp.SerializationClass);
-        Assert.Equal(SlotClass.AluClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
+        Assert.Equal(SlotClass.LsuClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
         Assert.Equal(SlotPinningKind.ClassFlexible, microOp.AdmissionMetadata.Placement.PinningKind);
         Assert.Equal((0x300UL, 32UL), Assert.Single(microOp.AdmissionMetadata.ReadMemoryRanges));
         Assert.Equal((0x200UL, 32UL), Assert.Single(microOp.AdmissionMetadata.WriteMemoryRanges));
-        Assert.Equal(SlotClass.AluClass, slotDescriptor.Placement.RequiredSlotClass);
+        Assert.Equal(SlotClass.LsuClass, slotDescriptor.Placement.RequiredSlotClass);
         Assert.Equal(microOp.AdmissionMetadata.Placement.PinningKind, slotDescriptor.Placement.PinningKind);
     }
 
-    [Fact(Skip = "ISE gap: VSTORE not in OpcodeRegistry — canonical decoder rejects. See ise_issues.md")]
+    [Fact]
     public void LegacySlotCarrierMaterializer_VectorStoreProjection_PublishesTwoSurfaceTransferMemoryShape()
     {
         VLIW_Instruction[] rawSlots =
@@ -656,13 +657,14 @@ public sealed class Phase03CarrierProjectionTransportTailTests
         Assert.False(slotDescriptor.WritesRegister);
         Assert.False(microOp.IsMemoryOp);
         Assert.False(microOp.AdmissionMetadata.IsMemoryOp);
-        Assert.Equal(InstructionClass.ScalarAlu, microOp.InstructionClass);
-        Assert.Equal(SerializationClass.Free, microOp.SerializationClass);
-        Assert.Equal(SlotClass.AluClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
+        Assert.Equal(MicroOpClass.Lsu, microOp.Class);
+        Assert.Equal(InstructionClass.Memory, microOp.InstructionClass);
+        Assert.Equal(SerializationClass.MemoryOrdered, microOp.SerializationClass);
+        Assert.Equal(SlotClass.LsuClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
         Assert.Equal(SlotPinningKind.ClassFlexible, microOp.AdmissionMetadata.Placement.PinningKind);
         Assert.Equal((0x280UL, 32UL), Assert.Single(microOp.AdmissionMetadata.ReadMemoryRanges));
         Assert.Equal((0x380UL, 32UL), Assert.Single(microOp.AdmissionMetadata.WriteMemoryRanges));
-        Assert.Equal(SlotClass.AluClass, slotDescriptor.Placement.RequiredSlotClass);
+        Assert.Equal(SlotClass.LsuClass, slotDescriptor.Placement.RequiredSlotClass);
         Assert.Equal(microOp.AdmissionMetadata.Placement.PinningKind, slotDescriptor.Placement.PinningKind);
     }
 
@@ -1934,5 +1936,3 @@ public sealed class Phase03CarrierProjectionTransportTailTests
         Processor.MainMemory.WriteToPosition(descriptor, descriptorAddress);
     }
 }
-
-

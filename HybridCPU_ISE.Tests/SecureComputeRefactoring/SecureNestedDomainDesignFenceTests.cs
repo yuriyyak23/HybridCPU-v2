@@ -118,6 +118,44 @@ public sealed class SecureNestedDomainDesignFenceTests
             vmcs02.Decision);
     }
 
+    [Theory]
+    [InlineData(
+        SecureNestedCheckpointPayloadClass.Vmcs12Authority,
+        SecureNestedDomainAdmissionDecision.DeniedNestedVmcsAuthority)]
+    [InlineData(
+        SecureNestedCheckpointPayloadClass.Vmcs02Authority,
+        SecureNestedDomainAdmissionDecision.DeniedNestedVmcsAuthority)]
+    [InlineData(
+        SecureNestedCheckpointPayloadClass.MutableShadowVmcsAuthority,
+        SecureNestedDomainAdmissionDecision.DeniedMutableShadowVmcsAuthority)]
+    public void SecureNestedCheckpoint_ForbiddenAuthorityPayloadsRemainDenied(
+        SecureNestedCheckpointPayloadClass payloadClass,
+        SecureNestedDomainAdmissionDecision expectedDecision)
+    {
+        SecureNestedDomainAdmissionResult result =
+            SecureNestedDomainAdmissionPolicy.Default.AdmitCheckpointPayload(payloadClass);
+
+        Assert.Equal(expectedDecision, result.Decision);
+        Assert.False(result.IsAllowed);
+        Assert.False(result.BackendSuccessAuthorized);
+        Assert.False(result.MutableNestedStateAuthorized);
+    }
+
+    [Theory]
+    [InlineData(SecureNestedCheckpointPayloadClass.NeutralChildIntentDescriptor)]
+    [InlineData(SecureNestedCheckpointPayloadClass.CompatibilityProjectionMetadata)]
+    [InlineData(SecureNestedCheckpointPayloadClass.ShadowVmcsCompatibilityBridge)]
+    public void SecureNestedCheckpoint_AllowedPayloadsRemainDesignFenceOnly(
+        SecureNestedCheckpointPayloadClass payloadClass)
+    {
+        SecureNestedDomainAdmissionResult result =
+            SecureNestedDomainAdmissionPolicy.Default.AdmitCheckpointPayload(payloadClass);
+
+        Assert.Equal(SecureNestedDomainAdmissionDecision.AllowedDesignFence, result.Decision);
+        Assert.False(result.BackendSuccessAuthorized);
+        Assert.False(result.MutableNestedStateAuthorized);
+    }
+
     [Fact]
     public void SecureNestedShadowVmcs_RemainsCompatibilityBridgeOnly()
     {
@@ -137,6 +175,8 @@ public sealed class SecureNestedDomainDesignFenceTests
         Assert.Equal(
             SecureNestedDomainAdmissionDecision.DeniedMutableShadowVmcsAuthority,
             mutableAuthority.Decision);
+        Assert.False(mutableAuthority.BackendSuccessAuthorized);
+        Assert.False(mutableAuthority.MutableNestedStateAuthorized);
     }
 
     [Fact]
@@ -200,6 +240,26 @@ public sealed class SecureNestedDomainDesignFenceTests
     }
 
     [Fact]
+    public void SecureNestedAllowedOutcomes_NeverAuthorizeBackendOrMutableNestedState()
+    {
+        SecureNestedDomainAdmissionResult noEffect = Admit(
+            childIntent: SecureChildDomainIntentDescriptor.Missing);
+        SecureNestedDomainAdmissionResult designFence = Admit();
+
+        Assert.Equal(
+            SecureNestedDomainAdmissionDecision.AllowedNoEffect,
+            noEffect.Decision);
+        Assert.False(noEffect.BackendSuccessAuthorized);
+        Assert.False(noEffect.MutableNestedStateAuthorized);
+
+        Assert.Equal(
+            SecureNestedDomainAdmissionDecision.AllowedDesignFence,
+            designFence.Decision);
+        Assert.False(designFence.BackendSuccessAuthorized);
+        Assert.False(designFence.MutableNestedStateAuthorized);
+    }
+
+    [Fact]
     public void Phase9SecureNestedSources_DoNotIntroduceIsaOrVmxAuthorityBackend()
     {
         string source = ReadProjectSource(
@@ -219,6 +279,8 @@ public sealed class SecureNestedDomainDesignFenceTests
         Assert.DoesNotContain("ReadFieldValue(", source);
         Assert.DoesNotContain("WriteFieldValue(", source);
         Assert.DoesNotContain("AllowBackendExecution = true", source);
+        Assert.DoesNotContain("BackendSuccessAuthorized: true", source);
+        Assert.DoesNotContain("MutableNestedStateAuthorized: true", source);
     }
 
     private static SecureNestedDomainAdmissionResult Admit(

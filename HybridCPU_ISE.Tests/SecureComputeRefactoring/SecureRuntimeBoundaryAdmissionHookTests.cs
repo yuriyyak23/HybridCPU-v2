@@ -5,29 +5,151 @@ namespace HybridCPU_ISE.Tests.SecureComputeRefactoring;
 public sealed class SecureRuntimeBoundaryAdmissionHookTests
 {
     [Fact]
-    public void RuntimeBoundaryAdmission_DoesNotEvaluateSecureChecksWhenDescriptorAbsent()
+    public void RuntimeBoundaryAdmission_OrdinaryOperationRemainsAllowedWhenDescriptorAbsent()
     {
         RuntimeBoundaryAdmissionResult result = new RuntimeBoundaryAdmissionService().Validate(
             CreateRequest(
                 CreateContext(secureCompute: null),
                 secureDescriptor: null,
-                secureOperationClass: SecureDomainOperationClass.EnterSecureDomain));
+                secureOperationClass: SecureDomainOperationClass.Ordinary));
 
         Assert.True(result.IsAllowed);
         Assert.Equal(RuntimeBoundaryAdmissionDecision.Allowed, result.Decision);
     }
 
     [Fact]
-    public void RuntimeBoundaryAdmission_DoesNotEvaluateSecureChecksWhenDescriptorDisabled()
+    public void RuntimeBoundaryAdmission_OrdinaryOperationRemainsAllowedWhenDescriptorDisabled()
     {
         RuntimeBoundaryAdmissionResult result = new RuntimeBoundaryAdmissionService().Validate(
             CreateRequest(
                 CreateContext(secureCompute: SecureComputeDomainDescriptor.Disabled),
                 secureDescriptor: null,
-                secureOperationClass: SecureDomainOperationClass.EnterSecureDomain));
+                secureOperationClass: SecureDomainOperationClass.Ordinary));
 
         Assert.True(result.IsAllowed);
         Assert.Equal(RuntimeBoundaryAdmissionDecision.Allowed, result.Decision);
+    }
+
+    [Fact]
+    public void RuntimeBoundaryAdmission_OrdinaryOperationRemainsAllowedWhenDescriptorUnmaterialized()
+    {
+        SecureComputeDomainDescriptor descriptor = CreateSecureDescriptor(
+            domainTag: 0,
+            measurementRequired: true,
+            privateMemoryRequired: true);
+
+        RuntimeBoundaryAdmissionResult result = new RuntimeBoundaryAdmissionService().Validate(
+            CreateRequest(
+                CreateContext(secureCompute: descriptor),
+                secureDescriptor: null,
+                secureOperationClass: SecureDomainOperationClass.Ordinary));
+
+        Assert.True(descriptor.IsEnabled);
+        Assert.False(descriptor.IsMaterialized);
+        Assert.True(result.IsAllowed);
+        Assert.Equal(RuntimeBoundaryAdmissionDecision.Allowed, result.Decision);
+    }
+
+    [Theory]
+    [MemberData(nameof(NonOrdinarySecureOperationClasses))]
+    public void RuntimeBoundaryAdmission_NonOrdinaryOperationDeniesWhenDescriptorMissingThroughStageB(
+        SecureDomainOperationClass secureOperationClass)
+    {
+        RuntimeBoundaryAdmissionResult result = new RuntimeBoundaryAdmissionService().Validate(
+            CreateRequest(
+                CreateContext(secureCompute: null),
+                secureDescriptor: null,
+                secureOperationClass: secureOperationClass));
+
+        Assert.False(result.IsAllowed);
+        Assert.Equal(RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied, result.Decision);
+        Assert.Contains("descriptor", result.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [MemberData(nameof(NonOrdinarySecureOperationClasses))]
+    public void RuntimeBoundaryAdmission_NonOrdinaryOperationDeniesWhenDescriptorDisabledThroughStageB(
+        SecureDomainOperationClass secureOperationClass)
+    {
+        RuntimeBoundaryAdmissionResult result = new RuntimeBoundaryAdmissionService().Validate(
+            CreateRequest(
+                CreateContext(secureCompute: SecureComputeDomainDescriptor.Disabled),
+                secureDescriptor: null,
+                secureOperationClass: secureOperationClass));
+
+        Assert.False(result.IsAllowed);
+        Assert.Equal(RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied, result.Decision);
+        Assert.Contains("disabled", result.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [MemberData(nameof(NonOrdinarySecureOperationClasses))]
+    public void RuntimeBoundaryAdmission_NonOrdinaryOperationDeniesWhenDescriptorUnmaterializedThroughStageB(
+        SecureDomainOperationClass secureOperationClass)
+    {
+        SecureComputeDomainDescriptor descriptor = CreateSecureDescriptor(
+            domainTag: 0,
+            measurementRequired: true,
+            privateMemoryRequired: false);
+
+        RuntimeBoundaryAdmissionResult result = new RuntimeBoundaryAdmissionService().Validate(
+            CreateRequest(
+                CreateContext(secureCompute: descriptor),
+                secureDescriptor: null,
+                secureOperationClass: secureOperationClass));
+
+        Assert.True(descriptor.IsEnabled);
+        Assert.False(descriptor.IsMaterialized);
+        Assert.False(result.IsAllowed);
+        Assert.Equal(RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied, result.Decision);
+        Assert.Contains("materialized", result.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void RuntimeBoundaryAdmission_PolicyDenyReasonReachesStageBHook()
+    {
+        SecureDomainAdmissionPolicy policy = new();
+
+        SecureDomainAdmissionResult missingPolicy = policy.Admit(
+            descriptor: null,
+            SecureDomainOperationClass.EnterSecureDomain,
+            measurement: null,
+            memory: null);
+        SecureDomainAdmissionResult disabledPolicy = policy.Admit(
+            SecureComputeDomainDescriptor.Disabled,
+            SecureDomainOperationClass.EnterSecureDomain,
+            measurement: null,
+            memory: null);
+
+        RuntimeBoundaryAdmissionService service = new();
+        RuntimeBoundaryAdmissionResult missingStageB = service.Validate(
+            CreateRequest(
+                CreateContext(secureCompute: null),
+                secureDescriptor: null,
+                secureOperationClass: SecureDomainOperationClass.EnterSecureDomain));
+        RuntimeBoundaryAdmissionResult disabledStageB = service.Validate(
+            CreateRequest(
+                CreateContext(secureCompute: SecureComputeDomainDescriptor.Disabled),
+                secureDescriptor: null,
+                secureOperationClass: SecureDomainOperationClass.EnterSecureDomain));
+
+        Assert.Equal(SecureDomainAdmissionDecision.DeniedMissingDescriptor, missingPolicy.Decision);
+        Assert.Equal(SecureDomainAdmissionDecision.DeniedDisabledDescriptor, disabledPolicy.Decision);
+        Assert.False(missingStageB.IsAllowed);
+        Assert.False(disabledStageB.IsAllowed);
+        Assert.Equal(RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied, missingStageB.Decision);
+        Assert.Equal(RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied, disabledStageB.Decision);
+        Assert.Equal(missingPolicy.Reason, missingStageB.Message);
+        Assert.Equal(disabledPolicy.Reason, disabledStageB.Message);
+
+        string activationGate = ReadProjectSource(
+            "HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/06_stage_b_secure_admission_activation_plan.md",
+            "HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/21_conformance_negative_positive_test_matrix.md",
+            "HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/22_limited_securecompute_release_gate.md");
+
+        Assert.Contains("fixed by runtime routing and tests", activationGate);
+        Assert.Contains("runtime tests and source scans", activationGate);
+        Assert.Contains("Stage B missing/disabled/unmaterialized descriptor bypass is closed in code and tests", activationGate);
     }
 
     [Fact]
@@ -105,6 +227,19 @@ public sealed class SecureRuntimeBoundaryAdmissionHookTests
         Assert.False(descriptor.IsActive);
         Assert.False(result.IsAllowed);
         Assert.Equal(RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied, result.Decision);
+    }
+
+    [Fact]
+    public void RuntimeBoundaryAdmission_NoEnabledDescriptorGuardBypassContractTests()
+    {
+        string runtimeAdmission = ReadProjectSource(
+            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
+
+        Assert.Contains(
+            "request.SecureOperationClass != SecureDomainOperationClass.Ordinary",
+            runtimeAdmission);
+        Assert.Contains("_secureAdmission.Admit(", runtimeAdmission);
+        Assert.DoesNotContain("secureDescriptor is { IsEnabled: true }", runtimeAdmission);
     }
 
     [Fact]
@@ -213,6 +348,20 @@ public sealed class SecureRuntimeBoundaryAdmissionHookTests
             SecureHypercallDescriptor.Disabled,
             SecureDebugPolicy.Denied,
             SecureCompatibilityProjectionPolicy.DenyAll);
+
+    public static System.Collections.Generic.IEnumerable<object[]> NonOrdinarySecureOperationClasses()
+    {
+        yield return new object[] { SecureDomainOperationClass.EnterSecureDomain };
+        yield return new object[] { SecureDomainOperationClass.TouchSecureMemory };
+        yield return new object[] { SecureDomainOperationClass.CreateEvidence };
+        yield return new object[] { SecureDomainOperationClass.PublishCompletion };
+        yield return new object[] { SecureDomainOperationClass.PublishRetireSideEffect };
+        yield return new object[] { SecureDomainOperationClass.SecureIo };
+        yield return new object[] { SecureDomainOperationClass.SecureHypercall };
+        yield return new object[] { SecureDomainOperationClass.SecureMigration };
+        yield return new object[] { SecureDomainOperationClass.NestedSecureDomain };
+        yield return new object[] { SecureDomainOperationClass.CompatibilityProjection };
+    }
 
     private static string ReadProjectSource(params string[] relativePaths)
     {

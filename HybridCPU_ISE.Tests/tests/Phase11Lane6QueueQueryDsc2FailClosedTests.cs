@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
@@ -20,20 +23,11 @@ namespace HybridCPU_ISE.Tests.Phase11;
 
 public sealed class Phase11Lane6QueueQueryDsc2FailClosedTests
 {
-    private static readonly string[] QueueControlMnemonics =
-    [
-        "DSC_POLL",
-        "DSC_WAIT",
-        "DSC_CANCEL",
-        "DSC_FENCE",
-        "DSC_COMMIT"
-    ];
+    private static IReadOnlyList<string> QueueControlMnemonics =>
+        CompilerFailClosedEmissionInventory.Lane6QueueControlMnemonics;
 
-    private static readonly string[] QueryMnemonics =
-    [
-        "DSC_QUERY_BACKEND",
-        "DSC_QUERY_SHAPE"
-    ];
+    private static IReadOnlyList<string> QueryMnemonics =>
+        CompilerFailClosedEmissionInventory.Lane6QueryMnemonics;
 
     [Fact]
     public void Phase11Rows_RemainReservedOrParserOnlyWithoutProductionPublication()
@@ -235,6 +229,128 @@ public sealed class Phase11Lane6QueueQueryDsc2FailClosedTests
                 "Lane6QueueControlNoExecution" or
                 "Lane6CapabilityQueryNoExecution" or
                 "ParserOnlyCarrierNoExecution");
+    }
+
+    [Fact]
+    public void CompilerDeferredAbi_RecordsQueueQueryDsc2PolicyWithoutEmissionAuthority()
+    {
+        CompilerLane6DeferredAbiContract[] rows =
+        [
+            .. CompilerLane6DeferredAbiContract.AllDeferredLane6Rows
+                .Where(static row => row.AbiClass is
+                    CompilerLane6DeferredAbiClass.QueueControl or
+                    CompilerLane6DeferredAbiClass.CapabilityQuery or
+                    CompilerLane6DeferredAbiClass.DescriptorParserV2)
+        ];
+
+        Assert.Equal(
+            [
+                "DSC2",
+                "DSC_CANCEL",
+                "DSC_COMMIT",
+                "DSC_FENCE",
+                "DSC_POLL",
+                "DSC_QUERY_BACKEND",
+                "DSC_QUERY_SHAPE",
+                "DSC_WAIT"
+            ],
+            rows.Select(static row => row.Mnemonic).Order(StringComparer.Ordinal).ToArray());
+
+        foreach (CompilerLane6DeferredAbiContract contract in rows)
+        {
+            Assert.False(contract.HasOpcodeAllocation);
+            Assert.False(contract.HasScalarOpcodeAllocation);
+            Assert.False(contract.IsExecutable);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.False(contract.CompilerHelperAllowed);
+            Assert.True(contract.NoHostEvidenceLeak);
+            Assert.True(contract.NoCompilerHelperEmission);
+            Assert.True(contract.NoHiddenScalarLowering);
+            Assert.True(contract.NoHiddenVectorLowering);
+            Assert.True(contract.NoMultiOpEmission);
+            Assert.True(contract.NoRuntimeAdmissionPublication);
+            Assert.True(contract.NoRetireCommitPublication);
+            Assert.True(contract.NoLane7Fallback);
+            Assert.True(contract.NoExternalBackendFallback);
+            Assert.True(contract.NoVmxSpecificPath);
+
+            switch (contract.AbiClass)
+            {
+                case CompilerLane6DeferredAbiClass.QueueControl:
+                    Assert.Equal("Lane6QueueControl", contract.ExtensionName);
+                    Assert.Equal("Lane6QueueControlNoExecution", contract.EvidenceBoundary);
+                    Assert.True(contract.IsQueueControl);
+                    Assert.True(contract.RequiresQueueAuthority);
+                    Assert.True(contract.RequiresTokenNamespaceAbi);
+                    Assert.True(contract.RequiresQueueHandleAbi);
+                    Assert.True(contract.RequiresTokenLifecycleAbi);
+                    Assert.True(contract.RequiresQueueOwnershipModel);
+                    Assert.True(contract.RequiresQueueStateModel);
+                    Assert.True(contract.RequiresQueueRollbackJournal);
+                    Assert.True(contract.RequiresQueueRuntimeAdmission);
+                    Assert.True(contract.RequiresQueueCommandEncoding);
+                    Assert.True(contract.RequiresRetireOwnedPublication);
+                    Assert.True(contract.RequiresRetireOwnedSideEffectPublication);
+                    Assert.True(contract.RequiresReplayRollbackConformance);
+                    Assert.True(contract.NoRetirePublicationBeforeQueueAuthority);
+                    Assert.True(contract.ExistingDmaStreamComputeEvidenceIsInsufficient);
+                    Assert.True(contract.ExistingDscStatusEvidenceIsInsufficient);
+                    Assert.True(contract.ExistingDscQueryCapsEvidenceIsInsufficient);
+                    Assert.True(contract.Dsc2ParserEvidenceIsInsufficient);
+                    Assert.True(contract.NoDmaStreamComputeFallback);
+                    Assert.True(contract.NoDscStatusFallback);
+                    Assert.True(contract.NoDscQueryCapsFallback);
+                    Assert.True(contract.NoDsc2Fallback);
+                    Assert.Contains("QueueAuthority", contract.RequiredPolicyDecisions);
+                    Assert.Contains("TokenLifecycleAbi", contract.RequiredPolicyDecisions);
+                    Assert.Contains("ReplayRollbackConformance", contract.RequiredPolicyDecisions);
+                    break;
+                case CompilerLane6DeferredAbiClass.CapabilityQuery:
+                    Assert.Equal("Lane6DscQuery", contract.ExtensionName);
+                    Assert.Equal("Lane6CapabilityQueryNoExecution", contract.EvidenceBoundary);
+                    Assert.True(contract.IsCapabilityQuery);
+                    Assert.True(contract.IsReadOnlyQuery);
+                    Assert.True(contract.RequiresCapabilityQueryAbi);
+                    Assert.True(contract.RequiresQuerySelectorAbi);
+                    Assert.True(contract.RequiresCapabilityResultAbi);
+                    Assert.True(contract.RequiresBoundedResultFootprint);
+                    Assert.True(contract.RequiresResultScrubbingPolicy);
+                    Assert.True(contract.RequiresReplayStableResult);
+                    Assert.True(contract.NoRetirePublicationBeforeQueryAuthority);
+                    Assert.True(contract.NoDscQueryCapsFallback);
+                    Assert.Contains("CapabilityQueryAbi", contract.RequiredPolicyDecisions);
+                    Assert.Contains("ResultScrubbingPolicy", contract.RequiredPolicyDecisions);
+                    Assert.Contains("ReplayStableResult", contract.RequiredPolicyDecisions);
+                    break;
+                case CompilerLane6DeferredAbiClass.DescriptorParserV2:
+                    Assert.Equal("Lane6DSC", contract.ExtensionName);
+                    Assert.Equal("ParserOnlyCarrierNoExecution", contract.EvidenceBoundary);
+                    Assert.True(contract.IsDescriptorOwned);
+                    Assert.True(contract.IsCarrierOnly);
+                    Assert.True(contract.IsParserOnly);
+                    Assert.True(contract.RequiresDescriptorV2Adr);
+                    Assert.True(contract.RequiresDescriptorV2ParserManifest);
+                    Assert.True(contract.RequiresBackwardCompatibleDecoder);
+                    Assert.True(contract.RequiresRuntimeAdmission);
+                    Assert.True(contract.RequiresRetireCommitAuthority);
+                    Assert.True(contract.RequiresDescriptorV2RetireReplayPolicy);
+                    Assert.True(contract.NoDsc2ExecutionBeforeAdr);
+                    Assert.True(contract.ParserAcceptanceIsNotExecutionEvidence);
+                    Assert.True(contract.NoParserToExecutionPromotion);
+                    Assert.True(contract.Phase10DescriptorOpEvidenceIsInsufficient);
+                    Assert.True(contract.NoQueueRuntimeFallback);
+                    Assert.Contains("DescriptorV2Adr", contract.RequiredPolicyDecisions);
+                    Assert.Contains("DescriptorV2ParserManifest", contract.RequiredPolicyDecisions);
+                    Assert.Contains("NoParserToExecutionPromotion", contract.RequiredPolicyDecisions);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(contract.AbiClass), contract.AbiClass, "Unsupported Lane6 deferred ABI class.");
+            }
+
+            InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+                contract.RequireCompilerEmissionAuthority);
+            Assert.Contains($"{contract.Mnemonic} compiler emission is blocked", exception.Message, StringComparison.Ordinal);
+        }
     }
 
     private static void AssertReservedNoAllocationRow(string mnemonic, string expectedExtension)

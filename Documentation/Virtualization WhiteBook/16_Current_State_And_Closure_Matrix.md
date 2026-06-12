@@ -1,6 +1,6 @@
 # Current State And Closure Matrix
 
-This chapter records the current virtualization status as of 2026-05-31, after VMX refactoring closure 255.
+This chapter records the current virtualization status as of 2026-06-12.
 
 ## Current Facts
 
@@ -15,6 +15,7 @@ This chapter records the current virtualization status as of 2026-05-31, after V
 - Generated/frontend projection inventory is compatibility artifact inventory.
 - VMREAD has partial generated/read-only value projection through neutral owners after runtime admission.
 - VMCALL trap projection is admitted-denied through neutral trap result, hypercall backend admission, route policy, and publication fences.
+- Completion-only and retire-capable route flags are structurally separated, but neither positive descriptor is connected to VMX frontend.
 - SecureCompute/VMX compatibility surfaces are projection and denial fences; VMX cannot activate, grant, or own SecureCompute.
 
 ## Closure Matrix
@@ -32,9 +33,9 @@ This chapter records the current virtualization status as of 2026-05-31, after V
 | VMWRITE | Denied/fail-closed | No admitted neutral owner | Denied alias |
 | VMCALL trap projection | Admitted-denied | Neutral trap policy/result | VMX exit projection |
 | VMCALL backend admission | Closed as fail-closed | `HypercallBackendAdmissionService`; no backend owner | Missing neutral owner |
-| Trap completion route | Designed/fenced | `TrapCompletionRouteService` | Projection-only denied route in VMX frontend |
+| Trap completion route | Split route policy implemented; positive use future-gated | `TrapCompletionRouteService` | Projection-only denied route in VMX frontend |
 | Trap result | Closed neutral split | `NeutralTrapResult` | Mapped later |
-| Completion publication | Fenced | `TrapCompletionPublicationFence` | Projected after fence |
+| Completion publication | Fenced; completion-without-retire record publication not opened | `TrapCompletionPublicationFence` | Projected only after fence |
 | Retire intercept exit | Fenced | Publication fence + retire model | Fail-closed VMX effect |
 | Descriptor readiness | Closed fail-closed | Neutral materialized descriptors/checkpoints | Not derived from VMREAD |
 | Migration/evidence for recomputed fields | Closed | Neutral migration/evidence policy | VMCS completion fields are not payload authority |
@@ -60,6 +61,8 @@ Neutral trap/completion/backend split:
 - `NeutralTrapResult` is runtime vocabulary;
 - `VmxTrapProjectionMapper` maps only after the neutral result exists;
 - `TrapCompletionRouteService` exists as neutral route policy before any successful publication;
+- `RuntimeOwnedCompletionPublication` separates the completion route flag from retire authorization;
+- the current fence still returns `DeniedRetirePublication` and an empty completion for completion-only route results;
 - production VMCALL uses `HypercallBackendAdmissionRequest.MissingNeutralOwner`;
 - no successful VMCALL backend, compatibility-exit completion, or intercept retire publication is opened.
 

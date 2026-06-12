@@ -439,19 +439,22 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
     }
 
     [Fact]
-    public void ByteBitReverse_CompilerAndVmxGates_RemainGenericNoEmission()
+    public void ByteBitReverse_CompilerHelpersOpenWithoutVmxOrAliasHelpers()
     {
-        string compilerSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         string vmxSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_ISE", "Core", "VMX"));
 
-        foreach ((InstructionsEnum opcode, string mnemonic, string helperFragment) in new[]
+        foreach ((InstructionsEnum opcode, string mnemonic, string helperName, string aliasFragment) in new[]
         {
-            (InstructionsEnum.REV8, "REV8", "Rev8"),
-            (InstructionsEnum.BREV8, "BREV8", "Brev8"),
+            (InstructionsEnum.REV8, "REV8", "ReverseByteOrder", "Rev8"),
+            (InstructionsEnum.BREV8, "BREV8", "ReverseBitsInEachByte", "Brev8"),
         })
         {
-            Assert.DoesNotContain($"InstructionsEnum.{mnemonic}", compilerSource, StringComparison.Ordinal);
-            Assert.DoesNotContain(helperFragment, compilerSource, StringComparison.Ordinal);
+            Assert.Contains($"InstructionsEnum.{mnemonic}", compilerSource, StringComparison.Ordinal);
+            Assert.Contains(helperName, compilerSource, StringComparison.Ordinal);
+            Assert.DoesNotContain(aliasFragment, compilerSource, StringComparison.Ordinal);
+            Assert.DoesNotContain("ReverseBytes", compilerSource, StringComparison.Ordinal);
+            Assert.DoesNotContain("ReverseBitsInByte", compilerSource, StringComparison.Ordinal);
 
             Assert.DoesNotContain($"InstructionsEnum.{mnemonic}", vmxSource, StringComparison.Ordinal);
 

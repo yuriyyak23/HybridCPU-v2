@@ -320,7 +320,7 @@ public sealed class L7SdcPhase10GateTests
             Processor.Memory = null;
         }
 
-        string compilerSource = ReadCombinedSources("HybridCPU_Compiler");
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain(nameof(AcceleratorTokenStore), compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(AcceleratorCommandQueue), compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(AcceleratorFenceCoordinator), compilerSource, StringComparison.Ordinal);
@@ -393,19 +393,4 @@ public sealed class L7SdcPhase10GateTests
         return File.ReadAllText(fullPath);
     }
 
-    private static string ReadCombinedSources(string relativeDirectory)
-    {
-        string root = Path.Combine(
-            L7SdcPhase07TestFactory.ResolveRepoRoot(),
-            relativeDirectory.Replace('/', Path.DirectorySeparatorChar));
-        Assert.True(Directory.Exists(root), $"Missing repository directory: {relativeDirectory}");
-        return string.Join(
-            Environment.NewLine,
-            Directory
-                .EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(static path =>
-                    !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) &&
-                    !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
-                .Select(File.ReadAllText));
-    }
 }

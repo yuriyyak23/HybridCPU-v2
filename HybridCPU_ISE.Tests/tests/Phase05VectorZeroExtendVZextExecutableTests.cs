@@ -309,11 +309,43 @@ public sealed class Phase05VectorZeroExtendVzextExecutableTests
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Narrow", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Convert", StringComparison.OrdinalIgnoreCase));
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("VZEXT", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VWADD", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VNSRL", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VCVT", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerVectorHelperClosedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("CompilerVectorVlmBlockedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VZEXT", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VWADD", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VNSRL", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VCVT.I", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.VZEXT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VZEXT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VZEXT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVzext", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVzext", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VWADD", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VWADD", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VWADD", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVwadd", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVwadd", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VNSRL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VNSRL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VNSRL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVnsrl", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVnsrl", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VCVT_I", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VCVT_I", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VCVT_I", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVcvtI", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVcvtI", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VCVT_U", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VCVT_U", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VCVT_U", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVcvtU", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVcvtU", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VCVT_F", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VCVT_F", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VCVT_F", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVcvtF", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVcvtF", compilerSource, StringComparison.OrdinalIgnoreCase);
     }
 
     private static VectorZeroExtendMicroOp MaterializeVzext(
@@ -499,15 +531,4 @@ public sealed class Phase05VectorZeroExtendVzextExecutableTests
             .ToArray();
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        IEnumerable<string> files = Directory.EnumerateFiles(
-                compilerRoot,
-                "*.cs",
-                SearchOption.AllDirectories)
-            .Where(filePath => !CompatFreezeScanner.IsGeneratedPath(filePath));
-
-        return string.Join(Environment.NewLine, files.Select(File.ReadAllText));
-    }
 }

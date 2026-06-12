@@ -5,23 +5,27 @@
 
 **You can help with the development sponsoring project by PayPal (https://paypal.me/YAKGitHub)
 
-
 # HybridCPU ISE
 
 **Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
 
-HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT, heterogeneous lane classes, explicit legality decisions, bounded replay reuse, retire-visible effects, and a versioned compiler/runtime contract. The repository now keeps the instruction-side closure in `Documentation/InstructionsRefactor/WhiteBook/` and the stream, lane6, and lane7 architecture records in `Documentation/Stream WhiteBook/`.
+HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
+heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
+retire-visible effects, and a versioned compiler/runtime contract. Stream,
+MatrixTile, assist, lane6 DSC, and lane7 architecture records live in
+`Documentation/Stream WhiteBook/`.
 
 This README deliberately compresses the current documentation map into the repository entry point. It keeps file references minimal; for deeper detail, start with:
 
-- `Documentation/InstructionsRefactor/WhiteBook/00_README.md`
 - `Documentation/WhiteBook/0. chapter-index.md`
 - `Documentation/operational-semantics.md`
 - `Documentation/validation-baseline.md`
 - `Documentation/evidence-matrix.md`
 - [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md)
 - [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md)
-- [StreamEngine and DmaStreamCompute summary pack](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/00_README.md)
+- [Stream WhiteBook](Documentation/Stream%20WhiteBook/00_README.md)
+- [VectorStream taxonomy](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md)
+- [MatrixTile execution plane](Documentation/Stream%20WhiteBook/03_MatrixTile/00_README.md)
 - [lane6 DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/00_README.md)
 - [lane7 L7-SDC external accelerator WhiteBook](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md)
 - [Stream WhiteBook diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md)
@@ -30,29 +34,41 @@ When this README, the WhiteBooks, older notes, and code disagree, live code and 
 
 ## Documentation Entry Points
 
-The instruction-side closure overlay and the Stream WhiteBook paths are current architecture records for the instruction, stream/vector, lane6 DSC, and lane7 L7-SDC surfaces. They are entry points rather than implementation approvals for future features.
+The instruction-side closure overlay and Stream WhiteBook are current
+architecture records for instruction, VectorStream, MatrixTile, assists, lane6
+DSC, and lane7 L7-SDC surfaces.
 
 | Area | Start here | Claim boundary |
 |---|---|---|
-| Instruction-side closure | [Instructions Refactor WhiteBook](Documentation/InstructionsRefactor/WhiteBook/00_README.md) | Current bounded runtime ISA closure overlay for scalar, atomic, fence, vector, lane6, lane7, and risk-closure evidence. |
+| Instruction inventory | [Instructions by lane](Documentation/InstructionsList/Complete/ISE_Instructions_By_Lane_CodeConfirmed.md) | Code-confirmed opcode, slot-class, and lane inventory; runtime legality remains final authority. |
 | Virtualization | [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md) | Current neutral-runtime virtualization record: VMX is a frozen compatibility frontend/projection surface, not the authority owner. |
 | SecureCompute | [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md) | Neutral secure-domain descriptor/admission model with policy evidence, VMX denial/projection fences, and no production secure backend execution claim. |
-| StreamEngine / VectorALU / SRF / BurstIO | [StreamEngine, SFR/SRF, And VectorALU](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/01_StreamEngine_SFR_SRF_VectorALU.md) | Live StreamEngine stream/vector behavior plus helper/data-ingress caveats; not DSC or L7 evidence. |
+| VectorStream | [VectorStream](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md) | StreamEngine orchestration, SRF transient state, BurstIO transport, and VectorALU compute; no MatrixTile/DSC publication authority. |
+| MatrixTile | [MatrixTile execution plane](Documentation/Stream%20WhiteBook/03_MatrixTile/00_README.md) | Closed four-op runtime contour with typed tile-stream transport, architectural MatrixRegisterFile state, retire publication, and replay/rollback. |
+| Assists | [Assist plane](Documentation/Stream%20WhiteBook/04_Assists/00_README.md) | Architecturally invisible, non-retiring cache/SRF warming only. |
 | Lane6 DSC | [DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md) | Current DSC1 Phase 06 materialized lane6 execution contour; DSC2, queues, async overlap, coherent/IOMMU memory, and broad lowering remain gated. |
 | Lane7 L7-SDC | [L7-SDC executive summary](Documentation/Stream%20WhiteBook/ExternalAccelerators/01_L7_SDC_Executive_Summary.md) | Current Phase 08 / 08A scoped `ACCEL_*` runtime contour with guarded tokens, staged commit, and conditional register ABI writeback. |
 | Diagrams | [diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md) | Explanatory diagrams only; not approval for expansion beyond current DSC1/L7 contours, async overlap, coherent DMA/cache, or production lowering. |
 
 ## Current CloseToRTL / NonRTL Snapshot
 
-The repository now has two stream/accelerator contours that are executable only inside narrow code-backed boundaries:
+The repository separates five adjacent execution contours:
 
+- VectorStream uses StreamEngine, SRF, BurstIO, and VectorALU without becoming
+  an architectural tile-state owner;
+- MatrixTile load/store uses typed lane6 transport, while MACC/transpose uses
+  MatrixTile compute; execute captures and retire publishes;
 - lane6 `DmaStreamCompute` executes current DSC1 Phase 06 descriptors through `DmaStreamComputeMicroOp.Execute(...) -> DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`, then publishes memory only through retire/token commit;
+- assists warm cache/SRF state but never retire;
 - lane7 L7-SDC executes current Phase 08 / 08A commands through `SystemDeviceCommandMicroOp.Execute(...) -> ExternalAcceleratorRuntime`, with staged backend results, guarded fence/commit, and conditional `rd` writeback through `AcceleratorRegisterAbi`;
 - compatibility-denied surfaces, VMX guest bindings, descriptorless submit, DSC2 execution, queue/async expansion, coherent DMA/cache, broad IOMMU-backed memory execution, universal external accelerator protocol, and production compiler/backend lowering remain fail-closed or future-gated.
 
 ## Instruction-Surface Closure
 
-The instruction-side closure overlay is summarized in `Documentation/InstructionsRefactor/WhiteBook/`. It is the current bounded runtime ISA record for scalar repair through `ZEXT.W`, branch/control target transport, scalar load/store, LR/SC and AMO W/D retire semantics, acquire/release ordering, canonical zero-payload `FENCE` and `FENCE_I`, and explicit non-executable or future-gated contours. It is documentation derived from code and tests, not a replacement for either.
+The current instruction inventory is summarized in
+`Documentation/InstructionsList/Complete/`, with the MatrixTile closure record
+under `Documentation/InstructionsList/MTILE_RefPlan/`. These documents are
+derived from runtime code and tests, not replacements for either.
 
 ## Virtualization And SecureCompute
 
@@ -92,7 +108,10 @@ The current codebase implements:
 - legality provenance through `LegalityAuthoritySource`;
 - certificate identity as a replay/reuse seam;
 - compiler/runtime structural agreement through typed-slot facts;
-- live StreamEngine raw stream/vector execution through validated ingress, VectorALU, SRF, and BurstIO surfaces;
+- live StreamEngine raw stream/vector execution through validated ingress,
+  VectorALU, SRF, and BurstIO surfaces;
+- MatrixTile memory and compute runtime with architectural MatrixRegisterFile
+  state, typed transport, retire-only publication, and replay/rollback;
 - lane6 `DmaStreamCompute` as a descriptor/decode carrier with a scoped DSC1 Phase 06 materialized runtime/token/commit contour;
 - lane7 L7-SDC as `SystemSingleton` external accelerator command carriers with scoped Phase 08 / 08A runtime execution, guarded token lifecycle, staged commit, and conditional register ABI writeback;
 - telemetry and replay evidence as architecture-facing surfaces;
@@ -107,7 +126,8 @@ At the same time, the live repository is not:
 - a compiler-only micro-packer;
 - a runtime where stale compiler metadata silently becomes correctness authority;
 - a machine where all optional or historical opcode contours are active mainline decode;
-- a hidden fallback between StreamEngine, lane6 DSC, lane7 L7-SDC, DMAController, custom accelerators, or fake/test backends;
+- a hidden fallback between StreamEngine, MatrixTile, lane6 DSC, lane7 L7-SDC,
+  assists, DMAController, custom accelerators, or fake/test backends;
 - an arbitrary executable DSC2/L7 accelerator ISA, coherent DMA/cache hierarchy, universal external accelerator protocol, or production compiler/backend lowering target.
 
 ## Runtime Shape
@@ -205,17 +225,21 @@ The current machine is a fixed typed `W=8`, `4-way SMT` runtime.
 |---:|---|
 | `0..3` | `AluClass` |
 | `4..5` | `LsuClass` |
-| `6` | `DmaStreamClass` |
+| `6` | `DmaStreamClass` or `MatrixTileStreamClass` |
 | `7` | `BranchControl` or `SystemSingleton` |
 
-Lane 7 is intentionally aliased between branch/control and system-singleton work. This alias is an architectural scheduling constraint in the current runtime, not an accidental implementation detail.
+Lane 6 is physically aliased between `DmaStreamClass` and
+`MatrixTileStreamClass`, with combined capacity one. Lane 7 is aliased between
+branch/control and system-singleton work.
 
 Lane 6 and lane 7 have separate Stream WhiteBook roles:
 
-- lane 6 hosts `DmaStreamClass` carriers, including lane6 assist/SRF ingress and the `DmaStreamCompute` descriptor carrier;
+- lane 6 hosts `DmaStreamClass` DSC/assist carriers or
+  `MatrixTileStreamClass` MTILE load/store carriers;
 - lane 7 hosts `BranchControl` or `SystemSingleton`; L7-SDC uses only the hard-pinned `SystemSingleton` side for `ACCEL_*` carriers.
 
-That topology does not create fallback authority. A rejected lane6 DSC command does not become StreamEngine, VectorALU, DMAController, or L7 work; a rejected L7 command does not move into lane6 or StreamEngine.
+That topology does not create fallback authority. DSC descriptors/tokens,
+MatrixTile transfer/capture records, assists, and L7 commands remain distinct.
 
 "8-wide issue" therefore means 8 heterogeneous physical lanes with class-aware constraints. It does not mean 8 interchangeable scalar issue positions.
 
@@ -229,9 +253,11 @@ flowchart LR
     ALU --> L3["Lane 3: ALU"]
     LSU["SlotClass.LsuClass"] --> L4["Lane 4: LSU"]
     LSU --> L5["Lane 5: LSU"]
-    DMA["SlotClass.DmaStreamClass"] --> L6["Lane 6: DMA / stream physical lane"]
+    DMA["SlotClass.DmaStreamClass"] --> L6["Lane 6: shared physical lane"]
+    MTMEM["SlotClass.MatrixTileStreamClass"] --> L6
     DSC["Lane6 DmaStreamCompute: DSC1 Phase 06 scoped execution"] --> DMA
     ASSIST6["Lane6 assist / SRF ingress: non-retiring helper"] --> DMA
+    MTILE["MTILE_LOAD / MTILE_STORE: typed tile-stream transport"] --> MTMEM
     BR["SlotClass.BranchControl"] --> L7["Lane 7: shared physical lane"]
     SYS["SlotClass.SystemSingleton"] --> L7
     L7SDC["L7-SDC ACCEL_*: scoped runtime; conditional rd writeback"] --> SYS
@@ -251,7 +277,10 @@ The binary carrier contains streaming fields, but the runtime still distinguishe
 
 Memory-to-memory here means memory-oriented execution, not a bypass around the lane model. A stream/vector form is decomposed by decode/runtime into micro-ops and carrier work that still consumes typed resources. ALU-class compute consumes `AluClass` lanes. Load/store movement, DMA/stream movement, assists, and control/system work consume their corresponding `LsuClass`, `DmaStreamClass`, carrier, or aliased lane-7 resources when that contour is active in the current model.
 
-The current StreamEngine stack is the live raw stream/vector executor. Lane6 `DmaStreamCompute` and lane7 L7-SDC are separate descriptor-backed runtime contours: lane6 is open only for current DSC1 Phase 06 materialized execution, and L7 is open only for current Phase 08 / 08A system-device commands. Their parser/helper/model evidence must not be read as StreamEngine execution or as approval for broader DSC/L7 behavior.
+The current StreamEngine stack is the live raw stream/vector executor.
+MatrixTile is a separate tile-state execution plane. Lane6 DSC and lane7 L7-SDC
+are separate descriptor-backed contours. Shared helpers or lanes do not merge
+their legality, publication, or replay authority.
 
 ```mermaid
 flowchart TB
@@ -266,6 +295,9 @@ flowchart TB
     L7SDC["L7-SDC ACCEL_* carriers"] --> SYS
     L7SDC --> L7RUN["ExternalAcceleratorRuntime scoped commands; rd only via ABI result"]
     DSC["Lane6 DmaStreamCompute descriptor carrier"] --> DSCRUN["DSC1 Phase 06 materialized runtime/token path"]
+    MTMEM["MTILE load/store"] --> MTTRANS["Typed StreamEngine/SRF transfer"]
+    MTTRANS --> MTRET["Retire-owned tile publication / store commit"]
+    MTCOMP["MTILE MACC / transpose"] --> MTRET
     GPR["32 architectural integer registers per VT"] --> BACK["PRF / Rename / Commit substrate"]
     NOVRF["No code-backed separate vector-register-file mainline claim"] -. boundary .-> V
 ```
@@ -274,7 +306,10 @@ flowchart TB
 
 The active frontend is native VLIW only. Compatibility ingress remains quarantined to compatibility and diagnostic seams. DBT, scalar-generalized decode, and permissive legacy decode are not current proof surfaces.
 
-Canonical decode is not a "try to guess old payload intent" shell. The native decoder rejects unknown or prohibited opcodes, retained compatibility contours, retired policy-gap usage, and unsupported residual scalar or matrix contours when those reach canonical decode.
+Canonical decode is not a "try to guess old payload intent" shell. The native
+decoder rejects unknown or prohibited opcodes, retained compatibility
+contours, retired policy-gap usage, unsupported residual scalar contours, and
+future MatrixTile extensions outside the closed four-op ABI.
 
 Decode is full-bundle aware even when foreground issue later advances slot by slot. The runtime preserves canonical decoded-bundle state separately from derived issue-plan state, so densification does not mutate the architectural bundle description.
 
@@ -342,34 +377,58 @@ This partition is the short form of the Stream WhiteBook evidence map.
 
 | Surface | Current implemented behavior | Confirmed by tests | Model/helper behavior | Parser-only behavior | Future-gated behavior | Rejected / not allowed behavior |
 |---|---|---|---|---|---|---|
-| StreamEngine | Validated `StreamExecutionRequest` ingress, `StreamEngine.Execute(...)`, supported StreamEngine contours, VectorALU compute, SRF exact warm/bypass and invalidation. | Stream ingress warmup, memory-subsystem binding, vector addressing closure, and SRF bypass tests confirm named seams only. | BurstIO DMA route is synchronous helper behavior; SRF/prefetch/VDSA assist are data-ingress helpers with telemetry. | Not the main StreamEngine claim. | Async overlap and coherent DMA/cache remain gated. | StreamEngine, VectorALU, or DMAController as fallback for rejected DSC/L7. |
+| VectorStream | Validated StreamEngine ingress, VectorALU compute, SRF exact warm/bypass, and BurstIO transport. | Stream ingress, memory binding, addressing, and SRF tests confirm named seams. | Prefetch and assist ingress remain helper behavior. | Not the main claim. | Async overlap and coherent DMA/cache remain gated. | VectorStream as fallback or architectural MatrixTile authority. |
+| MatrixTile | `MatrixTileMemory` lane6 load/store plus `MatrixTileCompute` MACC/transpose; architectural state publishes only at retire. | Phase 09-14 MatrixTile suites cover transfer, capture, retire, faults, replay, golden, and handoff. | StreamEngine/SRF are typed transport only. | Descriptor parsing alone is not execution. | Future opcodes/dtypes require a new gate. | Ordinary LSU, DSC, VectorALU, VMX, Lane7, or backend fallback. |
 | Lane6 DSC | Lane6 descriptor/decode carrier; `DmaStreamComputeMicroOp.Execute(...)` opens only the current DSC1 Phase 06 production contour; `ExecutionEnabled == true`; `WritesRegister == false`. | `DmaStreamCompute*` and compiler contract tests confirm descriptor, materialized runtime, helper, token, commit, and adjacent fail-closed boundaries under their filters. | `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` remains a direct helper; canonical micro-op execution enters `ExecuteMaterializedMicroOpToCommitPending(...)`. | DSC2 descriptor/capability/footprint parsing is parser-only and non-executable. | DSC2 execution, async queue/completion, IOMMU-backed memory, coherent cache, partial success, production lowering. | Hidden StreamEngine/DMAController fallback, direct destination commit, unsupported descriptor execution, broad parser/decode claim as execution. |
 | Lane7 L7-SDC | `ACCEL_*` lane7 `SystemSingleton` carriers; `SystemDeviceCommandMicroOp.Execute(...)` dispatches current Phase 08 / 08A runtime commands; `WritesRegister` follows destination register presence. | `L7SdcPhase08ExecutableTests`, `L7Sdc*`, compiler Phase12, and documentation claim-safety tests confirm scoped command execution, conditional writeback, and adjacent fail-closed seams. | Token, queue, poll, wait, cancel, fence, status, register ABI, backend, commit, rollback, conflict, and telemetry APIs are current runtime/helper surfaces only within the scoped contour. | SDC1 descriptor parsing and carrier cleanliness are admission evidence, not universal protocol evidence. | Universal `ACCEL_*` protocol, arbitrary backend dispatch, broad `rd`/CSR publication, IOMMU-backed executable memory. | Fake/test backend as production protocol, capability registry as authority, fallback to DSC/StreamEngine/custom accelerator execution. |
-| Memory / DMA / cache / conflict | Retire-time memory boundary, explicit physical helper paths, explicit SRF/cache invalidation surfaces where routed. | Phase05 conflict, Phase06 addressing/backend, Phase09 cache, and L7 conflict/commit tests confirm model/foundation seams only. | External accelerator conflict manager is model-local/passive; non-coherent invalidation fan-out is model/helper evidence. | Address-space and footprint parsing is not executable memory. | `GlobalMemoryConflictService`, coherent DMA/cache, dirty-line writeback, executable IOMMU-backed DSC/L7 memory. | Progress, poll, wait, fence, telemetry, token, certificate, or capability evidence publishing memory. |
+| Memory / DMA / cache / conflict | Retire-time memory boundary and explicit SRF/cache invalidation where routed. | Scoped conflict, addressing, MatrixTile, and L7 tests confirm named seams. | External conflict managers remain contour-local. | Address-space parsing is not executable memory. | Global conflict authority and coherent DMA/cache. | Transport completion or evidence publishing memory. |
 | Compiler / backend | Typed-slot facts are `ValidationOnly`; compiler contract mismatch rejects; descriptor sideband can be preserved and validated. | Compiler backend Phase11, DSC compiler contract, and L7 compiler Phase12 tests confirm preservation and prohibition boundaries. | Capability planning and model/test helper use must be labeled. | DSC/L7 sideband descriptor preservation is parser/transport evidence. | Production lowering beyond current DSC1 Phase 06 and L7 Phase 08 / 08A commands requires ordering, cache, backend, conformance, and docs gates. | Sideband emission, carrier projection, fake backend, or parser acceptance as production lowering proof. |
 
-## StreamEngine, VectorALU, SRF, And BurstIO
+## StreamEngine, VectorALU, StreamRegisterFile, And BurstIO
 
-StreamEngine is the current raw stream/vector execution surface. Its details live in [StreamEngine, SFR/SRF, And VectorALU](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/01_StreamEngine_SFR_SRF_VectorALU.md) and [VDSA Assist, Warming, Prefetch, SRF, And Data Ingress](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/03_VDSA_Assist_Warming_Prefetch_SRF_DataIngress.md).
+StreamEngine is the current raw stream/vector execution surface. Its canonical
+documentation is [VectorStream](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md),
+[SRF](Documentation/Stream%20WhiteBook/02_VectorStream/02_SRF_StreamRegisterFile.md),
+and [BurstIO](Documentation/Stream%20WhiteBook/02_VectorStream/03_BurstIO_And_Memory_Backends.md).
 
 Current behavior:
 
 - `StreamExecutionRequest` is the validated ingress projection for live StreamEngine execution.
 - `StreamEngine.Execute(...)` dispatches supported stream/vector contours; `Execute1D` and execution modes are StreamEngine behavior, not DSC descriptor execution.
 - `VectorALU` performs typed element compute over StreamEngine spans, including predication, tail/mask policy handling, compute families, and exception counters.
-- `StreamRegisterFile` / `SRF` is bounded warm/bypass storage with exact source, element-size, and byte-coverage checks; overlapping StreamEngine writes invalidate warmed windows.
+- `StreamRegisterFile` / SRF is bounded transient warm/bypass storage with exact
+  window checks; it is not architectural MatrixRegisterFile state.
 - `PrefetchToStreamRegister(...)`, `TryPrefetchToAssistStreamRegister(...)`, and `ScheduleLane6AssistPrefetch(...)` are explicit warm/data-ingress seams.
 
 Helper and non-claim boundaries:
 
 - BurstIO is the StreamEngine memory movement substrate. Its DMA helper configures/starts DMA and loops `DMAController.ExecuteCycle()` until completion or a safety limit; this is synchronous helper behavior, not architectural async DMA overlap.
-- SRF/prefetch/cache invalidation is explicit non-coherent invalidation, not coherent DMA/cache.
+- SRF/prefetch/cache invalidation is explicit non-coherent invalidation.
 - VDSA assist is architecturally invisible, non-retiring, replay-discardable, telemetry-visible data ingress. It does not execute VectorALU operations, commit memory, publish registers, or accept DSC descriptors.
-- StreamEngine, SRF, VectorALU, BurstIO, DMAController, and assist evidence do not close gates for expansion beyond current DSC1/L7 contours, DSC2, IOMMU-backed execution, coherent DMA/cache, or production compiler/backend lowering.
+- StreamEngine, SRF, VectorALU, BurstIO, DMAController, and assist evidence do
+  not authorize MatrixTile, DSC, or L7 publication.
+
+## MatrixTile
+
+MatrixTile is a first-class tile execution plane documented in
+[MatrixTile](Documentation/Stream%20WhiteBook/03_MatrixTile/00_README.md).
+
+- `MTILE_LOAD/STORE` are memory-semantic instructions with
+  `MatrixTileMemory` ownership and `MatrixTileStreamClass` lane6 placement.
+- `MTILE_MACC/MTRANSPOSE` use `MatrixTileCompute`.
+- load transports memory through typed StreamEngine/SRF ingress and publishes
+  the tile only at retire.
+- store snapshots architectural tile state, stages rows, and commits memory
+  all-or-none only at retire.
+- MatrixRegisterFile is architectural; SRF and execute capture are not.
+- replay/rollback binds owner, resource contour, transfer identity, and staged
+  footprint without using host/SRF state as guest evidence.
 
 ## Lane6 DmaStreamCompute
 
-Lane6 `DmaStreamCompute` is the descriptor/decode carrier plus scoped DSC1 Phase 06 materialized runtime/token/commit contour documented in [DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md) and [DmaStreamCompute summary](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/02_DmaStreamCompute.md).
+Lane6 `DmaStreamCompute` is the descriptor/decode carrier plus scoped DSC1
+runtime/token/commit contour documented in
+[DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md).
 
 Current implemented boundary:
 
@@ -432,7 +491,7 @@ Memory-related Stream WhiteBook claims are deliberately narrow.
 - L7 owner/domain plus mapping and IOMMU-domain epoch validation is current runtime admission/commit authority for the scoped contour, not a claim of universal L7 IOMMU-backed memory execution.
 - `ExternalAcceleratorConflictManager` is model-local/passive unless explicitly passed to model helpers. It is not a global CPU load/store authority.
 - `GlobalMemoryConflictService` is a future foundation for CPU load/store/atomic, DSC, DMA, StreamEngine/SRF, assist, L7, fence/wait/poll, cache, and cancellation hook points. It is not currently installed as the global CPU load/store authority.
-- Explicit SRF/cache invalidation fan-out after StreamEngine writes or L7/DSC scoped commits is non-coherent invalidation. Dirty-line/writeback and coherent DMA/cache remain future-gated, and coherent DMA requires a separate ADR.
+- Explicit SRF/cache invalidation fan-out after StreamEngine writes or scoped commits is non-coherent invalidation. Dirty-line/writeback and coherent DMA/cache remain future-gated, and coherent DMA requires a separate ADR.
 - Progress diagnostics, poll/wait/fence observations, telemetry snapshots, token handles, and certificates do not publish memory.
 
 Detailed sources: [DSC memory, ordering, commit, and fault semantics](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md), [L7 backend staging and commit](Documentation/Stream%20WhiteBook/ExternalAccelerators/06_Backend_Staging_Commit_And_Rollback.md), [L7 memory conflict model](Documentation/Stream%20WhiteBook/ExternalAccelerators/07_Memory_Conflict_Model.md), and [Ex1 cache non-coherent protocol](Documentation/Refactoring/Phases%20Ex1/09_Cache_Prefetch_And_NonCoherent_Protocol.md).
@@ -1005,7 +1064,11 @@ The rollback model is bounded by explicit replay-token capture/restore limits. I
 
 These boundaries are part of the architecture. They are not footnotes.
 
-DSC commits and L7 staged commits use explicit token/coordinator publication contours. Commit-pending state, progress diagnostics, poll/wait/fence observations, backend completion, telemetry, and conflict records do not publish memory by themselves. Explicit SRF/cache invalidation is non-coherent invalidation, not a coherent DMA/cache hierarchy.
+DSC commits and L7 staged commits use explicit token/coordinator publication
+contours. MatrixTile store uses retire-owned all-or-none commit. Transport
+completion, SRF state, diagnostics, backend completion, telemetry, and conflict
+records do not publish memory by themselves. Explicit SRF/cache invalidation is
+non-coherent invalidation, not a coherent DMA/cache hierarchy.
 
 ## Backend Truthfulness
 
@@ -1126,9 +1189,13 @@ The following claims are safe repository-facing statements for the current codeb
 - LR/SC and AMO W/D publish retire-time memory effects, and acquire/release ordering is proven through runtime retire evidence rather than metadata or decoder facts;
 - canonical zero-payload `FENCE` and `FENCE_I` are bounded runtime system contours; unsupported masks and payloads fail closed;
 - StreamEngine is the current raw stream/vector execution surface for supported contours;
-- VectorALU, SRF exact warm/bypass, and explicit SRF invalidation are current StreamEngine-side behavior within their documented bounds;
+- VectorALU, SRF exact warm/bypass, and explicit SRF invalidation are current
+  StreamEngine-side behavior within their documented bounds;
 - BurstIO DMA use in StreamEngine is synchronous helper behavior, not async overlap;
 - assists are runtime-explicit but architecturally non-retiring;
+- MatrixTile load/store has `MatrixTileMemory` ownership and lane6
+  `MatrixTileStreamClass` placement; MACC/transpose has `MatrixTileCompute`
+  ownership; retire is the publication authority;
 - lane6 `DmaStreamCompute` is a current descriptor/decode carrier whose direct `Execute(...)` path is enabled only for the DSC1 Phase 06 materialized contour;
 - `DmaStreamComputeDescriptorParser.ExecutionEnabled == true` for the current DSC1 contour;
 - DSC1 is the strict current descriptor ABI, while DSC2 is parser-only/non-executable;
@@ -1160,6 +1227,8 @@ Do not read the live repository as claiming:
 - lane6 `DmaStreamCompute` execution outside the current DSC1 Phase 06 contour or executable DSC2;
 - parser/decode sideband presence alone as token allocation, memory publication, or execution authority;
 - StreamEngine, VectorALU, DMAController, custom accelerator, or fake backend fallback for rejected DSC/L7;
+- ordinary LSU, DSC, VectorALU, VMX, Lane7, or external-backend fallback for
+  MatrixTile;
 - executable `VGATHER` / `VSCATTER`, future dot-product ABI variants, or cache/TLB/coherency claims as current ISA behavior;
 - universal L7 `ACCEL_*` protocol, L7 behavior beyond current Phase 08 / 08A commands, production backend dispatch, or unconditional architectural `rd` writeback;
 - fake/test L7 backend behavior as production protocol;
@@ -1197,7 +1266,7 @@ For a short technical pass, read this README first, then the instruction-refacto
 
 For instruction-side closure work, read in dependency order:
 
-1. [Instructions Refactor WhiteBook](Documentation/InstructionsRefactor/WhiteBook/00_README.md).
+1. [Instructions by lane](Documentation/InstructionsList/Complete/ISE_Instructions_By_Lane_CodeConfirmed.md).
 2. [WhiteBook chapter index](Documentation/WhiteBook/0.%20chapter-index.md).
 3. `Documentation/operational-semantics.md`.
 4. `Documentation/validation-baseline.md`.
@@ -1212,11 +1281,14 @@ For virtualization and SecureCompute work, read in dependency order:
 
 For Stream WhiteBook work, read in dependency order:
 
-1. [StreamEngine and DmaStreamCompute summary pack](Documentation/Stream%20WhiteBook/StreamEngine%20DmaStreamCompute/00_README.md).
-2. [lane6 DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md).
-3. [L7-SDC external accelerator WhiteBook](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md).
-4. [Stream WhiteBook diagrams](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md).
-5. Historical Ex1 gates for memory/conflict/cache/compiler/backend changes, especially [Phase11](Documentation/Refactoring/Phases%20Ex1/11_Compiler_Backend_Lowering_Contract.md), [Phase12](Documentation/Refactoring/Phases%20Ex1/12_Testing_Conformance_And_Documentation_Migration.md), and [Phase13](Documentation/Refactoring/Phases%20Ex1/13_Dependency_Graph_And_Execution_Order.md).
+1. [Stream WhiteBook](Documentation/Stream%20WhiteBook/00_README.md).
+2. [execution planes and lanes](Documentation/Stream%20WhiteBook/01_Architecture/01_Execution_Planes_And_Lanes.md).
+3. [VectorStream](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md).
+4. [MatrixTile](Documentation/Stream%20WhiteBook/03_MatrixTile/00_README.md).
+5. [assists](Documentation/Stream%20WhiteBook/04_Assists/00_README.md).
+6. [lane6/lane7 separation](Documentation/Stream%20WhiteBook/05_Lane6_Lane7_Separation.md).
+7. [DmaStreamCompute](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md).
+8. [L7-SDC](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md).
 
 For implementation work, map claims back to the live scheduler, safety, compiler-contract, replay, diagnostics, and pipeline code before strengthening any README or paper statement.
 

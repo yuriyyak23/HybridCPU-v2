@@ -79,6 +79,46 @@ public sealed class VmxTrapCompletionRouteOwnerTests
     }
 
     [Fact]
+    public void RuntimeOwnedCompletionPublicationRoute_SeparatesCompletionFromRetire()
+    {
+        TrapRequest request = CreateTrapRequest();
+        NeutralTrapResult trap = NeutralTrapResult.Trap(
+            request,
+            NeutralTrapResultKind.CompatibilityOperationIntercept);
+        var routeRequest = new TrapCompletionRouteRequest(
+            trap,
+            RuntimeBoundaryAdmissionResult.Allowed(DomainRuntimeAuthorityResult.Allowed),
+            TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication,
+            DomainValidated: true,
+            BackendExecutionAuthorized: true,
+            Qualification: 0x1234,
+            FaultAddress: 0x5678,
+            FaultAux: 0x9ABC);
+
+        TrapCompletionRouteResult route =
+            TrapCompletionRouteService.Default.Authorize(routeRequest);
+        TrapCompletionPublicationFenceResult fence =
+            TrapCompletionRouteService.Default.EvaluateFence(
+                routeRequest,
+                route);
+
+        Assert.Equal(TrapCompletionRouteDecision.DeniedRetirePublication, route.Decision);
+        Assert.True(route.CompletionPublicationAuthorized);
+        Assert.False(route.RetirePublicationAuthorized);
+        Assert.True(route.CompletionPublicationAuthorizedOnly);
+        Assert.False(route.IsFullyRetirable);
+        Assert.False(route.IsAllowed);
+        Assert.Equal((uint)NeutralTrapResultKind.CompatibilityOperationIntercept, route.NeutralReasonCode);
+        Assert.Contains("authorizes completion publication", route.Reason);
+        Assert.Contains("denies retire publication", route.Reason);
+
+        Assert.Equal(TrapCompletionPublicationDecision.DeniedRetirePublication, fence.Decision);
+        Assert.False(fence.CompletionPublicationAllowed);
+        Assert.False(fence.RetirePublicationAllowed);
+        Assert.True(fence.Completion.IsEmpty);
+    }
+
+    [Fact]
     public void TrapCompletionRoute_RejectsCompatibilityProjectionOwnedRouteAuthority()
     {
         TrapRequest request = CreateTrapRequest();

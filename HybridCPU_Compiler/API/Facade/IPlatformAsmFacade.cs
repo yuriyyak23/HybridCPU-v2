@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
 
@@ -13,6 +14,8 @@ namespace HybridCPU.Compiler.Core.API.Facade;
 [EditorBrowsable(EditorBrowsableState.Never)]
 public interface IPlatformAsmFacade : IAppAsmFacade
 {
+    void ReadSystemCycleCounter(AsmRegister dest);
+
     void CsrRead(AsmRegister dest, ushort csrAddr);
     void CsrWrite(ushort csrAddr, AsmRegister src);
     void CsrClear();
@@ -34,9 +37,18 @@ public interface IPlatformAsmFacade : IAppAsmFacade
         uint streamLength,
         ushort stride);
 
+    void VLoad(
+        CompilerVectorTransferMemoryAddressAbi destination,
+        CompilerVectorTransferMemoryAddressAbi source,
+        CompilerVectorTransferShapeAbi shape);
+
+    void VStore(
+        CompilerVectorTransferMemoryAddressAbi source,
+        CompilerVectorTransferMemoryAddressAbi destination,
+        CompilerVectorTransferShapeAbi shape);
+
     void VSetVli(
         AsmRegister vlReg,
         AsmRegister avlReg,
         DataTypeEnum dataType);
 }
-

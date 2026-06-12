@@ -187,6 +187,7 @@ namespace YAKSys_Hybrid_CPU
                     report.AluClassInjects = schedulerPhaseMetrics.AluClassInjects;
                     report.LsuClassInjects = schedulerPhaseMetrics.LsuClassInjects;
                     report.DmaStreamClassInjects = schedulerPhaseMetrics.DmaStreamClassInjects;
+                    report.MatrixTileStreamClassInjects = schedulerPhaseMetrics.MatrixTileStreamClassInjects;
                     report.BranchControlInjects = schedulerPhaseMetrics.BranchControlInjects;
                     report.HardPinnedInjects = schedulerPhaseMetrics.HardPinnedInjects;
                     report.ClassFlexibleInjects = schedulerPhaseMetrics.ClassFlexibleInjects;
@@ -210,6 +211,7 @@ namespace YAKSys_Hybrid_CPU
                     report.SmtLegalityRejectByAluClass = schedulerPhaseMetrics.SmtLegalityRejectByAluClass;
                     report.SmtLegalityRejectByLsuClass = schedulerPhaseMetrics.SmtLegalityRejectByLsuClass;
                     report.SmtLegalityRejectByDmaStreamClass = schedulerPhaseMetrics.SmtLegalityRejectByDmaStreamClass;
+                    report.SmtLegalityRejectByMatrixTileStreamClass = schedulerPhaseMetrics.SmtLegalityRejectByMatrixTileStreamClass;
                     report.SmtLegalityRejectByBranchControl = schedulerPhaseMetrics.SmtLegalityRejectByBranchControl;
                     report.SmtLegalityRejectBySystemSingleton = schedulerPhaseMetrics.SmtLegalityRejectBySystemSingleton;
                     report.ClassTemplateDomainInvalidations = schedulerPhaseMetrics.ClassTemplateDomainInvalidations;

@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
@@ -32,32 +35,11 @@ namespace HybridCPU_ISE.Tests.Phase10;
 
 public sealed class Phase10Lane6DescriptorOpsFailClosedTests
 {
-    private static readonly string[] DescriptorOpMnemonics =
-    [
-        "DmaStreamCompute.SUB",
-        "DmaStreamCompute.MIN",
-        "DmaStreamCompute.MAX",
-        "DmaStreamCompute.ABSDIFF",
-        "DmaStreamCompute.CLAMP",
-        "DmaStreamCompute.CONVERT",
-        "DmaStreamCompute.COMPARE",
-        "DmaStreamCompute.SELECT",
-        "DmaStreamCompute.REDUCE_SUM",
-        "DmaStreamCompute.REDUCE_MIN",
-        "DmaStreamCompute.REDUCE_MAX",
-        "DmaStreamCompute.REDUCE_AND",
-        "DmaStreamCompute.REDUCE_OR",
-        "DmaStreamCompute.REDUCE_XOR"
-    ];
+    private static IReadOnlyList<string> DescriptorOpMnemonics =>
+        CompilerFailClosedEmissionInventory.Lane6DescriptorMnemonics;
 
-    private static readonly string[] ShapeContourMnemonics =
-    [
-        "DSC_SHAPE_STRIDED",
-        "DSC_SHAPE_TILED",
-        "DSC_SHAPE_SCATTER_GATHER",
-        "DSC_SHAPE_2D",
-        "DSC_SHAPE_MULTI_RANGE"
-    ];
+    private static IReadOnlyList<string> ShapeContourMnemonics =>
+        CompilerFailClosedEmissionInventory.Lane6ShapeMnemonics;
 
     [Fact]
     public void Phase10Rows_RemainDescriptorOnlyDeclaredWithoutProductionPublication()
@@ -192,6 +174,84 @@ public sealed class Phase10Lane6DescriptorOpsFailClosedTests
 
         Assert.DoesNotContain(VectorLegalityMatrix.Rows, row =>
             row.FamilyName is "Lane6DescriptorOwnedNoExecution" or "Lane6ShapeContourNoExecution");
+    }
+
+    [Fact]
+    public void CompilerDeferredAbi_RecordsDescriptorOpsAndShapesWithoutEmissionAuthority()
+    {
+        CompilerLane6DeferredAbiContract[] rows =
+        [
+            .. CompilerLane6DeferredAbiContract.AllDeferredLane6Rows
+                .Where(static row => row.AbiClass is
+                    CompilerLane6DeferredAbiClass.DescriptorOp or
+                    CompilerLane6DeferredAbiClass.DescriptorShape)
+        ];
+
+        Assert.Equal(
+            DescriptorOpMnemonics.Concat(ShapeContourMnemonics).Order(StringComparer.Ordinal).ToArray(),
+            rows.Select(static row => row.Mnemonic).Order(StringComparer.Ordinal).ToArray());
+
+        foreach (CompilerLane6DeferredAbiContract contract in rows)
+        {
+            Assert.False(contract.HasOpcodeAllocation);
+            Assert.False(contract.HasScalarOpcodeAllocation);
+            Assert.False(contract.IsExecutable);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.False(contract.CompilerHelperAllowed);
+            Assert.True(contract.IsDescriptorOwned);
+            Assert.True(contract.IsDescriptorOnly);
+            Assert.True(contract.IsDescriptorParserOnlyBoundary);
+            Assert.True(contract.RuntimeExecutionEvidenceAbsent);
+            Assert.True(contract.RequiresRuntimeAdmission);
+            Assert.True(contract.RequiresRetireCommitAuthority);
+            Assert.True(contract.RequiresReplayRollbackConformance);
+            Assert.True(contract.RequiresGoldenArtifacts);
+            Assert.True(contract.RequiresRetireReplayGoldenEvidence);
+            Assert.True(contract.RuntimeOwnedLegalityIsFinal);
+            Assert.True(contract.NoCompilerHelperEmission);
+            Assert.True(contract.NoHiddenScalarLowering);
+            Assert.True(contract.NoHiddenVectorLowering);
+            Assert.True(contract.NoMultiOpEmission);
+            Assert.True(contract.NoDmaStreamComputeFallback);
+            Assert.True(contract.NoGenericDmaStreamComputeFallbackAsAuthority);
+            Assert.True(contract.NoDsc2Fallback);
+            Assert.True(contract.NoLane7Fallback);
+            Assert.True(contract.NoExternalBackendFallback);
+            Assert.True(contract.NoVmxSpecificPath);
+            Assert.Contains("RuntimeExecutionEvidenceAbsent", contract.RequiredPolicyDecisions);
+            Assert.Contains("RuntimeOwnedLegalityFinal", contract.RequiredPolicyDecisions);
+
+            InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+                contract.RequireCompilerEmissionAuthority);
+            Assert.Contains($"{contract.Mnemonic} compiler emission is blocked", exception.Message, StringComparison.Ordinal);
+
+            if (contract.AbiClass == CompilerLane6DeferredAbiClass.DescriptorOp)
+            {
+                Assert.Equal("Lane6DescriptorOp", contract.ExtensionName);
+                Assert.Equal("Lane6DescriptorOwnedNoExecution", contract.EvidenceBoundary);
+                Assert.True(contract.IsDescriptorOp);
+                Assert.False(contract.IsDescriptorShape);
+                Assert.True(contract.RequiresDescriptorOpAbi);
+                Assert.True(contract.RequiresDescriptorPayloadAbi);
+                Assert.True(contract.RequiresDescriptorParserValidation);
+                Assert.True(contract.RequiresDescriptorOpTypeAbi);
+                Assert.Contains("DescriptorOpAbi", contract.RequiredPolicyDecisions);
+            }
+            else
+            {
+                Assert.Equal(CompilerLane6DeferredAbiClass.DescriptorShape, contract.AbiClass);
+                Assert.Equal("Lane6DescriptorShape", contract.ExtensionName);
+                Assert.Equal("Lane6ShapeContourNoExecution", contract.EvidenceBoundary);
+                Assert.False(contract.IsDescriptorOp);
+                Assert.True(contract.IsDescriptorShape);
+                Assert.True(contract.RequiresShapeAbi);
+                Assert.True(contract.RequiresShapeEnumAbi);
+                Assert.True(contract.RequiresShapeParserManifest);
+                Assert.True(contract.RequiresShapeFaultModel);
+                Assert.True(contract.RequiresAliasOverlapPolicy);
+                Assert.Contains("ShapeAbi", contract.RequiredPolicyDecisions);
+            }
+        }
     }
 
     private static void AssertDescriptorOnlyRow(string mnemonic, string expectedExtension)

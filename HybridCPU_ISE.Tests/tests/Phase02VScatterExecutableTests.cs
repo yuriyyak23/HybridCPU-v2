@@ -292,7 +292,7 @@ public sealed class Phase02VScatterExecutableTests
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("VectorIndexed", StringComparison.Ordinal));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Vector2D", StringComparison.Ordinal));
 
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("VGATHER", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("VSCATTER", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("EncodeVectorIndexed", compilerSource, StringComparison.Ordinal);
@@ -434,15 +434,4 @@ public sealed class Phase02VScatterExecutableTests
         Processor.MainMemory.WriteToPosition(bytes, address);
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        IEnumerable<string> files = Directory.EnumerateFiles(
-                compilerRoot,
-                "*.cs",
-                SearchOption.AllDirectories)
-            .Where(filePath => !CompatFreezeScanner.IsGeneratedPath(filePath));
-
-        return string.Join(Environment.NewLine, files.Select(File.ReadAllText));
-    }
 }

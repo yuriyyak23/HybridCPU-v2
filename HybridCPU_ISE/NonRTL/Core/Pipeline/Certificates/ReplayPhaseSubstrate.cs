@@ -59,6 +59,8 @@ namespace YAKSys_Hybrid_CPU.Core
         /// <summary>Free DmaStream-class lanes at template capture time.</summary>
         public byte DmaStreamFree { get; }
 
+        public byte MatrixTileStreamFree { get; }
+
         /// <summary>Free BranchControl-class lanes at template capture time.</summary>
         public byte BranchControlFree { get; }
 
@@ -74,6 +76,7 @@ namespace YAKSys_Hybrid_CPU.Core
             AluFree = ClampToByte(state.GetFreeCapacity(SlotClass.AluClass));
             LsuFree = ClampToByte(state.GetFreeCapacity(SlotClass.LsuClass));
             DmaStreamFree = ClampToByte(state.GetFreeCapacity(SlotClass.DmaStreamClass));
+            MatrixTileStreamFree = ClampToByte(state.GetFreeCapacity(SlotClass.MatrixTileStreamClass));
             BranchControlFree = ClampToByte(state.GetFreeCapacity(SlotClass.BranchControl));
             SystemSingletonFree = ClampToByte(state.GetFreeCapacity(SlotClass.SystemSingleton));
         }
@@ -88,6 +91,7 @@ namespace YAKSys_Hybrid_CPU.Core
             return current.GetFreeCapacity(SlotClass.AluClass) >= AluFree
                 && current.GetFreeCapacity(SlotClass.LsuClass) >= LsuFree
                 && current.GetFreeCapacity(SlotClass.DmaStreamClass) >= DmaStreamFree
+                && current.GetFreeCapacity(SlotClass.MatrixTileStreamClass) >= MatrixTileStreamFree
                 && current.GetFreeCapacity(SlotClass.BranchControl) >= BranchControlFree
                 && current.GetFreeCapacity(SlotClass.SystemSingleton) >= SystemSingletonFree;
         }
@@ -101,6 +105,7 @@ namespace YAKSys_Hybrid_CPU.Core
             SlotClass.AluClass => AluFree,
             SlotClass.LsuClass => LsuFree,
             SlotClass.DmaStreamClass => DmaStreamFree,
+            SlotClass.MatrixTileStreamClass => MatrixTileStreamFree,
             SlotClass.BranchControl => BranchControlFree,
             SlotClass.SystemSingleton => SystemSingletonFree,
             _ => 0,
@@ -109,6 +114,7 @@ namespace YAKSys_Hybrid_CPU.Core
         public bool Equals(ClassCapacityTemplate other) =>
             AluFree == other.AluFree && LsuFree == other.LsuFree &&
             DmaStreamFree == other.DmaStreamFree &&
+            MatrixTileStreamFree == other.MatrixTileStreamFree &&
             BranchControlFree == other.BranchControlFree &&
             SystemSingletonFree == other.SystemSingletonFree;
 
@@ -116,7 +122,7 @@ namespace YAKSys_Hybrid_CPU.Core
             obj is ClassCapacityTemplate other && Equals(other);
 
         public override int GetHashCode() =>
-            HashCode.Combine(AluFree, LsuFree, DmaStreamFree, BranchControlFree, SystemSingletonFree);
+            HashCode.Combine(AluFree, LsuFree, DmaStreamFree, MatrixTileStreamFree, BranchControlFree, SystemSingletonFree);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte ClampToByte(int value) => value <= 0 ? (byte)0 : (byte)value;
@@ -133,6 +139,7 @@ namespace YAKSys_Hybrid_CPU.Core
         private byte _aluRemaining;
         private byte _lsuRemaining;
         private byte _dmaStreamRemaining;
+        private byte _matrixTileStreamRemaining;
         private byte _branchControlRemaining;
         private byte _systemSingletonRemaining;
 
@@ -144,6 +151,7 @@ namespace YAKSys_Hybrid_CPU.Core
             _aluRemaining = template.AluFree;
             _lsuRemaining = template.LsuFree;
             _dmaStreamRemaining = template.DmaStreamFree;
+            _matrixTileStreamRemaining = template.MatrixTileStreamFree;
             _branchControlRemaining = template.BranchControlFree;
             _systemSingletonRemaining = template.SystemSingletonFree;
         }
@@ -157,6 +165,7 @@ namespace YAKSys_Hybrid_CPU.Core
             SlotClass.AluClass => _aluRemaining,
             SlotClass.LsuClass => _lsuRemaining,
             SlotClass.DmaStreamClass => _dmaStreamRemaining,
+            SlotClass.MatrixTileStreamClass => _matrixTileStreamRemaining,
             SlotClass.BranchControl => _branchControlRemaining,
             SlotClass.SystemSingleton => _systemSingletonRemaining,
             _ => 0,
@@ -173,6 +182,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 case SlotClass.AluClass:        if (_aluRemaining > 0) _aluRemaining--; break;
                 case SlotClass.LsuClass:        if (_lsuRemaining > 0) _lsuRemaining--; break;
                 case SlotClass.DmaStreamClass:  if (_dmaStreamRemaining > 0) _dmaStreamRemaining--; break;
+                case SlotClass.MatrixTileStreamClass: if (_matrixTileStreamRemaining > 0) _matrixTileStreamRemaining--; break;
                 case SlotClass.BranchControl:   if (_branchControlRemaining > 0) _branchControlRemaining--; break;
                 case SlotClass.SystemSingleton: if (_systemSingletonRemaining > 0) _systemSingletonRemaining--; break;
             }

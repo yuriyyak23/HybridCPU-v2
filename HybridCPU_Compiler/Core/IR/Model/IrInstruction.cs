@@ -58,5 +58,17 @@ namespace HybridCPU.Compiler.Core.IR
         /// Phase 04 keeps compiler emission disabled; this field is transport metadata only.
         /// </summary>
         public AcceleratorCommandDescriptor? AcceleratorCommandDescriptor { get; init; }
+
+        /// <summary>
+        /// Compiler-owned positive MTILE helper sideband recovered from the direct MTILE carrier.
+        /// Runtime-owned legality remains the final ISA authority.
+        /// </summary>
+        public CompilerMatrixTileEmissionPlan? MatrixTileEmission { get; init; }
+
+        /// <summary>
+        /// Compiler-owned positive VLOAD/VSTORE helper sideband recovered from the direct
+        /// vector transfer carrier. Runtime-owned legality remains the final ISA authority.
+        /// </summary>
+        public CompilerVectorTransferEmissionPlan? VectorTransferEmission { get; init; }
     }
 }

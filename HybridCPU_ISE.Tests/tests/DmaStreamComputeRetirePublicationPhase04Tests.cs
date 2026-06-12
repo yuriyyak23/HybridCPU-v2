@@ -246,7 +246,7 @@ public sealed class DmaStreamComputeRetirePublicationPhase04Tests
             "Pipeline",
             "MicroOps",
             "DmaStreamComputeMicroOp.cs"));
-        string compilerText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadAllCompilerSource();
 
         Assert.DoesNotContain("DmaStreamComputeRuntime.ExecuteToCommitPending", microOpText, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamComputeRetirePublication.", microOpText, StringComparison.Ordinal);
@@ -342,15 +342,6 @@ public sealed class DmaStreamComputeRetirePublicationPhase04Tests
             NormalizedWriteMemoryRanges = ranges,
             NormalizedFootprintHash = descriptor.NormalizedFootprintHash ^ 0x204UL
         };
-    }
-
-    private static string ReadAllSourceText(string root)
-    {
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(file => !CompatFreezeScanner.IsGeneratedPath(file))
-                .Select(File.ReadAllText));
     }
 
     private sealed class FailingSecondWriteMemory : Processor.MainMemoryArea

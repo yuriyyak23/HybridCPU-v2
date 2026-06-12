@@ -43,6 +43,7 @@ The authority split has three layers:
 - VMREAD value projection is open only for completion-owned fields, memory-owned `GuestCr3`/`EptPointer`/`Vpid`/`Cr3TargetCount`, and execution-owned `GuestPc`/`GuestSp`/`GuestFlags`.
 - `GuestCr0`, `GuestCr4`, host execution aliases, `HostCr3`, compatibility-control fields, unknown fields, and all writes remain explicitly denied.
 - Trap projection now has a neutral result, hypercall backend admission policy, completion route policy, and retire/completion publication fences.
+- Completion and retire route authorization are now structurally separable through `RuntimeOwnedCompletionPublication`, but the descriptor is future-gated, absent from VMX frontend, and the current fence still publishes no completion record when retire is denied.
 
 ## Why The Model Matters
 

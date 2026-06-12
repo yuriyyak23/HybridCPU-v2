@@ -13,6 +13,7 @@ namespace HybridCPU_ISE.Tests.tests
             Assert.Equal((byte)0b_0000_1111, SlotClassLaneMap.GetLaneMask(SlotClass.AluClass));
             Assert.Equal((byte)0b_0011_0000, SlotClassLaneMap.GetLaneMask(SlotClass.LsuClass));
             Assert.Equal((byte)0b_0100_0000, SlotClassLaneMap.GetLaneMask(SlotClass.DmaStreamClass));
+            Assert.Equal((byte)0b_0100_0000, SlotClassLaneMap.GetLaneMask(SlotClass.MatrixTileStreamClass));
             Assert.Equal((byte)0b_1000_0000, SlotClassLaneMap.GetLaneMask(SlotClass.BranchControl));
             Assert.Equal((byte)0b_1000_0000, SlotClassLaneMap.GetLaneMask(SlotClass.SystemSingleton));
         }
@@ -23,6 +24,7 @@ namespace HybridCPU_ISE.Tests.tests
             Assert.Equal(4, SlotClassLaneMap.GetClassCapacity(SlotClass.AluClass));
             Assert.Equal(2, SlotClassLaneMap.GetClassCapacity(SlotClass.LsuClass));
             Assert.Equal(1, SlotClassLaneMap.GetClassCapacity(SlotClass.DmaStreamClass));
+            Assert.Equal(1, SlotClassLaneMap.GetClassCapacity(SlotClass.MatrixTileStreamClass));
             Assert.Equal(1, SlotClassLaneMap.GetClassCapacity(SlotClass.BranchControl));
             Assert.Equal(1, SlotClassLaneMap.GetClassCapacity(SlotClass.SystemSingleton));
         }
@@ -32,11 +34,15 @@ namespace HybridCPU_ISE.Tests.tests
         {
             SlotClass[] branchAliases = SlotClassLaneMap.GetAliasedClasses(SlotClass.BranchControl).ToArray();
             SlotClass[] systemAliases = SlotClassLaneMap.GetAliasedClasses(SlotClass.SystemSingleton).ToArray();
+            SlotClass[] dmaAliases = SlotClassLaneMap.GetAliasedClasses(SlotClass.DmaStreamClass).ToArray();
+            SlotClass[] matrixAliases = SlotClassLaneMap.GetAliasedClasses(SlotClass.MatrixTileStreamClass).ToArray();
 
             Assert.True(SlotClassLaneMap.HasAliasedLanes(SlotClass.BranchControl));
             Assert.True(SlotClassLaneMap.HasAliasedLanes(SlotClass.SystemSingleton));
             Assert.Equal(new[] { SlotClass.SystemSingleton }, branchAliases);
             Assert.Equal(new[] { SlotClass.BranchControl }, systemAliases);
+            Assert.Equal(new[] { SlotClass.MatrixTileStreamClass }, dmaAliases);
+            Assert.Equal(new[] { SlotClass.DmaStreamClass }, matrixAliases);
         }
     }
 }

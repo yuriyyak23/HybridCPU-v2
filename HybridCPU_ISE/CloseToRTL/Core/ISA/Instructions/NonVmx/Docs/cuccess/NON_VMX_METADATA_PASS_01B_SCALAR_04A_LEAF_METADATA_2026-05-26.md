@@ -54,7 +54,7 @@ If any row later becomes executable, VMX can observe it only through generic Hyb
 Expected focused verification:
 
 ```powershell
-dotnet build "HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-restore
-dotnet test "HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-build --filter "FullyQualifiedName~NonVmxIteration04AScalarDeferredTemplateTests|FullyQualifiedName~NonVmxIteration04BDeferredTemplateSurfaceTests|FullyQualifiedName~CompilerNoEmissionBoundaryTests|FullyQualifiedName~NonVmxIteration02CatalogStatusTests|FullyQualifiedName~NonVmxIteration03CRotateExecutableTests|FullyQualifiedName~OpcodeRegistryCoverageTests|FullyQualifiedName~OpcodeEnumValueParityTests"
+dotnet build "\HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-restore
+dotnet test "\HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-build --filter "FullyQualifiedName~NonVmxIteration04AScalarDeferredTemplateTests|FullyQualifiedName~NonVmxIteration04BDeferredTemplateSurfaceTests|FullyQualifiedName~CompilerNoEmissionBoundaryTests|FullyQualifiedName~NonVmxIteration02CatalogStatusTests|FullyQualifiedName~NonVmxIteration03CRotateExecutableTests|FullyQualifiedName~OpcodeRegistryCoverageTests|FullyQualifiedName~OpcodeEnumValueParityTests"
 git diff --check -- "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx" "HybridCPU_ISE.Tests/tests/NonVmxIteration04AScalarDeferredTemplateTests.cs" "Documentation/InstructionsRefactor2/OpenTasks/NON_VMX_MISSING_INSTRUCTIONS_CURRENT_SHORTLIST_2026-05-25.md"
 ```

@@ -457,11 +457,13 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
     }
 
     [Fact]
-    public void RotateImmediate_CompilerHelpersAndVmxSpecificPath_RemainFailClosed()
+    public void RotateImmediate_CompilerHelpersOpenWithoutAliasesOrVmxSpecificPath()
     {
-        string compilerSource = ReadCompilerSource();
-        Assert.DoesNotContain("InstructionsEnum.ROLI", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("InstructionsEnum.RORI", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.ROLI", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.RORI", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("RotateLeftByImmediate", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("RotateRightByImmediate", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("RotateLeftImmediate", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("RotateRightImmediate", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("Roli", compilerSource, StringComparison.Ordinal);
@@ -546,17 +548,6 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
         bool hasRegistryMnemonic = OpcodeRegistry.Opcodes.Any(info =>
             string.Equals(info.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
         return hasEnum || hasRegistryMnemonic;
-    }
-
-    private static string ReadCompilerSource()
-    {
-        string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string compilerRoot = Path.Combine(repoRoot, "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(

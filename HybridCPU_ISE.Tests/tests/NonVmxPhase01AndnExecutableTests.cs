@@ -393,11 +393,11 @@ public sealed class NonVmxPhase01AndnExecutableTests
     }
 
     [Fact]
-    public void Andn_CompilerAndVmxGates_RemainGenericNoEmission()
+    public void Andn_CompilerHelperOpenWithoutAliasOrVmxSpecificPath()
     {
-        string compilerSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
-        Assert.DoesNotContain("InstructionsEnum.ANDN", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("ANDN", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.ANDN", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("AndWithInvertedSecond", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("Andn", compilerSource, StringComparison.Ordinal);
 
         string vmxSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_ISE", "Core", "VMX"));

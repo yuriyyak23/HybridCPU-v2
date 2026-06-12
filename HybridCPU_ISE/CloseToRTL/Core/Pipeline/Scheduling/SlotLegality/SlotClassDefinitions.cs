@@ -31,6 +31,9 @@ namespace YAKSys_Hybrid_CPU.Core
         /// <summary>Lane 7 (aliased): system-singleton lane (CSR, Halt, PortIO).</summary>
         SystemSingleton = 4,
 
+        /// <summary>Lane 6: MatrixTile memory stream transport, distinct from DMA/DSC semantics.</summary>
+        MatrixTileStreamClass = 5,
+
         /// <summary>No specific lane affinity (NOP, generic, or uninitialized).</summary>
         Unclassified = 7
     }
@@ -173,6 +176,7 @@ namespace YAKSys_Hybrid_CPU.Core
         private const byte AluMask          = 0b_0000_1111; // lanes 0-3
         private const byte LsuMask          = 0b_0011_0000; // lanes 4-5
         private const byte DmaStreamMask    = 0b_0100_0000; // lane 6
+        private const byte MatrixTileStreamMask = 0b_0100_0000; // lane 6 (aliased physical carrier)
         private const byte BranchMask       = 0b_1000_0000; // lane 7
         private const byte SystemMask       = 0b_1000_0000; // lane 7 (aliased with Branch)
         private const byte UnclassifiedMask = 0b_1111_1111; // any lane (placeholder)
@@ -189,6 +193,7 @@ namespace YAKSys_Hybrid_CPU.Core
             SlotClass.AluClass        => AluMask,
             SlotClass.LsuClass        => LsuMask,
             SlotClass.DmaStreamClass  => DmaStreamMask,
+            SlotClass.MatrixTileStreamClass => MatrixTileStreamMask,
             SlotClass.BranchControl   => BranchMask,
             SlotClass.SystemSingleton => SystemMask,
             SlotClass.Unclassified    => UnclassifiedMask,
@@ -221,6 +226,8 @@ namespace YAKSys_Hybrid_CPU.Core
         {
             SlotClass.BranchControl   => [SlotClass.SystemSingleton],
             SlotClass.SystemSingleton => [SlotClass.BranchControl],
+            SlotClass.DmaStreamClass => [SlotClass.MatrixTileStreamClass],
+            SlotClass.MatrixTileStreamClass => [SlotClass.DmaStreamClass],
             _ => []
         };
 
@@ -235,6 +242,8 @@ namespace YAKSys_Hybrid_CPU.Core
         {
             SlotClass.BranchControl   => true,
             SlotClass.SystemSingleton => true,
+            SlotClass.DmaStreamClass => true,
+            SlotClass.MatrixTileStreamClass => true,
             _ => false
         };
     }
@@ -295,6 +304,9 @@ namespace YAKSys_Hybrid_CPU.Core
         /// <summary>Number of DMA/Stream-class ops in the bundle (compiler structural budget).</summary>
         public byte DmaStreamCount { get; init; }
 
+        /// <summary>Number of MatrixTile stream-class ops in the bundle.</summary>
+        public byte MatrixTileStreamCount { get; init; }
+
         /// <summary>Number of BranchControl-class ops in the bundle (compiler structural budget).</summary>
         public byte BranchControlCount { get; init; }
 
@@ -312,6 +324,7 @@ namespace YAKSys_Hybrid_CPU.Core
             && AluCount == 0
             && LsuCount == 0
             && DmaStreamCount == 0
+            && MatrixTileStreamCount == 0
             && BranchControlCount == 0
             && SystemSingletonCount == 0;
 
@@ -355,7 +368,7 @@ namespace YAKSys_Hybrid_CPU.Core
             byte pinningMask = 0;
             int flexibleCount = 0;
             int pinnedCount = 0;
-            byte aluCount = 0, lsuCount = 0, dmaCount = 0, branchCount = 0, sysCount = 0;
+            byte aluCount = 0, lsuCount = 0, dmaCount = 0, matrixTileStreamCount = 0, branchCount = 0, sysCount = 0;
 
             for (int i = 0; i < 8; i++)
             {
@@ -379,6 +392,7 @@ namespace YAKSys_Hybrid_CPU.Core
                         case SlotClass.AluClass:        aluCount++;    break;
                         case SlotClass.LsuClass:        lsuCount++;    break;
                         case SlotClass.DmaStreamClass:  dmaCount++;    break;
+                        case SlotClass.MatrixTileStreamClass: matrixTileStreamCount++; break;
                         case SlotClass.BranchControl:   branchCount++; break;
                         case SlotClass.SystemSingleton: sysCount++;    break;
                     }
@@ -405,6 +419,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 AluCount = aluCount,
                 LsuCount = lsuCount,
                 DmaStreamCount = dmaCount,
+                MatrixTileStreamCount = matrixTileStreamCount,
                 BranchControlCount = branchCount,
                 SystemSingletonCount = sysCount
             };

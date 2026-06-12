@@ -60,7 +60,7 @@ If any Lane6 queue, query, or DSC2 row later becomes executable, it must close a
 Expected focused verification:
 
 ```powershell
-dotnet build "HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-restore
-dotnet test "HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-build --filter "FullyQualifiedName~NonVmxIteration04BDeferredTemplateSurfaceTests|FullyQualifiedName~CompilerNoEmissionBoundaryTests|FullyQualifiedName~DmaStreamComputeDsc2Phase07Tests|FullyQualifiedName~DmaStreamComputeStatusPhase07Tests|FullyQualifiedName~DmaStreamComputeQueryCapsPhase07ATests|FullyQualifiedName~Phase00InstructionInventoryTests"
+dotnet build "\HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-restore
+dotnet test "\HybridCPU ISE\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --no-build --filter "FullyQualifiedName~NonVmxIteration04BDeferredTemplateSurfaceTests|FullyQualifiedName~CompilerNoEmissionBoundaryTests|FullyQualifiedName~DmaStreamComputeDsc2Phase07Tests|FullyQualifiedName~DmaStreamComputeStatusPhase07Tests|FullyQualifiedName~DmaStreamComputeQueryCapsPhase07ATests|FullyQualifiedName~Phase00InstructionInventoryTests"
 git diff --check -- "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx" "HybridCPU_ISE.Tests/tests/NonVmxIteration04BDeferredTemplateSurfaceTests.cs" "Documentation/InstructionsRefactor2/OpenTasks/NON_VMX_MISSING_INSTRUCTIONS_CURRENT_SHORTLIST_2026-05-25.md"
 ```

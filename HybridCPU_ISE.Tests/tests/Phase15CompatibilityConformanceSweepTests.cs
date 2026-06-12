@@ -74,10 +74,6 @@ public sealed class Phase15CompatibilityConformanceSweepTests
         new("VDOT.ACCUM", IsaInstructionStatus.Reserved, RuntimeInstructionEvidence.None, true),
         new("VDOT.WIDE.I16", IsaInstructionStatus.Reserved, RuntimeInstructionEvidence.None, true),
         new("VDOT.WIDE.I32", IsaInstructionStatus.Reserved, RuntimeInstructionEvidence.None, true),
-        new("MTILE_LOAD", IsaInstructionStatus.OptionalDisabled, RuntimeInstructionEvidence.DeclaredOnly, false),
-        new("MTILE_STORE", IsaInstructionStatus.OptionalDisabled, RuntimeInstructionEvidence.DeclaredOnly, false),
-        new("MTILE_MACC", IsaInstructionStatus.OptionalDisabled, RuntimeInstructionEvidence.DeclaredOnly, false),
-        new("MTRANSPOSE", IsaInstructionStatus.OptionalDisabled, RuntimeInstructionEvidence.DeclaredOnly, false),
         new("DmaStreamCompute.SUB", IsaInstructionStatus.DescriptorOnly, RuntimeInstructionEvidence.DeclaredOnly, true),
         new("DmaStreamCompute.MIN", IsaInstructionStatus.DescriptorOnly, RuntimeInstructionEvidence.DeclaredOnly, true),
         new("DmaStreamCompute.MAX", IsaInstructionStatus.DescriptorOnly, RuntimeInstructionEvidence.DeclaredOnly, true),
@@ -233,6 +229,42 @@ public sealed class Phase15CompatibilityConformanceSweepTests
     }
 
     [Fact]
+    public void ReservedNoEvidenceCatalogRows_AreCoveredBySweepRows()
+    {
+        string[] reservedNoEvidenceCatalogRows =
+        [
+            .. InstructionSupportStatusCatalog.ExplicitStatuses
+                .Where(static status =>
+                    status.Status == IsaInstructionStatus.Reserved &&
+                    status.RuntimeEvidence == RuntimeInstructionEvidence.None)
+                .Select(static status => status.Mnemonic),
+            .. IsaV4Surface.ReservedOpcodes
+                .Select(InstructionSupportStatusCatalog.GetStatus)
+                .Where(static status =>
+                    status.Status == IsaInstructionStatus.Reserved &&
+                    status.RuntimeEvidence == RuntimeInstructionEvidence.None)
+                .Select(static status => status.Mnemonic)
+        ];
+
+        reservedNoEvidenceCatalogRows = reservedNoEvidenceCatalogRows
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        string[] reservedNoEvidenceSweepRows = DeferredRows
+            .Where(static row =>
+                row.ExpectedStatus == IsaInstructionStatus.Reserved &&
+                row.ExpectedEvidence == RuntimeInstructionEvidence.None)
+            .Select(static row => row.Mnemonic)
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.NotEmpty(reservedNoEvidenceCatalogRows);
+        Assert.Empty(reservedNoEvidenceCatalogRows.Except(reservedNoEvidenceSweepRows, StringComparer.Ordinal));
+    }
+
+    [Fact]
     public void DeferredRowsFromPhases05Through14_RemainFailClosed()
     {
         foreach (DeferredRow row in DeferredRows)
@@ -256,6 +288,14 @@ public sealed class Phase15CompatibilityConformanceSweepTests
                 Assert.False(HasIsaOpcodeValue(row.Mnemonic), row.Mnemonic);
                 Assert.False(HasRegistryMnemonic(row.Mnemonic), row.Mnemonic);
             }
+            else if (IsMatrixTileMnemonic(row.Mnemonic))
+            {
+                Assert.True(status.HasNumericOpcode, row.Mnemonic);
+                Assert.True(status.HasRuntimeOpcodeMetadata, row.Mnemonic);
+                Assert.True(status.HasCanonicalDecoderAcceptance, row.Mnemonic);
+                Assert.True(status.HasRegistryFactory, row.Mnemonic);
+                Assert.True(IsRegisteredRuntimeOpcode(row.Mnemonic), row.Mnemonic);
+            }
             else
             {
                 Assert.False(status.HasRuntimeOpcodeMetadata, row.Mnemonic);
@@ -267,7 +307,7 @@ public sealed class Phase15CompatibilityConformanceSweepTests
     }
 
     [Fact]
-    public void VectorLegalityMatrix_DoesNotOpenDeferredVectorContours()
+    public void VectorLegalityMatrix_DoesNotOpenDeferredExecutableContours()
     {
         foreach (DeferredRow row in DeferredRows.Where(static row =>
                      row.Mnemonic.StartsWith("V", StringComparison.Ordinal) ||
@@ -275,6 +315,24 @@ public sealed class Phase15CompatibilityConformanceSweepTests
         {
             if (TryResolveInstructionEnum(row.Mnemonic, out InstructionsEnum opcode))
             {
+                if (IsMatrixTileMnemonic(row.Mnemonic))
+                {
+                    Assert.True(VectorLegalityMatrix.TryGetRow(opcode, out VectorLegalityMatrixRow? matrixRow), row.Mnemonic);
+                    Assert.Equal("XMatrix", matrixRow.FamilyName);
+                    Assert.Equal(VectorContourLegalityStatus.DescriptorOnly, matrixRow.DescriptorBacked);
+                    Assert.DoesNotContain(VectorContourLegalityStatus.Executable, new[]
+                    {
+                        matrixRow.OneDimensional,
+                        matrixRow.IndexedAddressing,
+                        matrixRow.TwoDimensionalAddressing,
+                        matrixRow.Masked,
+                        matrixRow.TailMaskPolicy,
+                        matrixRow.Reduction,
+                        matrixRow.DescriptorBacked
+                    });
+                    continue;
+                }
+
                 Assert.False(
                     VectorLegalityMatrix.TryGetRow(opcode, out _),
                     $"{row.Mnemonic} must not gain a VLM executable row during Phase 15.");
@@ -349,6 +407,9 @@ public sealed class Phase15CompatibilityConformanceSweepTests
     private static bool HasRegistryMnemonic(string mnemonic) =>
         OpcodeRegistry.Opcodes.Any(info =>
             string.Equals(info.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
+
+    private static bool IsMatrixTileMnemonic(string mnemonic) =>
+        mnemonic is "MTILE_LOAD" or "MTILE_STORE" or "MTILE_MACC" or "MTRANSPOSE";
 
     private static string ReadProjectFile(string relativePath) =>
         File.ReadAllText(Path.Combine(

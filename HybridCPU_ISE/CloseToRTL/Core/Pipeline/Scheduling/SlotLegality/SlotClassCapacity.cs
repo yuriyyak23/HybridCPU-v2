@@ -39,6 +39,12 @@ namespace YAKSys_Hybrid_CPU.Core
         /// <summary>Total DMA/Stream lanes available (from lane map).</summary>
         public byte DmaStreamTotal;
 
+        /// <summary>Number of MatrixTile stream lane claims currently occupied.</summary>
+        public byte MatrixTileStreamOccupied;
+
+        /// <summary>Total MatrixTile stream lanes available.</summary>
+        public byte MatrixTileStreamTotal;
+
         /// <summary>Number of BranchControl lanes currently occupied.</summary>
         public byte BranchControlOccupied;
 
@@ -88,6 +94,7 @@ namespace YAKSys_Hybrid_CPU.Core
             SlotClass.AluClass        => AluTotal - AluOccupied,
             SlotClass.LsuClass        => LsuTotal - LsuOccupied,
             SlotClass.DmaStreamClass  => DmaStreamTotal - DmaStreamOccupied,
+            SlotClass.MatrixTileStreamClass => MatrixTileStreamTotal - MatrixTileStreamOccupied,
             SlotClass.BranchControl   => BranchControlTotal - BranchControlOccupied,
             SlotClass.SystemSingleton => SystemSingletonTotal - SystemSingletonOccupied,
             _                         => 0,
@@ -102,6 +109,7 @@ namespace YAKSys_Hybrid_CPU.Core
             SlotClass.AluClass        => AluOccupied,
             SlotClass.LsuClass        => LsuOccupied,
             SlotClass.DmaStreamClass  => DmaStreamOccupied,
+            SlotClass.MatrixTileStreamClass => MatrixTileStreamOccupied,
             SlotClass.BranchControl   => BranchControlOccupied,
             SlotClass.SystemSingleton => SystemSingletonOccupied,
             _                         => 0,
@@ -120,6 +128,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 case SlotClass.AluClass:        AluOccupied++;        break;
                 case SlotClass.LsuClass:        LsuOccupied++;        break;
                 case SlotClass.DmaStreamClass:  DmaStreamOccupied++;  break;
+                case SlotClass.MatrixTileStreamClass: MatrixTileStreamOccupied++; break;
                 case SlotClass.BranchControl:   BranchControlOccupied++;   break;
                 case SlotClass.SystemSingleton: SystemSingletonOccupied++; break;
                 // Unclassified ops do not consume typed capacity
@@ -135,6 +144,7 @@ namespace YAKSys_Hybrid_CPU.Core
             AluTotal             = (byte)SlotClassLaneMap.GetClassCapacity(SlotClass.AluClass);
             LsuTotal             = (byte)SlotClassLaneMap.GetClassCapacity(SlotClass.LsuClass);
             DmaStreamTotal       = (byte)SlotClassLaneMap.GetClassCapacity(SlotClass.DmaStreamClass);
+            MatrixTileStreamTotal = (byte)SlotClassLaneMap.GetClassCapacity(SlotClass.MatrixTileStreamClass);
             BranchControlTotal   = (byte)SlotClassLaneMap.GetClassCapacity(SlotClass.BranchControl);
             SystemSingletonTotal = (byte)SlotClassLaneMap.GetClassCapacity(SlotClass.SystemSingleton);
 
@@ -151,6 +161,7 @@ namespace YAKSys_Hybrid_CPU.Core
             AluOccupied = 0;
             LsuOccupied = 0;
             DmaStreamOccupied = 0;
+            MatrixTileStreamOccupied = 0;
             BranchControlOccupied = 0;
             SystemSingletonOccupied = 0;
         }

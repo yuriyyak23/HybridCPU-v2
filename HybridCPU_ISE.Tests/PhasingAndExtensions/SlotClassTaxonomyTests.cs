@@ -16,6 +16,7 @@ namespace HybridCPU_ISE.Tests
         [InlineData(SlotClass.AluClass)]
         [InlineData(SlotClass.LsuClass)]
         [InlineData(SlotClass.DmaStreamClass)]
+        [InlineData(SlotClass.MatrixTileStreamClass)]
         [InlineData(SlotClass.BranchControl)]
         [InlineData(SlotClass.SystemSingleton)]
         [InlineData(SlotClass.Unclassified)]
@@ -33,6 +34,7 @@ namespace HybridCPU_ISE.Tests
         [InlineData(SlotClass.AluClass, 4)]
         [InlineData(SlotClass.LsuClass, 2)]
         [InlineData(SlotClass.DmaStreamClass, 1)]
+        [InlineData(SlotClass.MatrixTileStreamClass, 1)]
         [InlineData(SlotClass.BranchControl, 1)]
         [InlineData(SlotClass.SystemSingleton, 1)]
         public void GetClassCapacity_ReturnsExpectedCount(SlotClass sc, int expected)
@@ -76,10 +78,20 @@ namespace HybridCPU_ISE.Tests
             Assert.Equal(SlotClass.BranchControl, aliased[0]);
         }
 
+        [Fact]
+        public void GetAliasedClasses_Lane6ClassesReferenceEachOther()
+        {
+            Assert.Equal(
+                SlotClass.MatrixTileStreamClass,
+                SlotClassLaneMap.GetAliasedClasses(SlotClass.DmaStreamClass)[0]);
+            Assert.Equal(
+                SlotClass.DmaStreamClass,
+                SlotClassLaneMap.GetAliasedClasses(SlotClass.MatrixTileStreamClass)[0]);
+        }
+
         [Theory]
         [InlineData(SlotClass.AluClass)]
         [InlineData(SlotClass.LsuClass)]
-        [InlineData(SlotClass.DmaStreamClass)]
         [InlineData(SlotClass.Unclassified)]
         public void GetAliasedClasses_NonAliased_ReturnsEmpty(SlotClass sc)
         {
@@ -87,16 +99,17 @@ namespace HybridCPU_ISE.Tests
         }
 
         [Fact]
-        public void HasAliasedLanes_TrueForBranchAndSystem()
+        public void HasAliasedLanes_TrueForPhysicalAliases()
         {
             Assert.True(SlotClassLaneMap.HasAliasedLanes(SlotClass.BranchControl));
             Assert.True(SlotClassLaneMap.HasAliasedLanes(SlotClass.SystemSingleton));
+            Assert.True(SlotClassLaneMap.HasAliasedLanes(SlotClass.DmaStreamClass));
+            Assert.True(SlotClassLaneMap.HasAliasedLanes(SlotClass.MatrixTileStreamClass));
         }
 
         [Theory]
         [InlineData(SlotClass.AluClass)]
         [InlineData(SlotClass.LsuClass)]
-        [InlineData(SlotClass.DmaStreamClass)]
         [InlineData(SlotClass.Unclassified)]
         public void HasAliasedLanes_FalseForNonAliased(SlotClass sc)
         {

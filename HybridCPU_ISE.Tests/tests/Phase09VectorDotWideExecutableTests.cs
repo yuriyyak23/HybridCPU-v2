@@ -370,11 +370,17 @@ public sealed class Phase09VectorDotWideExecutableTests
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("BlockScaled", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Int8Dot", StringComparison.OrdinalIgnoreCase));
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("VDOT.WIDE", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VDOT_WIDE", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("DotWide", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("BlockScaled", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerVectorHelperClosedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VDOT.WIDE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.VDOT_WIDE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VDOT_WIDE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VDOT_WIDE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVdotWide", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVdotWide", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileDotWide", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitDotWide", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileBlockScaled", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Int8Dot", compilerSource, StringComparison.Ordinal);
     }
 
@@ -536,15 +542,4 @@ public sealed class Phase09VectorDotWideExecutableTests
     private static byte[] ReadBytes(ulong address, int count) =>
         Processor.MainMemory.ReadFromPosition(new byte[count], address, (ulong)count);
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        IEnumerable<string> files = Directory.EnumerateFiles(
-                compilerRoot,
-                "*.cs",
-                SearchOption.AllDirectories)
-            .Where(filePath => !CompatFreezeScanner.IsGeneratedPath(filePath));
-
-        return string.Join(Environment.NewLine, files.Select(File.ReadAllText));
-    }
 }

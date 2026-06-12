@@ -156,6 +156,50 @@ public class AppAsmFacade : IAppAsmFacade
             stealabilityPolicy: StealabilityPolicy.NotStealable);
     }
 
+    /// <summary>Emits a canonical XLEN=64 scalar register-register instruction using packed architectural registers.</summary>
+    protected void EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        Context.CompileInstruction(
+            (uint)opcode,
+            (byte)DataTypeEnum.UINT64,
+            ScalarPredicateMask,
+            0,
+            VLIW_Instruction.PackArchRegs(
+                Resolve(dest).Value,
+                Resolve(src1).Value,
+                Resolve(src2).Value),
+            0,
+            0,
+            0,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
+    }
+
+    /// <summary>Emits a canonical XLEN=64 scalar imm6 instruction using packed architectural registers.</summary>
+    protected void EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src, int immediate6)
+    {
+        if ((uint)immediate6 > 0x3Fu)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(immediate6),
+                immediate6,
+                "Scalar immediate payload must fit imm6 [0, 63].");
+        }
+
+        Context.CompileInstruction(
+            (uint)opcode,
+            (byte)DataTypeEnum.UINT64,
+            ScalarPredicateMask,
+            (ushort)immediate6,
+            VLIW_Instruction.PackArchRegs(
+                Resolve(dest).Value,
+                Resolve(src).Value,
+                ZeroArchReg),
+            0,
+            0,
+            0,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
+    }
+
     /// <summary>Emits a canonical scalar register-register instruction using packed architectural registers.</summary>
     protected void EmitScalarBinary(Processor.CPU_Core.InstructionsEnum opcode, AsmRegister dest, AsmRegister src1, AsmRegister src2)
     {
@@ -268,6 +312,198 @@ public class AppAsmFacade : IAppAsmFacade
     public void RemainderUnsignedWord(AsmRegister dest, AsmRegister src1, AsmRegister src2) =>
         EmitScalarWordBinary(Processor.CPU_Core.InstructionsEnum.REMUW, dest, src1, src2);
 
+    public void SetBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BSET");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.BSET, dest, src, index);
+    }
+
+    public void ClearBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BCLR");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.BCLR, dest, src, index);
+    }
+
+    public void InvertBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BINV");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.BINV, dest, src, index);
+    }
+
+    public void ExtractBitRegister(AsmRegister dest, AsmRegister src, AsmRegister index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BEXT");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.BEXT, dest, src, index);
+    }
+
+    public void SetBitImmediate(AsmRegister dest, AsmRegister src, int index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BSETI");
+        EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum.BSETI, dest, src, index);
+    }
+
+    public void ClearBitImmediate(AsmRegister dest, AsmRegister src, int index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BCLRI");
+        EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum.BCLRI, dest, src, index);
+    }
+
+    public void InvertBitImmediate(AsmRegister dest, AsmRegister src, int index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BINVI");
+        EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum.BINVI, dest, src, index);
+    }
+
+    public void ExtractBitImmediate(AsmRegister dest, AsmRegister src, int index)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitfield, "BEXTI");
+        EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum.BEXTI, dest, src, index);
+    }
+
+    public void AndWithInvertedSecond(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "ANDN");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.ANDN, dest, src1, src2);
+    }
+
+    public void OrWithInvertedSecond(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "ORN");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.ORN, dest, src1, src2);
+    }
+
+    public void ExclusiveNor(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "XNOR");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.XNOR, dest, src1, src2);
+    }
+
+    public void ScalarMinSigned(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "MIN");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.MIN, dest, src1, src2);
+    }
+
+    public void ScalarMaxSigned(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "MAX");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.MAX, dest, src1, src2);
+    }
+
+    public void ScalarMinUnsigned(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "MINU");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.MINU, dest, src1, src2);
+    }
+
+    public void ScalarMaxUnsigned(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "MAXU");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.MAXU, dest, src1, src2);
+    }
+
+    public void BinaryPolynomialProductLow(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarCarryLessChecksum, "CLMUL");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.CLMUL, dest, src1, src2);
+    }
+
+    public void BinaryPolynomialProductHigh(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarCarryLessChecksum, "CLMULH");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.CLMULH, dest, src1, src2);
+    }
+
+    public void BinaryPolynomialProductReverse(AsmRegister dest, AsmRegister src1, AsmRegister src2)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarCarryLessChecksum, "CLMULR");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.CLMULR, dest, src1, src2);
+    }
+
+    public void ZeroIfConditionEqualZero(AsmRegister dest, AsmRegister src, AsmRegister condition)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarSelectCzero, "CZERO.EQZ");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.CZERO_EQZ, dest, src, condition);
+    }
+
+    public void ZeroIfConditionNotEqualZero(AsmRegister dest, AsmRegister src, AsmRegister condition)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarSelectCzero, "CZERO.NEZ");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.CZERO_NEZ, dest, src, condition);
+    }
+
+    public void AddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "ADD.UW");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.ADD_UW, dest, src, addend);
+    }
+
+    public void ShiftLeftOneAndAdd(AsmRegister dest, AsmRegister src, AsmRegister addend)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "SH1ADD");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.SH1ADD, dest, src, addend);
+    }
+
+    public void ShiftLeftTwoAndAdd(AsmRegister dest, AsmRegister src, AsmRegister addend)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "SH2ADD");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.SH2ADD, dest, src, addend);
+    }
+
+    public void ShiftLeftThreeAndAdd(AsmRegister dest, AsmRegister src, AsmRegister addend)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "SH3ADD");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.SH3ADD, dest, src, addend);
+    }
+
+    public void ShiftLeftOneAndAddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "SH1ADD.UW");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.SH1ADD_UW, dest, src, addend);
+    }
+
+    public void ShiftLeftTwoAndAddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "SH2ADD.UW");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.SH2ADD_UW, dest, src, addend);
+    }
+
+    public void ShiftLeftThreeAndAddUnsignedWord(AsmRegister dest, AsmRegister src, AsmRegister addend)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "SH3ADD.UW");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.SH3ADD_UW, dest, src, addend);
+    }
+
+    public void ShiftLeftUnsignedWordByImmediate(AsmRegister dest, AsmRegister src, int shift)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarAddressGeneration, "SLLI.UW");
+        EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum.SLLI_UW, dest, src, shift);
+    }
+
+    public void RotateLeftRegister(AsmRegister dest, AsmRegister src, AsmRegister shift)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "ROL");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.ROL, dest, src, shift);
+    }
+
+    public void RotateRightRegister(AsmRegister dest, AsmRegister src, AsmRegister shift)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "ROR");
+        EmitScalarXlenBinary(Processor.CPU_Core.InstructionsEnum.ROR, dest, src, shift);
+    }
+
+    public void RotateLeftByImmediate(AsmRegister dest, AsmRegister src, int shift)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "ROLI");
+        EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum.ROLI, dest, src, shift);
+    }
+
+    public void RotateRightByImmediate(AsmRegister dest, AsmRegister src, int shift)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "RORI");
+        EmitScalarXlenImmediate6(Processor.CPU_Core.InstructionsEnum.RORI, dest, src, shift);
+    }
+
     public void CountLeadingZeros(AsmRegister dest, AsmRegister src) =>
         EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.CLZ, dest, src);
 
@@ -283,8 +519,38 @@ public class AppAsmFacade : IAppAsmFacade
         EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.CPOP, dest, src);
     }
 
+    public void ReverseByteOrder(AsmRegister dest, AsmRegister src)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "REV8");
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.REV8, dest, src);
+    }
+
+    public void ReverseBitsInEachByte(AsmRegister dest, AsmRegister src)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "BREV8");
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.BREV8, dest, src);
+    }
+
+    public void SignExtendByte(AsmRegister dest, AsmRegister src)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "SEXT.B");
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.SEXT_B, dest, src);
+    }
+
+    public void SignExtendHalf(AsmRegister dest, AsmRegister src)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "SEXT.H");
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.SEXT_H, dest, src);
+    }
+
     public void SignExtendWord(AsmRegister dest, AsmRegister src) =>
         EmitScalarWordUnary(Processor.CPU_Core.InstructionsEnum.SEXT_W, dest, src);
+
+    public void ZeroExtendHalf(AsmRegister dest, AsmRegister src)
+    {
+        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarBitmanipCore, "ZEXT.H");
+        EmitScalarXlenUnary(Processor.CPU_Core.InstructionsEnum.ZEXT_H, dest, src);
+    }
 
     public void ZeroExtendWord(AsmRegister dest, AsmRegister src) =>
         EmitScalarWordUnary(Processor.CPU_Core.InstructionsEnum.ZEXT_W, dest, src);
@@ -413,6 +679,50 @@ public class AppAsmFacade : IAppAsmFacade
     public void Move(AsmRegister src, AsmRegister dest)
     {
         EmitScalarImmediate(Processor.CPU_Core.InstructionsEnum.ADDI, dest, src, 0);
+    }
+
+    public void MtileLoad(
+        CompilerMatrixTileTileOperand destinationTile,
+        CompilerMatrixTileDescriptorAbi descriptor,
+        CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi)
+    {
+        Context.CompileMtileLoad(destinationTile, descriptor, memoryFaultAbi);
+    }
+
+    public void MtileStore(
+        CompilerMatrixTileTileOperand sourceTile,
+        CompilerMatrixTileDescriptorAbi descriptor,
+        CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi)
+    {
+        Context.CompileMtileStore(sourceTile, descriptor, memoryFaultAbi);
+    }
+
+    public void MtileMacc(
+        CompilerMatrixTileTileOperand leftSourceTile,
+        CompilerMatrixTileTileOperand rightSourceTile,
+        CompilerMatrixTileTileOperand accumulatorTile,
+        CompilerMatrixTileDescriptorAbi leftSourceDescriptor,
+        CompilerMatrixTileAccumulatorPolicyAbi accumulatorPolicyAbi)
+    {
+        Context.CompileMtileMacc(
+            leftSourceTile,
+            rightSourceTile,
+            accumulatorTile,
+            leftSourceDescriptor,
+            accumulatorPolicyAbi);
+    }
+
+    public void Mtranspose(
+        CompilerMatrixTileTileOperand sourceTile,
+        CompilerMatrixTileTileOperand destinationTile,
+        CompilerMatrixTileDescriptorAbi sourceDescriptor,
+        CompilerMatrixTileTransposePolicyAbi transposePolicyAbi)
+    {
+        Context.CompileMtranspose(
+            sourceTile,
+            destinationTile,
+            sourceDescriptor,
+            transposePolicyAbi);
     }
 
     // ── Control flow ──

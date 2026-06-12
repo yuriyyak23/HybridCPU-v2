@@ -206,7 +206,7 @@ public sealed class DmaStreamComputeTypedSlotTests
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
         string registryText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Core", "Diagnostics"), "InstructionRegistry*.cs");
-        string compilerText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_Compiler"), "*.cs");
+        string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
 
         Assert.DoesNotContain(nameof(DmaStreamComputeMicroOp), registryText, StringComparison.Ordinal);
         Assert.False(InstructionRegistry.IsCustomAcceleratorOpcode((uint)Processor.CPU_Core.InstructionsEnum.DmaStreamCompute));

@@ -182,9 +182,7 @@ public sealed class L7SdcCryptoSparseDescriptorTaxonomyPhase09Tests
         Assert.DoesNotContain(threadMethods, name => name.Contains("Compression", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(threadMethods, name => name.Contains("Media", StringComparison.OrdinalIgnoreCase));
 
-        string compilerText = ReadAllSourceText(Path.Combine(
-            CompatFreezeScanner.FindRepoRoot(),
-            "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("crypto.hash.metadata.v1", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("sparse.graph.metadata.v1", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("ACCEL_CRYPTO", compilerText, StringComparison.Ordinal);
@@ -376,12 +374,4 @@ public sealed class L7SdcCryptoSparseDescriptorTaxonomyPhase09Tests
         Assert.Null(admission.Token);
     }
 
-    private static string ReadAllSourceText(string root)
-    {
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(file => !CompatFreezeScanner.IsGeneratedPath(file))
-                .Select(File.ReadAllText));
-    }
 }

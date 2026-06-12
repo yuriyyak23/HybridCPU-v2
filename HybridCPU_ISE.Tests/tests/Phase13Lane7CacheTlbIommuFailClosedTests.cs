@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
@@ -21,38 +23,11 @@ namespace HybridCPU_ISE.Tests.Phase13;
 
 public sealed class Phase13Lane7CacheTlbIommuFailClosedTests
 {
-    private static readonly string[] MaintenanceMnemonics =
-    [
-        "SFENCE.VMA",
-        "ICACHE_INVAL",
-        "DCACHE_CLEAN",
-        "DCACHE_INVAL",
-        "DCACHE_FLUSH",
-        "IOTLB_INV",
-        "IOMMU_FENCE"
-    ];
+    private static IReadOnlyList<string> MaintenanceMnemonics =>
+        CompilerFailClosedEmissionInventory.Lane7CacheTlbIommuMnemonics;
 
-    private static readonly string[] CompilerForbiddenTokens =
-    [
-        "SfenceVma",
-        "EmitSfenceVma",
-        "SFENCE.VMA",
-        "IcacheInval",
-        "ICACHE_INVAL",
-        "DcacheClean",
-        "DcacheInval",
-        "DcacheFlush",
-        "DCACHE_CLEAN",
-        "DCACHE_INVAL",
-        "DCACHE_FLUSH",
-        "IotlbInv",
-        "IommuFence",
-        "IOTLB_INV",
-        "IOMMU_FENCE",
-        "Lane7CacheMaintenanceHelper",
-        "Lane7TlbMaintenanceHelper",
-        "Lane7IommuMaintenanceHelper"
-    ];
+    private static IReadOnlyList<string> CompilerForbiddenTokens =>
+        CompilerFailClosedEmissionInventory.Lane7CacheTlbIommuCompilerSourceFragments;
 
     private static readonly string[] VmxForbiddenTokens =
     [
@@ -205,7 +180,7 @@ public sealed class Phase13Lane7CacheTlbIommuFailClosedTests
     public void CompilerFacade_DoesNotExposePhase13HelpersOrHiddenLowering()
     {
         List<string> failures = [];
-        foreach (string path in EnumerateCompilerSources())
+        foreach (string path in CompilerSourceScanner.EnumerateCompilerSourceFiles())
         {
             string source = File.ReadAllText(path);
             foreach (string token in CompilerForbiddenTokens)
@@ -222,6 +197,183 @@ public sealed class Phase13Lane7CacheTlbIommuFailClosedTests
             "Phase 13 compiler helpers and hidden lowering must remain closed:" +
             Environment.NewLine +
             string.Join(Environment.NewLine, failures));
+    }
+
+    [Fact]
+    public void CompilerDeferredAbi_RecordsSfenceVmaPolicyWithoutEmissionAuthority()
+    {
+        CompilerLane7DeferredAbiContract contract =
+            CompilerLane7DeferredAbiContract.TranslationFence;
+
+        CompilerLane7DeferredAbiAssertions.AssertNoEmissionAuthority(
+            contract,
+            "SFENCE.VMA",
+            CompilerLane7DeferredAbiClass.TranslationFence,
+            "CacheTlbCoherency",
+            "Lane7TranslationFenceDeferred");
+        Assert.True(contract.RequiresPrivilegeAndAdmissionPolicy);
+        Assert.True(contract.RequiresAddressSpaceSelectorAbi);
+        Assert.True(contract.RequiresTlbShootdownPolicy);
+        Assert.True(contract.RequiresCrossCoreShootdownPolicy);
+        Assert.True(contract.RequiresRetireOwnedSideEffectPublication);
+        Assert.True(contract.NoGenericFenceFallback);
+        Assert.True(contract.NoVmxEptVpidNptSemanticAlias);
+        CompilerLane7DeferredAbiAssertions.AssertHiddenLoweringBlocked(contract);
+
+        CompilerLane7DeferredAbiAssertions.AssertEmissionAuthorityThrows(contract);
+
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        CompilerLane7DeferredAbiAssertions.AssertCompilerSourceCarriesMetadataButNoEmission(
+            compilerSource,
+            ("SFENCE.VMA", "SFENCE_VMA", "SfenceVma"));
+    }
+
+    [Fact]
+    public void CompilerDeferredAbi_RecordsCacheMaintenancePolicyWithoutEmissionAuthority()
+    {
+        CompilerLane7DeferredAbiContract[] rows =
+        [
+            .. CompilerLane7DeferredAbiContract.CacheMaintenanceRows
+        ];
+
+        Assert.Equal(
+            ["DCACHE_CLEAN", "DCACHE_FLUSH", "DCACHE_INVAL", "ICACHE_INVAL"],
+            rows.Select(static row => row.Mnemonic).Order(StringComparer.Ordinal).ToArray());
+
+        foreach (CompilerLane7DeferredAbiContract contract in rows)
+        {
+            CompilerLane7DeferredAbiAssertions.AssertNoEmissionAuthority(
+                contract,
+                contract.Mnemonic,
+                CompilerLane7DeferredAbiClass.CacheMaintenance,
+                "CacheTlbCoherency",
+                "Lane7CacheMaintenanceDeferred");
+            Assert.True(contract.RequiresPrivilegeAndAdmissionPolicy);
+            Assert.True(contract.RequiresCacheMaintenanceAbi);
+            Assert.True(contract.RequiresCacheHierarchyAuthorityModel);
+            Assert.True(contract.RequiresAddressRangeScopeAbi);
+            Assert.True(contract.RequiresReplayStableInvalidationModel);
+            Assert.True(contract.RequiresRetireOwnedSideEffectPublication);
+            Assert.True(contract.NoGenericFenceFallback);
+            Assert.True(contract.NoFenceIFallback);
+            Assert.True(contract.VmxCacheEvidenceIsInsufficient);
+            CompilerLane7DeferredAbiAssertions.AssertHiddenLoweringBlocked(contract);
+            CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                contract,
+                "CacheMaintenanceAbi",
+                "CacheHierarchyAuthorityModel",
+                "AddressRangeScopeAbi",
+                "PrivilegeAndAdmissionPolicy",
+                "ReplayStableInvalidationModel",
+                "RetireOwnedSideEffectPublication",
+                "NoFenceIFallback");
+
+            if (contract.Mnemonic == "ICACHE_INVAL")
+            {
+                Assert.True(contract.RequiresInstructionFetchCoherencyModel);
+                Assert.False(contract.RequiresDataCacheCoherencyModel);
+                Assert.False(contract.RequiresDirtyLineOwnershipModel);
+                Assert.False(contract.RequiresMemoryOrderingIntegration);
+                CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(contract, "InstructionFetchCoherencyModel");
+            }
+            else
+            {
+                Assert.False(contract.RequiresInstructionFetchCoherencyModel);
+                Assert.True(contract.RequiresDataCacheCoherencyModel);
+                Assert.True(contract.RequiresDirtyLineOwnershipModel);
+                Assert.True(contract.RequiresMemoryOrderingIntegration);
+                CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                    contract,
+                    "DataCacheCoherencyModel",
+                    "DirtyLineOwnershipModel",
+                    "MemoryOrderingIntegration");
+            }
+
+            CompilerLane7DeferredAbiAssertions.AssertEmissionAuthorityThrows(contract);
+        }
+
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        CompilerLane7DeferredAbiAssertions.AssertCompilerSourceCarriesMetadataButNoEmission(
+            compilerSource,
+            ("ICACHE_INVAL", "IcacheInval"),
+            ("DCACHE_CLEAN", "DcacheClean"),
+            ("DCACHE_INVAL", "DcacheInval"),
+            ("DCACHE_FLUSH", "DcacheFlush"));
+    }
+
+    [Fact]
+    public void CompilerDeferredAbi_RecordsIommuMaintenancePolicyWithoutEmissionAuthority()
+    {
+        CompilerLane7DeferredAbiContract[] rows =
+        [
+            .. CompilerLane7DeferredAbiContract.IommuMaintenanceRows
+        ];
+
+        Assert.Equal(
+            ["IOMMU_FENCE", "IOTLB_INV"],
+            rows.Select(static row => row.Mnemonic).Order(StringComparer.Ordinal).ToArray());
+
+        foreach (CompilerLane7DeferredAbiContract contract in rows)
+        {
+            CompilerLane7DeferredAbiAssertions.AssertNoEmissionAuthority(
+                contract,
+                contract.Mnemonic,
+                CompilerLane7DeferredAbiClass.IommuMaintenance,
+                "CacheTlbCoherency",
+                "Lane7IommuMaintenanceDeferred");
+            Assert.True(contract.RequiresPrivilegeAndAdmissionPolicy);
+            Assert.True(contract.RequiresIommuMaintenanceAbi);
+            Assert.True(contract.RequiresDeviceDomainAuthority);
+            Assert.True(contract.RequiresDmaVisibilityModel);
+            Assert.True(contract.RequiresLane6TokenAuthorityGate);
+            Assert.True(contract.RequiresExternalDeviceQuiescencePolicy);
+            Assert.True(contract.RequiresReplayStableInvalidationModel);
+            Assert.True(contract.RequiresRetireOwnedSideEffectPublication);
+            Assert.True(contract.NoGenericFenceFallback);
+            Assert.True(contract.NoVmxEptVpidNptSemanticAlias);
+            Assert.True(contract.VmxIommuEvidenceIsInsufficient);
+            Assert.True(contract.ExistingLane6DmaEvidenceIsInsufficient);
+            Assert.True(contract.ExistingLane7ControlPlaneEvidenceIsInsufficient);
+            Assert.True(contract.NoLane6DmaFallback);
+            Assert.True(contract.NoLane7AcceleratorFallback);
+            Assert.True(contract.NoExternalBackendFallback);
+            CompilerLane7DeferredAbiAssertions.AssertHiddenLoweringBlocked(contract);
+            CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(
+                contract,
+                "IommuMaintenanceAbi",
+                "DeviceDomainAuthority",
+                "DmaVisibilityModel",
+                "Lane6TokenAuthorityGate",
+                "ExternalDeviceQuiescencePolicy",
+                "PrivilegeAndAdmissionPolicy",
+                "ReplayStableInvalidationModel",
+                "RetireOwnedSideEffectPublication",
+                "NoVmxEptVpidNptSemanticAlias",
+                "NoLane6DmaFallback",
+                "NoLane7AcceleratorFallback",
+                "NoExternalBackendFallback");
+
+            if (contract.Mnemonic == "IOTLB_INV")
+            {
+                Assert.True(contract.RequiresIotlbInvalidationModel);
+                Assert.False(contract.RequiresIommuFenceCompletionModel);
+                CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(contract, "IotlbInvalidationModel");
+            }
+            else
+            {
+                Assert.False(contract.RequiresIotlbInvalidationModel);
+                Assert.True(contract.RequiresIommuFenceCompletionModel);
+                CompilerLane7DeferredAbiAssertions.AssertPolicyDecisions(contract, "IommuFenceCompletionModel");
+            }
+
+            CompilerLane7DeferredAbiAssertions.AssertEmissionAuthorityThrows(contract);
+        }
+
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        CompilerLane7DeferredAbiAssertions.AssertCompilerSourceCarriesMetadataButNoEmission(
+            compilerSource,
+            ("IOTLB_INV", "IotlbInv"),
+            ("IOMMU_FENCE", "IommuFence"));
     }
 
     [Fact]
@@ -340,23 +492,6 @@ public sealed class Phase13Lane7CacheTlbIommuFailClosedTests
             ?? throw new InvalidOperationException($"{type.FullName}.{name} was not found.");
         Assert.True(field.IsLiteral, $"{type.FullName}.{name} must remain a const template marker.");
         return Assert.IsType<T>(field.GetRawConstantValue());
-    }
-
-    private static IEnumerable<string> EnumerateCompilerSources()
-    {
-        string root = FindRepositoryRoot();
-        string[] candidateRoots =
-        [
-            Path.Combine(root, "HybridCPU_Compiler"),
-            Path.Combine(root, "HybridCPU_ISE", "Compiler")
-        ];
-
-        return candidateRoots
-            .Where(Directory.Exists)
-            .SelectMany(path => Directory.EnumerateFiles(path, "*.cs", SearchOption.AllDirectories))
-            .Where(path => !path.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
-            .Where(path => !path.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
-            .OrderBy(path => path, StringComparer.Ordinal);
     }
 
     private static IEnumerable<string> EnumerateVmxProductionSources()

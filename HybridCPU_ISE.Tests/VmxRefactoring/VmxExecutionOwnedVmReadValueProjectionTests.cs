@@ -148,7 +148,7 @@ public sealed class VmxExecutionOwnedVmReadValueProjectionTests
                 result.ValueProjection.Decision);
             Assert.Equal(VmcsFieldProjectionOwner.ExecutionDomainDescriptor, result.ValueProjection.SchemaEntry.Owner);
             Assert.Equal(0, result.Value);
-            Assert.Contains("privileged execution-state semantics", result.Reason);
+            Assert.Contains("descriptor value source", result.Reason);
         }
     }
 
@@ -242,7 +242,8 @@ public sealed class VmxExecutionOwnedVmReadValueProjectionTests
 
         string projectionSource = ActiveVmxConformanceHelpers.ReadProjectSource(
             "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
-        Assert.DoesNotContain("StateEpoch", projectionSource);
+        Assert.Contains("CurrentPrivilegedExecutionStateEpoch", projectionSource);
+        Assert.DoesNotContain("request.Execution.ReadOnlyState.StateEpoch", projectionSource);
     }
 
     private static void AssertProjected(

@@ -107,16 +107,34 @@ public sealed partial class SecureIoDomainDescriptor
         DmaPolicy == SecureIoDmaPolicy.ExplicitSharedBuffersOnly &&
         SharedBuffers.Count != 0;
 
-    public bool AllowsSharedBuffer(ulong bufferId)
+    public bool TryFindCurrentSharedBuffer(
+        ulong bufferId,
+        ulong ownerDomainTag,
+        SecureRevocationEpoch policyEpoch,
+        out SecureSharedBufferDescriptor buffer)
     {
-        foreach (var buffer in SharedBuffers)
+        if (DmaPolicy != SecureIoDmaPolicy.ExplicitSharedBuffersOnly ||
+            ownerDomainTag == 0 ||
+            !policyEpoch.IsMaterialized)
         {
-            if (buffer.BufferId == bufferId && buffer.IsMaterialized)
+            buffer = default;
+            return false;
+        }
+
+        foreach (var candidate in SharedBuffers)
+        {
+            if (candidate.BufferId == bufferId &&
+                candidate.IsMaterialized &&
+                candidate.IsOwnedBy(ownerDomainTag) &&
+                candidate.HasCurrentLifetime(policyEpoch) &&
+                candidate.Grant.MatchesEpoch(policyEpoch))
             {
+                buffer = candidate;
                 return true;
             }
         }
 
+        buffer = default;
         return false;
     }
 

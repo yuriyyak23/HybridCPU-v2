@@ -58,7 +58,7 @@ Code anchors:
 
 Commit snapshots destination bytes before all-or-none publication. If a later write fails,
 rollback restores snapshots when guard, token binding, descriptor identity, footprint, and
-backup evidence are valid. Successful commit invalidates overlapping SRF/cache windows and
+backup evidence are valid. Successful commit invalidates overlapping SFR/cache windows and
 records telemetry.
 
 The invalidation contour is explicit non-coherent model fan-out. It is not a

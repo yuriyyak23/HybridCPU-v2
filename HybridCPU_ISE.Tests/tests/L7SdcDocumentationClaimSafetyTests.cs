@@ -116,7 +116,10 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     public void L7SdcDocumentationClaimSafety_PhaseDocsKeepDiagnosticsClosureGate()
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string phaseRoot = Path.Combine(repoRoot, "Documentation", "InstructionsRefactor2");
+        string phaseRoot = ResolveRepoPath(
+            repoRoot,
+            "Documentation/InstructionsRefactor2",
+            "Documentation/ActualRefactoring/InstructionsRefactor2");
         string[] phaseDocs = Directory.GetFiles(phaseRoot, "Phase_*.md", SearchOption.TopDirectoryOnly);
 
         Assert.NotEmpty(phaseDocs);
@@ -172,8 +175,7 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     {
         string dmaText = ReadCombined(
             "Documentation/Stream WhiteBook/DmaStreamCompute/00_README.md",
-            "Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md",
-            "Documentation/Stream WhiteBook/StreamEngine DmaStreamCompute/02_DmaStreamCompute.md");
+            "Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md");
         string assistText = ReadRepoFile("HybridCPU_ISE/docs/assist-semantics.md");
 
         Assert.Contains("lane6", dmaText, StringComparison.OrdinalIgnoreCase);
@@ -248,7 +250,9 @@ public sealed class L7SdcDocumentationClaimSafetyTests
         {
             Path.Combine(repoRoot, "Documentation", "CustomExternalAccelerator"),
             Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "DmaStreamCompute"),
-            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "StreamEngine DmaStreamCompute"),
+            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "02_VectorStream"),
+            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "03_MatrixTile"),
+            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "04_Assists"),
             Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "ExternalAccelerators")
         };
 
@@ -313,9 +317,40 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     private static string ReadRepoFile(string relativePath)
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string fullPath = Path.Combine(repoRoot, relativePath.Replace('/', Path.DirectorySeparatorChar));
+        string fullPath = ResolveRepoPath(repoRoot, relativePath);
         Assert.True(File.Exists(fullPath), $"Missing repository document: {relativePath}");
         return File.ReadAllText(fullPath);
+    }
+
+    private static string ResolveRepoPath(
+        string repoRoot,
+        string relativePath,
+        string? fallbackRelativePath = null)
+    {
+        string fullPath = Path.Combine(repoRoot, relativePath.Replace('/', Path.DirectorySeparatorChar));
+        if (File.Exists(fullPath) || Directory.Exists(fullPath))
+        {
+            return fullPath;
+        }
+
+        if (fallbackRelativePath is not null)
+        {
+            return Path.Combine(repoRoot, fallbackRelativePath.Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        const string oldInstructionsRoot = "Documentation/InstructionsRefactor2/";
+        if (relativePath.StartsWith(oldInstructionsRoot, StringComparison.Ordinal))
+        {
+            string suffix = relativePath[oldInstructionsRoot.Length..];
+            return Path.Combine(
+                repoRoot,
+                "Documentation",
+                "ActualRefactoring",
+                "InstructionsRefactor2",
+                suffix.Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        return fullPath;
     }
 
     private static string NormalizeRelativePath(string relativePath) =>

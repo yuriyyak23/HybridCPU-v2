@@ -381,12 +381,13 @@ namespace YAKSys_Hybrid_CPU.Core
             bool isMemoryOp = slot.GetRuntimeAdmissionIsMemoryOp();
             bool isControlFlow = slot.GetRuntimeAdmissionIsControlFlow();
 
+            if (placement.RequiredSlotClass is
+                SlotClass.DmaStreamClass or SlotClass.MatrixTileStreamClass)
+                return AuxiliaryClusterKind.DmaStream;
             if (slot.IsVectorOp)
                 return AuxiliaryClusterKind.Vector;
             if (isMemoryOp)
                 return AuxiliaryClusterKind.Memory;
-            if (placement.RequiredSlotClass == SlotClass.DmaStreamClass)
-                return AuxiliaryClusterKind.DmaStream;
             if (isControlFlow || placement.RequiredSlotClass == SlotClass.BranchControl)
                 return AuxiliaryClusterKind.Control;
             if (placement.RequiredSlotClass == SlotClass.SystemSingleton)

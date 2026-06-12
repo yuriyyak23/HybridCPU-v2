@@ -259,9 +259,7 @@ public sealed class L7SdcFftDescriptorTaxonomyPhase09Tests
         Assert.DoesNotContain(threadMethods, name => name.Contains("Compression", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(threadMethods, name => name.Contains("Media", StringComparison.OrdinalIgnoreCase));
 
-        string compilerText = ReadAllSourceText(Path.Combine(
-            CompatFreezeScanner.FindRepoRoot(),
-            "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("fft.metadata.v1", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("ACCEL_FFT", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("ACCEL_DSP", compilerText, StringComparison.Ordinal);
@@ -271,12 +269,4 @@ public sealed class L7SdcFftDescriptorTaxonomyPhase09Tests
         Assert.DoesNotContain(nameof(FftMetadataCapabilityProvider), compilerText, StringComparison.Ordinal);
     }
 
-    private static string ReadAllSourceText(string root)
-    {
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(file => !CompatFreezeScanner.IsGeneratedPath(file))
-                .Select(File.ReadAllText));
-    }
 }

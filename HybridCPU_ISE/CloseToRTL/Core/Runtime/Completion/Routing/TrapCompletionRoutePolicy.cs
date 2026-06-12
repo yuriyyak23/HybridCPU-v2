@@ -43,6 +43,13 @@ public sealed partial class TrapCompletionRouteDescriptor
             allowsRetirePublication: false,
             requiresValidatedDomain: false);
 
+    public static TrapCompletionRouteDescriptor RuntimeOwnedCompletionPublication { get; } =
+        new(
+            CompletionRouteAuthority.Runtime,
+            allowsCompletionPublication: true,
+            allowsRetirePublication: false,
+            requiresValidatedDomain: true);
+
     public static TrapCompletionRouteDescriptor RuntimeOwnedPublication { get; } =
         new(
             CompletionRouteAuthority.Runtime,
@@ -91,10 +98,17 @@ public readonly record struct TrapCompletionRouteResult(
     uint NeutralReasonCode,
     string Reason)
 {
-    public bool IsAllowed =>
+    public bool CompletionPublicationAuthorizedOnly =>
+        CompletionPublicationAuthorized &&
+        !RetirePublicationAuthorized;
+
+    public bool IsFullyRetirable =>
         Decision == TrapCompletionRouteDecision.Allowed &&
         CompletionPublicationAuthorized &&
         RetirePublicationAuthorized;
+
+    public bool IsAllowed =>
+        IsFullyRetirable;
 
     public bool DeniesBackendExecution =>
         Decision == TrapCompletionRouteDecision.DeniedBackendExecution;
@@ -106,6 +120,16 @@ public readonly record struct TrapCompletionRouteResult(
         new(
             decision,
             CompletionPublicationAuthorized: false,
+            RetirePublicationAuthorized: false,
+            NeutralReasonCode: (uint)trapResult.Kind,
+            reason);
+
+    public static TrapCompletionRouteResult CompletionAuthorizedButRetireDenied(
+        NeutralTrapResult trapResult,
+        string reason) =>
+        new(
+            TrapCompletionRouteDecision.DeniedRetirePublication,
+            CompletionPublicationAuthorized: true,
             RetirePublicationAuthorized: false,
             NeutralReasonCode: (uint)trapResult.Kind,
             reason);
@@ -177,10 +201,9 @@ public sealed class TrapCompletionRouteService
 
         if (!route.AllowsRetirePublication)
         {
-            return TrapCompletionRouteResult.Denied(
-                TrapCompletionRouteDecision.DeniedRetirePublication,
+            return TrapCompletionRouteResult.CompletionAuthorizedButRetireDenied(
                 request.TrapResult,
-                "Trap completion route descriptor denies retire publication.");
+                "Trap completion route descriptor authorizes completion publication but denies retire publication.");
         }
 
         return new TrapCompletionRouteResult(

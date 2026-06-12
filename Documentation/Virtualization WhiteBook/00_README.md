@@ -1,8 +1,10 @@
 # HybridCPU ISE Virtualization WhiteBook
 
-Status date: 2026-05-31, after VMX refactoring closure 255.
+Status date: 2026-06-12.
 
 This WhiteBook is the split architecture record for the current HybridCPU ISE virtualization layer. It is written against the live `CloseToRTL/Core/Runtime` and `CloseToRTL/Core/Virtualization` code contours plus the VMX refactoring audit corpus.
+
+The development source of truth is `HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/`. When roadmap wording or current/future classification differs, the activation plan wins. This WhiteBook explains that plan and the confirmed implementation state; it does not independently approve activation.
 
 The central rule is simple: virtualization authority is neutral runtime authority. VMX is a frozen compatibility frontend. VMX vocabulary can describe compatibility ABI, generated projection, denied aliases, and VMX-facing completion vocabulary, but it must not own execution domains, trap policy, completion publication, memory authority, capability grants, migration payloads, secure-compute authority, or host evidence.
 
@@ -32,6 +34,7 @@ The central rule is simple: virtualization authority is neutral runtime authorit
 
 This pack is grounded in:
 
+- `HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/**`
 - `HybridCPU_ISE/docs/VMXRefactoring/2026-05-24-vmx-current-model-completion-audit.md`
 - `HybridCPU_ISE/docs/VMXRefactoring/audit3.md`
 - `HybridCPU_ISE/docs/VMXRefactoring/audit4.md`
@@ -54,6 +57,7 @@ This pack is grounded in:
 - `VmExitReason`, `ExitQualification`, and `TrapDecision` are VMX-facing projection vocabulary only.
 - VMREAD has partial generated/read-only value projection after runtime admission, but only for fields with explicit neutral owner/value sources.
 - VMCALL has neutral trap, backend-admission, route, completion, and retire fences, but production backend execution remains denied.
+- `TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication` now represents a future-gated completion-only route flag split; it is not used by VMX frontend and does not by itself publish a completion record.
 
 ## What This Pack Is Not
 

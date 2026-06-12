@@ -51,6 +51,7 @@ namespace YAKSys_Hybrid_CPU
 
         /// <summary>SMT legality rejections attributed to DMA/Stream-class candidates.</summary>
         public long SmtLegalityRejectByDmaStreamClass { get; set; }
+        public long SmtLegalityRejectByMatrixTileStreamClass { get; set; }
 
         /// <summary>SMT legality rejections attributed to Branch/Control candidates.</summary>
         public long SmtLegalityRejectByBranchControl { get; set; }
@@ -108,6 +109,7 @@ namespace YAKSys_Hybrid_CPU
 
         /// <summary>Successful injections into DMA/Stream-class lanes.</summary>
         public long DmaStreamClassInjects { get; set; }
+        public long MatrixTileStreamClassInjects { get; set; }
 
         /// <summary>Injections into Branch/Control lanes.</summary>
         public long BranchControlInjects { get; set; }
@@ -173,6 +175,7 @@ namespace YAKSys_Hybrid_CPU
             SmtLegalityRejectByAluClass > 0 ||
             SmtLegalityRejectByLsuClass > 0 ||
             SmtLegalityRejectByDmaStreamClass > 0 ||
+            SmtLegalityRejectByMatrixTileStreamClass > 0 ||
             SmtLegalityRejectByBranchControl > 0 ||
             SmtLegalityRejectBySystemSingleton > 0 ||
             NopAvoided > 0;

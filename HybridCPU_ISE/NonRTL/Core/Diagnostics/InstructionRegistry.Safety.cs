@@ -36,7 +36,8 @@ namespace YAKSys_Hybrid_CPU.Core
             {
                 explicitMask |= new SafetyMask128(0UL, StructuralFallbackLane7SingletonBitHigh);
             }
-            else if (microOp.Placement.RequiredSlotClass == SlotClass.DmaStreamClass &&
+            else if (microOp.Placement.RequiredSlotClass is
+                         SlotClass.DmaStreamClass or SlotClass.MatrixTileStreamClass &&
                      explicitMask.IsZero)
             {
                 explicitMask |= new SafetyMask128(0UL, StructuralFallbackDmaStreamLaneBitHigh);
@@ -72,7 +73,10 @@ namespace YAKSys_Hybrid_CPU.Core
                    microOp.IsControlFlow ||
                    microOp.HasSideEffects ||
                    microOp.SerializationClass != SerializationClass.Free ||
-                   microOp.Placement.RequiredSlotClass is SlotClass.BranchControl or SlotClass.SystemSingleton or SlotClass.DmaStreamClass;
+                   microOp.Placement.RequiredSlotClass is SlotClass.BranchControl
+                       or SlotClass.SystemSingleton
+                       or SlotClass.DmaStreamClass
+                       or SlotClass.MatrixTileStreamClass;
         }
 
         internal static InvalidOperationException CreateMissingExplicitStructuralSafetyMaskException(
@@ -293,7 +297,8 @@ namespace YAKSys_Hybrid_CPU.Core
             return placement.RequiredSlotClass switch
             {
                 SlotClass.BranchControl or SlotClass.SystemSingleton => new SafetyMask128(0UL, StructuralFallbackLane7SingletonBitHigh),
-                SlotClass.DmaStreamClass => new SafetyMask128(0UL, StructuralFallbackDmaStreamLaneBitHigh),
+                SlotClass.DmaStreamClass or SlotClass.MatrixTileStreamClass =>
+                    new SafetyMask128(0UL, StructuralFallbackDmaStreamLaneBitHigh),
                 _ when serializationClass != SerializationClass.Free
                     || isControlFlow
                     || hasSideEffects => new SafetyMask128(0UL, StructuralFallbackSerializedOpBitHigh),

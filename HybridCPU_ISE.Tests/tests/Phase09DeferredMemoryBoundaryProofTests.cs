@@ -266,6 +266,58 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
     }
 
     [Fact]
+    public void StoreSegmentMicroOp_WhenStoreBufferIsMissing_ThenFailsClosedInsteadOfNoOpSuccess()
+    {
+        var core = new Processor.CPU_Core(0);
+        var microOp = new StoreSegmentMicroOp
+        {
+            Instruction = new VLIW_Instruction
+            {
+                OpCode = (uint)Processor.CPU_Core.InstructionsEnum.VSTORE,
+                DataTypeValue = DataTypeEnum.UINT32,
+                DestSrc1Pointer = 0x200,
+                StreamLength = 2,
+                Stride = 4
+            }
+        };
+        microOp.InitializeMetadata();
+
+        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+            () => microOp.Execute(ref core));
+
+        Assert.Contains("StoreSegmentMicroOp.Execute()", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("missing store buffer", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("fail closed", ex.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Store2DMicroOp_WhenStoreBufferIsMissing_ThenFailsClosedInsteadOfNoOpSuccess()
+    {
+        var core = new Processor.CPU_Core(0);
+        var microOp = new Store2DMicroOp
+        {
+            Instruction = new VLIW_Instruction
+            {
+                OpCode = (uint)Processor.CPU_Core.InstructionsEnum.VSTORE,
+                DataTypeValue = DataTypeEnum.UINT32,
+                DestSrc1Pointer = 0x240,
+                Immediate = 2,
+                StreamLength = 4,
+                RowStride = 8,
+                Stride = 4
+            }
+        };
+        microOp.InitializeMetadata();
+
+        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+            () => microOp.Execute(ref core));
+
+        Assert.Contains("Store2DMicroOp.Execute()", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("missing store buffer", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("fail closed", ex.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ExplicitPacketLoadLane_WhenAsyncReadCompletesUnsuccessfully_ThenFailsClosedBeforeDecodeOrRetire()
     {
         InitializeCpuMainMemoryIdentityMap(0x1000);
@@ -580,4 +632,3 @@ public sealed class Phase09DeferredMemoryBoundaryProofTests
         }
     }
 }
-

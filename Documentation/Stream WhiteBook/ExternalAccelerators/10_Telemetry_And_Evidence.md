@@ -31,6 +31,12 @@ lane6 DSC expansion beyond Phase 06 DSC1, DSC2 execution, IOMMU-backed
 execution, async overlap, coherent DMA/cache, successful partial completion, or
 production compiler/backend lowering.
 
+They also do not constitute a lane7 golden/no-fallback artifact corpus. Full
+corpus closure still requires exact L7-SDC artifact files, manifest rows,
+manifest-consuming tests, no generic backend fallback evidence, and
+retire/replay/status publication evidence for the named surface. That corpus is
+currently `not evidenced`.
+
 Code anchors:
 
 - `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Auth/AcceleratorOwnerDomainGuard.cs`
@@ -46,8 +52,8 @@ from lane6 `DmaStreamComputeTelemetry`.
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Diagnostics/TelemetryExporter.cs`
-- `HybridCPU_ISE/Core/Diagnostics/TypedSlotTelemetryProfile.cs`
+- `HybridCPU_ISE/NonRTL/Core/Diagnostics/TelemetryExporter.cs`
+- `HybridCPU_ISE/NonRTL/Core/Diagnostics/TypedSlotTelemetryProfile.cs`
 - `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/DmaStreamComputeTelemetry.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcTelemetryTests.cs`
 

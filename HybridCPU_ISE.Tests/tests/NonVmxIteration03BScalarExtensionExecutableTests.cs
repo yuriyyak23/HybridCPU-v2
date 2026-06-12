@@ -423,7 +423,7 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
     }
 
     [Fact]
-    public void ScalarExtension_AdjacentContoursAndCompilerHelpers_RemainFailClosed()
+    public void ScalarExtension_CompilerHelpersOpenWithoutPopcntAlias()
     {
         string[] closed =
         [
@@ -443,13 +443,17 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
             Assert.False(HasEnumOrRegistryMnemonic(mnemonic));
         }
 
-        string compilerSource = ReadCompilerSource();
-        Assert.DoesNotContain("InstructionsEnum.SEXT_B", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("InstructionsEnum.SEXT_H", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("InstructionsEnum.ZEXT_H", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("SignExtendByte", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("SignExtendHalf", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("ZeroExtendHalf", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.SEXT_B", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.SEXT_H", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.ZEXT_H", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("SignExtendByte", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("SignExtendHalf", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ZeroExtendHalf", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("POPCNT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("Popcnt", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("PopulationCount", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CountPopulation", compilerSource, StringComparison.Ordinal);
     }
 
     private static ushort ResolveOpcodeValue(InstructionsEnum opcode) =>
@@ -511,17 +515,6 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
         bool hasRegistryMnemonic = OpcodeRegistry.Opcodes.Any(info =>
             string.Equals(info.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
         return hasEnum || hasRegistryMnemonic;
-    }
-
-    private static string ReadCompilerSource()
-    {
-        string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string compilerRoot = Path.Combine(repoRoot, "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(

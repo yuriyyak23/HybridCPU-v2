@@ -8,14 +8,20 @@ The live topology is fixed:
 | --- | --- |
 | 0-3 | `AluClass` |
 | 4-5 | `LsuClass` |
-| 6 | `DmaStreamClass` |
+| 6 | `DmaStreamClass` / `MatrixTileStreamClass` physical aliases |
 | 7 | `BranchControl` / `SystemSingleton` aliases |
 
 Code anchors:
 
-- `HybridCPU_ISE/Core/Pipeline/Scheduling/SlotClassDefinitions.cs`
+- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/Scheduling/SlotLegality/SlotClassDefinitions.cs`
 - `HybridCPU_Compiler/Core/IR/Model/IrHazardEnums.cs`
 - `HybridCPU_Compiler/Core/IR/Hazards/HybridCpuSlotModel.Analysis.cs`
+
+Lane6 sharing is a capacity/conflict fact, not ABI equivalence.
+`DmaStreamClass` owns the DSC descriptor/token contour.
+`MatrixTileStreamClass` owns typed MTILE load/store transport through
+StreamEngine/SRF and retire publication. A bundle cannot admit both owners on
+the single physical lane.
 
 ## SystemSingleton vs BranchControl
 
@@ -42,8 +48,9 @@ The native command surface is:
 - `ACCEL_WAIT`: system command, full serial.
 - `ACCEL_CANCEL`: system command, full serial.
 - `ACCEL_FENCE`: system command, full serial.
+- `ACCEL_STATUS`: system command, CSR ordered token/status query.
 
-Current carriers are hard-pinned lane7 command carriers with a scoped executable
+Current seven-command carriers are hard-pinned lane7 command carriers with a scoped executable
 runtime contour:
 
 - `SystemDeviceCommandMicroOp.WritesRegister = DestinationRegister != 0`;
@@ -66,8 +73,8 @@ descriptor ABI travels as sideband, not raw VLIW payload fields.
 
 Code anchors:
 
-- `HybridCPU_ISE/Arch/OpcodeInfo.Registry.Data.System.cs`
-- `HybridCPU_ISE/Arch/InstructionClassifier.cs`
+- `HybridCPU_ISE/NonRTL/Arch/OpcodeInfo.Registry.Data.System.cs`
+- `HybridCPU_ISE/NonRTL/Arch/InstructionClassifier.cs`
 - `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
 - `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNativeCarrierValidationTests.cs`

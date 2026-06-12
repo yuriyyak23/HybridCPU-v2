@@ -1,107 +1,90 @@
-# DmaStreamCompute And Assist Separation
+# Execution Contour Separation
 
-## Lane6 DmaStreamCompute
+This page records the boundary between adjacent stream, matrix, assist, DSC,
+and external-accelerator surfaces. Shared physical resources do not merge their
+ISA, descriptor, publication, or replay authority.
+
+## VectorStream
+
+`StreamEngine` orchestrates vector-stream work. SRF is transient stream state,
+`BurstIO` performs bounded memory transport, and `VectorALU` supplies typed
+vector compute. None of these helpers chooses an ISA slot or publishes guest
+architectural MatrixTile state.
+
+Canonical documentation:
+`Documentation/Stream WhiteBook/02_VectorStream/`.
+
+## MatrixTile
+
+`MTILE_LOAD` and `MTILE_STORE` are memory-semantic ISA instructions with
+runtime class `MatrixTileMemory`. They use `MatrixTileStreamClass` on physical
+lane6 and a typed StreamEngine/SRF transfer envelope.
+
+`MTILE_MACC` and `MTRANSPOSE` use the separate `MatrixTileCompute` contour.
+Execute creates an invisible capture; retire is the only tile, accumulator, or
+store publication authority. Stream completion and SRF valid/dirty state are
+not architectural evidence.
+
+Canonical documentation:
+`Documentation/Stream WhiteBook/03_MatrixTile/`.
+
+## DmaStreamCompute
 
 `DmaStreamCompute` is the lane6 descriptor carrier plus explicit runtime/helper
-token model for descriptor-backed stream compute. It has its own DSC1 descriptor
-ABI, guard, replay evidence, token, commit, and telemetry contour. Its micro-op
-uses `SlotClass.DmaStreamClass` and lane6 class placement. Current direct
-micro-op execution is open only for the Phase 06 DSC1 production contour through
-`DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`; DSC2,
-queue/async, broad lowering, and StreamEngine/DMAController fallback remain
-fail-closed.
+token model for descriptor-backed stream compute. Its micro-op uses
+`SlotClass.DmaStreamClass`. The current DSC1 path enters
+`DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`.
 
-Code anchors:
+DSC2 execution, queue/async lifecycle, and fallback to StreamEngine,
+DMAController, scalar, vector, MatrixTile, assist, or L7-SDC fail closed.
+Physical lane6 conflict with MatrixTile does not grant DSC descriptor, token,
+queue, replay, or commit authority to MTILE.
 
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs`
-- `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/*`
-- `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
-- `HybridCPU_ISE.Tests/tests/DmaStreamCompute*.cs`
-- `HybridCPU_ISE.Tests/CompilerTests/DmaStreamComputeCompilerContractTests.cs`
+Canonical documentation:
+`Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md`.
 
-Documentation anchors:
+## Assists
 
-- `Documentation/InstructionsRefactor/WhiteBook/02_Runtime_Surface_Closure.md`
-- `Documentation/InstructionsRefactor/WhiteBook/04_Memory_Atomic_Fence_Model.md`
-- `Documentation/InstructionsRefactor/WhiteBook/06_Verification_And_Risk_Closure.md`
-- `Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md`
-- `Documentation/Stream WhiteBook/StreamEngine DmaStreamCompute/02_DmaStreamCompute.md`
-- `Documentation/Refactoring/Phases Ex1/02_Executable_Lane6_DSC_ADR_Gate.md`
-- `Documentation/Refactoring/Phases Ex1/13_Dependency_Graph_And_Execution_Order.md`
+Assist is architecturally invisible, non-retiring, replay-discardable warming.
+An assist may consume LSU or lane6 DMA-class transport resources, but it does
+not become VectorALU execution, DSC descriptor acceptance, MatrixTile
+transport, or L7-SDC authority.
 
-## StreamEngine, SRF, and VectorALU helpers
+Canonical documentation:
+`Documentation/Stream WhiteBook/04_Assists/`.
 
-StreamEngine, SRF, and VectorALU are older raw stream/vector execution and ingress
-surfaces. They can share memory and SRF concepts with lane6 work, but they do not replace
-the native descriptor-backed lane6 path and do not become L7-SDC command carriers.
+## L7-SDC
 
-Code anchors:
+The current external-accelerator command contour uses lane7
+`SystemSingleton`. Its typed descriptor, guard, token, backend staging,
+commit coordinator, and register ABI are scoped L7 runtime surfaces. Production
+L7-SDC paths do not call `ICustomAccelerator.Execute()`.
 
-- `HybridCPU_ISE/Core/Execution/StreamEngine/*`
-- `HybridCPU_ISE/Core/Execution/Compute/VectorALU*.cs`
-- `Documentation/Stream WhiteBook/StreamEngine DmaStreamCompute/01_StreamEngine_SFR_SRF_VectorALU.md`
+L7-SDC is not a lane6 fallback for VectorStream, MatrixTile, DSC, or assists.
 
-## VDSA assist boundary
+## Ownership Glossary
 
-Assist is architecturally invisible, non-retiring, replay-discardable, and boundedly
-observable through cache/SRF warming, replay evidence, and telemetry. Lane6 assist
-carriers may use DMA/SRF resources for ingress warming, but that is not VectorALU
-execution, not `DmaStreamCompute` descriptor acceptance, and not L7-SDC lane7 command
-authority.
+- `DMA`: separate memory-transfer controller/channel API.
+- `StreamEngine`: in-core vector-stream orchestration and typed MTILE transport
+  substrate.
+- `SRF`: transient stream register/window state, never architectural tile
+  authority.
+- `VectorALU`: typed vector compute helper.
+- `MatrixTileRegFile`: architectural tile-state authority.
+- `DmaStreamCompute`: DSC descriptor/token/commit execution contour.
+- `Assist`: non-retiring warming contour.
+- `ExternalAccelerator`: lane7 L7-SDC command contour.
+- `backend`: scoped executor behind a guard, never automatic fallback
+  authority.
+- `commit`: contour-specific publication operation; transport completion is
+  not commit.
 
-Code anchors:
+## Fail-Closed Rule
 
-- `HybridCPU_ISE/docs/assist-semantics.md`
-- `HybridCPU_ISE/Core/Pipeline/Assist/AssistRuntime.cs`
-- `HybridCPU_ISE/Core/Pipeline/Assist/AssistMicroOp.cs`
-- `HybridCPU_ISE/Core/Pipeline/Scheduling/MicroOpScheduler.Assist.cs`
-- `HybridCPU_ISE/Core/Pipeline/Scheduling/MicroOpScheduler.AssistBackpressure.cs`
-- `Documentation/Stream WhiteBook/StreamEngine DmaStreamCompute/03_VDSA_Assist_Warming_Prefetch_SRF_DataIngress.md`
+Wrong owner, wrong domain, wrong lane, stale token/capture, mismatched resource
+identity, missing staged payload, or attempted cross-contour reuse rejects
+execution or publication. Telemetry, certificates, host state, SRF state, and
+compiler metadata cannot substitute for runtime-owned legality.
 
-Conflict evidence:
-
-- `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Conflicts/ExternalAcceleratorConflictManager.cs`
-- `HybridCPU_ISE.Tests/tests/L7SdcDmaStreamComputeConflictTests.cs`
-- `HybridCPU_ISE.Tests/tests/L7SdcSrfAssistConflictTests.cs`
-
-These conflict/cache/assist observations are model evidence only. They do not
-install a global CPU load/store authority and do not prove executable DSC/L7
-overlap, coherent DMA/cache, or production compiler/backend lowering.
-
-Stale anchors may appear only as stale examples, not current roots:
-
-- Stale only: `Documentation/DmaStreamCompute/...`
-- Stale only: `Documentation/StreamEngine DmaStreamCompute and ExternalAccelerators/...`
-
-## Ownership glossary
-
-- `DMA`: separate memory transfer controller and channel API.
-- `StreamEngine`: in-core stream/vector execution module.
-- `DmaStreamCompute`: lane6 descriptor carrier plus scoped Phase 06 runtime and
-  token/commit contour.
-- `ExternalAccelerator`: lane7 L7-SDC scoped command runtime subsystem.
-- `backend`: runtime executor behind guarded contours, not automatic fallback
-  execution.
-- `token`: model state and commit container; not authority by itself.
-- `commit`: explicit publication operation; not always retire.
-- `retire`: pipeline publication/exception boundary.
-- `fence`: scoped L7 runtime command for current tokens; broader/global fence
-  semantics remain gated.
-- `queue`: model queue unless a pipeline/device protocol is approved and
-  implemented.
-
-## Ex1 Non-Inversion Rule
-
-The following remain downstream evidence only:
-
-- lane6 DSC parser/helper/token/retire observations outside Phase 06 DSC1;
-- L7 fake backend, capability registry, queue, fence, token, register ABI, and
-  commit APIs outside the current scoped command contour;
-- IOMMU backend infrastructure and no-fallback resolver decisions;
-- conflict/cache observers and explicit non-coherent invalidation fan-out;
-- compiler sideband emission, descriptor preservation, and carrier projection.
-
-They cannot close upstream gates for expansion beyond current executable lane6
-DSC1 Phase 06 or current L7 Phase 08 / Phase 08A commands, DSC2 execution,
-async overlap, IOMMU-backed execution, coherent DMA/cache, successful partial
-completion, or production compiler/backend lowering.
+Historical refactoring records may mention superseded paths. They are archive
+evidence only and are not current WhiteBook roots.

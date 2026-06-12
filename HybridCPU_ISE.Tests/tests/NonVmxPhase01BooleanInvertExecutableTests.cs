@@ -436,19 +436,19 @@ public sealed class NonVmxPhase01BooleanInvertExecutableTests
     }
 
     [Fact]
-    public void BooleanInvert_CompilerAndVmxGates_RemainGenericNoEmission()
+    public void BooleanInvert_CompilerHelpersOpenWithoutAliasesOrVmxSpecificPath()
     {
-        string compilerSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         string vmxSource = ReadAllSource(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_ISE", "Core", "VMX"));
 
-        foreach ((InstructionsEnum opcode, string mnemonic, string helperFragment) in new[]
+        foreach ((InstructionsEnum opcode, string mnemonic, string helperName, string helperFragment) in new[]
         {
-            (InstructionsEnum.ORN, "ORN", "Orn"),
-            (InstructionsEnum.XNOR, "XNOR", "Xnor"),
+            (InstructionsEnum.ORN, "ORN", "OrWithInvertedSecond", "Orn"),
+            (InstructionsEnum.XNOR, "XNOR", "ExclusiveNor", "Xnor"),
         })
         {
-            Assert.DoesNotContain($"InstructionsEnum.{mnemonic}", compilerSource, StringComparison.Ordinal);
-            Assert.DoesNotContain(mnemonic, compilerSource, StringComparison.Ordinal);
+            Assert.Contains($"InstructionsEnum.{mnemonic}", compilerSource, StringComparison.Ordinal);
+            Assert.Contains(helperName, compilerSource, StringComparison.Ordinal);
             Assert.DoesNotContain(helperFragment, compilerSource, StringComparison.Ordinal);
 
             Assert.DoesNotContain($"InstructionsEnum.{mnemonic}", vmxSource, StringComparison.Ordinal);

@@ -87,6 +87,110 @@ public sealed class VmxHypercallBackendAdmissionPolicyTests
     }
 
     [Fact]
+    public void HypercallBackendAdmission_DraftOwnerSkeletonRemainsDeniedWithoutAcceptedSemantics()
+    {
+        NeutralTrapResult trap = CreateNeutralTrap();
+        HypercallBackendDescriptor descriptor =
+            HypercallBackendDescriptor.RuntimeOwnedDraftOwnerFence(
+                CapabilityBoundaryRequirement.None,
+                EvidenceBoundaryRequirement.None,
+                NeutralHypercallBackendOwnerDescriptor.DraftNoStateCandidate(
+                    ownerId: 0x060A));
+
+        HypercallBackendAdmissionResult result =
+            HypercallBackendAdmissionService.Default.Admit(new HypercallBackendAdmissionRequest(
+                trap,
+                RuntimeBoundaryAdmissionResult.Allowed(DomainRuntimeAuthorityResult.Allowed),
+                descriptor,
+                CapabilityDescriptorSet.Empty,
+                EvidencePolicyDescriptor.FailClosed,
+                DomainValidated: true));
+
+        Assert.Equal(
+            HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerRfcAdr,
+            result.Decision);
+        Assert.False(result.IsAllowed);
+        Assert.True(result.DeniesBackendExecution);
+        Assert.False(result.BackendExecutionAuthorized);
+        Assert.Contains("draft only", result.Reason);
+        Assert.Contains("no accepted owner semantics", result.Reason);
+    }
+
+    [Theory]
+    [InlineData(NeutralHypercallBackendOwnerSource.CompatibilityProjection)]
+    [InlineData(NeutralHypercallBackendOwnerSource.CompatibilityStateVocabulary)]
+    [InlineData(NeutralHypercallBackendOwnerSource.CapabilityProjection)]
+    [InlineData(NeutralHypercallBackendOwnerSource.MigrationCheckpoint)]
+    [InlineData(NeutralHypercallBackendOwnerSource.LaneStreamBoundary)]
+    [InlineData(NeutralHypercallBackendOwnerSource.SecureComputeBoundary)]
+    [InlineData(NeutralHypercallBackendOwnerSource.CompilerEmission)]
+    public void HypercallBackendAdmission_DeniesNonNeutralOwnerAuthoritySources(
+        NeutralHypercallBackendOwnerSource ownerSource)
+    {
+        NeutralTrapResult trap = CreateNeutralTrap();
+        var owner = new NeutralHypercallBackendOwnerDescriptor(
+            OwnerId: 0x060A,
+            Source: ownerSource,
+            RfcAdrId: NeutralHypercallBackendOwnerDescriptor.CandidateRfcAdrId,
+            RfcAdrState: NeutralHypercallBackendOwnerRfcAdrState.DraftOnly,
+            OperationClass:
+                NeutralHypercallBackendOperationClass.NoStateNoPayloadDomainLocal,
+            LeafSelection:
+                NeutralHypercallBackendLeafSelection.CandidateOnlyNoNumericLeaf,
+            NoPayloadOnly: true,
+            DomainLocalOnly: true,
+            NegativeTestsPresent: true);
+        HypercallBackendDescriptor descriptor =
+            HypercallBackendDescriptor.RuntimeOwnedDraftOwnerFence(
+                CapabilityBoundaryRequirement.None,
+                EvidenceBoundaryRequirement.None,
+                owner);
+
+        HypercallBackendAdmissionResult result =
+            HypercallBackendAdmissionService.Default.Admit(new HypercallBackendAdmissionRequest(
+                trap,
+                RuntimeBoundaryAdmissionResult.Allowed(DomainRuntimeAuthorityResult.Allowed),
+                descriptor,
+                CapabilityDescriptorSet.Empty,
+                EvidencePolicyDescriptor.FailClosed,
+                DomainValidated: true));
+
+        Assert.Equal(
+            HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerAuthority,
+            result.Decision);
+        Assert.True(result.DeniesBackendExecution);
+        Assert.False(result.BackendExecutionAuthorized);
+    }
+
+    [Fact]
+    public void HypercallBackendAdmission_DeniesDraftOwnerWithoutNegativeConformanceProof()
+    {
+        NeutralTrapResult trap = CreateNeutralTrap();
+        HypercallBackendDescriptor descriptor =
+            HypercallBackendDescriptor.RuntimeOwnedDraftOwnerFence(
+                CapabilityBoundaryRequirement.None,
+                EvidenceBoundaryRequirement.None,
+                NeutralHypercallBackendOwnerDescriptor.DraftNoStateCandidate(
+                    ownerId: 0x060A,
+                    negativeTestsPresent: false));
+
+        HypercallBackendAdmissionResult result =
+            HypercallBackendAdmissionService.Default.Admit(new HypercallBackendAdmissionRequest(
+                trap,
+                RuntimeBoundaryAdmissionResult.Allowed(DomainRuntimeAuthorityResult.Allowed),
+                descriptor,
+                CapabilityDescriptorSet.Empty,
+                EvidencePolicyDescriptor.FailClosed,
+                DomainValidated: true));
+
+        Assert.Equal(
+            HypercallBackendAdmissionDecision.DeniedNeutralBackendOwnerProof,
+            result.Decision);
+        Assert.True(result.DeniesBackendExecution);
+        Assert.False(result.BackendExecutionAuthorized);
+    }
+
+    [Fact]
     public void HypercallBackendAdmission_RejectsCompatibilityProjectionOwnedBackendAuthority()
     {
         NeutralTrapResult trap = CreateNeutralTrap();
@@ -117,12 +221,22 @@ public sealed class VmxHypercallBackendAdmissionPolicyTests
     public void HypercallBackendAdmission_SourceHasNoVmxExitOrVmcsAuthority()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs");
+            "CloseToRTL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs",
+            "CloseToRTL/Core/Runtime/Events/Hypercalls/NeutralHypercallBackendOwnerDescriptor.cs");
 
         Assert.Contains("HypercallBackendAdmissionService", source);
+        Assert.Contains("NeutralHypercallBackendOwnerDescriptor", source);
+        Assert.Contains("DraftOnly", source);
+        Assert.Contains("CandidateOnlyNoNumericLeaf", source);
+        Assert.DoesNotContain("NeutralHypercallBackendOwnerRfcAdrState.Accepted", source);
+        Assert.DoesNotContain("Accepted = ", source);
         Assert.Contains("CapabilityBoundaryRequirement", source);
         Assert.Contains("EvidenceBoundaryRequirement", source);
         Assert.Contains("HypercallBackendAuthority.Runtime", source);
+        Assert.DoesNotContain("HypercallBackendAdmissionDecision.Allowed", source);
+        Assert.DoesNotContain("BackendExecutionAuthorized: true", source);
+        Assert.DoesNotContain("AllowedBackend", source);
+        Assert.DoesNotContain("RuntimeOwnedPublication", source);
         Assert.DoesNotContain("VmExitReason", source);
         Assert.DoesNotContain("Vmx", source);
         Assert.DoesNotContain("VMX", source);

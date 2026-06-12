@@ -219,6 +219,7 @@ namespace YAKSys_Hybrid_CPU.Arch
             const VectorContourLegalityStatus na = VectorContourLegalityStatus.NotApplicable;
             const VectorContourLegalityStatus executable = VectorContourLegalityStatus.Executable;
             const VectorContourLegalityStatus failClosed = VectorContourLegalityStatus.FailClosed;
+            const VectorContourLegalityStatus descriptorOnly = VectorContourLegalityStatus.DescriptorOnly;
 
             return
             [
@@ -492,6 +493,19 @@ namespace YAKSys_Hybrid_CPU.Arch
                     na,
                     executable,
                     "VSCATTER publishes one executable 1D indexed-write carrier backed by Indexed2SrcDesc; vector 2D and indexed+2D scatter remain closed.")
+                ,
+
+                Row(
+                    "XMatrix",
+                    [InstructionsEnum.MTILE_LOAD, InstructionsEnum.MTILE_STORE, InstructionsEnum.MTILE_MACC, InstructionsEnum.MTRANSPOSE],
+                    failClosed,
+                    failClosed,
+                    failClosed,
+                    failClosed,
+                    failClosed,
+                    failClosed,
+                    descriptorOnly,
+                    "XMatrix Phase05 publishes runtime-owned descriptor-only legality rows for MTILE_LOAD, MTILE_STORE, MTILE_MACC, and MTRANSPOSE; descriptor-backed legality references the matrix/tile descriptor, memory/fault, accumulator, and transpose ABI, while decoder, IR, MicroOp, execution, compiler emission, and fallback paths remain closed.")
             ];
         }
 

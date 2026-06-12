@@ -202,12 +202,7 @@ public sealed class DmaStreamComputeQueryCapsPhase07ATests
         Assert.DoesNotContain(threadMethods, name => name.Contains("QueryCaps", StringComparison.Ordinal));
 
         string repoRoot = ResolveRepoRoot();
-        string compilerText = File.ReadAllText(Path.Combine(
-            repoRoot,
-            "HybridCPU_Compiler",
-            "API",
-            "Threading",
-            "HybridCpuThreadCompilerContext.cs"));
+        string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("DSC_QUERY_CAPS", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamComputeQueryCaps", compilerText, StringComparison.Ordinal);
 

@@ -106,6 +106,8 @@ namespace HybridCPU.Compiler.Core.Threading
             StealabilityPolicy stealabilityPolicy)
         {
             ValidateNoDirectSystemDeviceCommandEmission(opCode);
+            ValidateNoDirectMatrixTileEmission(opCode);
+            ValidateNoDirectVectorTransferEmission(opCode);
             uint encodedStreamLength = RequireVliwUInt32(streamLength, nameof(streamLength));
             if (_instructionCount >= MAX_INSTRUCTIONS_PER_THREAD)
                 throw new InvalidOperationException($"VT-{_virtualThreadId.Value}: Instruction buffer overflow (max {MAX_INSTRUCTIONS_PER_THREAD})");
@@ -328,6 +330,15 @@ namespace HybridCPU.Compiler.Core.Threading
             {
                 throw new InvalidOperationException(
                     "L7-SDC system-device opcodes require explicit accelerator intent; use CompileAcceleratorSubmit with typed descriptor sideband.");
+            }
+        }
+
+        private static void ValidateNoDirectVectorTransferEmission(uint opCode)
+        {
+            if (opCode is (uint)InstructionsEnum.VLOAD or (uint)InstructionsEnum.VSTORE)
+            {
+                throw new InvalidOperationException(
+                    "VLOAD/VSTORE require the explicit typed vector load/store helper ABI; raw CompileInstruction transport is not emission authority.");
             }
         }
 

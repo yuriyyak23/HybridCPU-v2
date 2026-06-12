@@ -150,7 +150,7 @@ public sealed class DmaStreamComputeCompilerContractTests
                 methodName => methodName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
         }
 
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
         string[] forbiddenSourceFragments =
         [
             "DSC_STATUS",
@@ -222,17 +222,4 @@ public sealed class DmaStreamComputeCompilerContractTests
         Assert.Equal(0, context.GetCompiledInstructions().Length);
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerDirectory = Path.Combine(
-            CompatFreezeScanner.FindRepoRoot(),
-            "HybridCPU_Compiler");
-
-        return string.Join(
-            Environment.NewLine,
-            Directory
-                .EnumerateFiles(compilerDirectory, "*.cs", SearchOption.AllDirectories)
-                .Where(static path => !CompatFreezeScanner.IsGeneratedPath(path))
-                .Select(File.ReadAllText));
-    }
 }

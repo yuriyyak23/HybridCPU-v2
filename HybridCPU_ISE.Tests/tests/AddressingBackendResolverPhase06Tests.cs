@@ -441,7 +441,7 @@ public sealed class AddressingBackendResolverPhase06Tests
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
         Assert.Empty(ScanCurrentExecutableSurfacesForPhase06Hooks(repoRoot));
 
-        string compilerText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadAllCompilerSource();
         Assert.DoesNotContain("AddressingBackendResolver", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("MemoryAddressSpaceKind", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("IommuTranslated", compilerText, StringComparison.Ordinal);
@@ -534,12 +534,4 @@ public sealed class AddressingBackendResolverPhase06Tests
             new AcceleratorFenceMicroOp()
         };
 
-    private static string ReadAllSourceText(string root)
-    {
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(file => !CompatFreezeScanner.IsGeneratedPath(file))
-                .Select(File.ReadAllText));
-    }
 }

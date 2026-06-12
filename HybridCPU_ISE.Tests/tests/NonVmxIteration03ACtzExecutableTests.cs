@@ -364,7 +364,7 @@ public sealed class NonVmxIteration03ACtzExecutableTests
             Assert.False(HasEnumOrRegistryMnemonic(mnemonic));
         }
 
-        string compilerSource = ReadCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.DoesNotContain("POPCNT", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("CountPopulation", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("PopulationCount", compilerSource, StringComparison.Ordinal);
@@ -378,17 +378,6 @@ public sealed class NonVmxIteration03ACtzExecutableTests
         bool hasRegistryMnemonic = OpcodeRegistry.Opcodes.Any(info =>
             string.Equals(info.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
         return hasEnum || hasRegistryMnemonic;
-    }
-
-    private static string ReadCompilerSource()
-    {
-        string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string compilerRoot = Path.Combine(repoRoot, "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(

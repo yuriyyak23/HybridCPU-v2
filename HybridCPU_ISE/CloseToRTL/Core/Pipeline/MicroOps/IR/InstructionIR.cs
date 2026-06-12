@@ -1,6 +1,7 @@
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
+using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 
 namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
 {
@@ -98,6 +99,14 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps
         /// registry, materializer, MicroOp, execute, retire, and replay proof chain.
         /// </summary>
         public VectorInstructionPayload? VectorPayload { get; init; }
+
+        /// <summary>
+        /// Typed matrix/tile runtime projection for MTILE decode. This sideband is
+        /// materializer evidence only; it does not publish a MicroOp, scheduler lane,
+        /// execution path, retire behavior, replay behavior, compiler helper, or
+        /// fallback lowering authority.
+        /// </summary>
+        public MatrixTileInstructionIrProjection? MatrixTileProjection { get; init; }
 
         /// <summary>
         /// Typed VMX-v2 operand/qualification sideband. VMX execution remains

@@ -170,6 +170,7 @@ public static class TelemetryExporter
             [SlotClass.AluClass] = metrics.AluClassInjects,
             [SlotClass.LsuClass] = metrics.LsuClassInjects,
             [SlotClass.DmaStreamClass] = metrics.DmaStreamClassInjects,
+            [SlotClass.MatrixTileStreamClass] = metrics.MatrixTileStreamClassInjects,
             [SlotClass.BranchControl] = metrics.BranchControlInjects,
             [SlotClass.SystemSingleton] = 0 // no dedicated counter; derived below
         };
@@ -180,6 +181,7 @@ public static class TelemetryExporter
             [SlotClass.AluClass] = GetValueOrDefault(smtLegalityRejectsPerClass, SlotClass.AluClass),
             [SlotClass.LsuClass] = GetValueOrDefault(smtLegalityRejectsPerClass, SlotClass.LsuClass),
             [SlotClass.DmaStreamClass] = GetValueOrDefault(smtLegalityRejectsPerClass, SlotClass.DmaStreamClass),
+            [SlotClass.MatrixTileStreamClass] = GetValueOrDefault(smtLegalityRejectsPerClass, SlotClass.MatrixTileStreamClass),
             [SlotClass.BranchControl] = GetValueOrDefault(smtLegalityRejectsPerClass, SlotClass.BranchControl),
             [SlotClass.SystemSingleton] = GetValueOrDefault(smtLegalityRejectsPerClass, SlotClass.SystemSingleton)
         };
@@ -290,10 +292,11 @@ public static class TelemetryExporter
 
     private static Dictionary<SlotClass, long>? BuildCertificateRejectsPerClass(SchedulerPhaseMetrics metrics)
     {
-        var rejectsPerClass = new Dictionary<SlotClass, long>(5);
+        var rejectsPerClass = new Dictionary<SlotClass, long>(6);
         AddIfPositive(rejectsPerClass, SlotClass.AluClass, metrics.CertificateRejectByAluClass);
         AddIfPositive(rejectsPerClass, SlotClass.LsuClass, metrics.CertificateRejectByLsuClass);
         AddIfPositive(rejectsPerClass, SlotClass.DmaStreamClass, metrics.CertificateRejectByDmaStreamClass);
+        AddIfPositive(rejectsPerClass, SlotClass.MatrixTileStreamClass, metrics.CertificateRejectByMatrixTileStreamClass);
         AddIfPositive(rejectsPerClass, SlotClass.BranchControl, metrics.CertificateRejectByBranchControl);
         AddIfPositive(rejectsPerClass, SlotClass.SystemSingleton, metrics.CertificateRejectBySystemSingleton);
         return rejectsPerClass.Count == 0 ? null : rejectsPerClass;
@@ -301,10 +304,11 @@ public static class TelemetryExporter
 
     private static Dictionary<SlotClass, long>? BuildSmtLegalityRejectsPerClass(SchedulerPhaseMetrics metrics)
     {
-        var rejectsPerClass = new Dictionary<SlotClass, long>(5);
+        var rejectsPerClass = new Dictionary<SlotClass, long>(6);
         AddIfPositive(rejectsPerClass, SlotClass.AluClass, metrics.SmtLegalityRejectByAluClass);
         AddIfPositive(rejectsPerClass, SlotClass.LsuClass, metrics.SmtLegalityRejectByLsuClass);
         AddIfPositive(rejectsPerClass, SlotClass.DmaStreamClass, metrics.SmtLegalityRejectByDmaStreamClass);
+        AddIfPositive(rejectsPerClass, SlotClass.MatrixTileStreamClass, metrics.SmtLegalityRejectByMatrixTileStreamClass);
         AddIfPositive(rejectsPerClass, SlotClass.BranchControl, metrics.SmtLegalityRejectByBranchControl);
         AddIfPositive(rejectsPerClass, SlotClass.SystemSingleton, metrics.SmtLegalityRejectBySystemSingleton);
         return rejectsPerClass.Count == 0 ? null : rejectsPerClass;

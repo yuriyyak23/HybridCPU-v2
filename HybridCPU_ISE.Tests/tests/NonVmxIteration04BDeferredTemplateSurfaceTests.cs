@@ -114,7 +114,7 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     {
         Type[] templateTypes = GetDeferredTemplateTypes();
 
-        Assert.Equal(105, templateTypes.Length);
+        Assert.Equal(101, templateTypes.Length);
         foreach (Type templateType in templateTypes)
         {
             Assert.False(GetConstant<bool>(templateType, "IsExecutable"), templateType.FullName);
@@ -134,7 +134,7 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
                 type.Namespace!.Contains(".Lanes04_05Memory.", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(52, vectorTypes.Length);
+        Assert.Equal(48, vectorTypes.Length);
         foreach (Type templateType in vectorTypes)
         {
             Assert.True(GetConstant<bool>(templateType, "RequiresVectorLegalityMatrixClosure"), templateType.FullName);
@@ -820,7 +820,7 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     [InlineData(typeof(CloseToRtlMtileStore), "MTILE_STORE", true, false, false)]
     [InlineData(typeof(CloseToRtlMtileMacc), "MTILE_MACC", false, true, false)]
     [InlineData(typeof(CloseToRtlMtranspose), "MTRANSPOSE", false, false, true)]
-    public void Iteration11A_MatrixTileLeafTemplates_RemainOptionalDisabledNoExecution(
+    public void Iteration11A_MatrixTileLeafTemplates_RecordPhase13RuntimeExecution(
         Type templateType,
         string mnemonic,
         bool expectsMemoryShapeFaultModel,
@@ -828,13 +828,14 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
         bool expectsTransposePolicyAbi)
     {
         Assert.Equal(mnemonic, GetConstant<string>(templateType, "Mnemonic"));
-        Assert.Equal("VectorDotMatrixDeferredNoExecution", GetConstant<string>(templateType, "EvidenceBoundary"));
-        Assert.True(GetConstant<bool>(templateType, "OptionalDisabledInIsaV4"), templateType.FullName);
+        Assert.Equal("MatrixTileRuntimeExecutableAuthority", GetConstant<string>(templateType, "EvidenceBoundary"));
+        Assert.False(GetConstant<bool>(templateType, "OptionalDisabledInIsaV4"), templateType.FullName);
+        Assert.True(GetConstant<bool>(templateType, "OptionalEnabledInIsaV4"), templateType.FullName);
         Assert.True(GetConstant<bool>(templateType, "RequiresTileExecutionModel"), templateType.FullName);
         Assert.True(GetConstant<bool>(templateType, "RequiresTileDescriptorAbi"), templateType.FullName);
         Assert.True(GetConstant<bool>(templateType, "RequiresVectorLegalityMatrixClosure"), templateType.FullName);
         Assert.True(GetConstant<bool>(templateType, "RequiresFutureRetireReplayEvidence"), templateType.FullName);
-        Assert.False(GetConstant<bool>(templateType, "IsExecutable"), templateType.FullName);
+        Assert.True(GetConstant<bool>(templateType, "IsExecutable"), templateType.FullName);
         Assert.False(GetConstant<bool>(templateType, "CompilerHelperAllowed"), templateType.FullName);
         Assert.Null(templateType.GetProperty("Opcode", BindingFlags.Public | BindingFlags.Static));
         Assert.Null(templateType.GetMethod("Execute", BindingFlags.Public | BindingFlags.Static));

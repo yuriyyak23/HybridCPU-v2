@@ -1,4 +1,5 @@
 using HybridCPU.Compiler.Core.API.Facade;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
 using HybridCPU_ISE.CloseToRTL.Memory.MMU;
@@ -293,13 +294,62 @@ public sealed class Phase05BVectorSaturatingAddExecutableTests
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("FixedPoint", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Clip", StringComparison.OrdinalIgnoreCase));
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("VADD.SAT", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerVectorHelperClosedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("CompilerVectorVlmBlockedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VADD.SAT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.VADD_SAT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VADD_SAT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VADD_SAT", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVaddSat", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVaddSat", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("VADDSAT", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VSUB.SAT", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VMUL.SAT", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VAVG", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VCLIP", compilerSource, StringComparison.Ordinal);
+
+        foreach (CompilerFailClosedEmissionRow row in CompilerFailClosedEmissionInventory.VectorFixedPointSaturationRows)
+        {
+            Assert.Contains(row.Mnemonic, compilerSource, StringComparison.Ordinal);
+
+            CompilerVectorVlmBlockedAbiContract contract = Assert.Single(
+                CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows,
+                contract => contract.Mnemonic == row.Mnemonic);
+            Assert.Equal(CompilerVectorVlmBlockedAbiClass.FixedPointSaturation, contract.AbiClass);
+            Assert.False(contract.CompilerEmissionAllowed);
+
+            foreach (string fragment in row.CompilerSourceFragments)
+            {
+                Assert.DoesNotContain(fragment, compilerSource, StringComparison.Ordinal);
+            }
+
+            foreach (string fragment in row.PublicHelperFragments)
+            {
+                Assert.DoesNotContain(publicMethodNames, name => name.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        foreach (CompilerFailClosedEmissionRow row in CompilerFailClosedEmissionInventory.VectorFixedPointAverageClipRows)
+        {
+            Assert.Contains(row.Mnemonic, compilerSource, StringComparison.Ordinal);
+
+            CompilerVectorVlmBlockedAbiContract contract = Assert.Single(
+                CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows,
+                contract => contract.Mnemonic == row.Mnemonic);
+            Assert.Equal(CompilerVectorVlmBlockedAbiClass.FixedPointAverageClip, contract.AbiClass);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.True(contract.NoVaddSatFallback);
+            Assert.True(contract.NoFixedPointSaturationFallback);
+            Assert.True(contract.NoBaseVectorArithmeticFallback);
+            Assert.True(contract.NoExecutableRowAliasPromotion);
+
+            foreach (string fragment in row.CompilerSourceFragments)
+            {
+                Assert.DoesNotContain(fragment, compilerSource, StringComparison.Ordinal);
+            }
+
+            foreach (string fragment in row.PublicHelperFragments)
+            {
+                Assert.DoesNotContain(publicMethodNames, name => name.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+            }
+        }
     }
 
     private static VectorSaturatingAddMicroOp MaterializeVaddSat(
@@ -483,15 +533,4 @@ public sealed class Phase05BVectorSaturatingAddExecutableTests
             .ToArray();
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        IEnumerable<string> files = Directory.EnumerateFiles(
-                compilerRoot,
-                "*.cs",
-                SearchOption.AllDirectories)
-            .Where(filePath => !CompatFreezeScanner.IsGeneratedPath(filePath));
-
-        return string.Join(Environment.NewLine, files.Select(File.ReadAllText));
-    }
 }

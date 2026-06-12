@@ -175,8 +175,7 @@ internal sealed class LegacyVmxFreezeReadinessCertificationContract
 
     public const bool BroadVmxFilterPassedAfterRepositoryPathRepair = true;
 
-    public const string MoveAwayProbeTargetRoot =
-        @"New folder";
+    public const string MoveAwayProbeTargetRoot = @"\Desktop\New folder";
 
     public static readonly string[] MoveAwayProbeMissingSymbols = Array.Empty<string>();
 

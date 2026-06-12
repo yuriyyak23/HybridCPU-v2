@@ -431,34 +431,37 @@ public sealed class CanonicalDecoderAcceptanceInventoryTests
     [InlineData(InstructionsEnum.MTILE_STORE, "MTILE_STORE")]
     [InlineData(InstructionsEnum.MTILE_MACC, "MTILE_MACC")]
     [InlineData(InstructionsEnum.MTRANSPOSE, "MTRANSPOSE")]
-    public void MatrixOpcodes_HaveEnumValuesButCanonicalDecoderFailsClosed(
+    public void MatrixOpcodes_HaveTypedMicroOpRegistryAndPhase13ExecutableCatalogClaim(
         InstructionsEnum opcode,
         string mnemonic)
     {
         InstructionSupportStatus status = InstructionSupportStatusCatalog.GetStatus(mnemonic);
-        Assert.Equal(IsaInstructionStatus.OptionalDisabled, status.Status);
-        Assert.Equal(RuntimeInstructionEvidence.DeclaredOnly, status.RuntimeEvidence);
+        Assert.Equal(IsaInstructionStatus.OptionalEnabled, status.Status);
+        Assert.Equal(RuntimeInstructionEvidence.ConformanceTested, status.RuntimeEvidence);
         Assert.True(status.HasNumericOpcode);
-        Assert.False(status.HasRuntimeOpcodeMetadata);
-        Assert.False(status.HasCanonicalDecoderAcceptance);
-        Assert.False(status.HasRegistryFactory);
-        Assert.False(status.HasExecutionSemantics);
-        Assert.False(status.IsExecutableClaim);
-        Assert.Null(OpcodeRegistry.GetInfo((uint)opcode));
-        Assert.Null(InstructionRegistry.GetDescriptor((uint)opcode));
-        Assert.False(InstructionRegistry.IsRegistered((uint)opcode));
+        Assert.True(status.HasRuntimeOpcodeMetadata);
+        Assert.True(status.HasCanonicalDecoderAcceptance);
+        Assert.True(status.HasRegistryFactory);
+        Assert.True(status.HasExecutionSemantics);
+        Assert.True(status.IsExecutableClaim);
+        Assert.NotNull(OpcodeRegistry.GetInfo((uint)opcode));
+        Assert.NotNull(InstructionRegistry.GetDescriptor((uint)opcode));
+        Assert.True(InstructionRegistry.IsMatrixTileMaterializerRegistered((uint)opcode));
+        Assert.True(InstructionRegistry.IsRegistered((uint)opcode));
 
         var decoder = new VliwDecoderV4();
-        VLIW_Instruction instruction = new()
-        {
-            OpCode = (uint)opcode,
-            DataTypeValue = DataTypeEnum.INT32,
-            StreamLength = 1
-        };
+        VLIW_Instruction instruction = InstructionEncoder.EncodeVector1D(
+            (uint)opcode,
+            DataTypeEnum.INT32,
+            destSrc1Ptr: 0x1000,
+            src2Ptr: 0x2000,
+            streamLength: 4,
+            stride: 16);
 
-        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
-            () => decoder.Decode(in instruction, slotIndex: 0));
-        Assert.Contains("unsupported optional matrix", exception.Message, StringComparison.Ordinal);
+        InstructionIR ir = decoder.Decode(in instruction, slotIndex: 0);
+        Assert.Equal((ushort)opcode, ir.CanonicalOpcode.Value);
+        Assert.True(ir.MatrixTileProjection.HasValue);
+        Assert.True(InstructionRegistry.IsRegistered((uint)opcode));
     }
 
     [Theory]
@@ -1475,7 +1478,8 @@ public sealed class InstructionRegistryFactoryCoverageTests
         Assert.NotEqual(ResourceBitset.Zero, microOp.ResourceMask);
         Assert.True(microOp.SafetyMask.IsNonZero);
         Assert.True(microOp.AdmissionMetadata.StructuralSafetyMask.IsNonZero);
-        Assert.Equal(SlotClass.AluClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
+        Assert.Equal(MicroOpClass.Lsu, microOp.Class);
+        Assert.Equal(SlotClass.LsuClass, microOp.AdmissionMetadata.Placement.RequiredSlotClass);
         Assert.Equal(SlotPinningKind.ClassFlexible, microOp.AdmissionMetadata.Placement.PinningKind);
         Assert.False(microOp.TryGetPrimaryWriteBackResult(out _));
 
@@ -2709,21 +2713,43 @@ public sealed class InstructionRegistryFactoryCoverageTests
 
 public sealed class EncoderDecoderDeclaredRoundtripInventoryTests
 {
-    [Fact]
-    public void GenericVectorEncoder_CanEmitMatrixOpcodeThatCanonicalDecoderRejects()
+    [Theory]
+    [InlineData(InstructionsEnum.MTILE_LOAD, InstructionClass.Memory, SerializationClass.Free)]
+    [InlineData(InstructionsEnum.MTILE_STORE, InstructionClass.Memory, SerializationClass.MemoryOrdered)]
+    [InlineData(InstructionsEnum.MTILE_MACC, InstructionClass.ScalarAlu, SerializationClass.Free)]
+    [InlineData(InstructionsEnum.MTRANSPOSE, InstructionClass.ScalarAlu, SerializationClass.Free)]
+    public void GenericVectorEncoder_CanEmitMatrixOpcodeThatCanonicalDecoderAccepts(
+        InstructionsEnum opcode,
+        InstructionClass expectedClass,
+        SerializationClass expectedSerialization)
     {
         VLIW_Instruction instruction = InstructionEncoder.EncodeVector1D(
-            (uint)InstructionsEnum.MTILE_LOAD,
+            (uint)opcode,
             DataTypeEnum.INT32,
             destSrc1Ptr: 0x1000,
             src2Ptr: 0x2000,
             streamLength: 4);
 
         var decoder = new VliwDecoderV4();
-        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
-            () => decoder.Decode(in instruction, slotIndex: 0));
+        InstructionIR ir = decoder.Decode(in instruction, slotIndex: 0);
 
-        Assert.Contains("unsupported optional matrix memory contour", exception.Message, StringComparison.Ordinal);
+        Assert.Equal((ushort)opcode, ir.CanonicalOpcode.Value);
+        Assert.Equal(expectedClass, ir.Class);
+        Assert.Equal(expectedSerialization, ir.SerializationClass);
+        Assert.True(OpcodeRegistry.RequiresVectorPayloadProjection((uint)opcode));
+        Assert.NotNull(OpcodeRegistry.GetInfo((uint)opcode));
+        Assert.True(ir.VectorPayload.HasValue);
+        Assert.True(ir.MatrixTileProjection.HasValue);
+        Assert.False(ir.MatrixTileProjection.Value.OpensExecution);
+        Assert.False(ir.MatrixTileProjection.Value.UsesFallbackPath);
+        Assert.Equal(0x1000UL, ir.VectorPayload.Value.PrimaryPointer);
+        Assert.Equal(0x2000UL, ir.VectorPayload.Value.SecondaryPointer);
+        Assert.Equal(4U, ir.VectorPayload.Value.StreamLength);
+        Assert.Equal((ushort)0, ir.VectorPayload.Value.RowStride);
+        Assert.False(ir.HasAbsoluteAddressing);
+        Assert.Equal(VLIW_Instruction.NoArchReg, ir.Rd);
+        Assert.Equal(VLIW_Instruction.NoArchReg, ir.Rs1);
+        Assert.Equal(VLIW_Instruction.NoArchReg, ir.Rs2);
     }
 
     [Fact]

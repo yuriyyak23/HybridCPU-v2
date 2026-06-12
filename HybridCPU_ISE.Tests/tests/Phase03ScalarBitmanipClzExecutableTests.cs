@@ -360,7 +360,7 @@ public sealed class ScalarBitmanipClzExecutableTests
     [Fact]
     public void Clz_CompilerEmission_OnlyOpensSelectedCountLeadingZerosHelper()
     {
-        string compilerSource = ReadCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
 
         Assert.Contains("CountLeadingZeros", compilerSource, StringComparison.Ordinal);
         Assert.Contains("InstructionsEnum.CLZ", compilerSource, StringComparison.Ordinal);
@@ -392,17 +392,6 @@ public sealed class ScalarBitmanipClzExecutableTests
         bool hasRegistryMnemonic = OpcodeRegistry.Opcodes.Any(info =>
             string.Equals(info.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
         return hasEnum || hasRegistryMnemonic;
-    }
-
-    private static string ReadCompilerSource()
-    {
-        string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string compilerRoot = Path.Combine(repoRoot, "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(

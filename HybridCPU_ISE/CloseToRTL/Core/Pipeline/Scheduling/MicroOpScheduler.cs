@@ -898,6 +898,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
         /// <summary>SMT legality rejections attributed to DMA/Stream-class candidates.</summary>
         public long SmtLegalityRejectByDmaStreamClass { get; private set; }
+        public long SmtLegalityRejectByMatrixTileStreamClass { get; private set; }
 
         /// <summary>SMT legality rejections attributed to Branch/Control candidates.</summary>
         public long SmtLegalityRejectByBranchControl { get; private set; }
@@ -1064,6 +1065,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
         /// <summary>Successful injections into DMA/Stream-class lanes.</summary>
         public long DmaStreamClassInjects { get; private set; }
+        public long MatrixTileStreamClassInjects { get; private set; }
 
         /// <summary>Injections into Branch/Control lanes.</summary>
         public long BranchControlInjects { get; private set; }
@@ -1076,6 +1078,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
         /// <summary>Certificate rejections attributed to DMA/Stream-class candidates.</summary>
         public long CertificateRejectByDmaStreamClass { get; private set; }
+        public long CertificateRejectByMatrixTileStreamClass { get; private set; }
 
         /// <summary>Certificate rejections attributed to Branch/Control candidates.</summary>
         public long CertificateRejectByBranchControl { get; private set; }

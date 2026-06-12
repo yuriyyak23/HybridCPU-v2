@@ -1,18 +1,18 @@
 // BREV8 production path:
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\ByteBitReverse\Brev8Instruction.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\ByteBitReverse\Brev8Instruction.LocalSemantics.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Architecture\Common\CPU_Core.Enums.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Frontend\Decode\VliwDecoderV4Bridge\VliwDecoderV4.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Core.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\Internal\InternalOp.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\Scalar\ALU\ScalarAluOps.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Execution\Dispatch\ExecutionDispatcherV4.Scalar.cs
-// - HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxPhase01ByteBitReverseExecutableTests.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\ByteBitReverse\Brev8Instruction.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\ByteBitReverse\Brev8Instruction.LocalSemantics.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Architecture\Common\CPU_Core.Enums.cs
+// - \HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
+// - \HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
+// - \HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Frontend\Decode\VliwDecoderV4Bridge\VliwDecoderV4.cs
+// - \HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Helpers.Core.cs
+// - \HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
+// - \HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Pipeline\MicroOps\Internal\InternalOp.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Execution\Scalar\ALU\ScalarAluOps.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\Execution\Dispatch\ExecutionDispatcherV4.Scalar.cs
+// - \HybridCPU_ISE.Tests\tests\NonVmxPhase01ByteBitReverseExecutableTests.cs
 // BREV8 production metadata anchor: scalar per-byte bit reverse is opened as a
 // unary XLEN=64 scalar ALU row. It remains separate from vector VBREV8; compiler
 // helper emission and VMX-specific frontend integration remain closed.

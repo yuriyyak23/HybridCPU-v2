@@ -364,8 +364,7 @@ public sealed class CachePrefetchNonCoherentPhase09Tests
             Path.Combine(root, "HybridCPU_ISE", "Core", "Cache", "CPU_Core.Cache.cs"));
         string observerSource = File.ReadAllText(
             Path.Combine(root, "HybridCPU_ISE", "Core", "Memory", "MemoryCoherencyObserver.cs"));
-        string compilerSource = File.ReadAllText(
-            Path.Combine(root, "HybridCPU_Compiler", "API", "Threading", "HybridCpuThreadCompilerContext.cs"));
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         string combined = cacheSource + observerSource + compilerSource;
 
         Assert.Contains(

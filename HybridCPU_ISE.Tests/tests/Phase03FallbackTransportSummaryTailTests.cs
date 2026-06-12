@@ -1,7 +1,9 @@
+using System;
 using HybridCPU_ISE.Arch;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
+using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Legality;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
@@ -249,9 +251,11 @@ public sealed class Phase03FallbackTransportSummaryTailTests
         }
 
         [Theory]
+        [InlineData(InstructionsEnum.MTILE_LOAD, 0x4B40UL)]
+        [InlineData(InstructionsEnum.MTILE_STORE, 0x4B60UL)]
         [InlineData(InstructionsEnum.MTILE_MACC, 0x4B00UL)]
         [InlineData(InstructionsEnum.MTRANSPOSE, 0x4B20UL)]
-        public void DecodeFullBundle_UnsupportedOptionalMatrixContours_FailClosedAsDecodeFaultTrap(
+        public void DecodeFullBundle_RuntimeOwnedMatrixTileContours_PublishTypedCarrierInsteadOfFallbackTrap(
             InstructionsEnum opcode,
             ulong pc)
         {
@@ -260,7 +264,7 @@ public sealed class Phase03FallbackTransportSummaryTailTests
 
             VLIW_Instruction[] rawSlots =
                 CreateBundle(
-                    CreateScalarInstruction(opcode, rd: 4, rs1: 5, rs2: 6, immediate: 0x280),
+                    CreateGoldenMatrixTileInstruction(opcode),
                     default);
 
             core.TestDecodeFetchedBundle(rawSlots, pc);
@@ -269,20 +273,32 @@ public sealed class Phase03FallbackTransportSummaryTailTests
             BundleLegalityDescriptor legalityDescriptor = core.GetCurrentBundleLegalityDescriptor();
             DecodedBundleTransportFacts transportFacts = core.TestReadCurrentDecodedBundleTransportFacts();
             DecodedBundleSlotDescriptor slot = transportFacts.Slots[0];
-            TrapMicroOp trapMicroOp = Assert.IsType<TrapMicroOp>(slot.MicroOp);
+            MatrixTileMicroOp microOp = Assert.IsAssignableFrom<MatrixTileMicroOp>(slot.MicroOp);
 
-            Assert.True(canonicalBundle.HasDecodeFault);
-            Assert.True(canonicalBundle.IsEmpty);
-            Assert.True(legalityDescriptor.HasDecodeFault);
-            Assert.True(legalityDescriptor.IsEmpty);
+            bool expectedMemoryCarrier =
+                opcode is InstructionsEnum.MTILE_LOAD or InstructionsEnum.MTILE_STORE;
+
+            Assert.False(canonicalBundle.HasDecodeFault);
+            Assert.False(canonicalBundle.IsEmpty);
+            Assert.False(legalityDescriptor.HasDecodeFault);
+            Assert.False(legalityDescriptor.IsEmpty);
             Assert.Equal((byte)0b0000_0001, transportFacts.ValidNonEmptyMask);
-            Assert.Equal((byte)0, transportFacts.AdmissionPrep.ScalarCandidateMask);
-            Assert.Equal((byte)0b0000_0001, transportFacts.AdmissionPrep.AuxiliaryOpMask);
-            Assert.Equal((uint)opcode, trapMicroOp.OpCode);
-            Assert.Equal(SlotClass.SystemSingleton, slot.Placement.RequiredSlotClass);
+            Assert.Equal((uint)opcode, slot.OpCode);
+            Assert.Equal(expectedMemoryCarrier, slot.IsMemoryOp);
+            Assert.Equal(expectedMemoryCarrier, microOp.AdmissionMetadata.IsMemoryOp);
+            Assert.Equal(
+                expectedMemoryCarrier
+                    ? SlotClass.MatrixTileStreamClass
+                    : SlotClass.AluClass,
+                slot.Placement.RequiredSlotClass);
+            Assert.Equal(SlotPinningKind.ClassFlexible, slot.Placement.PinningKind);
             Assert.False(slot.WritesRegister);
             Assert.Empty(slot.ReadRegisters);
             Assert.Empty(slot.WriteRegisters);
+            Assert.True(microOp.PublishesTypedTileMicroOp);
+            Assert.True(microOp.PublishesExecutionCaptureSemantics);
+            Assert.False(microOp.UsesFallbackPath);
+            AssertMatrixTileTypeAndMemoryShape(opcode, microOp);
         }
 
         [Fact]
@@ -357,44 +373,65 @@ public sealed class Phase03FallbackTransportSummaryTailTests
             Assert.Empty(slot.WriteRegisters);
         }
 
-        [Theory]
-        [InlineData(InstructionsEnum.MTILE_LOAD, 0x4B40UL)]
-        [InlineData(InstructionsEnum.MTILE_STORE, 0x4B60UL)]
-        public void DecodeFullBundle_UnsupportedOptionalMatrixMemoryContours_FailClosedAsDecodeFaultTrap(
-            InstructionsEnum opcode,
-            ulong pc)
+        private static VLIW_Instruction CreateGoldenMatrixTileInstruction(InstructionsEnum opcode)
         {
-            var core = new Processor.CPU_Core(0);
-            core.PrepareExecutionStart(pc);
+            foreach (MatrixTileExecutionGoldenVector vector in
+                     MatrixTilePositiveGoldenArtifactManifest.ExecutionVectors)
+            {
+                if (vector.Opcode == opcode)
+                {
+                    return vector.Carrier.CreateInstruction();
+                }
+            }
 
-            VLIW_Instruction[] rawSlots =
-                CreateBundle(
-                    CreateScalarInstruction(opcode, rd: 4, rs1: 5, rs2: 6, immediate: 0x2C0),
-                    default);
+            throw new InvalidOperationException($"No positive matrix/tile golden carrier is published for {opcode}.");
+        }
 
-            rawSlots[0].StreamLength = 4;
-            rawSlots[0].Stride = 4;
+        private static void AssertMatrixTileTypeAndMemoryShape(
+            InstructionsEnum opcode,
+            MatrixTileMicroOp microOp)
+        {
+            switch (opcode)
+            {
+                case InstructionsEnum.MTILE_LOAD:
+                    Assert.IsType<MtileLoadMicroOp>(microOp);
+                    Assert.Equal(MatrixTileProjectedOperationKind.Load, microOp.OperationKind);
+                    Assert.Equal(InstructionClass.Memory, microOp.InstructionClass);
+                    Assert.Equal(SerializationClass.Free, microOp.SerializationClass);
+                    Assert.NotEmpty(microOp.AdmissionMetadata.ReadMemoryRanges);
+                    Assert.Empty(microOp.AdmissionMetadata.WriteMemoryRanges);
+                    break;
 
-            core.TestDecodeFetchedBundle(rawSlots, pc);
+                case InstructionsEnum.MTILE_STORE:
+                    Assert.IsType<MtileStoreMicroOp>(microOp);
+                    Assert.Equal(MatrixTileProjectedOperationKind.Store, microOp.OperationKind);
+                    Assert.Equal(InstructionClass.Memory, microOp.InstructionClass);
+                    Assert.Equal(SerializationClass.MemoryOrdered, microOp.SerializationClass);
+                    Assert.Empty(microOp.AdmissionMetadata.ReadMemoryRanges);
+                    Assert.NotEmpty(microOp.AdmissionMetadata.WriteMemoryRanges);
+                    break;
 
-            var canonicalBundle = core.GetCurrentDecodedInstructionBundle();
-            BundleLegalityDescriptor legalityDescriptor = core.GetCurrentBundleLegalityDescriptor();
-            DecodedBundleTransportFacts transportFacts = core.TestReadCurrentDecodedBundleTransportFacts();
-            DecodedBundleSlotDescriptor slot = transportFacts.Slots[0];
-            TrapMicroOp trapMicroOp = Assert.IsType<TrapMicroOp>(slot.MicroOp);
+                case InstructionsEnum.MTILE_MACC:
+                    Assert.IsType<MtileMaccMicroOp>(microOp);
+                    Assert.Equal(MatrixTileProjectedOperationKind.Macc, microOp.OperationKind);
+                    Assert.Equal(InstructionClass.ScalarAlu, microOp.InstructionClass);
+                    Assert.Equal(SerializationClass.Free, microOp.SerializationClass);
+                    Assert.Empty(microOp.AdmissionMetadata.ReadMemoryRanges);
+                    Assert.Empty(microOp.AdmissionMetadata.WriteMemoryRanges);
+                    break;
 
-            Assert.True(canonicalBundle.HasDecodeFault);
-            Assert.True(canonicalBundle.IsEmpty);
-            Assert.True(legalityDescriptor.HasDecodeFault);
-            Assert.True(legalityDescriptor.IsEmpty);
-            Assert.Equal((byte)0b0000_0001, transportFacts.ValidNonEmptyMask);
-            Assert.Equal((byte)0, transportFacts.AdmissionPrep.ScalarCandidateMask);
-            Assert.Equal((byte)0b0000_0001, transportFacts.AdmissionPrep.AuxiliaryOpMask);
-            Assert.Equal((uint)opcode, trapMicroOp.OpCode);
-            Assert.Equal(SlotClass.SystemSingleton, slot.Placement.RequiredSlotClass);
-            Assert.False(slot.WritesRegister);
-            Assert.Empty(slot.ReadRegisters);
-            Assert.Empty(slot.WriteRegisters);
+                case InstructionsEnum.MTRANSPOSE:
+                    Assert.IsType<MtransposeMicroOp>(microOp);
+                    Assert.Equal(MatrixTileProjectedOperationKind.Transpose, microOp.OperationKind);
+                    Assert.Equal(InstructionClass.ScalarAlu, microOp.InstructionClass);
+                    Assert.Equal(SerializationClass.Free, microOp.SerializationClass);
+                    Assert.Empty(microOp.AdmissionMetadata.ReadMemoryRanges);
+                    Assert.Empty(microOp.AdmissionMetadata.WriteMemoryRanges);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unsupported matrix/tile opcode.");
+            }
         }
 
         private static VLIW_Instruction[] CreateBundle(
@@ -496,4 +533,3 @@ public sealed class Phase03FallbackTransportSummaryTailTests
             streamLength: streamLength);
     }
 }
-

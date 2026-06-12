@@ -28,7 +28,10 @@ public readonly record struct VmxCompatibilityVmReadAdmissionRequest(
     bool SchedulingValidated,
     bool NoEmissionValidated,
     bool ProjectionEvidenceValidated,
-    CompletionRecord? Completion = null);
+    CompletionRecord? Completion = null,
+    PrivilegedExecutionStateDescriptor? PrivilegedExecutionState = null,
+    PrivilegedExecutionStateEpoch CurrentPrivilegedExecutionStateEpoch = default,
+    bool PrivilegedExecutionStateConformanceProven = false);
 
 public readonly record struct VmxCompatibilityVmReadAdmissionResult(
     VmxCompatibilityVmReadAdmissionDecision Decision,
@@ -163,13 +166,20 @@ public sealed partial class VmxCompatibilityAdmissionService
 
         VmcsReadOnlyValueProjectionResult valueProjection = _readOnlyValueProjection.Project(
             new VmcsReadOnlyValueProjectionRequest(
-                request.FieldId,
-                admission,
-                request.EvidencePolicy,
-                request.DescriptorValidated,
-                request.Context?.Execution,
-                request.Context?.Memory,
-                request.Completion));
+                FieldId: request.FieldId,
+                RuntimeAdmission: admission,
+                EvidencePolicy: request.EvidencePolicy,
+                DescriptorValidated: request.DescriptorValidated,
+                Execution: request.Context?.Execution,
+                Memory: request.Context?.Memory,
+                Completion: request.Completion,
+                PrivilegedExecutionState: request.PrivilegedExecutionState,
+                RuntimeDomainTag: request.Context?.DomainTag ?? 0,
+                RuntimeAddressSpaceTag: request.Context?.AddressSpaceTag ?? 0,
+                CurrentPrivilegedExecutionStateEpoch:
+                    request.CurrentPrivilegedExecutionStateEpoch,
+                PrivilegedExecutionStateConformanceProven:
+                    request.PrivilegedExecutionStateConformanceProven));
 
         return CreateResult(
             valueProjection.IsProjected

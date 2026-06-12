@@ -7,14 +7,6 @@ public sealed class SecureComputeVmxPhase8BoundaryMatrixTests
 {
     [Theory]
     [InlineData(
-        VmcsField.GuestCr0,
-        SecureComputeCompatibilityFieldClass.GuestPrivilegedControl,
-        SecureComputeCompatibilityMatrixDecision.DeniedGuestPrivilegedControlOwnerMissing)]
-    [InlineData(
-        VmcsField.GuestCr4,
-        SecureComputeCompatibilityFieldClass.GuestPrivilegedControl,
-        SecureComputeCompatibilityMatrixDecision.DeniedGuestPrivilegedControlOwnerMissing)]
-    [InlineData(
         VmcsField.HostCr3,
         SecureComputeCompatibilityFieldClass.HostAddressSpaceAlias,
         SecureComputeCompatibilityMatrixDecision.DeniedHostAddressSpaceOwnerMissing)]
@@ -39,6 +31,24 @@ public sealed class SecureComputeVmxPhase8BoundaryMatrixTests
         Assert.False(result.ValueAvailable);
         Assert.False(result.BackendSuccessAuthorized);
         Assert.Equal(expectedDecision, result.Decision);
+    }
+
+    [Theory]
+    [InlineData(VmcsField.GuestCr0)]
+    [InlineData(VmcsField.GuestCr4)]
+    public void SecureComputeVmxReadMatrix_AllowsOnlyPhase10GuestControlFields(
+        VmcsField field)
+    {
+        SecureComputeCompatibilityMatrixResult result =
+            new SecureComputeCompatibilityBoundaryMatrixPolicy().AdmitVmRead(
+                CreateReadRequest(
+                    field,
+                    SecureComputeCompatibilityFieldClass.GuestPrivilegedControl));
+
+        Assert.True(result.IsAllowed);
+        Assert.True(result.ValueAvailable);
+        Assert.False(result.BackendSuccessAuthorized);
+        Assert.False(result.MutationAuthorized);
     }
 
     [Fact]

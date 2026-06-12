@@ -394,6 +394,7 @@ namespace YAKSys_Hybrid_CPU.Core
             byte aluClassMask,
             byte lsuClassMask,
             byte dmaStreamClassMask,
+            byte matrixTileStreamClassMask,
             byte branchControlMask,
             byte systemSingletonMask,
             byte unclassifiedMask,
@@ -403,6 +404,7 @@ namespace YAKSys_Hybrid_CPU.Core
             AluClassMask = aluClassMask;
             LsuClassMask = lsuClassMask;
             DmaStreamClassMask = dmaStreamClassMask;
+            MatrixTileStreamClassMask = matrixTileStreamClassMask;
             BranchControlMask = branchControlMask;
             SystemSingletonMask = systemSingletonMask;
             UnclassifiedMask = unclassifiedMask;
@@ -413,6 +415,7 @@ namespace YAKSys_Hybrid_CPU.Core
         public byte AluClassMask { get; }
         public byte LsuClassMask { get; }
         public byte DmaStreamClassMask { get; }
+        public byte MatrixTileStreamClassMask { get; }
         public byte BranchControlMask { get; }
         public byte SystemSingletonMask { get; }
         public byte UnclassifiedMask { get; }
@@ -422,6 +425,7 @@ namespace YAKSys_Hybrid_CPU.Core
         public int AluClassCount => BitOperations.PopCount((uint)AluClassMask);
         public int LsuClassCount => BitOperations.PopCount((uint)LsuClassMask);
         public int DmaStreamClassCount => BitOperations.PopCount((uint)DmaStreamClassMask);
+        public int MatrixTileStreamClassCount => BitOperations.PopCount((uint)MatrixTileStreamClassMask);
         public int BranchControlCount => BitOperations.PopCount((uint)BranchControlMask);
         public int SystemSingletonCount => BitOperations.PopCount((uint)SystemSingletonMask);
         public int UnclassifiedCount => BitOperations.PopCount((uint)UnclassifiedMask);

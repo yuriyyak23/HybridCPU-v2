@@ -188,8 +188,9 @@ namespace YAKSys_Hybrid_CPU.Core
             return (uint)state.AluOccupied
                  | ((uint)state.LsuOccupied << OCCUPANCY_BITS_PER_CLASS)
                  | ((uint)state.DmaStreamOccupied << (OCCUPANCY_BITS_PER_CLASS * 2))
-                 | ((uint)state.BranchControlOccupied << (OCCUPANCY_BITS_PER_CLASS * 3))
-                 | ((uint)state.SystemSingletonOccupied << (OCCUPANCY_BITS_PER_CLASS * 4));
+                 | ((uint)state.MatrixTileStreamOccupied << (OCCUPANCY_BITS_PER_CLASS * 3))
+                 | ((uint)state.BranchControlOccupied << (OCCUPANCY_BITS_PER_CLASS * 4))
+                 | ((uint)state.SystemSingletonOccupied << (OCCUPANCY_BITS_PER_CLASS * 5));
         }
 
         private static byte ComputeResourceProfile(in BundleResourceCertificate4Way certificate)
@@ -211,6 +212,7 @@ namespace YAKSys_Hybrid_CPU.Core
             CompressClass(ref hasher, SlotClass.AluClass);
             CompressClass(ref hasher, SlotClass.LsuClass);
             CompressClass(ref hasher, SlotClass.DmaStreamClass);
+            CompressClass(ref hasher, SlotClass.MatrixTileStreamClass);
             CompressClass(ref hasher, SlotClass.BranchControl);
             CompressClass(ref hasher, SlotClass.SystemSingleton);
             return (ushort)(hasher.Finalize() & 0xFFFF);

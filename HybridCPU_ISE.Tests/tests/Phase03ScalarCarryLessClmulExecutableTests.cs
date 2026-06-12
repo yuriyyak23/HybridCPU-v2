@@ -406,7 +406,7 @@ public sealed class ScalarCarryLessClmulExecutableTests
     }
 
     [Fact]
-    public void Clmul_PreservedNoEmissionAndAdjacentContoursRemainClosed()
+    public void Clmul_CompilerEmission_OpensCarryLessRowsWhileAdjacentContoursRemainClosed()
     {
         string[] scalarClosed =
         [
@@ -432,22 +432,33 @@ public sealed class ScalarCarryLessClmulExecutableTests
             Assert.False(status.IsExecutableClaim, mnemonic);
         }
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("CLMUL", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("CompileClMul", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("EmitClMul", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ClMulH", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ClMulR", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Crc32", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Crc64", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("CompileAdc", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("CompileSbc", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("CompileAddc", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("CompileSubc", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("EmitAdc", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("EmitSbc", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("EmitAddc", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("EmitSubc", compilerSource, StringComparison.OrdinalIgnoreCase);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        string compilerEmissionSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        Assert.Contains("InstructionsEnum.CLMUL", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.CLMULH", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.CLMULR", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("BinaryPolynomialProductLow", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("BinaryPolynomialProductHigh", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("BinaryPolynomialProductReverse", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.Contains("ScalarCarryLessChecksum", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileClMul", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitClMul", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CarryLessMultiply", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("CompilerDeferredScalarAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.CRC32", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.CRC64", compilerEmissionSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileCrc32", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileCrc64", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitCrc32", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitCrc64", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileAdc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileSbc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileAddc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CompileSubc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitAdc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitSbc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitAddc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitSubc", compilerEmissionSource, StringComparison.OrdinalIgnoreCase);
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(
@@ -565,13 +576,4 @@ public sealed class ScalarCarryLessClmulExecutableTests
         return hasEnum || hasRegistryMnemonic;
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
-    }
 }

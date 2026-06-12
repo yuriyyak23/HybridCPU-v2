@@ -3,12 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using HybridCPU.Compiler.Core.API.Facade;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
 using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
+using CloseToRtlCsel = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
 using CloseToRtlAdc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AdcInstruction;
 using CloseToRtlAddc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AddcInstruction;
 using CloseToRtlCrc32 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc32Instruction;
@@ -21,6 +23,50 @@ namespace HybridCPU_ISE.Tests.Phase04;
 
 public sealed class CrcAndMultiPrecisionAbiGateTests
 {
+    [Fact]
+    public void CselRow_ClosesFourRegisterCarrierGateFailClosed()
+    {
+        Assert.Equal("CSEL", CloseToRtlCsel.Mnemonic);
+        Assert.Equal("rd, rs_true, rs_false, rs_cond", CloseToRtlCsel.OperandShape);
+        Assert.Equal("ScalarSelectAbiDeferredNoEmission", CloseToRtlCsel.EvidenceBoundary);
+        Assert.Equal("Phase01ECarrierGateClosedNoApprovedCarrier", CloseToRtlCsel.CarrierGateDecision);
+        Assert.True(CloseToRtlCsel.RequiresFourRegisterCarrierAbi);
+        Assert.True(CloseToRtlCsel.FourSourceCarrierDecisionClosed);
+        Assert.True(CloseToRtlCsel.ExternalCarrierGateClosed);
+        Assert.True(CloseToRtlCsel.RequiresExternalCarrierAbi);
+        Assert.False(CloseToRtlCsel.ApprovedFourSourceCarrier);
+        Assert.False(CloseToRtlCsel.ExternalCarrierApprovedInPhase01);
+        Assert.False(CloseToRtlCsel.CurrentPackedScalarIrSupportsCarrier);
+
+        AssertDeferredNoEmissionSurface(typeof(CloseToRtlCsel));
+        AssertReservedNoAllocationStatus("CSEL", "ScalarSelectCzero");
+        AssertCompilerCselAbiContract();
+    }
+
+    [Fact]
+    public void CselRow_DoesNotInventCzeroAliasCarrierRuntimeOrCompilerAuthority()
+    {
+        AssertNoEnumOrRegistryMnemonic("CSEL");
+        Assert.False(IsaV4Surface.OptionalEnabledOpcodes.Contains("CSEL"));
+        Assert.False(InstructionRegistry.IsRegistered(uint.MaxValue));
+
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerDeferredScalarAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("NoAllocationUntilFourRegisterCarrierConditionResultAliasPolicyAbi", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.CSEL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.CSEL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.CSEL", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileCsel", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitCsel", compilerSource, StringComparison.OrdinalIgnoreCase);
+
+        AssertNoPublicFacadeHelpers(
+            "Csel",
+            "ConditionalSelect",
+            "SelectConditional",
+            "CompileCsel",
+            "EmitCsel");
+    }
+
     [Theory]
     [InlineData(typeof(CloseToRtlCrc32), "CRC32", "ScalarCrcChecksum")]
     [InlineData(typeof(CloseToRtlCrc64), "CRC64", "ScalarCrcChecksum")]
@@ -44,6 +90,7 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
 
         AssertDeferredNoEmissionSurface(instructionType);
         AssertReservedNoAllocationStatus(mnemonic, expectedExtension);
+        AssertCompilerCrcAbiContract(mnemonic, expectedExtension);
     }
 
     [Fact]
@@ -56,9 +103,15 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
             Assert.False(InstructionRegistry.IsRegistered(uint.MaxValue));
         }
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("CRC32", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("CRC64", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerDeferredScalarAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("NoAllocationUntilPolynomialReflectionSeedFinalXorEndianDataResultAbi", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.CRC32", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.CRC64", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.CRC32", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.CRC64", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.CRC32", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.CRC64", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("CompileCrc32", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("CompileCrc64", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("EmitCrc32", compilerSource, StringComparison.OrdinalIgnoreCase);
@@ -104,6 +157,12 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
 
         AssertDeferredNoEmissionSurface(instructionType);
         AssertReservedNoAllocationStatus(mnemonic, "ScalarMultiPrecision");
+        AssertCompilerMultiPrecisionAbiContract(
+            mnemonic,
+            requiredMarker,
+            requiredPublicationMarker,
+            optionalInputMarker,
+            requiredOutputMarker);
     }
 
     [Fact]
@@ -116,7 +175,16 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
             Assert.False(InstructionRegistry.IsRegistered(uint.MaxValue));
         }
 
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("NoAllocationUntilExplicitCarryBorrowTransportRetirePublicationAbi", compilerSource, StringComparison.Ordinal);
+
+        foreach (string mnemonic in new[] { "ADC", "SBC", "ADDC", "SUBC" })
+        {
+            Assert.DoesNotContain($"InstructionsEnum.{mnemonic}", compilerSource, StringComparison.Ordinal);
+            Assert.DoesNotContain($"IsaOpcodeValues.{mnemonic}", compilerSource, StringComparison.Ordinal);
+            Assert.DoesNotContain($"OpcodeValues.{mnemonic}", compilerSource, StringComparison.Ordinal);
+        }
+
         foreach (string helper in new[]
         {
             "CompileAdc",
@@ -167,6 +235,145 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
         Assert.Null(instructionType.GetProperty("Opcode", BindingFlags.Public | BindingFlags.Static));
         Assert.Null(instructionType.GetMethod("Execute", BindingFlags.Public | BindingFlags.Static));
     }
+
+    private static void AssertCompilerCselAbiContract()
+    {
+        CompilerDeferredScalarAbiContract contract = Assert.Single(
+            CompilerDeferredScalarAbiContract.ScalarSelectCarrierRows,
+            row => row.Mnemonic == "CSEL");
+
+        Assert.Equal("ScalarSelectCzero", contract.ExtensionName);
+        Assert.Equal("ScalarSelectAbiDeferredNoEmission", contract.EvidenceBoundary);
+        Assert.Equal("NoAllocationUntilFourRegisterCarrierConditionResultAliasPolicyAbi", contract.AbiDecision);
+        Assert.Equal("rd, rs_true, rs_false, rs_cond", contract.OperandShape);
+        Assert.Equal(64, contract.ResultBits);
+        Assert.Equal(CompilerDeferredScalarAbiClass.ScalarSelectCarrier, contract.AbiClass);
+        Assert.True(contract.RequiresFourRegisterCarrierAbi);
+        Assert.True(contract.RequiresExternalCarrierAbi);
+        Assert.True(contract.RequiresConditionRegisterAbi);
+        Assert.True(contract.RequiresSelectResultAbi);
+        Assert.True(contract.RequiresNoCzeroAliasPolicy);
+        Assert.True(contract.FourSourceCarrierDecisionClosed);
+        Assert.False(contract.ApprovedFourSourceCarrier);
+        Assert.False(contract.CurrentPackedScalarIrSupportsCarrier);
+        Assert.True(contract.RejectCzeroAliasLowering);
+        Assert.True(contract.RejectHiddenMultiOpSelectLowering);
+        Assert.False(contract.HasOpcodeAllocation);
+        Assert.False(contract.CompilerEmissionAllowed);
+        Assert.Contains("FourRegisterCarrierAbi", contract.RequiredPolicyDecisions);
+        Assert.Contains("ConditionRegisterTransport", contract.RequiredPolicyDecisions);
+        Assert.Contains("SelectResultSemantics", contract.RequiredPolicyDecisions);
+        Assert.Contains("RetireOwnedRegisterWriteback", contract.RequiredPolicyDecisions);
+        Assert.Contains("ReplayRollbackEvidence", contract.RequiredPolicyDecisions);
+        Assert.Contains("NoCzeroAliasLowering", contract.RequiredPolicyDecisions);
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            contract.RequireCompilerEmissionAuthority);
+        Assert.Contains("compiler emission is blocked", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("four-register carrier", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("no-CZERO-alias", exception.Message, StringComparison.Ordinal);
+    }
+
+    private static void AssertCompilerCrcAbiContract(
+        string mnemonic,
+        string expectedExtension)
+    {
+        CompilerDeferredScalarAbiContract contract = Assert.Single(
+            CompilerDeferredScalarAbiContract.ScalarCrcChecksumRows,
+            row => row.Mnemonic == mnemonic);
+
+        Assert.Equal(expectedExtension, contract.ExtensionName);
+        Assert.Equal("CrcPolynomialAbiDeferredNoEmission", contract.EvidenceBoundary);
+        Assert.Equal("NoAllocationUntilPolynomialReflectionSeedFinalXorEndianDataResultAbi", contract.AbiDecision);
+        Assert.Equal("rd, rs_seed, rs_data", contract.OperandShape);
+        Assert.Equal(mnemonic == "CRC32" ? 32 : 64, contract.ResultBits);
+        Assert.Equal(CompilerDeferredScalarAbiClass.ScalarCrcChecksum, contract.AbiClass);
+        Assert.True(contract.RequiresPolynomialAbi);
+        Assert.True(contract.RequiresReflectionAbi);
+        Assert.True(contract.RequiresSeedFinalXorAbi);
+        Assert.True(contract.RequiresEndianPolicyAbi);
+        Assert.True(contract.RequiresDataWidthAbi);
+        Assert.True(contract.RequiresResultSemanticsAbi);
+        Assert.True(contract.RejectImplicitPolynomialSelection);
+        Assert.False(contract.HasOpcodeAllocation);
+        Assert.False(contract.CompilerEmissionAllowed);
+        Assert.Contains("Polynomial", contract.RequiredPolicyDecisions);
+        Assert.Contains("InputReflection", contract.RequiredPolicyDecisions);
+        Assert.Contains("OutputReflection", contract.RequiredPolicyDecisions);
+        Assert.Contains("SeedInitialization", contract.RequiredPolicyDecisions);
+        Assert.Contains("FinalXor", contract.RequiredPolicyDecisions);
+        Assert.Contains("EndianIngestionOrder", contract.RequiredPolicyDecisions);
+        Assert.Contains("DataWidth", contract.RequiredPolicyDecisions);
+        Assert.Contains("ResultWidthAndExtension", contract.RequiredPolicyDecisions);
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            contract.RequireCompilerEmissionAuthority);
+        Assert.Contains("compiler emission is blocked", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("result semantics", exception.Message, StringComparison.Ordinal);
+    }
+
+    private static void AssertCompilerMultiPrecisionAbiContract(
+        string mnemonic,
+        string requiredMarker,
+        string requiredPublicationMarker,
+        string optionalInputMarker,
+        string requiredOutputMarker)
+    {
+        CompilerDeferredScalarAbiContract contract = Assert.Single(
+            CompilerDeferredScalarAbiContract.ScalarMultiPrecisionRows,
+            row => row.Mnemonic == mnemonic);
+
+        Assert.Equal("ScalarMultiPrecision", contract.ExtensionName);
+        Assert.Equal("MultiPrecisionCarryAbiDeferredNoEmission", contract.EvidenceBoundary);
+        Assert.Equal("NoAllocationUntilExplicitCarryBorrowTransportRetirePublicationAbi", contract.AbiDecision);
+        Assert.Equal(64, contract.ResultBits);
+        Assert.Equal(CompilerDeferredScalarAbiClass.ScalarMultiPrecision, contract.AbiClass);
+        Assert.False(contract.RequiresPolynomialAbi);
+        Assert.False(contract.RequiresReflectionAbi);
+        Assert.False(contract.RequiresSeedFinalXorAbi);
+        Assert.False(contract.RequiresEndianPolicyAbi);
+        Assert.True(contract.RequiresCarryBorrowPublicationAbi);
+        Assert.True(contract.RequiresRetireOwnedPublicationAbi);
+        Assert.True(contract.NoImplicitFlags);
+        Assert.True(contract.RejectHiddenArchitecturalFlags);
+        Assert.False(contract.HasOpcodeAllocation);
+        Assert.False(contract.CompilerEmissionAllowed);
+        Assert.Contains("RetireOwnedCarryBorrowPublication", contract.RequiredPolicyDecisions);
+        Assert.Contains("CarryBorrowConsumerAbi", contract.RequiredPolicyDecisions);
+        Assert.Contains("NoImplicitFlags", contract.RequiredPolicyDecisions);
+        Assert.True(GetCompilerContractFlag(contract, requiredMarker), requiredMarker);
+        Assert.True(GetCompilerContractFlag(contract, requiredPublicationMarker), requiredPublicationMarker);
+        Assert.True(GetCompilerContractFlag(contract, requiredOutputMarker), requiredOutputMarker);
+
+        if (!string.IsNullOrEmpty(optionalInputMarker))
+        {
+            Assert.True(GetCompilerContractFlag(contract, optionalInputMarker), optionalInputMarker);
+        }
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            contract.RequireCompilerEmissionAuthority);
+        Assert.Contains("compiler emission is blocked", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("carry/borrow", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("retire-owned", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("no-implicit-flags", exception.Message, StringComparison.Ordinal);
+    }
+
+    private static bool GetCompilerContractFlag(
+        CompilerDeferredScalarAbiContract contract,
+        string marker) =>
+        marker switch
+        {
+            "RequiresCarryInAbi" => contract.RequiresCarryInAbi,
+            "RequiresCarryOutAbi" => contract.RequiresCarryOutAbi,
+            "RequiresBorrowInAbi" => contract.RequiresBorrowInAbi,
+            "RequiresBorrowOutAbi" => contract.RequiresBorrowOutAbi,
+            "RequiresCarryBorrowPublicationAbi" => contract.RequiresCarryBorrowPublicationAbi,
+            "RequiresExplicitCarryInputTransportAbi" => contract.RequiresExplicitCarryInputTransportAbi,
+            "RequiresExplicitCarryOutputTransportAbi" => contract.RequiresExplicitCarryOutputTransportAbi,
+            "RequiresExplicitBorrowInputTransportAbi" => contract.RequiresExplicitBorrowInputTransportAbi,
+            "RequiresExplicitBorrowOutputTransportAbi" => contract.RequiresExplicitBorrowOutputTransportAbi,
+            _ => throw new ArgumentOutOfRangeException(nameof(marker), marker, null)
+        };
 
     private static void AssertReservedNoAllocationStatus(
         string mnemonic,
@@ -230,13 +437,4 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
         return Assert.IsType<T>(field.GetRawConstantValue());
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
-    }
 }

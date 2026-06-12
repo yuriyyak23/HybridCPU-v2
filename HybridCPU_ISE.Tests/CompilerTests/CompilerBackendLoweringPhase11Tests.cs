@@ -255,7 +255,7 @@ public sealed class CompilerBackendLoweringPhase11Tests
         Assert.Contains("model or test helper", dscDecision.Reason, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("model or test helper", l7Decision.Reason, StringComparison.OrdinalIgnoreCase);
 
-        string compilerSource = ReadAllSourceText(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
         Assert.DoesNotContain("DmaStreamComputeRuntime", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(AcceleratorTokenStore), compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(AcceleratorCommandQueue), compilerSource, StringComparison.Ordinal);
@@ -488,14 +488,4 @@ public sealed class CompilerBackendLoweringPhase11Tests
         return File.ReadAllText(fullPath);
     }
 
-    private static string ReadAllSourceText(string directory)
-    {
-        Assert.True(Directory.Exists(directory), $"Missing source directory: {directory}");
-        return string.Join(
-            Environment.NewLine,
-            Directory
-                .EnumerateFiles(directory, "*.cs", SearchOption.AllDirectories)
-                .Where(static path => !CompatFreezeScanner.IsGeneratedPath(path))
-                .Select(File.ReadAllText));
-    }
 }

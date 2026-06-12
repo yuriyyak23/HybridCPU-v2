@@ -281,7 +281,7 @@ public sealed class Ex1Phase12ConformanceMigrationTests
         Assert.Contains("non-production", parserOnlyDecision.Reason, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("model or test helper", modelHelperDecision.Reason, StringComparison.OrdinalIgnoreCase);
 
-        string compilerText = ReadAllSourceText(Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadAllCompilerSource();
         Assert.DoesNotContain("DmaStreamComputeRuntime", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(FakeMatMulExternalAcceleratorBackend), compilerText, StringComparison.Ordinal);
     }
@@ -451,17 +451,6 @@ public sealed class Ex1Phase12ConformanceMigrationTests
             relativePath.Replace('/', Path.DirectorySeparatorChar));
         Assert.True(File.Exists(fullPath), $"Missing repository file: {relativePath}");
         return File.ReadAllText(fullPath);
-    }
-
-    private static string ReadAllSourceText(string directory)
-    {
-        Assert.True(Directory.Exists(directory), $"Missing source directory: {directory}");
-        return string.Join(
-            Environment.NewLine,
-            Directory
-                .EnumerateFiles(directory, "*.cs", SearchOption.AllDirectories)
-                .Where(static path => !CompatFreezeScanner.IsGeneratedPath(path))
-                .Select(File.ReadAllText));
     }
 
     private static string PhaseEx1Root() =>

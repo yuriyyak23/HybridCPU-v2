@@ -29,6 +29,16 @@ namespace YAKSys_Hybrid_CPU.Core
         Dma,
 
         /// <summary>
+        /// MatrixTile memory transport. ISA memory semantics remain separate from LSU ownership.
+        /// </summary>
+        MatrixTileMemory,
+
+        /// <summary>
+        /// MatrixTile compute operation.
+        /// </summary>
+        MatrixTileCompute,
+
+        /// <summary>
         /// Vector/Stream operation
         /// </summary>
         Vector,
@@ -90,6 +100,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
         // Extended resource bit layout constants (High 64 bits, bits 64-127)
         private const int EXT_GRLB_BASE = 0;      // High bits 0-31: Extended GRLB channels
+        private const int MATRIX_TILE_BASE = 16;  // High bits 16-23: MatrixTile structural channels
         private const int EXT_MEM_DOMAIN_BASE = 32; // High bits 32-47: Extended memory domains
         private const int EXT_MEM_BANK_BASE = 48;   // High bits 48-63: Memory Banks occupancy (Phase Refactoring Pt. 1)
 
@@ -211,6 +222,30 @@ namespace YAKSys_Hybrid_CPU.Core
             if (engineId < 0 || engineId >= 4) engineId = 0;
             return new ResourceBitset(1UL << (STREAM_ENGINE_BASE + engineId), 0);
         }
+
+        public static ResourceBitset ForMatrixTileStreamWindow() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 0));
+
+        public static ResourceBitset ForMatrixTileIngress() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 1));
+
+        public static ResourceBitset ForMatrixTileEgress() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 2));
+
+        public static ResourceBitset ForMatrixTileStateRead() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 3));
+
+        public static ResourceBitset ForMatrixTileStateWrite() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 4));
+
+        public static ResourceBitset ForMatrixTileAccumulatorRead() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 5));
+
+        public static ResourceBitset ForMatrixTileAccumulatorWrite() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 6));
+
+        public static ResourceBitset ForMatrixTileTransposePolicy() =>
+            new(0UL, 1UL << (MATRIX_TILE_BASE + 7));
 
         /// <summary>
         /// Build resource mask for custom accelerator.
@@ -687,8 +722,10 @@ namespace YAKSys_Hybrid_CPU.Core
         /// - Bits 68-71: Stream engines 4-7 (4 additional engines)
         /// - Bits 72-75: Custom accelerators 4-7 (4 additional accelerators)
         /// - Bits 76-79: Additional LSU channels
-        /// - Bits 80-95: Extended memory domains (16 additional domains)
-        /// - Bits 96-127: Reserved for future resource types
+        /// - Bits 80-87: MatrixTile stream/state/compute structural channels
+        /// - Bits 88-95: Reserved
+        /// - Bits 96-111: Extended memory domains (16 additional domains)
+        /// - Bits 112-127: Memory bank occupancy
         ///
         /// When this operation executes, these resources must be locked.
         /// If any resource conflicts with globalResourceLocks, operation must wait.

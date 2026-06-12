@@ -70,7 +70,29 @@ public sealed class SecureIoHypercallPolicyTests
         Assert.Equal(SecureIoHypercallAdmissionDecision.DeniedPrivateMemoryAccess, privateAccess.Decision);
         Assert.Equal(SecureIoHypercallAdmissionDecision.DeniedMissingTypedGrant, missingGrant.Decision);
         Assert.True(allowed.IsAllowed);
+        Assert.True(allowed.IsPolicyAdmissionOnly);
         Assert.Equal(SecureIoHypercallAdmissionDecision.AllowedIo, allowed.Decision);
+        Assert.False(allowed.BackendExecutionAuthorized);
+        Assert.False(allowed.CompletionPublicationAuthorized);
+        Assert.False(allowed.RetirePublicationAuthorized);
+    }
+
+    [Fact]
+    public void SecureIo_FencePresenceDoesNotAuthorizeCompletionOrRetirePublication()
+    {
+        SecureIoHypercallAdmissionResult result =
+            SecureIoHypercallAdmissionPolicy.Default.AdmitIoDma(
+                CreateIoPolicy(neutralOwner: true),
+                CreateSharedMemory(),
+                SharedDmaAccess(CreateCapabilities(DmaGrantMask)),
+                RetireFence(),
+                requireRetirePublication: true);
+
+        Assert.True(result.IsAllowed);
+        Assert.True(result.IsPolicyAdmissionOnly);
+        Assert.False(result.BackendExecutionAuthorized);
+        Assert.False(result.CompletionPublicationAuthorized);
+        Assert.False(result.RetirePublicationAuthorized);
     }
 
     [Fact]
@@ -226,7 +248,8 @@ public sealed class SecureIoHypercallPolicyTests
                 new SecureRevocationEpoch(7),
                 RetireFence(),
                 neutralBackendOwnerMaterialized: true,
-                domainValidated: true).Decision);
+                domainValidated: true,
+                validatedDomainTag: 7).Decision);
         Assert.Equal(
             SecureIoHypercallAdmissionDecision.DeniedMissingTypedGrant,
             policy.AdmitHypercall(
@@ -238,11 +261,147 @@ public sealed class SecureIoHypercallPolicyTests
                 new SecureRevocationEpoch(7),
                 RetireFence(),
                 neutralBackendOwnerMaterialized: true,
-                domainValidated: true).Decision);
+                domainValidated: true,
+                validatedDomainTag: 7).Decision);
     }
 
     [Fact]
-    public void SecureHypercall_AdmittedDeniedDoesNotAuthorizeBackendSuccess()
+    public void SecureHypercall_SharedBufferRequiresCurrentOwnerLifetimeEvidenceAndBufferGrant()
+    {
+        var policy = SecureIoHypercallAdmissionPolicy.Default;
+        SecureHypercallDescriptor hypercall = CreateHypercallPolicy(
+            new SecureHypercallArgumentDescriptor(
+                0,
+                SecureHypercallArgumentClass.ExplicitSharedBuffer,
+                SharedBufferId: 1,
+                Grant: new SecureGrantHandle(
+                    SecureGrantHandleKind.IoPolicy,
+                    LocalId: 1,
+                    ProvenanceHash: 0x51,
+                    Epoch: 7)));
+
+        SecureIoHypercallAdmissionResult missingValidatedOwner = AdmitSharedBufferHypercall(
+            policy,
+            hypercall,
+            CreateIoPolicy(neutralOwner: true),
+            validatedDomainTag: 0);
+        SecureIoHypercallAdmissionResult wrongOwner = AdmitSharedBufferHypercall(
+            policy,
+            hypercall,
+            CreateIoPolicy(
+                neutralOwner: true,
+                sharedBuffer: SharedBuffer(ownerDomainTag: 8)),
+            validatedDomainTag: 7);
+        SecureIoHypercallAdmissionResult staleLifetime = AdmitSharedBufferHypercall(
+            policy,
+            hypercall,
+            CreateIoPolicy(
+                neutralOwner: true,
+                sharedBuffer: SharedBuffer(lifetimeEpoch: 6)),
+            validatedDomainTag: 7);
+        SecureIoHypercallAdmissionResult staleBufferGrant = AdmitSharedBufferHypercall(
+            policy,
+            hypercall,
+            CreateIoPolicy(
+                neutralOwner: true,
+                sharedBuffer: SharedBuffer(grantEpoch: 6)),
+            validatedDomainTag: 7);
+        SecureIoHypercallAdmissionResult deniedEvidence = AdmitSharedBufferHypercall(
+            policy,
+            hypercall,
+            CreateIoPolicy(
+                neutralOwner: true,
+                sharedBuffer: SharedBuffer(
+                    evidenceClass: SecureEvidenceVisibilityClass.Denied)),
+            validatedDomainTag: 7);
+
+        Assert.Equal(
+            SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
+            missingValidatedOwner.Decision);
+        Assert.Equal(
+            SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
+            wrongOwner.Decision);
+        Assert.Equal(
+            SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
+            staleLifetime.Decision);
+        Assert.Equal(
+            SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
+            staleBufferGrant.Decision);
+        Assert.Equal(
+            SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
+            deniedEvidence.Decision);
+    }
+
+    [Fact]
+    public void SecureHypercall_SharedBufferArgumentRequiresExplicitSharedBufferPolicy()
+    {
+        var policy = SecureIoHypercallAdmissionPolicy.Default;
+        SecureHypercallDescriptor hypercall = CreateHypercallPolicy(
+            new SecureHypercallArgumentDescriptor(
+                0,
+                SecureHypercallArgumentClass.ExplicitSharedBuffer,
+                SharedBufferId: 1,
+                Grant: new SecureGrantHandle(
+                    SecureGrantHandleKind.IoPolicy,
+                    LocalId: 1,
+                    ProvenanceHash: 0x51,
+                    Epoch: 7)));
+        SecureIoDomainDescriptor deniedIoPolicy = CreateIoPolicy(
+            neutralOwner: true,
+            dmaPolicy: SecureIoDmaPolicy.Denied);
+        SecureIoDomainDescriptor missingSharedBuffer = new(
+            SecureIoDmaPolicy.ExplicitSharedBuffersOnly,
+            Array.Empty<SecureSharedBufferDescriptor>(),
+            requireCompletionFence: true,
+            neutralIoOwnerMaterialized: true);
+
+        Assert.Equal(
+            SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
+            policy.AdmitHypercall(
+                hypercall,
+                hypercallId: 0x10,
+                CreateCapabilities(HypercallGrantMask),
+                EvidencePolicy(),
+                deniedIoPolicy,
+                new SecureRevocationEpoch(7),
+                RetireFence(),
+                neutralBackendOwnerMaterialized: true,
+                domainValidated: true,
+                validatedDomainTag: 7).Decision);
+        Assert.Equal(
+            SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding,
+            policy.AdmitHypercall(
+                hypercall,
+                hypercallId: 0x10,
+                CreateCapabilities(HypercallGrantMask),
+                EvidencePolicy(),
+                missingSharedBuffer,
+                new SecureRevocationEpoch(7),
+                RetireFence(),
+                neutralBackendOwnerMaterialized: true,
+                domainValidated: true,
+                validatedDomainTag: 7).Decision);
+    }
+
+    [Fact]
+    public void SecureIo_SharedDmaRequiresExplicitSharedBufferPolicyNotJustMaterializedBuffer()
+    {
+        SecureIoHypercallAdmissionResult result =
+            SecureIoHypercallAdmissionPolicy.Default.AdmitIoDma(
+                CreateIoPolicy(
+                    neutralOwner: true,
+                    dmaPolicy: SecureIoDmaPolicy.Denied),
+                CreateSharedMemory(),
+                SharedDmaAccess(CreateCapabilities(DmaGrantMask)),
+                CompletionFence(),
+                requireRetirePublication: false);
+
+        Assert.Equal(SecureIoHypercallAdmissionDecision.DeniedSharedBufferBinding, result.Decision);
+        Assert.False(result.IsAllowed);
+    }
+
+    [Fact]
+    public void SecureHypercall_AdmittedDeniedDoesNotAuthorizeBackendCompletionOrRetirePublication()
     {
         SecureIoHypercallAdmissionResult result =
             SecureIoHypercallAdmissionPolicy.Default.AdmitHypercall(
@@ -259,8 +418,8 @@ public sealed class SecureIoHypercallPolicyTests
         Assert.True(result.IsAllowed);
         Assert.True(result.IsAdmittedDenied);
         Assert.False(result.BackendExecutionAuthorized);
-        Assert.True(result.CompletionPublicationAuthorized);
-        Assert.True(result.RetirePublicationAuthorized);
+        Assert.False(result.CompletionPublicationAuthorized);
+        Assert.False(result.RetirePublicationAuthorized);
     }
 
     [Fact]
@@ -299,6 +458,8 @@ public sealed class SecureIoHypercallPolicyTests
 
         Assert.Equal(SecureIoHypercallAdmissionDecision.DeniedBackendSuccessClosed, result.Decision);
         Assert.False(result.BackendExecutionAuthorized);
+        Assert.False(result.CompletionPublicationAuthorized);
+        Assert.False(result.RetirePublicationAuthorized);
     }
 
     [Fact]
@@ -328,7 +489,19 @@ public sealed class SecureIoHypercallPolicyTests
         Assert.DoesNotContain("VMWRITE", source);
         Assert.DoesNotContain("VmcsManager", source);
         Assert.DoesNotContain("VmxExecutionUnit", source);
+        Assert.DoesNotContain("VmCall", source);
+        Assert.DoesNotContain("Lane6", source);
+        Assert.DoesNotContain("Lane7", source);
         Assert.Contains("DeniedBackendSuccessClosed", source);
+        Assert.Contains("IsPolicyAdmissionOnly", source);
+        Assert.Contains("TryFindCurrentSharedBuffer", source);
+        Assert.DoesNotContain("AllowsSharedBuffer(", source);
+        Assert.Contains("CompletionPublicationAuthorized: false", source);
+        Assert.Contains("RetirePublicationAuthorized: false", source);
+        Assert.DoesNotContain("completion.CompletionPublicationAuthorized", source);
+        Assert.DoesNotContain("completion.RetirePublicationAuthorized", source);
+        Assert.DoesNotContain("publicationFence?.CanPublishCompletion == true", source);
+        Assert.DoesNotContain("publicationFence?.CanPublishRetire == true", source);
     }
 
     private static SecureComputeDomainDescriptor CreateSecureDescriptor(
@@ -368,14 +541,22 @@ public sealed class SecureIoHypercallPolicyTests
             requireCompletionFence: true,
             requireRetirePublicationRule: true);
 
-    private static SecureIoDomainDescriptor CreateIoPolicy(bool neutralOwner) =>
+    private static SecureIoDomainDescriptor CreateIoPolicy(
+        bool neutralOwner,
+        SecureIoDmaPolicy dmaPolicy = SecureIoDmaPolicy.ExplicitSharedBuffersOnly,
+        SecureSharedBufferDescriptor? sharedBuffer = null) =>
         new(
-            SecureIoDmaPolicy.ExplicitSharedBuffersOnly,
-            new[] { SharedBuffer() },
+            dmaPolicy,
+            new[] { sharedBuffer ?? SharedBuffer() },
             requireCompletionFence: true,
             neutralIoOwnerMaterialized: neutralOwner);
 
-    private static SecureSharedBufferDescriptor SharedBuffer() =>
+    private static SecureSharedBufferDescriptor SharedBuffer(
+        ulong ownerDomainTag = 7,
+        ulong lifetimeEpoch = 7,
+        ulong grantEpoch = 7,
+        SecureEvidenceVisibilityClass evidenceClass =
+            SecureEvidenceVisibilityClass.HostOwnedQuarantined) =>
         new(
             BufferId: 1,
             Start: 0x2000,
@@ -385,10 +566,27 @@ public sealed class SecureIoHypercallPolicyTests
                 SecureGrantHandleKind.IoPolicy,
                 LocalId: 1,
                 ProvenanceHash: 0x51,
-                Epoch: 7),
-            EvidenceClass: SecureEvidenceVisibilityClass.HostOwnedQuarantined,
-            OwnerDomainTag: 7,
-            LifetimeEpoch: 7);
+                Epoch: grantEpoch),
+            EvidenceClass: evidenceClass,
+            OwnerDomainTag: ownerDomainTag,
+            LifetimeEpoch: lifetimeEpoch);
+
+    private static SecureIoHypercallAdmissionResult AdmitSharedBufferHypercall(
+        SecureIoHypercallAdmissionPolicy policy,
+        SecureHypercallDescriptor hypercall,
+        SecureIoDomainDescriptor ioPolicy,
+        ulong validatedDomainTag) =>
+        policy.AdmitHypercall(
+            hypercall,
+            hypercallId: 0x10,
+            CreateCapabilities(HypercallGrantMask),
+            EvidencePolicy(),
+            ioPolicy,
+            new SecureRevocationEpoch(7),
+            RetireFence(),
+            neutralBackendOwnerMaterialized: true,
+            domainValidated: true,
+            validatedDomainTag: validatedDomainTag);
 
     private static SecureMemoryDomainDescriptor CreatePrivateMemory() =>
         new(

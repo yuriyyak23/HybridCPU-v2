@@ -84,7 +84,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
             int limit = bundle.Length < bundleWidth ? bundle.Length : bundleWidth;
 
-            byte actualAlu = 0, actualLsu = 0, actualDma = 0, actualBranch = 0, actualSys = 0;
+            byte actualAlu = 0, actualLsu = 0, actualDma = 0, actualMatrixTileStream = 0, actualBranch = 0, actualSys = 0;
             int actualFlexible = 0, actualPinned = 0;
             int totalNonNull = 0;
 
@@ -108,6 +108,7 @@ namespace YAKSys_Hybrid_CPU.Core
                     case SlotClass.AluClass:        actualAlu++;    break;
                     case SlotClass.LsuClass:        actualLsu++;    break;
                     case SlotClass.DmaStreamClass:  actualDma++;    break;
+                    case SlotClass.MatrixTileStreamClass: actualMatrixTileStream++; break;
                     case SlotClass.BranchControl:   actualBranch++; break;
                     case SlotClass.SystemSingleton: actualSys++;    break;
                 }
@@ -130,6 +131,7 @@ namespace YAKSys_Hybrid_CPU.Core
             if (facts.AluCount != actualAlu
                 || facts.LsuCount != actualLsu
                 || facts.DmaStreamCount != actualDma
+                || facts.MatrixTileStreamCount != actualMatrixTileStream
                 || facts.BranchControlCount != actualBranch
                 || facts.SystemSingletonCount != actualSys)
             {
@@ -139,8 +141,14 @@ namespace YAKSys_Hybrid_CPU.Core
             if (facts.AluCount > SlotClassLaneMap.GetClassCapacity(SlotClass.AluClass)
                 || facts.LsuCount > SlotClassLaneMap.GetClassCapacity(SlotClass.LsuClass)
                 || facts.DmaStreamCount > SlotClassLaneMap.GetClassCapacity(SlotClass.DmaStreamClass)
+                || facts.MatrixTileStreamCount > SlotClassLaneMap.GetClassCapacity(SlotClass.MatrixTileStreamClass)
                 || facts.BranchControlCount > SlotClassLaneMap.GetClassCapacity(SlotClass.BranchControl)
                 || facts.SystemSingletonCount > SlotClassLaneMap.GetClassCapacity(SlotClass.SystemSingleton))
+            {
+                return false;
+            }
+
+            if (facts.DmaStreamCount + facts.MatrixTileStreamCount > 1)
             {
                 return false;
             }
@@ -173,6 +181,8 @@ namespace YAKSys_Hybrid_CPU.Core
             return compilerFacts.AluCount <= runtimeCapacity.AluTotal
                 && compilerFacts.LsuCount <= runtimeCapacity.LsuTotal
                 && compilerFacts.DmaStreamCount <= runtimeCapacity.DmaStreamTotal
+                && compilerFacts.MatrixTileStreamCount <= runtimeCapacity.MatrixTileStreamTotal
+                && compilerFacts.DmaStreamCount + compilerFacts.MatrixTileStreamCount <= 1
                 && compilerFacts.BranchControlCount <= runtimeCapacity.BranchControlTotal
                 && compilerFacts.SystemSingletonCount <= runtimeCapacity.SystemSingletonTotal;
         }

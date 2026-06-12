@@ -2,6 +2,8 @@
 
 The current codebase uses `CloseToRTL/Core/Runtime` and `CloseToRTL/Core/Virtualization` as the live implementation surface. Older documents may refer to logical `Core/Runtime` and `Core/VMX`; in this checkout, the active surfaces are the `CloseToRTL` paths.
 
+Development sequencing and current/future classification are owned by `HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/`. This implementation map must stay consistent with that plan.
+
 ## Runtime Authority Surface
 
 - `CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs`

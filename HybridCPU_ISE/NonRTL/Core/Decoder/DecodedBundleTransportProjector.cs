@@ -585,6 +585,10 @@ namespace YAKSys_Hybrid_CPU.Core.Decoder
                 case SystemDeviceCommandMicroOp systemDeviceCommandMicroOp:
                     systemDeviceCommandMicroOp.InitializeMetadata();
                     break;
+
+                case MatrixTileMicroOp matrixTileMicroOp:
+                    matrixTileMicroOp.InitializeMetadata();
+                    break;
             }
         }
 

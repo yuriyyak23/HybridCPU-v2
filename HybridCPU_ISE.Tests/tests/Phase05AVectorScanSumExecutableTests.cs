@@ -294,15 +294,83 @@ public sealed class Phase05AVectorScanSumExecutableTests
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Zip", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(publicMethodNames, name => name.Contains("Interleave", StringComparison.OrdinalIgnoreCase));
 
-        string compilerSource = ReadAllCompilerSource();
-        Assert.DoesNotContain("VSCAN", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VSCAN_SUM", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VLDSEG", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VSTSEG", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VZIP", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VUNZIP", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VINTERLEAVE", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("VDEINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        string compilerSource = CompilerSourceScanner.ReadAllCompilerSource();
+        Assert.Contains("CompilerVectorHelperClosedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("CompilerVectorVlmBlockedAbiContract", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VSCAN.SUM", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VSCAN.MIN", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VSCAN.MAX", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VZIP", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VUNZIP", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VDEINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VLDSEG2", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("VSTSEG8", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("InstructionsEnum.VSCAN_SUM", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VSCAN_SUM", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VSCAN_SUM", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVscanSum", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVscanSum", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VSCAN_MIN", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VSCAN_MIN", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VSCAN_MIN", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVscanMin", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVscanMin", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VSCAN_MAX", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VSCAN_MAX", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VSCAN_MAX", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVscanMax", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVscanMax", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VZIP", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VZIP", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VZIP", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVzip", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVzip", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VUNZIP", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VUNZIP", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VUNZIP", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVunzip", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVunzip", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVinterleave", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVinterleave", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VDEINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VDEINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VDEINTERLEAVE", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVdeinterleave", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVdeinterleave", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VLDSEG2", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VLDSEG2", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VLDSEG2", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVldseg2", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVldseg2", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VLDSEG4", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VLDSEG4", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VLDSEG4", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVldseg4", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVldseg4", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VLDSEG8", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VLDSEG8", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VLDSEG8", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVldseg8", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVldseg8", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VSTSEG2", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VSTSEG2", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VSTSEG2", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVstseg2", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVstseg2", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VSTSEG4", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VSTSEG4", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VSTSEG4", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVstseg4", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVstseg4", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InstructionsEnum.VSTSEG8", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("IsaOpcodeValues.VSTSEG8", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("OpcodeValues.VSTSEG8", compilerSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("CompileVstseg8", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EmitVstseg8", compilerSource, StringComparison.OrdinalIgnoreCase);
     }
 
     private static VectorScanSumMicroOp MaterializeVscanSum(
@@ -488,15 +556,4 @@ public sealed class Phase05AVectorScanSumExecutableTests
             .ToArray();
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        IEnumerable<string> files = Directory.EnumerateFiles(
-                compilerRoot,
-                "*.cs",
-                SearchOption.AllDirectories)
-            .Where(filePath => !CompatFreezeScanner.IsGeneratedPath(filePath));
-
-        return string.Join(Environment.NewLine, files.Select(File.ReadAllText));
-    }
 }

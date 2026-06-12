@@ -107,6 +107,32 @@ public sealed class SecureEvidencePublicationPolicyTests
         Assert.True(policy.AdmitRetirePublication(explicitRetireFence).IsAllowed);
     }
 
+    [Theory]
+    [InlineData(SecureCompletionFenceState.Missing, SecureRetirePublicationRule.Denied, false, false)]
+    [InlineData(SecureCompletionFenceState.Pending, SecureRetirePublicationRule.Denied, false, false)]
+    [InlineData(SecureCompletionFenceState.CompletionAllowed, SecureRetirePublicationRule.CompletionFenceRequired, true, false)]
+    [InlineData(SecureCompletionFenceState.CompletionAllowed, SecureRetirePublicationRule.ExplicitRetireFenceRequired, true, false)]
+    [InlineData(SecureCompletionFenceState.RetireAllowed, SecureRetirePublicationRule.CompletionFenceRequired, true, false)]
+    [InlineData(SecureCompletionFenceState.RetireAllowed, SecureRetirePublicationRule.ExplicitRetireFenceRequired, true, true)]
+    public void SecureCompletionPublicationFence_MatrixKeepsCompletionAndRetireSeparate(
+        SecureCompletionFenceState state,
+        SecureRetirePublicationRule retireRule,
+        bool expectedCompletion,
+        bool expectedRetire)
+    {
+        var fence = new SecureCompletionPublicationFence(state, retireRule);
+        var policy = SecureEvidencePublicationPolicy.Default;
+
+        Assert.Equal(expectedCompletion, fence.CanPublishCompletion);
+        Assert.Equal(expectedRetire, fence.CanPublishRetire);
+        Assert.Equal(
+            expectedCompletion,
+            policy.AdmitCompletionPublication(fence).IsAllowed);
+        Assert.Equal(
+            expectedRetire,
+            policy.AdmitRetirePublication(fence).IsAllowed);
+    }
+
     [Fact]
     public void Lane6Lane7SidebandEvidence_RespectsVisibilityClassAndPolicy()
     {
@@ -168,6 +194,68 @@ public sealed class SecureEvidencePublicationPolicyTests
                 hostOwnedLane7,
                 secureGuestPolicy,
                 neutralGuestPolicy).Decision);
+    }
+
+    [Fact]
+    public void EvidenceVisibility_DoesNotCreateMigrationCompletionOrCheckpointAuthority()
+    {
+        var policy = SecureEvidencePublicationPolicy.Default;
+        var secureGuestPolicy = new SecureEvidencePolicy(
+            allowGuestVisibleEvidence: true,
+            allowMigrationSerializableEvidence: false,
+            allowCompatibilityAliasEvidence: false,
+            allowDebugEvidence: false);
+        var secureDebugPolicy = new SecureEvidencePolicy(
+            allowGuestVisibleEvidence: false,
+            allowMigrationSerializableEvidence: false,
+            allowCompatibilityAliasEvidence: false,
+            allowDebugEvidence: true);
+        var neutralGuestPolicy = new EvidencePolicyDescriptor(
+            allowCompatibilityAliases: false,
+            allowGuestArchitecturalState: true,
+            allowMigrationSerializableState: false);
+
+        Assert.True(policy.AdmitGuestVisibleEvidence(
+            secureGuestPolicy,
+            neutralGuestPolicy,
+            SecureEvidenceVisibilityClass.GuestVisible).IsAllowed);
+        Assert.True(policy.AdmitGuestVisibleEvidence(
+            secureDebugPolicy,
+            neutralGuestPolicy,
+            SecureEvidenceVisibilityClass.DebugOnly).IsAllowed);
+        Assert.Equal(
+            SecureEvidencePublicationDecision.DeniedCompletionFence,
+            policy.AdmitCompletionPublication(null).Decision);
+        Assert.False(secureGuestPolicy.CanSerializeAcrossMigration(
+            neutralGuestPolicy,
+            SecureEvidenceVisibilityClass.GuestVisible));
+        Assert.False(secureDebugPolicy.CanSerializeAcrossMigration(
+            neutralGuestPolicy,
+            SecureEvidenceVisibilityClass.DebugOnly));
+        Assert.Equal(
+            SecureEvidencePublicationDecision.DeniedHostOwnedEvidence,
+            policy.AdmitGuestVisibleEvidence(
+                secureGuestPolicy,
+                neutralGuestPolicy,
+                SecureEvidenceVisibilityClass.HostOwnedQuarantined).Decision);
+        Assert.Equal(
+            SecureEvidencePublicationDecision.DeniedRecomputedEvidence,
+            policy.AdmitGuestVisibleEvidence(
+                secureGuestPolicy,
+                neutralGuestPolicy,
+                SecureEvidenceVisibilityClass.RecomputedAfterRestore).Decision);
+        Assert.Equal(
+            SecureCheckpointPayloadDecision.DeniedDebugTraceAsGuestState,
+            SecureCheckpointPayloadPolicy.FailClosed.Classify(
+                SecureCheckpointPayloadClass.DebugTrace));
+        Assert.Equal(
+            SecureCheckpointPayloadDecision.DeniedHostOwnedEvidence,
+            SecureCheckpointPayloadPolicy.FailClosed.Classify(
+                SecureCheckpointPayloadClass.HostOwnedEvidence));
+        Assert.Equal(
+            SecureCheckpointPayloadDecision.DeniedRawMeasurementSecret,
+            SecureCheckpointPayloadPolicy.FailClosed.Classify(
+                SecureCheckpointPayloadClass.RawMeasurementSecret));
     }
 
     [Fact]

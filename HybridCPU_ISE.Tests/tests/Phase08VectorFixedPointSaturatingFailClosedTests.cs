@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
@@ -51,6 +53,167 @@ public sealed class Phase08VectorFixedPointSaturatingFailClosedTests
                 ? "VectorScanSegmentMovement"
                 : "VectorSaturatingFixedPoint";
             Assert.Equal(expectedExtension, status.ExtensionName);
+        }
+    }
+
+    [Fact]
+    public void FixedPointSaturationRows_HaveCompilerVisiblePlanningOnlyNoEmissionContracts()
+    {
+        Assert.Equal(
+            CompilerFailClosedEmissionInventory.VectorFixedPointSaturationMnemonics.Order(StringComparer.Ordinal),
+            CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows
+                .Where(static contract => contract.AbiClass == CompilerVectorVlmBlockedAbiClass.FixedPointSaturation)
+                .Select(static contract => contract.Mnemonic)
+                .Order(StringComparer.Ordinal));
+
+        foreach (CompilerFailClosedEmissionRow row in CompilerFailClosedEmissionInventory.VectorFixedPointSaturationRows)
+        {
+            CompilerVectorVlmBlockedAbiContract contract = Assert.Single(
+                CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows,
+                contract => contract.Mnemonic == row.Mnemonic);
+
+            bool isSaturatingShift = row.Mnemonic is "VSLL.SAT" or "VSRL.SAT" or "VSRA.SAT";
+            bool mayRemainReserved = row.Mnemonic is "VSRL.SAT" or "VSRA.SAT";
+            Assert.Equal("VectorFixedPointSaturationVlmBlocked", contract.ExtensionName);
+            Assert.Equal("VectorFixedPointSaturatingFailClosed", contract.EvidenceBoundary);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.False(contract.CompilerHelperAllowed);
+            Assert.False(contract.TypedFacadeAllowed);
+            Assert.False(contract.TypedHelperAllowed);
+            Assert.True(contract.RequiresSaturatingPolicyAbi);
+            Assert.True(contract.RequiresSignednessWidthClampPolicy);
+            Assert.True(contract.RequiresElementWidthLmulVlAbi);
+            Assert.True(contract.RequiresSignednessAbi);
+            Assert.True(contract.RequiresOverflowPolicyAbi);
+            Assert.True(contract.RequiresVlmMaterializationPolicy);
+            Assert.True(contract.RequiresStagedPublicationRetirePolicy);
+            Assert.True(contract.RequiresReplayRollbackGoldenEvidence);
+            Assert.Equal(isSaturatingShift, contract.RequiresShiftOperandAbi);
+            Assert.Equal(isSaturatingShift, contract.RequiresSaturatingShiftPolicyAbi);
+            Assert.Equal(isSaturatingShift, contract.RequiresSaturatingShiftMeaningDecision);
+            Assert.Equal(mayRemainReserved, contract.MayRemainReservedIfNonMeaningful);
+            Assert.True(contract.SeparateFromClosedVaddSat);
+            Assert.True(contract.NoVaddSatFallback);
+            Assert.True(contract.NoBaseVectorArithmeticFallback);
+            Assert.True(contract.NoBaseVectorShiftFallback);
+            Assert.True(contract.NoScalarHelperFallback);
+            Assert.True(contract.NoLane6StreamFallback);
+            Assert.True(contract.NoLane7AcceleratorFallback);
+            Assert.True(contract.NoVmxSpecificPathFallback);
+            Assert.True(contract.NoExecutableRowAliasPromotion);
+            Assert.True(contract.RejectsSaturatingAddAliasPromotion);
+            Assert.True(contract.RejectsAverageClipAliasPromotion);
+            Assert.True(contract.RejectsBaseArithmeticOrShiftAliasPromotion);
+            Assert.Contains("SaturatingPolicyAbi", contract.RequiredPolicyDecisions);
+            Assert.Contains("VlmMaterializationPolicy", contract.RequiredPolicyDecisions);
+            Assert.Contains("StagedPublicationRetirePolicy", contract.RequiredPolicyDecisions);
+            Assert.Contains("ReplayRollbackGoldenEvidence", contract.RequiredPolicyDecisions);
+            Assert.Contains("RuntimeMaterializerEvidence", contract.RequiredPolicyDecisions);
+            Assert.Contains("SeparateFromClosedVaddSat", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoVaddSatFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoBaseVectorArithmeticFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoBaseVectorShiftFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoScalarHelperFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoLane6StreamFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoLane7AcceleratorFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoVmxSpecificPathFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoExecutableRowAliasPromotion", contract.RequiredPolicyDecisions);
+            if (isSaturatingShift)
+            {
+                Assert.Contains("SaturatingShiftPolicyAbi", contract.RequiredPolicyDecisions);
+            }
+
+            InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+                contract.RequireCompilerHelperAuthority);
+            Assert.Contains($"{row.Mnemonic} typed compiler helper emission is blocked", exception.Message, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void FixedPointAverageClipRows_HaveCompilerVisiblePlanningOnlyNoEmissionContracts()
+    {
+        Assert.Equal(
+            CompilerFailClosedEmissionInventory.VectorFixedPointAverageClipMnemonics.Order(StringComparer.Ordinal),
+            CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows
+                .Where(static contract => contract.AbiClass == CompilerVectorVlmBlockedAbiClass.FixedPointAverageClip)
+                .Select(static contract => contract.Mnemonic)
+                .Order(StringComparer.Ordinal));
+
+        foreach (CompilerFailClosedEmissionRow row in CompilerFailClosedEmissionInventory.VectorFixedPointAverageClipRows)
+        {
+            CompilerVectorVlmBlockedAbiContract contract = Assert.Single(
+                CompilerVectorVlmBlockedAbiContract.AllVlmBlockedRows,
+                contract => contract.Mnemonic == row.Mnemonic);
+
+            bool isAverage = row.Mnemonic is "VAVG" or "VAVG.R";
+            bool isRoundedAverage = row.Mnemonic is "VAVG.R";
+            bool isClip = row.Mnemonic is "VCLIP";
+            Assert.Equal("VectorFixedPointAverageClipVlmBlocked", contract.ExtensionName);
+            Assert.Equal("VectorFixedPointSaturatingFailClosed", contract.EvidenceBoundary);
+            Assert.False(contract.CompilerEmissionAllowed);
+            Assert.False(contract.CompilerHelperAllowed);
+            Assert.False(contract.TypedFacadeAllowed);
+            Assert.False(contract.TypedHelperAllowed);
+            Assert.True(contract.IsFixedPointAverageClip);
+            Assert.Equal(isAverage, contract.IsFixedPointAverage);
+            Assert.Equal(isRoundedAverage, contract.IsRoundedFixedPointAverage);
+            Assert.Equal(isClip, contract.IsFixedPointClip);
+            Assert.True(contract.RequiresElementWidthLmulVlAbi);
+            Assert.True(contract.RequiresSignednessAbi);
+            Assert.True(contract.RequiresRoundingTruncationPolicyAbi);
+            Assert.True(contract.RequiresOverflowPolicyAbi);
+            Assert.True(contract.RequiresVlmMaterializationPolicy);
+            Assert.True(contract.RequiresStagedPublicationRetirePolicy);
+            Assert.True(contract.RequiresReplayRollbackGoldenEvidence);
+            Assert.Equal(isAverage, contract.RequiresAveragePolicyAbi);
+            Assert.Equal(isRoundedAverage, contract.RequiresRoundingPolicyAbi);
+            Assert.Equal(isClip, contract.RequiresClipBoundsAbi);
+            Assert.Equal(isClip, contract.RequiresNarrowingPolicyAbi);
+            Assert.Equal(isClip, contract.RequiresResultWidthPolicyAbi);
+            Assert.True(contract.NoVaddSatFallback);
+            Assert.True(contract.NoFixedPointSaturationFallback);
+            Assert.True(contract.NoBaseVectorArithmeticFallback);
+            Assert.True(contract.NoBaseVectorShiftFallback);
+            Assert.True(contract.NoNarrowWidenConvertFallback);
+            Assert.True(contract.NoScalarHelperFallback);
+            Assert.True(contract.NoLane6StreamFallback);
+            Assert.True(contract.NoLane7AcceleratorFallback);
+            Assert.True(contract.NoVmxSpecificPathFallback);
+            Assert.True(contract.NoExecutableRowAliasPromotion);
+            Assert.Contains("RoundingTruncationPolicyAbi", contract.RequiredPolicyDecisions);
+            Assert.Contains("VlmMaterializationPolicy", contract.RequiredPolicyDecisions);
+            Assert.Contains("StagedPublicationRetirePolicy", contract.RequiredPolicyDecisions);
+            Assert.Contains("ReplayRollbackGoldenEvidence", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoVaddSatFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoFixedPointSaturationFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoBaseVectorArithmeticFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoBaseVectorShiftFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoNarrowWidenConvertFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoScalarHelperFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoLane6StreamFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoLane7AcceleratorFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoVmxSpecificPathFallback", contract.RequiredPolicyDecisions);
+            Assert.Contains("NoExecutableRowAliasPromotion", contract.RequiredPolicyDecisions);
+            if (isAverage)
+            {
+                Assert.Contains("AveragePolicyAbi", contract.RequiredPolicyDecisions);
+            }
+
+            if (isRoundedAverage)
+            {
+                Assert.Contains("RoundingPolicyAbi", contract.RequiredPolicyDecisions);
+            }
+
+            if (isClip)
+            {
+                Assert.Contains("ClipBoundsAbi", contract.RequiredPolicyDecisions);
+                Assert.Contains("NarrowingPolicyAbi", contract.RequiredPolicyDecisions);
+                Assert.Contains("ResultWidthPolicyAbi", contract.RequiredPolicyDecisions);
+            }
+
+            InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+                contract.RequireCompilerHelperAuthority);
+            Assert.Contains($"{row.Mnemonic} typed compiler helper emission is blocked", exception.Message, StringComparison.Ordinal);
         }
     }
 

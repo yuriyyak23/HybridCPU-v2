@@ -302,6 +302,7 @@ namespace YAKSys_Hybrid_CPU.Core
             AluClassInjects = metrics.AluClassInjects;
             LsuClassInjects = metrics.LsuClassInjects;
             DmaStreamClassInjects = metrics.DmaStreamClassInjects;
+            MatrixTileStreamClassInjects = metrics.MatrixTileStreamClassInjects;
             BranchControlInjects = metrics.BranchControlInjects;
             HardPinnedInjects = metrics.HardPinnedInjects;
             ClassFlexibleInjects = metrics.ClassFlexibleInjects;
@@ -325,6 +326,7 @@ namespace YAKSys_Hybrid_CPU.Core
             SmtLegalityRejectByAluClass = metrics.SmtLegalityRejectByAluClass;
             SmtLegalityRejectByLsuClass = metrics.SmtLegalityRejectByLsuClass;
             SmtLegalityRejectByDmaStreamClass = metrics.SmtLegalityRejectByDmaStreamClass;
+            SmtLegalityRejectByMatrixTileStreamClass = metrics.SmtLegalityRejectByMatrixTileStreamClass;
             SmtLegalityRejectByBranchControl = metrics.SmtLegalityRejectByBranchControl;
             SmtLegalityRejectBySystemSingleton = metrics.SmtLegalityRejectBySystemSingleton;
             ClassTemplateDomainInvalidations = metrics.ClassTemplateDomainInvalidations;
@@ -332,6 +334,7 @@ namespace YAKSys_Hybrid_CPU.Core
             CertificateRejectByAluClass = metrics.CertificateRejectByAluClass;
             CertificateRejectByLsuClass = metrics.CertificateRejectByLsuClass;
             CertificateRejectByDmaStreamClass = metrics.CertificateRejectByDmaStreamClass;
+            CertificateRejectByMatrixTileStreamClass = metrics.CertificateRejectByMatrixTileStreamClass;
             CertificateRejectByBranchControl = metrics.CertificateRejectByBranchControl;
             CertificateRejectBySystemSingleton = metrics.CertificateRejectBySystemSingleton;
             RejectionsVT0 = metrics.RejectionsVT0;

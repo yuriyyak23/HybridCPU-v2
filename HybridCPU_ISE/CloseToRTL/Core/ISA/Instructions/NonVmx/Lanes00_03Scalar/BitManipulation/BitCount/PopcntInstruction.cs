@@ -1,9 +1,9 @@
 // POPCNT alias decision path:
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\PopcntInstruction.cs
-// - HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\PopcntInstruction.LocalSemantics.cs
-// - HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
-// - HybridCPU ISE\HybridCPU_ISE.Tests\CompilerTests\CompilerNoEmissionBoundaryTests.cs
-// - HybridCPU ISE\HybridCPU_ISE.Tests\CompilerTests\CompilerFacadeAbiPhase01Tests.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\PopcntInstruction.cs
+// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\BitManipulation\BitCount\PopcntInstruction.LocalSemantics.cs
+// - \HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
+// - \HybridCPU_ISE.Tests\CompilerTests\CompilerNoEmissionBoundaryTests.cs
+// - \HybridCPU_ISE.Tests\CompilerTests\CompilerFacadeAbiPhase01Tests.cs
 // POPCNT is not a separate runtime opcode. CPOP is the canonical hardware row;
 // POPCNT remains reserved/no-emission until a future parser-only alias policy is
 // explicitly approved. VMX has no direct integration point for this alias.

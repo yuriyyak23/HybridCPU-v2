@@ -34,9 +34,13 @@ as the separate L7-SDC / stream-accelerator reference.
 
 ## Boundaries not expanded
 
-- Fixed `W=8` topology remains lanes 0-3 ALU, lanes 4-5 LSU, lane6 `DmaStreamClass`, lane7 `BranchControl`/`SystemSingleton` alias.
+- Fixed `W=8` topology remains lanes 0-3 ALU, lanes 4-5 LSU, lane6
+  `DmaStreamClass` / `MatrixTileStreamClass` physical alias, and lane7
+  `BranchControl` / `SystemSingleton` physical alias.
 - L7-SDC uses lane7 `SystemSingleton` only.
 - `DmaStreamCompute` remains lane6 CPU-native descriptor-backed stream compute.
+- MatrixTile load/store uses a distinct lane6 tile-stream ABI. It does not use
+  DSC descriptors, tokens, queues, or commit authority.
 - L7-SDC uses typed sideband descriptors; raw carrier bits are not ABI or authority.
 - `SystemDeviceCommandMicroOp.Execute(...)` dispatches the current scoped
   runtime contour for `ACCEL_QUERY_CAPS`, `ACCEL_SUBMIT`, `ACCEL_POLL`,
@@ -44,11 +48,16 @@ as the separate L7-SDC / stream-accelerator reference.
 - Current carriers have `WritesRegister = DestinationRegister != 0`; retire
   writeback is emitted only when the runtime ABI result writes and the carrier
   has a destination register.
+- ACCEL_* currently do not write architectural rd by opcode class alone; register
+  writeback requires the scoped runtime ABI result and carrier destination.
 - `ACCEL_SUBMIT` requires a typed, guard-accepted `AcceleratorCommandDescriptor`;
   descriptorless submit remains fail-closed.
 - `AcceleratorRegisterAbi`, `AcceleratorFenceModel`, token store, backend,
   conflict, and commit helpers are runtime-side surfaces used by the current
   scoped contour. They are not a universal external accelerator protocol.
+- AcceleratorRegisterAbi is model-only outside the scoped runtime command
+  contour.
+- AcceleratorFenceModel is model-only outside the scoped runtime fence contour.
 - Owner/domain plus mapping/IOMMU epoch guard is the authority root.
 - Mapping/IOMMU epoch validation is current model admission/commit authority
   evidence only; it is not current executable L7 IOMMU-backed memory execution.
@@ -62,6 +71,7 @@ as the separate L7-SDC / stream-accelerator reference.
 - `ACCEL_FENCE` is executable only as the scoped runtime fence path: it observes
   guarded tokens, can call the commit coordinator under policy, and can write a
   packed status result to `rd` when the ABI says so.
+- No executable ACCEL_FENCE exists outside that scoped runtime fence path.
 - There is no universal external accelerator command protocol and no global CPU
   load/store conflict manager hook in the current implementation.
 - No universal external accelerator command protocol.

@@ -128,8 +128,7 @@ public sealed partial class RuntimeBoundaryAdmissionService
 
         SecureComputeDomainDescriptor? secureDescriptor =
             context.SecureCompute ?? request.SecureDescriptor;
-        if (request.SecureOperationClass != SecureDomainOperationClass.Ordinary &&
-            secureDescriptor is { IsEnabled: true })
+        if (request.SecureOperationClass != SecureDomainOperationClass.Ordinary)
         {
             SecureDomainAdmissionResult secureAdmission = _secureAdmission.Admit(
                 secureDescriptor,
@@ -142,6 +141,13 @@ public sealed partial class RuntimeBoundaryAdmissionService
                 return Deny(
                     RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied,
                     secureAdmission.Reason);
+            }
+
+            if (secureDescriptor is null)
+            {
+                return Deny(
+                    RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied,
+                    "Secure descriptor is required only for secure-domain operation classes.");
             }
 
             if (!context.IsBoundToDomain(secureDescriptor.DomainTag))

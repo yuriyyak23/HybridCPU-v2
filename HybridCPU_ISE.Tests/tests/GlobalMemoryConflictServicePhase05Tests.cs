@@ -333,7 +333,7 @@ public sealed class GlobalMemoryConflictServicePhase05Tests
                 });
         Assert.Empty(unexpectedConflictServiceHooks);
 
-        string compilerText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_Compiler"));
+        string compilerText = CompilerSourceScanner.ReadAllCompilerSource();
         Assert.DoesNotContain("GlobalMemoryConflictService", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("GlobalMemoryFootprint", compilerText, StringComparison.Ordinal);
         Assert.DoesNotContain("DmaStreamComputeRuntime.ExecuteToCommitPending", compilerText, StringComparison.Ordinal);
@@ -411,15 +411,6 @@ public sealed class GlobalMemoryConflictServicePhase05Tests
             new AcceleratorCancelMicroOp(),
             new AcceleratorFenceMicroOp()
         };
-
-    private static string ReadAllSourceText(string root)
-    {
-        return string.Join(
-            Environment.NewLine,
-            Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(file => !CompatFreezeScanner.IsGeneratedPath(file))
-                .Select(File.ReadAllText));
-    }
 
     private sealed class FakeMemoryBus : IMemoryBus
     {

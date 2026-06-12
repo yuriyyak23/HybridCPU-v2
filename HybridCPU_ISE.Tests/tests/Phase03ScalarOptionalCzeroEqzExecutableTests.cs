@@ -382,17 +382,23 @@ public sealed class ScalarOptionalCzeroEqzExecutableTests
     }
 
     [Fact]
-    public void CzeroEqz_CompilerEmission_RemainsClosedForScalarOptionalHelpers()
+    public void CzeroEqz_CompilerEmission_OpensConditionalZeroRowsWithoutFacadeAliases()
     {
-        string compilerSource = ReadAllCompilerSource();
+        string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
 
-        Assert.DoesNotContain("CZERO_EQZ", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("CZERO.EQZ", compilerSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("Czero", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("InstructionsEnum.CZERO_EQZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("InstructionsEnum.CZERO_NEZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("CZERO.EQZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("CZERO.NEZ", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ZeroIfConditionEqualZero", compilerSource, StringComparison.Ordinal);
+        Assert.Contains("ZeroIfConditionNotEqualZero", compilerSource, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("CzeroEqz", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CzeroNez", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Csel", compilerSource, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ConditionalSelect", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("Seqz", compilerSource, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Snez", compilerSource, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Sh1Add", compilerSource, StringComparison.OrdinalIgnoreCase);
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(
@@ -510,13 +516,4 @@ public sealed class ScalarOptionalCzeroEqzExecutableTests
         return hasEnum || hasRegistryMnemonic;
     }
 
-    private static string ReadAllCompilerSource()
-    {
-        string compilerRoot = Path.Combine(CompatFreezeScanner.FindRepoRoot(), "HybridCPU_Compiler");
-        return string.Join(
-            Environment.NewLine,
-            Directory.GetFiles(compilerRoot, "*.cs", SearchOption.AllDirectories)
-                .OrderBy(path => path, StringComparer.Ordinal)
-                .Select(File.ReadAllText));
-    }
 }
