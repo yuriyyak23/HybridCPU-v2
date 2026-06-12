@@ -1,6 +1,8 @@
 
 # HybridCPU-v2 ISE
 
+**Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
+
 # Base research paper
 [https://zenodo.org/records/20137443](https://doi.org/10.5281/zenodo.20137443)
 
@@ -11,8 +13,6 @@
 1) New Instructions to ISA
 2) Virtualization and Secure Compute layers
 
-
-**Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
 
 HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
