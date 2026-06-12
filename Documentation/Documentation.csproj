@@ -10,12 +10,11 @@
 
 	<ItemGroup>
 	  <Compile Remove="Refactoring\**" />
+	  <Compile Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
 	  <EmbeddedResource Remove="Refactoring\**" />
+	  <EmbeddedResource Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
 	  <None Remove="Refactoring\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Stream WhiteBook\StreamEngine DmaStreamCompute\" />
+	  <None Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
 	</ItemGroup>
 
 </Project>
