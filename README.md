@@ -62,13 +62,6 @@ The repository separates five adjacent execution contours:
 - lane7 L7-SDC executes current Phase 08 / 08A commands through `SystemDeviceCommandMicroOp.Execute(...) -> ExternalAcceleratorRuntime`, with staged backend results, guarded fence/commit, and conditional `rd` writeback through `AcceleratorRegisterAbi`;
 - compatibility-denied surfaces, VMX guest bindings, descriptorless submit, DSC2 execution, queue/async expansion, coherent DMA/cache, broad IOMMU-backed memory execution, universal external accelerator protocol, and production compiler/backend lowering remain fail-closed or future-gated.
 
-## Instruction-Surface Closure
-
-The current instruction inventory is summarized in
-`Documentation/InstructionsList/Complete/`, with the MatrixTile closure record
-under `Documentation/InstructionsList/MTILE_RefPlan/`. These documents are
-derived from runtime code and tests, not replacements for either.
-
 ## Virtualization And SecureCompute
 
 Virtualization and SecureCompute have their own authority packs:
