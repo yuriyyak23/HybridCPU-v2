@@ -12,7 +12,8 @@
 
 1) New Instructions to ISA
 2) Virtualization and Secure Compute layers
-# 
+
+# Model Overview
 
 HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
