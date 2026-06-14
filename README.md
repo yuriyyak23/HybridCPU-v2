@@ -1,13 +1,19 @@
+
+# HybridCPU-v2 ISE
+
+**Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
+
+# Base research paper
+[https://zenodo.org/records/20137443](https://doi.org/10.5281/zenodo.20137443)
+
 # Now In-Progress: 
+
+**You can help with the development sponsoring project by PayPal (https://paypal.me/YAKGitHub)
 
 1) New Instructions to ISA
 2) Virtualization and Secure Compute layers
 
-**You can help with the development sponsoring project by PayPal (https://paypal.me/YAKGitHub)
-
-# HybridCPU ISE
-
-**Replay-stable SMT-VLIW instruction-set emulator/runtime with typed-slot scheduling, runtime-owned legality, retire-visible evidence, and separate instruction and stream documentation overlays.**
+# Model Overview
 
 HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
@@ -15,12 +21,6 @@ retire-visible effects, and a versioned compiler/runtime contract. Stream,
 MatrixTile, assist, lane6 DSC, and lane7 architecture records live in
 `Documentation/Stream WhiteBook/`.
 
-This README deliberately compresses the current documentation map into the repository entry point. It keeps file references minimal; for deeper detail, start with:
-
-- `Documentation/WhiteBook/0. chapter-index.md`
-- `Documentation/operational-semantics.md`
-- `Documentation/validation-baseline.md`
-- `Documentation/evidence-matrix.md`
 - [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md)
 - [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md)
 - [Stream WhiteBook](Documentation/Stream%20WhiteBook/00_README.md)
@@ -40,7 +40,6 @@ DSC, and lane7 L7-SDC surfaces.
 
 | Area | Start here | Claim boundary |
 |---|---|---|
-| Instruction inventory | [Instructions by lane](Documentation/InstructionsList/Complete/ISE_Instructions_By_Lane_CodeConfirmed.md) | Code-confirmed opcode, slot-class, and lane inventory; runtime legality remains final authority. |
 | Virtualization | [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md) | Current neutral-runtime virtualization record: VMX is a frozen compatibility frontend/projection surface, not the authority owner. |
 | SecureCompute | [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md) | Neutral secure-domain descriptor/admission model with policy evidence, VMX denial/projection fences, and no production secure backend execution claim. |
 | VectorStream | [VectorStream](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md) | StreamEngine orchestration, SRF transient state, BurstIO transport, and VectorALU compute; no MatrixTile/DSC publication authority. |
@@ -62,13 +61,6 @@ The repository separates five adjacent execution contours:
 - assists warm cache/SRF state but never retire;
 - lane7 L7-SDC executes current Phase 08 / 08A commands through `SystemDeviceCommandMicroOp.Execute(...) -> ExternalAcceleratorRuntime`, with staged backend results, guarded fence/commit, and conditional `rd` writeback through `AcceleratorRegisterAbi`;
 - compatibility-denied surfaces, VMX guest bindings, descriptorless submit, DSC2 execution, queue/async expansion, coherent DMA/cache, broad IOMMU-backed memory execution, universal external accelerator protocol, and production compiler/backend lowering remain fail-closed or future-gated.
-
-## Instruction-Surface Closure
-
-The current instruction inventory is summarized in
-`Documentation/InstructionsList/Complete/`, with the MatrixTile closure record
-under `Documentation/InstructionsList/MTILE_RefPlan/`. These documents are
-derived from runtime code and tests, not replacements for either.
 
 ## Virtualization And SecureCompute
 
@@ -113,7 +105,7 @@ The current codebase implements:
 - MatrixTile memory and compute runtime with architectural MatrixRegisterFile
   state, typed transport, retire-only publication, and replay/rollback;
 - lane6 `DmaStreamCompute` as a descriptor/decode carrier with a scoped DSC1 Phase 06 materialized runtime/token/commit contour;
-- lane7 L7-SDC as `SystemSingleton` external accelerator command carriers with scoped Phase 08 / 08A runtime execution, guarded token lifecycle, staged commit, and conditional register ABI writeback;
+- lane7 L7-SDC as `SystemSingleton` external accelerator command carriers with scoped runtime execution, guarded token lifecycle, staged commit, and conditional register ABI writeback;
 - telemetry and replay evidence as architecture-facing surfaces;
 - explicit backend state with rename, commit, physical register, free-list, and retire coordination.
 
