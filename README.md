@@ -105,7 +105,7 @@ The current codebase implements:
 - MatrixTile memory and compute runtime with architectural MatrixRegisterFile
   state, typed transport, retire-only publication, and replay/rollback;
 - lane6 `DmaStreamCompute` as a descriptor/decode carrier with a scoped DSC1 Phase 06 materialized runtime/token/commit contour;
-- lane7 L7-SDC as `SystemSingleton` external accelerator command carriers with scoped Phase 08 / 08A runtime execution, guarded token lifecycle, staged commit, and conditional register ABI writeback;
+- lane7 L7-SDC as `SystemSingleton` external accelerator command carriers with scoped runtime execution, guarded token lifecycle, staged commit, and conditional register ABI writeback;
 - telemetry and replay evidence as architecture-facing surfaces;
 - explicit backend state with rename, commit, physical register, free-list, and retire coordination.
 
