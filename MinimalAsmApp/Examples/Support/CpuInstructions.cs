@@ -8,11 +8,18 @@ using Instruction = YAKSys_Hybrid_CPU.Processor.CPU_Core.InstructionsEnum;
 
 public static class CpuInstructions
 {
-    public static VLIW_Instruction AddImmediate(int destinationRegister, int sourceRegister, short immediate)
+    public static VLIW_Instruction AddImmediate(int destinationRegister, int sourceRegister, short immediate) =>
+        BinaryImmediate(Instruction.ADDI, destinationRegister, sourceRegister, immediate);
+
+    public static VLIW_Instruction BinaryImmediate(
+        Instruction opcode,
+        int destinationRegister,
+        int sourceRegister,
+        short immediate)
     {
         return new VLIW_Instruction
         {
-            OpCode = (uint)Instruction.ADDI,
+            OpCode = (uint)opcode,
             DataTypeValue = DataTypeEnum.INT64,
             PredicateMask = 0,
             Immediate = unchecked((ushort)immediate),
