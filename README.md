@@ -46,7 +46,6 @@ DSC, and lane7 L7-SDC surfaces.
 
 | Area | Start here | Claim boundary |
 |---|---|---|
-
 | Virtualization | [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md) | Current neutral-runtime virtualization record: VMX is a frozen compatibility frontend/projection surface, not the authority owner. |
 | SecureCompute | [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md) | Neutral secure-domain descriptor/admission model with policy evidence, VMX denial/projection fences, and no production secure backend execution claim. |
 | VectorStream | [VectorStream](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md) | StreamEngine orchestration, SRF transient state, BurstIO transport, and VectorALU compute; no MatrixTile/DSC publication authority. |
