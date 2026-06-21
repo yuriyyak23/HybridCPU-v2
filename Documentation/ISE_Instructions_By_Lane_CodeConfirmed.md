@@ -1,17 +1,5 @@
 # ISE runtime-implemented instructions
 
-## Code authority
-
-- `HybridCPU_ISE/CloseToRTL/Core/Architecture/Common/CPU_Core.Enums.cs` объявляет 251 уникальный numeric opcode.
-- `HybridCPU_ISE/NonRTL/Arch/InstructionSupportStatus.cs` задаёт fail-closed status/evidence vocabulary; `IsExecutableClaim` требует `Mandatory`/`OptionalEnabled`, execution evidence и semantics.
-- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Initialize*.cs` и `InstructionRegistry.Runtime.cs` подтверждают semantic factory и отсутствие unknown-opcode fallback.
-- `HybridCPU_ISE/NonRTL/Arch/OpcodeInfo.Registry.Data*.cs` и `InstructionClassifier.cs` задают published semantics/classification.
-- `HybridCPU_ISE/NonRTL/Core/Legality/BundleLegalityAnalyzer.cs` мапит обычные instruction classes в slot classes.
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/Scheduling/SlotLegality/SlotClassDefinitions.cs` задаёт W=8 lane masks.
-- Materialized MicroOp placement имеет приоритет над общим class mapping. Это критично для lane 6 `DmaStreamClass` и `MatrixTileStreamClass`.
-
-## Inclusion result
-
 | Runtime lane output | SlotClass | Placement | Count |
 | --- | --- | --- | ---: |
 | Any lane | `Unclassified` | NOP placeholder/flexible | 1 |
