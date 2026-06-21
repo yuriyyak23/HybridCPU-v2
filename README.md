@@ -10,8 +10,8 @@
 
 **You can help with the development sponsoring project by PayPal (https://paypal.me/YAKGitHub)
 
-1) New Instructions to ISA
-2) Virtualization and Secure Compute layers
+1) New Instructions to ISA added (Including Matrix\Tile) (21/06/2026)
+2) Virtualization and Secure Compute layers v0.6 (21/06/2026)
 
 # Model Overview
 
