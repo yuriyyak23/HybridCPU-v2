@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Элементы решения/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="CpuInterfaceBridge/HybridCpu_InterfaceBridge.csproj" Id="733f2e53-d3ee-460c-814b-9c3784171d66" />
+  <Project Path="Documentation/Documentation.csproj" />
+  <Project Path="HybridCPU_Compiler/HybridCPU_Compiler.csproj" Id="c4dc5e95-942e-455b-be5d-e90bfa048cfc" />
+  <Project Path="HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj" />
+  <Project Path="HybridCPU_ISE/HybridCPU_ISE.csproj" />
+  <Project Path="MinimalAsmApp/MinimalAsmApp.csproj" Id="207defb7-a35e-4222-8f06-bcb06f187159" />
+  <Project Path="TestAssemblerConsoleApps/TestAssemblerConsoleApps.csproj" Id="446a3a19-1946-4bf3-9384-cf25f536e218" />
+</Solution>

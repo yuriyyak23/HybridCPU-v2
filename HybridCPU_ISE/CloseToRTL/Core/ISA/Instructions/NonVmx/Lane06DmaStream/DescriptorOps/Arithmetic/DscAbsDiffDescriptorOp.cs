@@ -1,0 +1,56 @@
+namespace YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic;
+
+public sealed partial class DscAbsDiffDescriptorOp
+{
+    public const string Mnemonic = "DmaStreamCompute.ABSDIFF";
+    public const string OperandShape = "descriptor src0/src1/dst ranges, type, shape, overflow policy, owner-domain sideband";
+    public const string EvidenceBoundary = "Lane6DescriptorOwnedNoExecution";
+    public const string ExecutionLaneBinding = "Lane06DmaStream";
+    public const string DescriptorAuthorityBoundary = "GenericLane6DescriptorRuntimeOnly";
+    public const string VmxBoundary = "GenericRuntimeOnly";
+    public const string ProductionDecision = "Phase10NegativeDecisionGate";
+    public const bool IsDescriptorOwned = true;
+    public const bool HasScalarOpcodeAllocation = false;
+    public const bool RequiresDescriptorOpTypeAllocation = true;
+    public const bool RequiresDescriptorParserValidation = true;
+    public const bool RequiresOwnerDomainGuard = true;
+    public const bool RequiresTokenAdmission = true;
+    public const bool RequiresDescriptorPayloadAbi = true;
+    public const bool RequiresTypedDescriptorProjection = true;
+    public const bool RequiresDescriptorMaterializer = true;
+    public const bool RequiresBackendRuntimeAdmission = true;
+    public const bool RequiresOverflowPolicyAbi = true;
+    public const bool RequiresStagedCommit = true;
+    public const bool RequiresRetireCommitAuthority = true;
+    public const bool RequiresFutureRetireReplayEvidence = true;
+    public const bool RequiresReplayDeterminism = true;
+    public const bool RequiresReplayRollbackConformance = true;
+    public const bool RequiresRollbackPolicy = true;
+    public const bool RequiresGoldenArtifacts = true;
+    public const bool NoGuestVisibleHostEvidence = true;
+    public const bool NoHostOwnedEvidencePublication = true;
+    public const bool ExistingDmaStreamComputeEvidenceIsInsufficient = true;
+    public const bool NoScalarOpcodePublication = true;
+    public const bool NoDecoderEncoderAbiPublication = true;
+    public const bool NoScalarDecoderEncoderAbiPublication = true;
+    public const bool NoInstructionIrProjectionPublication = true;
+    public const bool NoRegistryMaterializerPublication = true;
+    public const bool NoTypedMicroOpPublication = true;
+    public const bool NoSchedulerLaneBindingPublication = true;
+    public const bool NoExecutionCapturePublication = true;
+    public const bool NoRetireWritebackPublication = true;
+    public const bool NoReplayRollbackPublication = true;
+    public const bool NoCompilerHelperEmission = true;
+    public const bool NoHiddenScalarLowering = true;
+    public const bool NoHiddenVectorLowering = true;
+    public const bool NoMultiOpEmission = true;
+    public const bool NoGenericDmaStreamComputeFallback = true;
+    public const bool NoStreamEngineFallback = true;
+    public const bool NoDmaControllerFallback = true;
+    public const bool NoLane7Fallback = true;
+    public const bool NoExternalBackendFallback = true;
+    public const bool NoVmxSpecificPath = true;
+    public const bool RequiresFutureVirtualizationBoundaryPolicy = true;
+    public const bool IsExecutable = false;
+    public const bool CompilerHelperAllowed = false;
+}

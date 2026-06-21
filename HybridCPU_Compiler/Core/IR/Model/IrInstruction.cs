@@ -1,0 +1,74 @@
+using HybridCPU_ISE.Arch;
+using System;
+using System.Collections.Generic;
+using YAKSys_Hybrid_CPU;
+using YAKSys_Hybrid_CPU.Arch;
+using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
+using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
+
+namespace HybridCPU.Compiler.Core.IR
+{
+    /// <summary>
+    /// Normalized instruction-level IR node derived from an encoded VLIW instruction.
+    /// </summary>
+    public sealed record IrInstruction(
+        int Index,
+        byte VirtualThreadId,
+        ulong EncodedAddress,
+        Processor.CPU_Core.InstructionsEnum Opcode,
+        DataTypeEnum DataType,
+        byte PredicateMask,
+        ushort Immediate,
+        uint StreamLength,
+        ushort Stride,
+        ushort RowStride,
+        bool Indexed,
+        bool Is2D,
+        bool Reduction,
+        bool TailAgnostic,
+        bool MaskAgnostic,
+        IReadOnlyList<IrOperand> Operands,
+    IrInstructionAnnotation Annotation,
+    IrSourceSpan? SourceSpan = null)
+    {
+        // ── ISA v4 Phase 02: canonical instruction classification ─────────────────────
+        // These properties are computed from the opcode by the IR builder via
+        // InstructionClassifier.Classify(Opcode). Stealability policy is carried separately
+        // through Annotation/slot metadata rather than as an instruction field.
+
+        /// <summary>
+        /// Canonical ISA v4 instruction class.
+        /// Determines pipeline routing and slot class assignment.
+        /// </summary>
+        public InstructionClass InstructionClass { get; init; } = InstructionClass.ScalarAlu;
+
+        /// <summary>
+        /// Canonical ISA v4 serialization class.
+        /// Determines ordering and side-effect isolation requirements.
+        /// </summary>
+        public SerializationClass SerializationClass { get; init; } = SerializationClass.Free;
+
+        /// <summary>
+        /// Descriptor sideband for canonical lane6 DmaStreamCompute emission.
+        /// </summary>
+        public DmaStreamComputeDescriptor? DmaStreamComputeDescriptor { get; init; }
+
+        /// <summary>
+        /// Descriptor sideband for L7-SDC decode/projector validation.
+        /// Phase 04 keeps compiler emission disabled; this field is transport metadata only.
+        /// </summary>
+        public AcceleratorCommandDescriptor? AcceleratorCommandDescriptor { get; init; }
+
+        /// <summary>
+        /// Compiler-owned positive MTILE helper sideband recovered from the direct MTILE carrier.
+        /// Runtime-owned legality remains the final ISA authority.
+        /// </summary>
+        public CompilerMatrixTileEmissionPlan? MatrixTileEmission { get; init; }
+
+        /// <summary>
+        /// Compiler-owned positive VLOAD/VSTORE helper sideband recovered from the direct
+        /// vector transfer carrier. Runtime-owned legality remains the final ISA authority.
+        /// </summary>
+        public CompilerVectorTransferEmissionPlan? VectorTransferEmission { get; init; }
+    }
+}
