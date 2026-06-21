@@ -17,7 +17,9 @@
 
 HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
-retire-visible effects, and a versioned compiler/runtime contract. Stream,
+retire-visible effects, and a versioned compiler/runtime contract. 
+
+Stream,
 MatrixTile, assist, lane6 DSC, and lane7 architecture records live in
 `Documentation/Stream WhiteBook/`.
 
@@ -35,6 +37,7 @@ This README deliberately compresses the current documentation map into the repos
 - [lane7 L7-SDC external accelerator WhiteBook](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md)
 - [Stream WhiteBook diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md)
 - [ISE_Instructions list](Documentation/ISE_Instructions_By_Lane_CodeConfirmed.md)
+- [Asm short Test Results](Documentation/AsmAppTestResults.md)
 
 When this README, the WhiteBooks, older notes, and code disagree, live code and the current proof/evidence surfaces are the authority. Historical material under old documentation paths is repository archaeology unless a current proof surface cites it.
 
