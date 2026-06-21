@@ -22,7 +22,6 @@ MatrixTile, assist, lane6 DSC, and lane7 architecture records live in
 `Documentation/Stream WhiteBook/`.
 
 This README deliberately compresses the current documentation map into the repository entry point. It keeps file references minimal; for deeper detail, start with:
-- `Documentation/ISE_Instructions_By_Lane_CodeConfirmed.md`
 - `Documentation/WhiteBook/0. chapter-index.md`
 - `Documentation/operational-semantics.md`
 - `Documentation/validation-baseline.md`
@@ -35,6 +34,7 @@ This README deliberately compresses the current documentation map into the repos
 - [lane6 DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/00_README.md)
 - [lane7 L7-SDC external accelerator WhiteBook](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md)
 - [Stream WhiteBook diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md)
+- [ISE_Instructions list](Documentation/ISE_Instructions_By_Lane_CodeConfirmed.md)
 
 When this README, the WhiteBooks, older notes, and code disagree, live code and the current proof/evidence surfaces are the authority. Historical material under old documentation paths is repository archaeology unless a current proof surface cites it.
 
