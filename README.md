@@ -66,9 +66,9 @@ The repository separates five adjacent execution contours:
   an architectural tile-state owner;
 - MatrixTile load/store uses typed lane6 transport, while MACC/transpose uses
   MatrixTile compute; execute captures and retire publishes;
-- lane6 `DmaStreamCompute` executes current DSC1 Phase 06 descriptors through `DmaStreamComputeMicroOp.Execute(...) -> DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`, then publishes memory only through retire/token commit;
+- lane6 `DmaStreamCompute` executes descriptors through `DmaStreamComputeMicroOp.Execute(...) -> DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)`, then publishes memory only through retire/token commit;
 - assists warm cache/SRF state but never retire;
-- lane7 L7-SDC executes current Phase 08 / 08A commands through `SystemDeviceCommandMicroOp.Execute(...) -> ExternalAcceleratorRuntime`, with staged backend results, guarded fence/commit, and conditional `rd` writeback through `AcceleratorRegisterAbi`;
+- lane7 L7-SDC executes commands through `SystemDeviceCommandMicroOp.Execute(...) -> ExternalAcceleratorRuntime`, with staged backend results, guarded fence/commit, and conditional `rd` writeback through `AcceleratorRegisterAbi`;
 - compatibility-denied surfaces, VMX guest bindings, descriptorless submit, DSC2 execution, queue/async expansion, coherent DMA/cache, broad IOMMU-backed memory execution, universal external accelerator protocol, and production compiler/backend lowering remain fail-closed or future-gated.
 
 ## Instruction-Surface Closure
