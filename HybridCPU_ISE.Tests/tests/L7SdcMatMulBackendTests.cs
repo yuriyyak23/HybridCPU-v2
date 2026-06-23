@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
 using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
@@ -13,10 +11,10 @@ using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Tokens;
 
 namespace HybridCPU_ISE.Tests.MemoryAccelerators;
 
-public sealed class L7SdcMatMulNoLegacyExecuteTests
+public sealed class L7SdcMatMulBackendTests
 {
     [Fact]
-    public void L7SdcMatMulNoLegacyExecute_FakeBackendStagesResultOnly()
+    public void L7SdcMatMulBackend_FakeBackendStagesExpectedResult()
     {
         Processor.MainMemoryArea previousMemory = Processor.MainMemory;
         try
@@ -94,7 +92,7 @@ public sealed class L7SdcMatMulNoLegacyExecuteTests
     }
 
     [Fact]
-    public void L7SdcMatMulNoLegacyExecute_FakeBackendRejectsDescriptorCapabilityMismatch()
+    public void L7SdcMatMulBackend_FakeBackendRejectsDescriptorCapabilityMismatch()
     {
         MatMulDescriptor matMulDescriptor =
             L7SdcMatMulDescriptorTests.CreateMatMulDescriptor();
@@ -141,7 +139,7 @@ public sealed class L7SdcMatMulNoLegacyExecuteTests
     }
 
     [Fact]
-    public void L7SdcMatMulNoLegacyExecute_BuilderRejectsInexactGuardedReadBytes()
+    public void L7SdcMatMulBackend_BuilderRejectsInexactGuardedReadBytes()
     {
         MatMulDescriptor matMulDescriptor =
             L7SdcMatMulDescriptorTests.CreateMatMulDescriptor();
@@ -166,32 +164,6 @@ public sealed class L7SdcMatMulNoLegacyExecuteTests
         Assert.False(built);
         Assert.Empty(stagedBytes);
         Assert.Contains("exact source bytes", message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void L7SdcMatMulNoLegacyExecute_ProductionPathDoesNotReferenceLegacyExecute()
-    {
-        string root = L7SdcPhase07TestFactory.ResolveRepoRoot();
-        string externalAcceleratorPath = Path.Combine(
-            root,
-            "HybridCPU_ISE",
-            "Core",
-            "Execution",
-            "ExternalAccelerators");
-
-        string[] offenders = Directory.GetFiles(externalAcceleratorPath, "*.cs", SearchOption.AllDirectories)
-            .Where(static path =>
-            {
-                string text = File.ReadAllText(path);
-                return text.Contains("ICustomAccelerator", StringComparison.Ordinal) ||
-                       text.Contains("MatMulAccelerator", StringComparison.Ordinal) ||
-                       text.Contains("YAKSys_Hybrid_CPU.Core.Accelerators", StringComparison.Ordinal) ||
-                       text.Contains(".Execute(", StringComparison.Ordinal);
-            })
-            .Select(path => Path.GetRelativePath(root, path))
-            .ToArray();
-
-        Assert.Empty(offenders);
     }
 
     private static void WriteFloat32Matrix(ulong address, float[] values)

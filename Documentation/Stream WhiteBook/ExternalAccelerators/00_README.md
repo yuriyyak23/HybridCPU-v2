@@ -65,7 +65,6 @@ as the separate L7-SDC / stream-accelerator reference.
 - Staged writes publish only through `AcceleratorCommitCoordinator`.
 - Direct backend writes cannot publish architectural memory.
 - After an emitted `ACCEL_SUBMIT` is rejected, the L7-SDC path remains rejected.
-- Production L7-SDC paths do not call `ICustomAccelerator.Execute()`.
 - MatMul L7-SDC surfaces are metadata, descriptor, and staging contours only.
 - Telemetry and evidence snapshots are observations and cannot authorize guard decisions.
 - `ACCEL_FENCE` is executable only as the scoped runtime fence path: it observes

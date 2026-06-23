@@ -1,9 +1,9 @@
 // CSEL Phase 01E carrier-gate decision path, closed negative:
-// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\ConditionalSelect\CselInstruction.cs
-// - \HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\ConditionalSelect\CselInstruction.LocalSemantics.cs
-// - \HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
-// - \HybridCPU_ISE.Tests\tests\NonVmxPhase01ScalarSelectExecutableTests.cs
-// - \HybridCPU_ISE.Tests\tests\NonVmxIteration04BDeferredTemplateSurfaceTests.cs
+// - \HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\ConditionalSelect\CselInstruction.cs
+// - \HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\ISA\Instructions\NonVmx\Lanes00_03Scalar\ConditionalSelect\CselInstruction.LocalSemantics.cs
+// - \HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
+// - \HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxPhase01ScalarSelectExecutableTests.cs
+// - \HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxIteration04BDeferredTemplateSurfaceTests.cs
 // Future hardware CSEL requires a new scalar-select production package with an
 // approved four-register carrier/sideband ABI plus decoder/encoder,
 // InstructionIR/projection, registry/materializer, InternalOp, execute,

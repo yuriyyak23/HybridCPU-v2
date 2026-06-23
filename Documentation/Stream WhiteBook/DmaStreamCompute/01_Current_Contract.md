@@ -57,14 +57,14 @@ wrong-owner, wrong-lane, stale token, or incomplete evidence rejects reuse.
 - no coherent DMA/cache claim;
 - no successful partial completion;
 - no StreamEngine, VectorALU, DMAController, MatrixTile, assist, or external
-  accelerator fallback.
+  command-plane fallback.
 
 The helper drives current work synchronously: no current async DMA overlap.
 
 ## Authority Separation
 
-`DmaStreamCompute` is not a custom accelerator and is not MTILE. Lane6 sharing
-is a physical conflict fact only.
+`DmaStreamCompute` is not an external-command plane and is not MTILE. Lane6
+sharing is a physical conflict fact only.
 
 Current anchor:
 `Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md`.

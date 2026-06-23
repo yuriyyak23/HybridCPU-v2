@@ -1,19 +1,5 @@
 # MatMul Capability Provider
 
-## Legacy fixture quarantine
-
-The retained `MatMulAccelerator` implements `ICustomAccelerator` for legacy descriptor
-fixture behavior and test metadata. It is not the L7-SDC production execution path, and
-production L7-SDC backends do not call `ICustomAccelerator.Execute()`.
-
-Code anchors:
-
-- `HybridCPU_ISE/Core/Accelerators/MatMulAccelerator.cs`
-- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Types.cs`
-- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Accelerators.cs`
-- `HybridCPU_ISE.Tests/tests/L7SdcLegacyQuarantineTests.cs`
-- `HybridCPU_ISE.Tests/tests/L7SdcMatMulNoLegacyExecuteTests.cs`
-
 ## Metadata-only provider
 
 `MatMulCapabilityProvider` registers `matmul.fixture.v1` metadata: operation name,
@@ -45,9 +31,7 @@ from that backend is still not commit.
 This contour is not a universal external accelerator command protocol. The
 current scoped `SystemDeviceCommandMicroOp.Execute(...)` path can submit guarded
 SDC1/MatMul work through the external accelerator runtime and test/reference
-backend surfaces, but production L7-SDC backends still do not call
-`ICustomAccelerator.Execute()` and legacy custom accelerator fallback remains
-quarantined.
+backend surfaces. Non-native fallback remains fail-closed.
 
 Code anchors:
 

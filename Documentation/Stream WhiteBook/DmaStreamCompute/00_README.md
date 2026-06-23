@@ -2,8 +2,8 @@
 
 Status: current bounded DSC1 contour
 
-`DmaStreamCompute` is the lane6 descriptor/token execution plane. It is not a
-custom accelerator, StreamEngine vector execution, MatrixTile, or assist.
+`DmaStreamCompute` is the lane6 descriptor/token execution plane. It is not an
+external-command plane, StreamEngine vector execution, MatrixTile, or assist.
 
 ## Placement
 
@@ -27,4 +27,4 @@ current WhiteBook. Git history remains the archive for those planning artifacts.
 The current DSC1 materialized path is executable. Unsupported descriptor shapes,
 DSC2 execution, queue/async lifecycle, coherent DMA/cache, successful partial
 completion, and fallback to StreamEngine, DMAController, scalar, vector, or
-custom accelerator execution fail closed.
+another execution contour fail closed.

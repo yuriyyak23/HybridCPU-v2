@@ -1,14 +1,14 @@
 // Production path for ANDN:
-// \HybridCPU_ISE\Core\Common\CPU_Core.Enums.cs
-// \HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
-// \HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
-// \HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
-// \HybridCPU_ISE\Core\Decoder\VliwDecoderV4.cs
-// \HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
-// \HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
-// \HybridCPU_ISE\Core\ALU\ScalarAluOps.cs
-// \HybridCPU_ISE\Core\Execution\ExecutionDispatcherV4.Scalar.cs
-// \HybridCPU_ISE.Tests\tests\NonVmxPhase01AndnExecutableTests.cs
+// \HybridCPU ISE\HybridCPU_ISE\Core\Common\CPU_Core.Enums.cs
+// \HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\OpcodeInfo.Registry.Data.Scalar.cs
+// \HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\InstructionSupportStatus.cs
+// \HybridCPU ISE\HybridCPU_ISE\NonRTL\Arch\IsaV4Surface.cs
+// \HybridCPU ISE\HybridCPU_ISE\Core\Decoder\VliwDecoderV4.cs
+// \HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Diagnostics\InstructionRegistry.Initialize.Scalar.cs
+// \HybridCPU ISE\HybridCPU_ISE\NonRTL\Core\Pipeline\InternalOpBuilder.cs
+// \HybridCPU ISE\HybridCPU_ISE\Core\ALU\ScalarAluOps.cs
+// \HybridCPU ISE\HybridCPU_ISE\Core\Execution\ExecutionDispatcherV4.Scalar.cs
+// \HybridCPU ISE\HybridCPU_ISE.Tests\tests\NonVmxPhase01AndnExecutableTests.cs
 // ANDN production metadata anchor: bitwise-invert boolean ALU is opened as a
 // single scalar register-register opcode with no compiler helper authority.
 // VMX does not receive a special frontend path for this ordinary scalar row.

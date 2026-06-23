@@ -154,7 +154,7 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     }
 
     [Fact]
-    public void L7SdcDocumentationClaimSafety_LegacyMatMulAndContextSwitchClaimsStayGuarded()
+    public void L7SdcDocumentationClaimSafety_MatMulAndContextSwitchClaimsStayGuarded()
     {
         string text = ReadCombined(
             "Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md",
@@ -163,7 +163,6 @@ public sealed class L7SdcDocumentationClaimSafetyTests
             "Documentation/Stream WhiteBook/ExternalAccelerators/10_Telemetry_And_Evidence.md",
             "Documentation/InstructionsRefactor2/03_PRESERVED_NO_EMISSION_CONTOURS.md");
 
-        Assert.Contains("Production L7-SDC paths do not call `ICustomAccelerator.Execute()`", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("metadata", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("mapping epoch", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("IOMMU", text, StringComparison.OrdinalIgnoreCase);
@@ -180,7 +179,7 @@ public sealed class L7SdcDocumentationClaimSafetyTests
 
         Assert.Contains("lane6", dmaText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("SlotClass.DmaStreamClass", dmaText, StringComparison.Ordinal);
-        Assert.Contains("not a custom accelerator", dmaText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not an external-command plane", dmaText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Execute(ref Processor.CPU_Core core)", dmaText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("fail closed", dmaText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("explicit runtime helper", dmaText, StringComparison.OrdinalIgnoreCase);

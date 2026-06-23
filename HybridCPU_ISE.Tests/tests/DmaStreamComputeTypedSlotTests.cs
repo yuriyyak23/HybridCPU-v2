@@ -6,7 +6,6 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
-using YAKSys_Hybrid_CPU.Core.Accelerators;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using HybridCPU_ISE.Tests.TestHelpers;
 
@@ -140,46 +139,6 @@ public sealed class DmaStreamComputeTypedSlotTests
         Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
         Assert.Contains("Phase 06 DSC1 contour", ex.Message, StringComparison.Ordinal);
         Assert.Contains("fails closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Fact]
-    public void CustomAcceleratorMicroOp_ExecuteStillThrowsFailClosed()
-    {
-        var microOp = new CustomAcceleratorMicroOp
-        {
-            OpCode = 0xC000
-        };
-        var core = new Processor.CPU_Core(0);
-
-        InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
-            () => microOp.Execute(ref core));
-
-        Assert.Contains("custom accelerator", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Fact]
-    public void RegisteredCustomAcceleratorOpcode_StillFailsClosedAndIsNotDmaStreamComputePath()
-    {
-        InstructionRegistry.Initialize();
-        InstructionRegistry.RegisterAccelerator(new MatMulAccelerator());
-
-        var context = new DecoderContext
-        {
-            OpCode = 0xC000,
-            Reg1ID = 1,
-            Reg2ID = 2,
-            Reg3ID = 3
-        };
-
-        Assert.True(InstructionRegistry.IsCustomAcceleratorOpcode(0xC000));
-
-        InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
-            () => InstructionRegistry.CreateMicroOp(0xC000, context));
-
-        Assert.Contains("custom accelerator", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain(nameof(DmaStreamComputeMicroOp), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

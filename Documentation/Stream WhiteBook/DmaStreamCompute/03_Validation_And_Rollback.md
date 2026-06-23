@@ -13,7 +13,7 @@ dotnet test .\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj --filter "FullyQual
 - descriptor/reference mismatch rejects;
 - wrong owner/domain rejects;
 - unsupported DSC1/DSC2 execution rejects;
-- StreamEngine/DMAController/scalar/vector/custom-accelerator fallback rejects;
+- StreamEngine/DMAController/scalar/vector/unrelated-contour fallback rejects;
 - memory remains unchanged before commit;
 - partial commit failure restores checkpoints;
 - replay rejects stale or incomplete identity.

@@ -1,8 +1,7 @@
 # L7-SDC Executive Summary
 
 L7-SDC is the lane7 System Device Command carrier/model surface for external
-accelerators. Its job is not to turn legacy custom accelerators into a pipeline
-execution path. Current code provides `ACCEL_*` lane7 carriers, typed descriptor
+accelerators. Current code provides `ACCEL_*` lane7 carriers, typed descriptor
 sideband, owner/domain guarded admission, token lifecycle helpers, staged backend
 results, register ABI writeback, and guarded commit through an explicit
 coordinator.
@@ -14,8 +13,8 @@ runtime commands for `ACCEL_QUERY_CAPS`, `ACCEL_SUBMIT`, `ACCEL_POLL`,
 `WritesRegister` follows `DestinationRegister != 0`; retire emits a writeback
 only when `AcceleratorRegisterAbiResult.WritesRegister` is true and the carrier
 has a destination register. Descriptorless submit, VMX guest compatibility
-execution, legacy custom accelerator fallback, and expansion beyond the current
-SDC contour remain fail-closed.
+execution, non-native fallback, and expansion beyond the current SDC contour
+remain fail-closed.
 
 ## Why lane7 SystemSingleton
 
@@ -33,21 +32,6 @@ Code anchors:
 - `HybridCPU_ISE.Tests/tests/L7SdcHardPinnedPlacementTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNoBranchControlAuthorityTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcPhase08ExecutableTests.cs`
-
-## Difference from legacy custom accelerators
-
-The retained custom accelerator registry and `MatMulAccelerator` are quarantined fixture
-and metadata surfaces. `CustomAcceleratorMicroOp` and retained DMA seams fail closed.
-The L7-SDC path is separate native ISA transport plus explicit guard and commit models.
-
-Code anchors:
-
-- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Accelerators.cs`
-- `HybridCPU_ISE/NonRTL/Core/Diagnostics/InstructionRegistry.Types.cs`
-- `HybridCPU_ISE/NonRTL/Core/Execution/BurstIO/AcceleratorRuntimeFailClosed.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Execution/ExternalAccelerators/Backends/MatMulAccelerator.cs`
-- `HybridCPU_ISE.Tests/tests/L7SdcLegacyQuarantineTests.cs`
-- `HybridCPU_ISE.Tests/tests/L7SdcMatMulNoLegacyExecuteTests.cs`
 
 ## Difference from DmaStreamCompute
 

@@ -111,7 +111,7 @@ NOP elision skips: 6112
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:00:40.0632591
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\alu
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\alu
 Last checkpoint: Completed (ExecuteMeasuredProgram completed successfully.)
 Last observed progress: cycles=43, retired=145
 Last observed core focus: VT=0, PC=0x2400
@@ -218,7 +218,7 @@ NOP elision skips: 6112
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:00:42.5788079
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\novt
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\novt
 Last checkpoint: Completed (ExecuteMeasuredProgram completed successfully.)
 Last observed progress: cycles=43, retired=145
 Last observed core focus: VT=0, PC=0x2400
@@ -328,7 +328,7 @@ Eligibility masks: requested=0x3E, normalized=0x3E, ready=0xC4, visible=0xC4, ma
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:02:07.1375768
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\vt
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\vt
 Last checkpoint: Completed (ExecuteMeasuredProgram completed successfully.)
 Last observed progress: cycles=40, retired=168
 Last observed core focus: VT=0, PC=0x1E00
@@ -438,7 +438,7 @@ Eligibility masks: requested=0x3E, normalized=0x3E, ready=0xC4, visible=0xC4, ma
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:02:05.9595512
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\max
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\max
 Last checkpoint: Completed (ExecuteMeasuredProgram completed successfully.)
 Last observed progress: cycles=40, retired=168
 Last observed core focus: VT=0, PC=0x1E00
@@ -548,7 +548,7 @@ Eligibility masks: requested=0x3E, normalized=0x3E, ready=0x5C, visible=0x5C, ma
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:01:57.7357743
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\lk
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\lk
 Last checkpoint: Completed (ExecuteMeasuredProgram completed successfully.)
 Last observed progress: cycles=40, retired=168
 Last observed core focus: VT=0, PC=0x1E00
@@ -658,7 +658,7 @@ Eligibility masks: requested=0x3E, normalized=0x3E, ready=0x5C, visible=0x5C, ma
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:01:54.5643738
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\bnmcz
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\bnmcz
 Last checkpoint: Completed (ExecuteMeasuredProgram completed successfully.)
 Last observed progress: cycles=40, retired=168
 Last observed core focus: VT=0, PC=0x1E00
@@ -678,7 +678,7 @@ Phase-mismatch invalidation delta (stable - rotating): -9999
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:00:00.8462167
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\replay
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\replay
 
 --- Running safety [NativeVLIW] ---
 === SafetyVerifier negative controls ===
@@ -691,7 +691,7 @@ stale witness/template rejection: rejected=True, actual=StaleStructuralIdentity/
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:00:00.2590928
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\safety
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\safety
 
 --- Running replay-reuse [NativeVLIW] ---
 === Replay template reuse diagnostics ===
@@ -705,7 +705,7 @@ boundary-state invalidation: attempts=4096, hits=0, misses=4096, warmup-misses=1
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:00:00.9163699
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\replay-reuse
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\replay-reuse
 
 --- Running assistant [NativeVLIW] ---
 === Assistant decision matrix ===
@@ -721,7 +721,7 @@ Assistant visibility/non-retirement counters: assist accepted=1, replay-invalida
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:00:00.2767841
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\assistant
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\assistant
 
 --- Running stream-vector [NativeVLIW] ---
 === Stream/Vector SPEC-like suite ===
@@ -736,7 +736,7 @@ dma-lane6-token-contract: passed=True, instructions=20,000, elements=80,000, byt
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:03:07.5662201
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\stream-vector
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\stream-vector
 
 --- Running matrix-tile [NativeVLIW] ---
 === MatrixTile SPEC-like pressure suite ===
@@ -762,15 +762,15 @@ mtile-fault-fuzz-policy-identity-pressure: passed=True, instructions=0, compiler
 Run status: Succeeded
 Worker exit code: 0
 Elapsed: 00:00:20.5904092
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\matrix-tile
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\matrix-tile
 
 Default SPEC-like diagnostic matrix summary:
 Aggregate status: Succeeded
 Child runs: 12
-Artifacts: \TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix
+Artifacts: \HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix
 
 === Stream/Vector final benchmarks, telemetry, statistics ===
-Suite: stream-vector-spec-suite, status=Passed, iterations=10,000, artifact=\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\stream-vector\stream_vector_spec_report.json
+Suite: stream-vector-spec-suite, status=Passed, iterations=10,000, artifact=\HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\stream-vector\stream_vector_spec_report.json
 Aggregate: scenarios=6/6, dynamic-instructions=780,000, vector-elements=4,240,000, modeled-bytes=42,600,000, elapsed-ms=186,592.561, checksum=0xDE1EF81CFD41AF21
 Throughput: vector-elements/ms=22.72, modeled-bytes/ms=228.30, dynamic-instructions/ms=4.18
 Benchmarks:
@@ -787,7 +787,7 @@ DMA lane6 telemetry:
   lane6-backend-used=True, direct-destination-writes=0, bytes-read=640,000, bytes-staged=200,000, read-bursts=40,000, modeled-latency-cycles=320,000, element-ops=80,000
 
 === MatrixTile final benchmarks, resources, and fail-closed diagnostics ===
-Suite: matrix-tile-spec-pressure-suite, status=Passed, iterations=10,000, artifact=\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\matrix-tile\matrix_tile_spec_report.json
+Suite: matrix-tile-spec-pressure-suite, status=Passed, iterations=10,000, artifact=\HybridCPU ISE\TestAssemblerConsoleApps\bin\Debug\net10.0\TestResults\TestAssemblerConsoleApps\20260621_111842_369_matrix\matrix-tile\matrix_tile_spec_report.json
 Runtime closure: ClosedCompilerMatrixTileLoweredAnnotationsCarryNumericLayoutPolicySidebands
 Aggregate: scenarios=17/17, instructions=120,026, compiler-emissions=34, retire=120,016, replay-round-trips=80,018, fail-closed=53, stream-bytes=480,032, stream-invalidations=120,002, elapsed-ms=15,738.744
 Throughput: runtime-instructions/ms=7.63, compiler-emissions/ms=0.00, retire-publications/ms=7.63, stream-bytes/ms=30.50

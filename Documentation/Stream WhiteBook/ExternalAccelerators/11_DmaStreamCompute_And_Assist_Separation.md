@@ -57,8 +57,7 @@ Canonical documentation:
 
 The current external-accelerator command contour uses lane7
 `SystemSingleton`. Its typed descriptor, guard, token, backend staging,
-commit coordinator, and register ABI are scoped L7 runtime surfaces. Production
-L7-SDC paths do not call `ICustomAccelerator.Execute()`.
+commit coordinator, and register ABI are scoped L7 runtime surfaces.
 
 L7-SDC is not a lane6 fallback for VectorStream, MatrixTile, DSC, or assists.
 

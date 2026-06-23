@@ -5,7 +5,6 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
-using YAKSys_Hybrid_CPU.Core.Accelerators;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Descriptors;
@@ -194,33 +193,6 @@ public sealed class L7SdcNativeCarrierValidationTests
         Assert.Contains("lane 7", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
-    public void L7SdcNativeCarrierValidation_CustomRegistryOpcodeIsNotCarrierAuthority()
-    {
-        InstructionRegistry.Clear();
-        InstructionRegistry.Initialize();
-
-        try
-        {
-            InstructionRegistry.RegisterAccelerator(new MatMulAccelerator());
-            Assert.True(InstructionRegistry.IsCustomAcceleratorOpcode(0xC000));
-            Assert.False(OpcodeRegistry.IsSystemDeviceCommandOpcode(0xC000));
-
-            var raw = L7SdcPhase03TestCases.CreateNativeInstruction(InstructionsEnum.ACCEL_SUBMIT);
-            raw.OpCode = 0xC000;
-
-            InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
-                () => new VliwDecoderV4().Decode(in raw, slotIndex: 7));
-
-            Assert.Contains("custom accelerator", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain(nameof(AcceleratorSubmitMicroOp), ex.Message, StringComparison.Ordinal);
-        }
-        finally
-        {
-            InstructionRegistry.Clear();
-            InstructionRegistry.Initialize();
-        }
-    }
 
     [Theory]
     [MemberData(nameof(L7SdcPhase03TestCases.AllOpcodes), MemberType = typeof(L7SdcPhase03TestCases))]

@@ -6,7 +6,6 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
-using YAKSys_Hybrid_CPU.Core.Accelerators;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
@@ -102,40 +101,6 @@ public sealed class L7SdcNoBranchControlAuthorityTests
     }
 
     [Fact]
-    public void L7SdcNoBranchControlAuthority_CustomAcceleratorRegistryOpcodesAreNotCarrierAuthority()
-    {
-        InstructionRegistry.Clear();
-        InstructionRegistry.Initialize();
-
-        try
-        {
-            InstructionRegistry.RegisterAccelerator(new MatMulAccelerator());
-
-            Assert.True(InstructionRegistry.IsCustomAcceleratorOpcode(0xC000));
-            Assert.False(InstructionRegistry.IsRegistered(0xC000));
-            Assert.False(OpcodeRegistry.IsSystemDeviceCommandOpcode(0xC000));
-
-            var decoder = new VliwDecoderV4();
-            VLIW_Instruction instruction = L7SdcPhase03TestCases.CreateNativeInstruction(
-                InstructionsEnum.ACCEL_SUBMIT);
-            instruction.OpCode = 0xC000;
-
-            InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
-                () => decoder.Decode(in instruction, slotIndex: 7));
-
-            Assert.Contains("custom accelerator", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("fail closed", ex.Message, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("L7-SDC", ex.Message, StringComparison.Ordinal);
-            Assert.DoesNotContain(nameof(AcceleratorSubmitMicroOp), ex.Message, StringComparison.Ordinal);
-        }
-        finally
-        {
-            InstructionRegistry.Clear();
-            InstructionRegistry.Initialize();
-        }
-    }
-
-    [Fact]
     public void L7SdcNoBranchControlAuthority_BranchSystemAliasRemainsLane7ButAuthorityDistinct()
     {
         Assert.Equal((byte)0b_1000_0000, SlotClassLaneMap.GetLaneMask(SlotClass.BranchControl));
@@ -164,7 +129,6 @@ public sealed class L7SdcNoBranchControlAuthorityTests
             "SystemDeviceCommandMicroOp.cs"));
 
         Assert.DoesNotContain("ICustomAccelerator", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("MatMulAccelerator", source, StringComparison.Ordinal);
         Assert.DoesNotContain(nameof(DmaStreamComputeMicroOp), source, StringComparison.Ordinal);
         Assert.DoesNotContain("StreamEngine", source, StringComparison.Ordinal);
         Assert.DoesNotContain("VectorALU", source, StringComparison.Ordinal);

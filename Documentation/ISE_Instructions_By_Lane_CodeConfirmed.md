@@ -1,4 +1,6 @@
-# ISE runtime-implemented instructions
+# ISE runtime-implemented instructions by lane
+
+## Inclusion result
 
 | Runtime lane output | SlotClass | Placement | Count |
 | --- | --- | --- | ---: |
