@@ -27,7 +27,8 @@
 : Behavior remains unavailable until the named RFC, implementation, tests and release gate pass.
 
 `limited activation`
-: A future release claim for one named owner-specific path after Phase 22. It does not mean feature completeness.
+: A future release claim for one named owner-specific path after the
+limited-release gate. It does not mean feature completeness.
 
 ## Forbidden Collapses
 

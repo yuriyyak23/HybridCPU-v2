@@ -1,6 +1,6 @@
 # Secure IO And Shared Buffers
 
-## Phase 12 Contract
+## Secure I/O Contract
 
 Secure I/O uses explicit descriptor-owned shared buffers. Buffer ID alone is not authority.
 
@@ -44,4 +44,8 @@ Lane6, Lane7 and Stream tokens do not become SecureCompute grants, backend handl
 
 ## Hypercall Boundary
 
-Secure hypercall recognition does not establish VMCALL authority. Current backend-success requests fail closed. Phase 13 now defines a neutral typed proof-only owner/service contract and exact decoded-leaf, service-ID and owner-ID allocations in `SecureHypercallBackendOwnerAbiRegistry`. Execution, completion publication and retire publication remain closed.
+Secure hypercall recognition does not establish VMCALL authority. Current
+backend-success requests fail closed. `SecureHypercallBackendOwnerAbiRegistry`
+defines a neutral typed proof-only owner/service contract and exact decoded-leaf,
+service-ID and owner-ID allocations. Execution, completion publication and
+retire publication remain closed.

@@ -2,8 +2,9 @@
 
 This diagram shows sideband preservation and carrier projection into the current
 scoped L7 runtime contour. It is not broad production executable lowering;
-Phase11/Phase12/Phase13 keep production lowering beyond the tested commands
-last-mile and gated by executable semantics plus conformance.
+compiler/backend, documentation migration, and dependency-order gates keep
+production lowering beyond the tested commands last-mile and gated by executable
+semantics plus conformance.
 
 ```mermaid
 flowchart TD

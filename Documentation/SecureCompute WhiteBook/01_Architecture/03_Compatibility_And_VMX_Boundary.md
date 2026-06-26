@@ -8,7 +8,9 @@ There is no secure VMCS and no VMCS-owned secure state.
 
 ## Privileged Execution-State Owner
 
-Phase 09 introduces `PrivilegedExecutionStateDescriptor` and `PrivilegedExecutionStateOwnerPolicy` for `GuestCr0` and `GuestCr4`.
+`PrivilegedExecutionStateDescriptor` and
+`PrivilegedExecutionStateOwnerPolicy` define the owner proof for `GuestCr0` and
+`GuestCr4`.
 
 Owner admission validates:
 
@@ -24,7 +26,8 @@ The accepted owner result remains projection-closed and keeps mutation, backend 
 
 ## Read-Only Projection
 
-Phase 10 adds `PrivilegedExecutionStateProjectionService`.
+`PrivilegedExecutionStateProjectionService` provides the read-only projection
+path.
 
 Projection is admitted only when:
 

@@ -25,9 +25,9 @@ commit/fence/backend failures remain runtime results surfaced through guarded
 status/register ABI paths.
 
 Telemetry snapshots, token handles, capability records, conflict records,
-backend results, and status words are downstream evidence only. Under Ex1
-Phase13 they cannot close gates for expansion beyond the current L7 contour,
-lane6 DSC expansion beyond Phase 06 DSC1, DSC2 execution, IOMMU-backed
+backend results, and status words are downstream evidence only. They cannot
+close gates for expansion beyond the current L7 contour, lane6 DSC expansion
+beyond the current DSC1 materialized contour, DSC2 execution, IOMMU-backed
 execution, async overlap, coherent DMA/cache, successful partial completion, or
 production compiler/backend lowering.
 

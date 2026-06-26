@@ -3,8 +3,8 @@
 Each diagram is a Mermaid diagram with code anchors under the diagram. The
 diagrams describe the current scoped executable contours, adjacent fail-closed
 surfaces, explicit helper surfaces, or future-gated planning evidence; none of
-them is implementation approval for expansion beyond current L7 Phase 08 /
-Phase 08A commands, current lane6 Phase 06 DSC1, DSC2 execution, async overlap,
+them is implementation approval for expansion beyond the current L7 command
+contour, the current lane6 DSC1 materialized contour, DSC2 execution, async overlap,
 IOMMU-backed execution, coherent DMA/cache, or production compiler/backend
 lowering.
 

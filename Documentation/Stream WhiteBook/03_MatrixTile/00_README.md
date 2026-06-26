@@ -1,6 +1,6 @@
 # MatrixTile Execution Plane
 
-Status: `closed/phase19-compiler-sideband-conformance`
+Status: `closed/compiler-sideband-conformance`
 
 MatrixTile is a closed runtime/ISA execution plane with four canonical
 operations:
@@ -81,4 +81,5 @@ only by retire publication.
 
 MatrixTile is not ordinary LSU execution, a generic ALU/vector operation,
 `DmaStreamCompute`, DSC, Lane7, VMX, assist, generic StreamEngine authority, or
-an external-backend fallback. No separate MatrixTile Phase 20 is open.
+an external-backend fallback. No separate MatrixTile production-activation gate
+is open.

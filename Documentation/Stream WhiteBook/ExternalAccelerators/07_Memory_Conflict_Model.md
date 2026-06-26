@@ -14,7 +14,7 @@ There is no global CPU load/store pipeline hook that automatically consults
 store, fence, and commit helpers do not infer global load/store ordering from a
 hidden process-wide manager.
 
-Under Ex1 Phase05, this is absent/passive/current-non-authority behavior.
+In the current implementation, this is absent/passive/current-non-authority behavior.
 Executable overlap requires a future mandatory `GlobalMemoryConflictService`
 with CPU load/store/atomic, DSC, DMA, StreamEngine/SFR/assist, L7, fence/wait,
 poll, cache, and cancellation hook points. The current conflict manager is not

@@ -38,9 +38,9 @@ Current `ACCEL_QUERY_CAPS`, `ACCEL_SUBMIT`, `ACCEL_POLL`, `ACCEL_WAIT`,
 `ExternalAcceleratorRuntime` inside the current scoped contour. They can produce
 register ABI results when the command semantics and carrier destination register
 permit it. Staged memory publishes only through the guarded commit coordinator.
-Expansion beyond these command semantics requires the Ex1 Phase10 L7 gate,
+Expansion beyond these command semantics requires the L7 expansion gate,
 ordering/conflict/cache/backend/fault semantics, compiler/backend conformance,
-and Phase12 documentation migration.
+and documentation migration.
 
 Code anchors:
 

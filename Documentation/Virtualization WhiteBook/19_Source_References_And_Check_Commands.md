@@ -88,7 +88,7 @@ rg -n "TrapCompletionRouteDescriptor\.(RuntimeOwnedCompletionPublication|Runtime
   "\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend"
 ```
 
-The second scan must have no matches until an accepted owner-specific RFC/ADR and the corresponding Phase 08/09 implementation gates exist.
+The second scan must have no matches until an accepted owner-specific RFC/ADR and the corresponding completion/retire implementation gates exist.
 
 ```powershell
 rg -n "VmcsReadOnlyValueProjectionService|ExecutionDomainReadOnlyStateView|MemoryDomainReadOnlyTranslationView|PrivilegedExecutionStateProjectionDenied|HostAddressSpaceOwnerMissing|HostExecutionStateOwnerMissing|CompatibilityControlValueProjectionDenied" `

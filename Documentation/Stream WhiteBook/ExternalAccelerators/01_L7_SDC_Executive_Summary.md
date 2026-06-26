@@ -7,8 +7,8 @@ results, register ABI writeback, and guarded commit through an explicit
 coordinator.
 
 The current pipeline-visible instruction behavior is scoped, not universal:
-`SystemDeviceCommandMicroOp.Execute(...)` dispatches Phase 08 / Phase 08A
-runtime commands for `ACCEL_QUERY_CAPS`, `ACCEL_SUBMIT`, `ACCEL_POLL`,
+`SystemDeviceCommandMicroOp.Execute(...)` dispatches the current scoped runtime
+commands for `ACCEL_QUERY_CAPS`, `ACCEL_SUBMIT`, `ACCEL_POLL`,
 `ACCEL_WAIT`, `ACCEL_CANCEL`, `ACCEL_FENCE`, and `ACCEL_STATUS`.
 `WritesRegister` follows `DestinationRegister != 0`; retire emits a writeback
 only when `AcceleratorRegisterAbiResult.WritesRegister` is true and the carrier
@@ -51,13 +51,13 @@ Code anchors:
 ## Architectural position
 
 The current contour is descriptor-backed, guard-rooted, staged, and
-retire/commit-owned. Ex1 Phase10 keeps expansion beyond the current scoped L7
-commands under an ADR/conformance gate, Phase12 controls documentation
-migration, and Phase13 is planning/dependency order only. The implementation
-deliberately separates authority from evidence: descriptor identity, registry
-metadata, token handle, telemetry, replay identity, and certificate identity can
-explain or correlate decisions, but they do not replace guard checks or the
-commit coordinator.
+retire/commit-owned. Expansion beyond the current scoped L7 commands remains
+under ADR/conformance control, documentation migration is separate from runtime
+implementation, and dependency-order planning is not implementation approval.
+The implementation deliberately separates authority from evidence: descriptor
+identity, registry metadata, token handle, telemetry, replay identity, and
+certificate identity can explain or correlate decisions, but they do not replace
+guard checks or the commit coordinator.
 
 `AcceleratorRegisterAbi` and `AcceleratorFenceModel` are current runtime
 surfaces used by the scoped executable commands. They are not evidence for a

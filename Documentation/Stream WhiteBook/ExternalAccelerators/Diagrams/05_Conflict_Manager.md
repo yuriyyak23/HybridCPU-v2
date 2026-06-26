@@ -2,7 +2,7 @@
 
 This diagram describes an explicit conflict-manager model instance. It is not a
 global CPU load/store hook and does not publish memory by itself.
-It is absent/passive current evidence under Ex1 Phase05, not an installed global
+It is absent/passive current evidence, not an installed global
 conflict authority for executable overlap.
 
 ```mermaid

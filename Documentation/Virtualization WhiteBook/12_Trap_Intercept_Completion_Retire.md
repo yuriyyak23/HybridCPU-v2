@@ -71,7 +71,7 @@ The runtime route descriptors are intentionally distinct:
 
 - `ProjectionOnlyDenied`: completion false, retire false; current VMX frontend path.
 - `RuntimeOwnedCompletionPublication`: completion route flag true, retire false; future-gated split descriptor introduced by `ISE-COMP-ROUTE-01`.
-- `RuntimeOwnedPublication`: completion true, retire true; coupled future descriptor that also requires the Phase 09 retire gate.
+- `RuntimeOwnedPublication`: completion true, retire true; coupled future descriptor that also requires an explicit retire-publication gate.
 
 `TrapCompletionRouteResult.CompletionPublicationAuthorizedOnly` identifies the split route result. `IsFullyRetirable` identifies the coupled completion+retire result. `IsAllowed` remains equivalent to fully retirable and must not be used to describe completion-only route authorization.
 

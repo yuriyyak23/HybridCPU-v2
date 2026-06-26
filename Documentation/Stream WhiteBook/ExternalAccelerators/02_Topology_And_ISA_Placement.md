@@ -61,10 +61,10 @@ runtime contour:
   writes and the carrier has a destination register;
 - staged writes publish only through the guarded commit coordinator.
 
-Ex1 Phase10 keeps expansion beyond the current contour future-gated. Universal
+The L7 expansion gate keeps expansion beyond the current contour future-gated. Universal
 external accelerator protocol semantics, arbitrary backend dispatch, VMX guest
 binding, coherent DMA/cache, broad compiler/backend lowering, and new CSR/rd
-publication forms require a later ADR, implementation, tests, and Phase12
+publication forms require a later ADR, implementation, tests, and documentation
 migration.
 
 Raw carrier validation requires lane7 placement and clean reserved/retired policy fields,
@@ -89,7 +89,7 @@ lane7 `SystemSingleton`.
 
 Typed placement and clean carrier evidence prove only the current scoped L7
 carrier contract. Compiler sideband transport and carrier projection are
-downstream evidence under Ex1 Phase13 and must not satisfy gates for expansion
+downstream evidence under the dependency-order gate and must not satisfy gates for expansion
 beyond the tested runtime contour.
 
 Code anchors:

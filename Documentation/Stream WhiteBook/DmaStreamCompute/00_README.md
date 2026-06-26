@@ -19,7 +19,7 @@ external-command plane, StreamEngine vector execution, MatrixTile, or assist.
 3. `03_Validation_And_Rollback.md`
 4. `../05_Lane6_Lane7_Separation.md`
 
-The former continuation prompt and superseded Phase 3 ADR were removed from the
+The former continuation prompt and superseded DSC ADR were removed from the
 current WhiteBook. Git history remains the archive for those planning artifacts.
 
 ## Boundary

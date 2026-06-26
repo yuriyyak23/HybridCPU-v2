@@ -2,9 +2,9 @@
 
 This WhiteBook is the current compact architecture record for L7-SDC under
 `Documentation/Stream WhiteBook/ExternalAccelerators`. It normalizes the current
-Phase 08 / Phase 08A executable contour, adjacent fail-closed surfaces, and Ex1
-Phase00-Phase13 gates into a separate reading pack while keeping every statement
-tied to live code, tests, or phase closure evidence.
+scoped executable command contour, adjacent fail-closed surfaces, and expansion
+gates into a separate reading pack while keeping every statement tied to live
+code, tests, or closure evidence.
 
 Implemented behavior, helper/model-only APIs, fail-closed surfaces,
 compatibility projections, conformance evidence, and future design are
@@ -44,7 +44,7 @@ as the separate L7-SDC / stream-accelerator reference.
 - L7-SDC uses typed sideband descriptors; raw carrier bits are not ABI or authority.
 - `SystemDeviceCommandMicroOp.Execute(...)` dispatches the current scoped
   runtime contour for `ACCEL_QUERY_CAPS`, `ACCEL_SUBMIT`, `ACCEL_POLL`,
-  `ACCEL_WAIT`, `ACCEL_CANCEL`, `ACCEL_FENCE`, and Phase 08A `ACCEL_STATUS`.
+  `ACCEL_WAIT`, `ACCEL_CANCEL`, `ACCEL_FENCE`, and `ACCEL_STATUS`.
 - Current carriers have `WritesRegister = DestinationRegister != 0`; retire
   writeback is emitted only when the runtime ABI result writes and the carrier
   has a destination register.
@@ -75,23 +75,24 @@ as the separate L7-SDC / stream-accelerator reference.
   load/store conflict manager hook in the current implementation.
 - No universal external accelerator command protocol.
 
-## Ex1 Gates
+## Expansion Gates
 
 Current L7 after Ex1 is a scoped executable contour plus adjacent closed gates:
 
-- Phase 08 / Phase 08A current code covers the listed SDC commands, staged
+- Current code covers the listed SDC commands, staged
   backend completion, guarded observation/fence/commit, and register ABI
   writeback where tests prove it.
-- Ex1 Phase10 still gates any expansion beyond that contour: universal command
+- The expansion gate still blocks any widening beyond that contour: universal command
   protocol, arbitrary external accelerator backends, coherent DMA/cache,
   IOMMU-backed memory execution, VMX guest binding, broad compiler/backend
   production lowering, and new `rd`/CSR publication forms.
-- Ex1 Phase11 keeps compiler/backend production lowering forbidden unless the
+- The compiler/backend gate keeps production lowering forbidden unless the
   relevant executable feature requirements are present.
-- Ex1 Phase12 is the conformance/documentation migration gate.
-- Ex1 Phase13 is dependency-order planning only; it does not approve expansion
-  beyond the current L7 contour, lane6 DSC expansion beyond Phase 06 DSC1, DSC2
-  execution, IOMMU-backed execution, coherent DMA/cache, async overlap,
+- The conformance/documentation migration gate remains separate from runtime
+  implementation.
+- Dependency-order planning does not approve expansion beyond the current L7
+  contour, lane6 DSC expansion beyond the current DSC1 materialized contour,
+  DSC2 execution, IOMMU-backed execution, coherent DMA/cache, async overlap,
   successful partial completion, or production lowering.
 
 Downstream L7 surfaces remain non-upstream evidence: fake/test backends,

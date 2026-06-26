@@ -63,7 +63,7 @@ records telemetry.
 
 The invalidation contour is explicit non-coherent model fan-out. It is not a
 coherent DMA/cache hierarchy, global snooping, or current pipeline retire
-publication. Coherent DMA/cache remains future-gated behind Phase09 and a
+publication. Coherent DMA/cache remains future-gated behind a
 separate coherent-DMA ADR.
 
 Code anchors:

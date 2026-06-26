@@ -4,7 +4,12 @@
 
 Every checkpoint candidate requires an explicit payload class and admission decision. Object presence does not make state serializable.
 
-Phase 15 adds output-manifest classification for future positive paths. The manifest names request state, internal backend result, internal completion record, guest-visible output, retire-visible state and recomputed-after-restore state. Internal backend results and completion records are manifest coverage only; they do not create backend execution, checkpoint, restore, completion publication or retire publication authority.
+Output-manifest classification exists for future positive paths. The manifest
+names request state, internal backend result, internal completion record,
+guest-visible output, retire-visible state and recomputed-after-restore state.
+Internal backend results and completion records are manifest coverage only; they
+do not create backend execution, checkpoint, restore, completion publication or
+retire publication authority.
 
 ## Denied Payloads
 

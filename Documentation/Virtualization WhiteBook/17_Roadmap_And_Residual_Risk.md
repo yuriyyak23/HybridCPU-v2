@@ -20,9 +20,9 @@ Recommended next heavy steps:
 
 1. Continue VMREAD field-by-field only when a new explicit neutral owner/value source exists.
 2. Design neutral privileged execution-state semantics before opening `GuestCr0` or `GuestCr4`; otherwise keep them denied.
-3. Keep Phase 06B/07 blocked until neutral runtime owners accept an owner-specific RFC/ADR with exact leaf, owner service, executor result, capability/evidence/migration policy, denial reasons, and adjacent denials.
-4. Use `TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication` only after neutral backend execution authorization and the Phase 08 fence contract.
-5. Use `TrapCompletionRouteDescriptor.RuntimeOwnedPublication` only when Phase 09 explicitly authorizes retire.
+3. Keep neutral runtime-owner expansion blocked until an owner-specific RFC/ADR exists with exact leaf, owner service, executor result, capability/evidence/migration policy, denial reasons, and adjacent denials.
+4. Use `TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication` only after neutral backend execution authorization and an explicit completion-publication fence contract.
+5. Use `TrapCompletionRouteDescriptor.RuntimeOwnedPublication` only when an explicit retire-publication gate authorizes retire.
 6. Design neutral nested child-intent owner only for a real admitted nested path; do not use mutable shadow VMCS state as authority.
 7. Keep SecureCompute/VMX compatibility as projection/denial unless SecureCompute runtime descriptors and policy explicitly authorize a read-only projection.
 

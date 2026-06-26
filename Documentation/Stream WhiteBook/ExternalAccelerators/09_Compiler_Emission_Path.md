@@ -50,9 +50,9 @@ boundary:
 - IOMMU-backed L7 memory execution, coherent DMA/cache, successful partial
   completion, and fake/backend promotion beyond the current contour are also
   future-gated and cannot be inferred from sideband emission;
-- production compiler/backend lowering remains last-mile work under Ex1
-  Phase11/Phase13 for any behavior beyond the tested Phase 08 / Phase 08A
-  commands.
+- production compiler/backend lowering remains last-mile work behind the
+  compiler/backend and dependency-order gates for any behavior beyond the tested
+  current command contour.
 
 Code anchors:
 
