@@ -26,7 +26,6 @@ AiGen illustrations (prev):
 <img width="1648" height="1086" alt="7" src="https://github.com/user-attachments/assets/b7d38544-77b3-446f-a453-fda6557d8d3a" />
 
 
-
 HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
 retire-visible effects, and a versioned compiler/runtime contract. 
@@ -66,8 +65,8 @@ DSC, and lane7 L7-SDC surfaces.
 | VectorStream | [VectorStream](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md) | StreamEngine orchestration, SRF transient state, BurstIO transport, and VectorALU compute; no MatrixTile/DSC publication authority. |
 | MatrixTile | [MatrixTile execution plane](Documentation/Stream%20WhiteBook/03_MatrixTile/00_README.md) | Closed four-op runtime contour with typed tile-stream transport, architectural MatrixRegisterFile state, retire publication, and replay/rollback. |
 | Assists | [Assist plane](Documentation/Stream%20WhiteBook/04_Assists/00_README.md) | Architecturally invisible, non-retiring cache/SRF warming only. |
-| Lane6 DSC | [DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md) | Current DSC1 Phase 06 materialized lane6 execution contour; DSC2, queues, async overlap, coherent/IOMMU memory, and broad lowering remain gated. |
-| Lane7 L7-SDC | [L7-SDC executive summary](Documentation/Stream%20WhiteBook/ExternalAccelerators/01_L7_SDC_Executive_Summary.md) | Current Phase 08 / 08A scoped `ACCEL_*` runtime contour with guarded tokens, staged commit, and conditional register ABI writeback. |
+| Lane6 DSC | [DmaStreamCompute current contract](Documentation/Stream%20WhiteBook/DmaStreamCompute/01_Current_Contract.md) | Current DSC1 materialized lane6 execution contour; DSC2, queues, async overlap, coherent/IOMMU memory, and broad lowering remain gated. |
+| Lane7 L7-SDC | [L7-SDC executive summary](Documentation/Stream%20WhiteBook/ExternalAccelerators/01_L7_SDC_Executive_Summary.md) | Current scoped `ACCEL_*` runtime contour with guarded tokens, staged commit, and conditional register ABI writeback. |
 | Diagrams | [diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md) | Explanatory diagrams only; not approval for expansion beyond current DSC1/L7 contours, async overlap, coherent DMA/cache, or production lowering. |
 
 ## Current CloseToRTL / NonRTL Snapshot
@@ -112,7 +111,7 @@ The evidence classes used throughout the WhiteBook are:
 - future-gated behavior: planned behavior blocked by ADR, implementation, positive/negative tests, compiler conformance, and documentation migration;
 - rejected/not allowed behavior: unsafe interpretation that must remain a non-claim.
 
-This repository implements a replay-stable SMT-VLIW emulator/runtime inside a bounded evidence envelope. It does not claim a universal determinism theorem, a complete precise-exception theorem, a global memory-order theorem, a production hardware-rooted attestation stack, a mandatory compiler-facts runtime, expansion beyond the current lane6 DSC1 Phase 06 contour, expansion beyond current L7 Phase 08 / 08A `ACCEL_*` commands, coherent DMA/cache, async DMA overlap, or production compiler/backend lowering in the current mainline.
+This repository implements a replay-stable SMT-VLIW emulator/runtime inside a bounded evidence envelope. It does not claim a universal determinism theorem, a complete precise-exception theorem, a global memory-order theorem, a production hardware-rooted attestation stack, a mandatory compiler-facts runtime, expansion beyond the current lane6 DSC1 contour, expansion beyond current L7 `ACCEL_*` commands, coherent DMA/cache, async DMA overlap, or production compiler/backend lowering in the current mainline.
 
 ## Architectural Thesis
 
@@ -132,8 +131,8 @@ The current codebase implements:
   VectorALU, SRF, and BurstIO surfaces;
 - MatrixTile memory and compute runtime with architectural MatrixRegisterFile
   state, typed transport, retire-only publication, and replay/rollback;
-- lane6 `DmaStreamCompute` as a descriptor/decode carrier with a scoped DSC1 Phase 06 materialized runtime/token/commit contour;
-- lane7 L7-SDC as `SystemSingleton` external accelerator command carriers with scoped Phase 08 / 08A runtime execution, guarded token lifecycle, staged commit, and conditional register ABI writeback;
+- lane6 `DmaStreamCompute` as a descriptor/decode carrier with a scoped DSC1 materialized runtime/token/commit contour;
+- lane7 L7-SDC as `SystemSingleton` external accelerator command carriers with scoped runtime execution, guarded token lifecycle, staged commit, and conditional register ABI writeback;
 - telemetry and replay evidence as architecture-facing surfaces;
 - explicit backend state with rename, commit, physical register, free-list, and retire coordination.
 
@@ -275,7 +274,7 @@ flowchart LR
     LSU --> L5["Lane 5: LSU"]
     DMA["SlotClass.DmaStreamClass"] --> L6["Lane 6: shared physical lane"]
     MTMEM["SlotClass.MatrixTileStreamClass"] --> L6
-    DSC["Lane6 DmaStreamCompute: DSC1 Phase 06 scoped execution"] --> DMA
+    DSC["Lane6 DmaStreamCompute: DSC1 scoped execution"] --> DMA
     ASSIST6["Lane6 assist / SRF ingress: non-retiring helper"] --> DMA
     MTILE["MTILE_LOAD / MTILE_STORE: typed tile-stream transport"] --> MTMEM
     BR["SlotClass.BranchControl"] --> L7["Lane 7: shared physical lane"]
@@ -314,7 +313,7 @@ flowchart TB
     CFG["VConfigMicroOp"] --> SYS["SystemSingleton lane 7, serializing"]
     L7SDC["L7-SDC ACCEL_* carriers"] --> SYS
     L7SDC --> L7RUN["ExternalAcceleratorRuntime scoped commands; rd only via ABI result"]
-    DSC["Lane6 DmaStreamCompute descriptor carrier"] --> DSCRUN["DSC1 Phase 06 materialized runtime/token path"]
+    DSC["Lane6 DmaStreamCompute descriptor carrier"] --> DSCRUN["DSC1 materialized runtime/token path"]
     MTMEM["MTILE load/store"] --> MTTRANS["Typed StreamEngine/SRF transfer"]
     MTTRANS --> MTRET["Retire-owned tile publication / store commit"]
     MTCOMP["MTILE MACC / transpose"] --> MTRET
@@ -361,8 +360,8 @@ This distinction prevents claims about "bundle contains a slot" from being misre
 
 For Stream WhiteBook contours, it also prevents three common overclaims:
 
-- a lane6 `DmaStreamCompute` sideband descriptor or projected carrier is not executable outside the current DSC1 Phase 06 contour;
-- a lane7 `ACCEL_*` sideband descriptor or projected carrier is not executable outside the current Phase 08 / 08A runtime command contour and does not guarantee architectural `rd`;
+- a lane6 `DmaStreamCompute` sideband descriptor or projected carrier is not executable outside the current DSC1 contour;
+- a lane7 `ACCEL_*` sideband descriptor or projected carrier is not executable outside the current runtime command contour and does not guarantee architectural `rd`;
 - a helper token, model queue, parser accept, telemetry record, or fake backend completion is not by itself pipeline execution or memory publication.
 
 ```mermaid
@@ -370,7 +369,7 @@ flowchart LR
     N["Native VLIW Bundle"] --> DEC["VliwDecoderV4 / DecodedInstructionBundle"]
     DEC --> DES["BundleLegalityAnalyzer -> BundleLegalityDescriptor"]
     DEC --> DSCDEC["Lane6 DSC sideband/projector"]
-    DSCDEC --> DSCRUN["DmaStreamCompute carrier; Phase 06 DSC1 runtime-gated"]
+    DSCDEC --> DSCRUN["DmaStreamCompute carrier; DSC1 runtime-gated"]
     DEC --> L7DEC["Lane7 L7-SDC ACCEL_* sideband/projector"]
     L7DEC --> L7RUN["SystemSingleton carrier; scoped runtime; conditional rd"]
     DES --> FACTS["DecodedBundleTypedSlotFacts + DecodedSlotLegality"]
@@ -398,11 +397,11 @@ This partition is the short form of the Stream WhiteBook evidence map.
 | Surface | Current implemented behavior | Confirmed by tests | Model/helper behavior | Parser-only behavior | Future-gated behavior | Rejected / not allowed behavior |
 |---|---|---|---|---|---|---|
 | VectorStream | Validated StreamEngine ingress, VectorALU compute, SRF exact warm/bypass, and BurstIO transport. | Stream ingress, memory binding, addressing, and SRF tests confirm named seams. | Prefetch and assist ingress remain helper behavior. | Not the main claim. | Async overlap and coherent DMA/cache remain gated. | VectorStream as fallback or architectural MatrixTile authority. |
-| MatrixTile | `MatrixTileMemory` lane6 load/store plus `MatrixTileCompute` MACC/transpose; architectural state publishes only at retire. | Phase 09-14 MatrixTile suites cover transfer, capture, retire, faults, replay, golden, and handoff. | StreamEngine/SRF are typed transport only. | Descriptor parsing alone is not execution. | Future opcodes/dtypes require a new gate. | Ordinary LSU, DSC, VectorALU, VMX, Lane7, or backend fallback. |
-| Lane6 DSC | Lane6 descriptor/decode carrier; `DmaStreamComputeMicroOp.Execute(...)` opens only the current DSC1 Phase 06 production contour; `ExecutionEnabled == true`; `WritesRegister == false`. | `DmaStreamCompute*` and compiler contract tests confirm descriptor, materialized runtime, helper, token, commit, and adjacent fail-closed boundaries under their filters. | `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` remains a direct helper; canonical micro-op execution enters `ExecuteMaterializedMicroOpToCommitPending(...)`. | DSC2 descriptor/capability/footprint parsing is parser-only and non-executable. | DSC2 execution, async queue/completion, IOMMU-backed memory, coherent cache, partial success, production lowering. | Hidden StreamEngine/DMAController fallback, direct destination commit, unsupported descriptor execution, broad parser/decode claim as execution. |
-| Lane7 L7-SDC | `ACCEL_*` lane7 `SystemSingleton` carriers; `SystemDeviceCommandMicroOp.Execute(...)` dispatches current Phase 08 / 08A runtime commands; `WritesRegister` follows destination register presence. | `L7SdcPhase08ExecutableTests`, `L7Sdc*`, compiler Phase12, and documentation claim-safety tests confirm scoped command execution, conditional writeback, and adjacent fail-closed seams. | Token, queue, poll, wait, cancel, fence, status, register ABI, backend, commit, rollback, conflict, and telemetry APIs are current runtime/helper surfaces only within the scoped contour. | SDC1 descriptor parsing and carrier cleanliness are admission evidence, not universal protocol evidence. | Universal `ACCEL_*` protocol, arbitrary backend dispatch, broad `rd`/CSR publication, IOMMU-backed executable memory. | Fake/test backend as production protocol, capability registry as authority, fallback to DSC/StreamEngine/custom accelerator execution. |
+| MatrixTile | `MatrixTileMemory` lane6 load/store plus `MatrixTileCompute` MACC/transpose; architectural state publishes only at retire. | MatrixTile suites cover transfer, capture, retire, faults, replay, golden, and handoff. | StreamEngine/SRF are typed transport only. | Descriptor parsing alone is not execution. | Future opcodes/dtypes require a new gate. | Ordinary LSU, DSC, VectorALU, VMX, Lane7, or backend fallback. |
+| Lane6 DSC | Lane6 descriptor/decode carrier; `DmaStreamComputeMicroOp.Execute(...)` opens only the current DSC1 production contour; `ExecutionEnabled == true`; `WritesRegister == false`. | `DmaStreamCompute*` and compiler contract tests confirm descriptor, materialized runtime, helper, token, commit, and adjacent fail-closed boundaries under their filters. | `DmaStreamComputeRuntime.ExecuteToCommitPending(...)` remains a direct helper; canonical micro-op execution enters `ExecuteMaterializedMicroOpToCommitPending(...)`. | DSC2 descriptor/capability/footprint parsing is parser-only and non-executable. | DSC2 execution, async queue/completion, IOMMU-backed memory, coherent cache, partial success, production lowering. | Hidden StreamEngine/DMAController fallback, direct destination commit, unsupported descriptor execution, broad parser/decode claim as execution. |
+| Lane7 L7-SDC | `ACCEL_*` lane7 `SystemSingleton` carriers; `SystemDeviceCommandMicroOp.Execute(...)` dispatches current runtime commands; `WritesRegister` follows destination register presence. | L7-SDC executable, compiler-contract, and documentation claim-safety tests confirm scoped command execution, conditional writeback, and adjacent fail-closed seams. | Token, queue, poll, wait, cancel, fence, status, register ABI, backend, commit, rollback, conflict, and telemetry APIs are current runtime/helper surfaces only within the scoped contour. | SDC1 descriptor parsing and carrier cleanliness are admission evidence, not universal protocol evidence. | Universal `ACCEL_*` protocol, arbitrary backend dispatch, broad `rd`/CSR publication, IOMMU-backed executable memory. | Fake/test backend as production protocol, capability registry as authority, fallback to DSC/StreamEngine/custom accelerator execution. |
 | Memory / DMA / cache / conflict | Retire-time memory boundary and explicit SRF/cache invalidation where routed. | Scoped conflict, addressing, MatrixTile, and L7 tests confirm named seams. | External conflict managers remain contour-local. | Address-space parsing is not executable memory. | Global conflict authority and coherent DMA/cache. | Transport completion or evidence publishing memory. |
-| Compiler / backend | Typed-slot facts are `ValidationOnly`; compiler contract mismatch rejects; descriptor sideband can be preserved and validated. | Compiler backend Phase11, DSC compiler contract, and L7 compiler Phase12 tests confirm preservation and prohibition boundaries. | Capability planning and model/test helper use must be labeled. | DSC/L7 sideband descriptor preservation is parser/transport evidence. | Production lowering beyond current DSC1 Phase 06 and L7 Phase 08 / 08A commands requires ordering, cache, backend, conformance, and docs gates. | Sideband emission, carrier projection, fake backend, or parser acceptance as production lowering proof. |
+| Compiler / backend | Typed-slot facts are `ValidationOnly`; compiler contract mismatch rejects; descriptor sideband can be preserved and validated. | Compiler backend, DSC compiler contract, and L7 compiler tests confirm preservation and prohibition boundaries. | Capability planning and model/test helper use must be labeled. | DSC/L7 sideband descriptor preservation is parser/transport evidence. | Production lowering beyond current DSC1 and L7 commands requires ordering, cache, backend, conformance, and docs gates. | Sideband emission, carrier projection, fake backend, or parser acceptance as production lowering proof. |
 
 ## StreamEngine, VectorALU, StreamRegisterFile, And BurstIO
 
@@ -453,7 +452,7 @@ runtime/token/commit contour documented in
 Current implemented boundary:
 
 - `DmaStreamComputeMicroOp` is the lane6 typed-slot descriptor carrier.
-- `DmaStreamComputeMicroOp.Execute(...)` is enabled only for the current DSC1 Phase 06 contour.
+- `DmaStreamComputeMicroOp.Execute(...)` is enabled only for the current DSC1 contour.
 - Canonical micro-op execution enters `DmaStreamComputeRuntime.ExecuteMaterializedMicroOpToCommitPending(...)` after materialization, token-store issue/admission, owner/domain guard, and descriptor shape checks.
 - `DmaStreamComputeDescriptorParser.ExecutionEnabled == true` for DSC1.
 - `DmaStreamComputeMicroOp.WritesRegister == false`; the carrier has no current architectural read/write register contract.
@@ -465,11 +464,11 @@ Runtime/helper behavior is split deliberately: `DmaStreamComputeRuntime.ExecuteM
 
 DSC2 is parser-only/non-executable. Address-space, strided, tile/2D, scatter-gather, capability-profile, and footprint-summary parsing can produce exact or conservative footprint evidence, but it does not allocate pipeline tokens, call the runtime helper, publish memory, prove IOMMU-backed execution, authorize partial success, or permit production lowering.
 
-Expansion beyond the current lane6 contour is gated by ADR approval, token store and issue/admission decisions for the new contour, precise retire faults, ordering/conflict service, explicit physical/IOMMU backend selection with no fallback, DSC2 executable-use gates, all-or-none/progress decisions, non-coherent cache protocol, compiler/backend contract, conformance, and documentation migration. Phase13 records dependency order only; it is not implementation approval.
+Expansion beyond the current lane6 contour is gated by ADR approval, token store and issue/admission decisions for the new contour, precise retire faults, ordering/conflict service, explicit physical/IOMMU backend selection with no fallback, DSC2 executable-use gates, all-or-none/progress decisions, non-coherent cache protocol, compiler/backend contract, conformance, documentation migration, and dependency-order review. Dependency order is not implementation approval.
 
 ## Lane7 L7-SDC External Accelerator Model
 
-L7-SDC is the lane7 `SystemSingleton` system-device command surface for external accelerators. Current code implements a scoped Phase 08 / Phase 08A runtime contour, not a universal external accelerator protocol. Start with [L7-SDC executive summary](Documentation/Stream%20WhiteBook/ExternalAccelerators/01_L7_SDC_Executive_Summary.md), [topology and ISA placement](Documentation/Stream%20WhiteBook/ExternalAccelerators/02_Topology_And_ISA_Placement.md), and [descriptor ABI and carrier cleanliness](Documentation/Stream%20WhiteBook/ExternalAccelerators/03_Descriptor_ABI_And_Carrier_Cleanliness.md).
+L7-SDC is the lane7 `SystemSingleton` system-device command surface for external accelerators. Current code implements a scoped runtime contour, not a universal external accelerator protocol. Start with [L7-SDC executive summary](Documentation/Stream%20WhiteBook/ExternalAccelerators/01_L7_SDC_Executive_Summary.md), [topology and ISA placement](Documentation/Stream%20WhiteBook/ExternalAccelerators/02_Topology_And_ISA_Placement.md), and [descriptor ABI and carrier cleanliness](Documentation/Stream%20WhiteBook/ExternalAccelerators/03_Descriptor_ABI_And_Carrier_Cleanliness.md).
 
 Current carrier set:
 
@@ -481,7 +480,7 @@ Current carrier set:
 | `ACCEL_WAIT` | Guarded runtime wait/timeout observation; does not publish staged memory by itself. |
 | `ACCEL_CANCEL` | Guarded runtime cancellation policy; bad handles and unsupported states reject without writeback. |
 | `ACCEL_FENCE` | Scoped runtime fence path; can observe guarded tokens, call commit coordinator under policy, and write packed fence status when permitted. |
-| `ACCEL_STATUS` | Phase 08A status lookup contour; conditional register ABI result. |
+| `ACCEL_STATUS` | Status lookup contour; conditional register ABI result. |
 
 `SystemDeviceCommandMicroOp.Execute(...)` dispatches through `ExternalAcceleratorRuntime` for the current scoped commands. Current carriers have `WritesRegister = DestinationRegister != 0`; retire writes architectural `rd` only when `AcceleratorRegisterAbiResult.WritesRegister` is true and the carrier has a destination register.
 
@@ -528,7 +527,7 @@ Compiler sideband transport is explicit and bounded. DSC descriptors travel thro
 
 The compiler may select CPU/non-accelerator lowering, lane6 DSC contour, or compile-time rejection before native `ACCEL_SUBMIT` emission. Once an `ACCEL_SUBMIT` carrier is emitted and rejected, there is no post-submit hidden alternate execution promise.
 
-`CompilerBackendLoweringContract` blocks production lowering beyond the current DSC1 Phase 06 and L7 Phase 08 / 08A contours. Future lowering requires executable implementation for the new contour, result publication, backend/addressing semantics, ordering/conflict semantics, cache protocol, positive and negative tests, compiler conformance, and Phase12 documentation migration.
+`CompilerBackendLoweringContract` blocks production lowering beyond the current DSC1 and L7 contours. Future lowering requires executable implementation for the new contour, result publication, backend/addressing semantics, ordering/conflict semantics, cache protocol, positive and negative tests, compiler conformance, and documentation migration.
 
 Diagram caveat: this compact transport diagram is sideband preservation evidence only. It is not production executable lowering. Full source: [Compiler To ISE Transport](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/06_Compiler_To_ISE_Transport.md).
 
@@ -536,7 +535,7 @@ Diagram caveat: this compact transport diagram is sideband preservation evidence
 flowchart LR
     IR["Compiler DSC/L7 intent"] --> SIDE["Typed sideband descriptor"]
     SIDE --> DEC["Decoder/projector validates carrier"]
-    DEC --> DSC["Lane6 DSC carrier: Phase 06 DSC1 runtime-gated"]
+    DEC --> DSC["Lane6 DSC carrier: DSC1 runtime-gated"]
     DEC --> L7["Lane7 L7-SDC carrier: scoped runtime; conditional rd"]
     DSC --> GATED["Projection does not publish memory by itself"]
     L7 --> GATED
@@ -545,7 +544,7 @@ flowchart LR
 
 ## Stream WhiteBook Diagrams
 
-Diagrams below are explanatory evidence/model aids. They are not implementation approval for expansion beyond current lane6 DSC1 Phase 06, executable DSC2, expansion beyond current L7 Phase 08 / 08A commands, async DMA overlap, IOMMU-backed executable memory, coherent DMA/cache, or production compiler/backend lowering.
+Diagrams below are explanatory evidence/model aids. They are not implementation approval for expansion beyond current lane6 DSC1, executable DSC2, expansion beyond current L7 commands, async DMA overlap, IOMMU-backed executable memory, coherent DMA/cache, or production compiler/backend lowering.
 
 | Diagram | README handling | Nearby caveat |
 |---|---|---|
@@ -921,7 +920,7 @@ The current version history explicitly records that:
 - scheduling policy belongs in sideband metadata rather than architectural slot bits;
 - canonical opcodes must execute correctly with missing/default compiler metadata.
 
-For Stream WhiteBook surfaces, the compiler/runtime contract also records a negative boundary: DSC and L7 sideband descriptor emission/preservation is not production executable lowering. `CompilerBackendLoweringContract` keeps production lowering beyond current DSC1 Phase 06 and L7 Phase 08 / 08A commands blocked until executable runtime semantics for the new contour, backend/addressing, ordering/conflict, cache protocol, positive/negative tests, compiler conformance, and documentation migration are complete.
+For Stream WhiteBook surfaces, the compiler/runtime contract also records a negative boundary: DSC and L7 sideband descriptor emission/preservation is not production executable lowering. `CompilerBackendLoweringContract` keeps production lowering beyond current DSC1 and L7 commands blocked until executable runtime semantics for the new contour, backend/addressing, ordering/conflict, cache protocol, positive/negative tests, compiler conformance, and documentation migration are complete.
 
 ```mermaid
 flowchart LR
@@ -1128,18 +1127,18 @@ The current scoped runtime and refactor slices recorded in the updated WhiteBook
 |---|---|
 | Focused runtime baseline | Passed 482, Failed 0 |
 | Combined runtime baseline | Passed 511, Failed 0 |
-| Phase 08 atomic semantics | Passed 26, Failed 0 |
-| Phase 08 load/store semantics | Passed 36, Failed 0 |
-| Phase 09 replay/rollback and SMT/VT ownership | Passed 41, Failed 0 |
+| Atomic semantics slice | Passed 26, Failed 0 |
+| Load/store semantics slice | Passed 36, Failed 0 |
+| Replay/rollback and SMT/VT ownership slice | Passed 41, Failed 0 |
 | Lane6 DSC / DmaStream / Lane7 pinning slice | Passed 186, Failed 0 |
 | Lane7 L7-SDC contract slice | Passed 303, Failed 0 |
 | Compiler scalar-tail inventory slice | Passed 19, Failed 0 |
 | Runtime scalar closure through `ZEXT.W` | Passed 148, Failed 0 |
-| Phase 10 atomic ordering plus `FENCE` / `FENCE_I` | Passed 49, Failed 0 |
+| Atomic ordering plus `FENCE` / `FENCE_I` | Passed 49, Failed 0 |
 
 These are scoped slices, not a fresh repository-wide full-suite total.
 
-The reproducible smoke baseline is the Phase 06 proof subset:
+The reproducible smoke baseline is the validation proof subset:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\build\run-validation-baseline.ps1 -NoRestore
@@ -1216,10 +1215,10 @@ The following claims are safe repository-facing statements for the current codeb
 - MatrixTile load/store has `MatrixTileMemory` ownership and lane6
   `MatrixTileStreamClass` placement; MACC/transpose has `MatrixTileCompute`
   ownership; retire is the publication authority;
-- lane6 `DmaStreamCompute` is a current descriptor/decode carrier whose direct `Execute(...)` path is enabled only for the DSC1 Phase 06 materialized contour;
+- lane6 `DmaStreamCompute` is a current descriptor/decode carrier whose direct `Execute(...)` path is enabled only for the DSC1 materialized contour;
 - `DmaStreamComputeDescriptorParser.ExecutionEnabled == true` for the current DSC1 contour;
 - DSC1 is the strict current descriptor ABI, while DSC2 is parser-only/non-executable;
-- lane7 L7-SDC `ACCEL_*` carriers are current lane7 `SystemSingleton` carriers whose direct `Execute(...)` path dispatches scoped Phase 08 / 08A runtime commands;
+- lane7 L7-SDC `ACCEL_*` carriers are current lane7 `SystemSingleton` carriers whose direct `Execute(...)` path dispatches scoped runtime commands;
 - current `ACCEL_*` carriers advertise `WritesRegister` when a destination register is present, and retire writes `rd` only when the runtime ABI result writes;
 - explicit owner/domain guard evidence outranks descriptor identity, telemetry, token handles, capability metadata, and certificate/replay identity;
 - telemetry is a first-class evidence surface;
@@ -1244,13 +1243,13 @@ Do not read the live repository as claiming:
 - `W=8` or "8-wide issue" as an `IPC=8` theorem;
 - independent branch and system physical lanes;
 - full cross-core shared-bundle issue as the mainline SMT model;
-- lane6 `DmaStreamCompute` execution outside the current DSC1 Phase 06 contour or executable DSC2;
+- lane6 `DmaStreamCompute` execution outside the current DSC1 contour or executable DSC2;
 - parser/decode sideband presence alone as token allocation, memory publication, or execution authority;
 - StreamEngine, VectorALU, DMAController, custom accelerator, or fake backend fallback for rejected DSC/L7;
 - ordinary LSU, DSC, VectorALU, VMX, Lane7, or external-backend fallback for
   MatrixTile;
 - executable `VGATHER` / `VSCATTER`, future dot-product ABI variants, or cache/TLB/coherency claims as current ISA behavior;
-- universal L7 `ACCEL_*` protocol, L7 behavior beyond current Phase 08 / 08A commands, production backend dispatch, or unconditional architectural `rd` writeback;
+- universal L7 `ACCEL_*` protocol, L7 behavior beyond current commands, production backend dispatch, or unconditional architectural `rd` writeback;
 - fake/test L7 backend behavior as production protocol;
 - capability registry, telemetry, token, certificate, replay, descriptor identity, or status words as authority;
 - async DMA overlap, coherent DMA/cache, dirty-line writeback, or automatic snooping;
@@ -1258,7 +1257,7 @@ Do not read the live repository as claiming:
 - `GlobalMemoryConflictService` as an already installed global CPU load/store authority;
 - progress, poll, wait, fence, or telemetry diagnostics publishing memory;
 - compiler sideband descriptor emission as production executable lowering;
-- Phase13 dependency order as implementation approval.
+- dependency order as implementation approval.
 
 ## Current Limitations
 
@@ -1267,14 +1266,14 @@ The following limitations are explicit:
 - typed-slot facts are validated and transported, but not required for canonical runtime execution;
 - some inter-core and compatibility legality surfaces still exist and must not be confused with active typed-slot SMT mainline;
 - stream-control and VMX surfaces are guarded when not wired;
-- lane6 DSC execution is limited to the current DSC1 Phase 06 materialized contour;
+- lane6 DSC execution is limited to the current DSC1 materialized contour;
 - DSC2, address-space, strided/tile/scatter-gather, and capability-profile surfaces are parser-only/model-only unless future executable gates close;
 - L7-SDC queue, poll, wait, cancel, fence, status, register ABI, backend, commit, rollback, conflict, and telemetry surfaces are scoped runtime/helper/test surfaces, not universal protocol evidence;
 - current DSC runtime memory is physical helper/runtime memory, and current L7 mapping/IOMMU epoch validation is guarded admission/commit authority rather than broad executable IOMMU-backed memory;
 - `FENCE` and `FENCE_I` are bounded system contours only; they do not imply a broad cache/TLB/DMA/coherence theorem;
 - `SFENCE.VMA`, `DCACHE_CLEAN`, `DCACHE_INVAL`, `DCACHE_FLUSH`, and `ICACHE_INVAL` remain reserved or optional-disabled until a complete runtime-owned model is implemented and tested end to end;
 - the installed conflict/cache surfaces are explicit and non-coherent; global conflict authority, dirty-line/writeback, coherent DMA/cache, async overlap, and any broad cache/TLB theorem remain future-gated;
-- production compiler/backend lowering beyond current DSC1 Phase 06 and L7 Phase 08 / 08A contours is blocked by `CompilerBackendLoweringContract`;
+- production compiler/backend lowering beyond current DSC1 and L7 contours is blocked by `CompilerBackendLoweringContract`;
 - proof signing is simulated ISE scaffolding, not a production root-of-trust path;
 - telemetry schema is rich but source-defined rather than frozen as a long-term external compatibility contract;
 - the documented validation baseline is a smoke subset, not a repository-wide green total;
