@@ -15,6 +15,18 @@
 
 # Model Overview
 
+AiGen illustrations (prev):
+
+<img width="1648" height="1086" alt="1" src="https://github.com/user-attachments/assets/b0bc2e40-7192-4e8e-91d4-3a4bb99c17c8" />
+<img width="1648" height="1086" alt="2" src="https://github.com/user-attachments/assets/cc43a744-72ac-4c72-87f1-59dbcd347417" />
+<img width="1648" height="1086" alt="3" src="https://github.com/user-attachments/assets/3607e2b8-c8b9-4b53-bf96-1287cc2fc0da" />
+<img width="1648" height="1086" alt="4" src="https://github.com/user-attachments/assets/c6bc4ab1-00ca-47a7-b491-34ed943a496d" />
+<img width="1648" height="1086" alt="5" src="https://github.com/user-attachments/assets/aa542607-a5f0-4790-9a8f-d4569140eab2" />
+<img width="1648" height="1086" alt="6" src="https://github.com/user-attachments/assets/8b0a6948-eaf2-4471-8eed-67ab5eeb4185" />
+<img width="1648" height="1086" alt="7" src="https://github.com/user-attachments/assets/b7d38544-77b3-446f-a453-fda6557d8d3a" />
+
+
+
 HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
 retire-visible effects, and a versioned compiler/runtime contract. 
