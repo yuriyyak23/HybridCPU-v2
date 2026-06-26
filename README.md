@@ -26,6 +26,7 @@ AiGen illustrations (prev):
 <img width="1648" height="1086" alt="7" src="https://github.com/user-attachments/assets/b7d38544-77b3-446f-a453-fda6557d8d3a" />
 
 
+
 HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
 retire-visible effects, and a versioned compiler/runtime contract. 
@@ -51,7 +52,6 @@ This README deliberately compresses the current documentation map into the repos
 - [Asm short Test Results](Documentation/AsmAppTestResults.md)
 
 When this README, the WhiteBooks, older notes, and code disagree, live code and the current proof/evidence surfaces are the authority. Historical material under old documentation paths is repository archaeology unless a current proof surface cites it.
-
 ## Documentation Entry Points
 
 The instruction-side closure overlay and Stream WhiteBook are current
