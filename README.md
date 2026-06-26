@@ -15,6 +15,8 @@
 
 # Model Overview
 
+AiGen illustrations (prev):
+
 <img width="1448" height="1086" alt="1" src="https://github.com/user-attachments/assets/b0bc2e40-7192-4e8e-91d4-3a4bb99c17c8" />
 <img width="1448" height="1086" alt="2" src="https://github.com/user-attachments/assets/cc43a744-72ac-4c72-87f1-59dbcd347417" />
 <img width="1448" height="1086" alt="3" src="https://github.com/user-attachments/assets/3607e2b8-c8b9-4b53-bf96-1287cc2fc0da" />
