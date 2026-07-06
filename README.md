@@ -38,7 +38,7 @@ MatrixTile, assist, lane6 DSC, and lane7 architecture records live in
 
 This README deliberately compresses the current documentation map into the repository entry point. It keeps file references minimal; for deeper detail, start with:
 
-
+- [WhiteBook](Documentation/WhiteBook/0.%20chapter-index.md)
 - [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md)
 - [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md)
 - [Stream WhiteBook](Documentation/Stream%20WhiteBook/00_README.md)
