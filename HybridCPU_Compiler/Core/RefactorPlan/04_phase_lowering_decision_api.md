@@ -4,61 +4,130 @@
 
 Заменить неявные `TryLower`/`bool success`/helper-return paths на typed decision API. Цель — сделать невозможной ситуацию, где compiler quietly falls back из одного контура в другой или представляет parser/helper success как production lowering.
 
+`CompilerLoweringDecision` должен быть semantic firewall, а не wrapper над `bool`, `Try*`, `HasLegalAssignment`, `Success`, `Valid`, `Accepted` или exception-as-control-flow.
+
+## Required enums
+
+### `CompilerLoweringDecisionKind`
+
+```csharp
+public enum CompilerLoweringDecisionKind
+{
+    EmitCarrier,
+    Reject,
+    ParserOnly,
+    HelperOnly,
+    NoEmission,
+    FutureGated
+}
+```
+
+### `CompilerEmissionClass`
+
+```csharp
+public enum CompilerEmissionClass
+{
+    NoEmission,
+    CarrierOnly,
+    CarrierWithOptionalSideband,
+    CarrierWithRequiredSideband,
+    DescriptorOnly,
+    SidebandOnly,
+    EvidenceOnly,
+    CompatibilityProjectionOnly
+}
+```
+
+### `CompilerProductionLoweringStatus`
+
+```csharp
+public enum CompilerProductionLoweringStatus
+{
+    NotProductionLowering,
+    HelperAbiOnly,
+    ParserOnly,
+    DiagnosticOnly,
+    ProductionCandidateRequiresRuntimeLegality,
+    ProductionAllowedByExplicitCompilerGate
+}
+```
+
+`ProductionAllowedByExplicitCompilerGate` is forbidden unless Phase 01 inventory identifies an existing supported production path and Phase 09 has negative tests for every missing gate. For current disputed contours, prefer `HelperAbiOnly`, `ParserOnly`, `DiagnosticOnly`, `NotProductionLowering` or `ProductionCandidateRequiresRuntimeLegality`.
+
 ## Центральный тип
 
 ```csharp
 public abstract record CompilerLoweringDecision
 {
+    public required CompilerLoweringDecisionKind DecisionKind { get; init; }
     public required SemanticIntentKind IntentKind { get; init; }
     public required ExecutionContourKind ContourKind { get; init; }
     public required CompilerAuthorityClass AuthorityClass { get; init; }
+    public required CompilerAuthoritySourceKind AuthoritySourceKind { get; init; }
     public required CompilerEvidenceClass EvidenceClass { get; init; }
     public required CompilerExecutionClaim ExecutionClaim { get; init; }
+    public required CompilerPublicationClass PublicationClass { get; init; }
+    public required CompilerEmissionClass EmissionClass { get; init; }
+    public required CompilerProductionLoweringStatus ProductionLoweringStatus { get; init; }
+    public required CompilerRuntimeAuthorityDependency RuntimeAuthorityDependency { get; init; }
     public required NoFallbackProof NoFallbackProof { get; init; }
+    public required IReadOnlyList<CompilerArtifactKind> ProducedArtifacts { get; init; }
+    public required IReadOnlyList<CompilerArtifactKind> RequiredArtifacts { get; init; }
+    public required IReadOnlyList<CompilerRejectReason> RejectReasons { get; init; }
+    public required LegacyApiTranslation? LegacyTranslation { get; init; }
     public required string Reason { get; init; }
 }
 ```
 
-## Decision variants
+The base type intentionally carries fields that feel redundant. This redundancy is the safety boundary: a caller should not need inference to know whether a result emitted a carrier, only parsed, only helped, or still requires runtime legality.
+
+## Decision subtypes
 
 ### `EmitCarrierDecision`
-
-Используется только там, где compiler вправе создать carrier bytes.
 
 ```csharp
 public sealed record EmitCarrierDecision : CompilerLoweringDecision
 {
-    public required VliwCarrierImage CarrierImage { get; init; }
-    public CompilerSidebandEnvelope? Sideband { get; init; }
-    public DescriptorEnvelope? Descriptor { get; init; }
-    public TypedSlotFactsEnvelope? TypedSlotFacts { get; init; }
+    public required CompilerEmissionPackage Package { get; init; }
 }
 ```
 
-Это не runtime legality и не execution claim.
+Rules:
+
+- `DecisionKind == EmitCarrier`.
+- `EmissionClass` must not be `NoEmission`.
+- `ProductionLoweringStatus` must not be `ProductionAllowedByExplicitCompilerGate` unless explicit gates exist.
+- `RuntimeAuthorityDependency` must include runtime Legality A/B for executable candidates.
+- Carrier emission does not imply execution, publication, commit or retire.
 
 ### `RejectAtCompileTimeDecision`
-
-Явный fail-closed результат.
 
 ```csharp
 public sealed record RejectAtCompileTimeDecision : CompilerLoweringDecision
 {
-    public required CompilerRejectReason RejectReason { get; init; }
+    public required IReadOnlyList<CompilerRejectReason> Reasons { get; init; }
+    public required bool IsFailClosed { get; init; }
 }
 ```
 
+Rules:
+
+- rejection must record no-fallback proof;
+- rejection must not silently retry another contour;
+- rejection must include negative evidence.
+
 ### `ParserOnlyDecision`
 
-Операция распознана, но не исполнима через compiler emission.
-
 ```csharp
-public sealed record ParserOnlyDecision : CompilerLoweringDecision;
+public sealed record ParserOnlyDecision : CompilerLoweringDecision
+{
+    public required DescriptorEnvelope? ParsedDescriptor { get; init; }
+}
 ```
 
-### `HelperOnlyDecision`
+Parser success does not imply production lowering, execution, bridge acceptance or runtime legality.
 
-Для scoped helper ABI, например ограниченного MatrixTile helper path.
+### `HelperOnlyDecision`
 
 ```csharp
 public sealed record HelperOnlyDecision : CompilerLoweringDecision
@@ -68,119 +137,185 @@ public sealed record HelperOnlyDecision : CompilerLoweringDecision
 }
 ```
 
+Helper success is a scoped ABI/helper result only. MatrixTile helper success is not a general matrix compiler and not production lowering.
+
 ### `NoEmissionDecision`
 
-Для VMX projection, SecureCompute policy/admission и иных случаев, где emission запрещен.
-
 ```csharp
-public sealed record NoEmissionDecision : CompilerLoweringDecision;
+public sealed record NoEmissionDecision : CompilerLoweringDecision
+{
+    public required string NoEmissionReason { get; init; }
+}
 ```
 
-### `FutureGatedDecision`
+Used for VMX projection-only, SecureCompute admission-only, diagnostics and policy/evidence-only outputs.
 
-Для DSC2, broad accelerator protocol, unsupported backend paths и прочих заявленных, но закрытых направлений.
+### `FutureGatedDecision`
 
 ```csharp
 public sealed record FutureGatedDecision : CompilerLoweringDecision
 {
+    public required IReadOnlyList<string> RequiredGates { get; init; }
     public required IReadOnlyList<string> MissingGates { get; init; }
 }
 ```
 
-## No fallback policy
+Future-gated is a rejection/no-emission class, not permission to fallback.
+
+## `NoFallbackProof`
 
 ```csharp
-public enum CompilerFallbackPolicy
-{
-    Forbidden,
-    ExplicitlyAllowedForEquivalentScalarSemantics,
-    DiagnosticOnly
-}
-
 public sealed record NoFallbackProof(
-    CompilerFallbackPolicy Policy,
-    bool WasFallbackAttempted,
-    bool WasFallbackRejected,
+    Guid ProofId,
+    ExecutionContourKind SourceContour,
+    ExecutionContourKind? RejectedFallbackContour,
+    FallbackPolicy Policy,
+    bool SameContourStructuralRetryAllowed,
+    bool CrossContourFallbackForbidden,
+    IReadOnlyList<ExecutionContourKind> ProhibitedFallbacks,
     string Reason);
 ```
 
-По умолчанию `Forbidden`. Любое implicit fallback поведение должно быть удалено или завернуто в explicit decision.
+### `FallbackPolicy`
 
-## Reject reasons
+```csharp
+public enum FallbackPolicy
+{
+    Forbidden,
+    SameContourStructuralRetryOnly,
+    ExplicitPolicyRequired,
+    DiagnosticOnlyNoEmission
+}
+```
+
+Same-contour structural placement retry is allowed only if it does not change semantic intent, contour, sideband requirement, descriptor requirement, emission class, authority class or runtime dependency. Cross-contour fallback is forbidden by default.
+
+## Legacy adapter anti-wrapper guard
+
+### `LegacyApiTranslation`
+
+```csharp
+public sealed record LegacyApiTranslation(
+    string SourceFile,
+    string SourceMember,
+    string LegacyReturnShape,
+    string LegacySuccessMeaning,
+    string TypedReplacementMeaning,
+    bool PreservesBehaviorOnly,
+    bool StrengthensAuthority);
+```
+
+`StrengthensAuthority` must always be `false`. Tests must fail if an adapter maps `true`, `Success`, `Valid`, `Accepted`, `IsLegal` or `HasLegalAssignment` directly to execution, runtime legality, commit, retire, publication or production lowering.
+
+Mandatory adapters from Phase 01:
+
+```text
+TryRecoverFromInstruction -> ParserOnlyDecision or HelperOnlyDecision, never ProductionAllowed
+HasLegalAssignment -> structural placement evidence, never RuntimeLegal
+IrBundleLegalityResult.Legal -> structural admission evidence, never RuntimeLegal
+EmitAnnotationsForBundle -> SidebandOnly/CarrierWithSideband artifact, never authority
+EmitFactsForBundle -> TypedSlotFacts evidence, never legality authority
+ValidateRuntimeContractCompatibility -> version compatibility check, never execution readiness
+```
+
+## `CompilerRejectReason`
 
 ```csharp
 public enum CompilerRejectReason
 {
     Unknown,
     UnsupportedIntent,
-    UnsupportedContour,
-    DescriptorRequired,
+    UnknownContour,
+    ProviderUnavailable,
+    MissingSideband,
+    MissingDescriptor,
     DescriptorAbiViolation,
-    TypedSlotTopologyViolation,
-    RuntimeAuthorityRequired,
-    FallbackForbidden,
+    TypedSlotFactsMismatch,
+    StaleCompilerContract,
+    RuntimeLegalityRequired,
+    MatrixTileUnsupportedOperation,
+    MatrixTileUnsupportedDType,
+    MatrixTileUnsupportedShape,
+    MatrixTileUnsupportedLayout,
+    MatrixTileUnsupportedAccumulator,
+    DscParserOnly,
+    DscCommitGateMissing,
+    L7DescriptorlessSubmitForbidden,
     VmxBackendEmissionForbidden,
     SecureComputeEmissionForbidden,
-    MatrixTileOperationUnsupported,
-    MatrixTileShapePolicyUnsupported,
-    MatrixTileDtypePolicyUnsupported,
-    MatrixTileAccumulatorPolicyUnsupported,
-    DscProductionLoweringBlocked,
-    DscParserOnly,
-    L7DescriptorMissing,
-    L7DescriptorlessSubmitForbidden,
-    CapabilityGateMissing,
-    FutureGated
+    CapabilityObservationNotAuthority,
+    CrossContourFallbackForbidden,
+    HelperSuccessNotProductionLowering,
+    DescriptorSuccessNotAuthority
 }
 ```
 
-## Tasks
+## API tasks
 
-### 1. Найти все lowering entrypoints
+### 1. Replace bare success APIs at boundaries
 
-Из фазы 1 взять все методы, которые сейчас создают carrier/descriptor/sideband/facts или обещают lowering success.
+New public compiler lowering boundaries must return `CompilerLoweringDecision`. Internal legacy paths may remain until migrated but must be wrapped before crossing the new handoff API.
 
-### 2. Обернуть legacy methods
+### 2. Add compile-time/default constructors guards
 
-Сначала не переписывать алгоритмы. Создать adapter layer:
+Records should not have constructors that default to authority-like success. A missing field should be a compile error or explicit `Unknown`/`Rejected`/`NoEmission` value.
+
+### 3. Add no-fallback proof propagation
+
+Every decision must include `NoFallbackProof`, including success paths. Success still needs proof that it did not silently downgrade to another contour.
+
+### 4. Add decision validation
+
+Add validators or tests for impossible combinations:
 
 ```text
-legacy result -> CompilerLoweringDecision
+DecisionKind=NoEmission with EmissionClass!=NoEmission -> invalid
+ParserOnly with ProductionAllowedByExplicitCompilerGate -> invalid
+HelperOnly with RuntimeExecutionRequired -> invalid unless explicitly bridged as helper ABI evidence only
+Reject with ProducedArtifacts containing carrier -> invalid unless diagnostic-only artifact
+BridgeAccepted in CompilerLoweringDecision -> invalid; bridge acceptance is separate phase
 ```
-
-### 3. Удалить ambiguous success из новых API
-
-Новый код не должен возвращать `bool` как основной outcome. `bool` допустим только как техническое поле внутри typed decision.
-
-### 4. Включить fail-closed по умолчанию
-
-Если contour не может быть доказанно выбран, решение должно быть:
-
-- `RejectAtCompileTimeDecision`, если intent недопустим;
-- `ParserOnlyDecision`, если распознавание есть, emission нет;
-- `FutureGatedDecision`, если путь заявлен, но закрыт;
-- `NoEmissionDecision`, если emission архитектурно запрещен.
 
 ## Deliverables
 
 - `CompilerLoweringDecision` hierarchy.
-- `CompilerRejectReason`.
-- `CompilerFallbackPolicy`.
+- `CompilerLoweringDecisionKind`.
+- `CompilerEmissionClass`.
+- `CompilerProductionLoweringStatus`.
 - `NoFallbackProof`.
-- Adapters над текущими lowering helpers.
-- Отрицательные тесты на отсутствие implicit fallback.
+- `FallbackPolicy`.
+- `LegacyApiTranslation`.
+- `CompilerRejectReason` expanded matrix.
+- Decision validator tests.
+- Legacy adapters for current `Try*`/`bool`/`IsLegal`/`HasLegalAssignment` paths.
+
+Recommended namespace layout:
+
+```text
+HybridCPU.Compiler.Core.IR.Lowering
+HybridCPU.Compiler.Core.IR.Diagnostics
+```
 
 ## Acceptance criteria
 
-Фаза завершена, если любой lowering path возвращает typed decision, а не голый `bool`, `null`, exception-as-control-flow или helper-specific success.
+Фаза завершена, если:
+
+1. Новый lowering boundary never returns bare `bool`.
+2. Every lowering outcome has decision kind, emission class, production lowering status, authority class, evidence class and runtime dependency.
+3. Parser/helper success cannot be consumed as production lowering.
+4. Descriptor ABI success cannot be consumed as execution authority.
+5. Same-contour structural retries are distinguished from forbidden cross-contour fallbacks.
+6. Legacy API adapters all have `LegacyApiTranslation` with `StrengthensAuthority == false`.
+7. Negative tests fail on any direct `Success -> RuntimeLegal` or `HasLegalAssignment -> BridgeAccepted` mapping.
 
 ## Non-goals
 
+- Не переписывать scheduler.
+- Не добавлять production backends.
 - Не менять runtime legality.
-- Не добавлять production backend lowering.
-- Не расширять ISA.
-- Не добавлять fallback ради прохождения тестов.
+- Не превращать MatrixTile helper ABI в general matrix lowering.
+- Не превращать parser result в runtime execution permission.
 
 ## Риски
 
-Главный риск — сделать decision API слишком тонкой оберткой над старым поведением. Typed decision должен менять семантику интерфейса: caller обязан видеть, что произошло — emit, reject, parser-only, helper-only, no-emission или future-gated.
+Главный риск — сделать новый `CompilerLoweringDecision` как красивую оболочку над старым `bool success`. Поэтому decision must encode all safety-relevant distinctions as fields, not rely on caller convention.
