@@ -26,6 +26,7 @@
 7. [`07_phase_contour_providers.md`](07_phase_contour_providers.md) — контурные lowering providers: scalar, stream, MatrixTile, DSC, L7-SDC, VMX, SecureCompute.
 8. [`08_phase_evidence_and_telemetry.md`](08_phase_evidence_and_telemetry.md) — evidence envelope, telemetry и auditability.
 9. [`09_phase_tests_migration_and_exit.md`](09_phase_tests_migration_and_exit.md) — отрицательные тесты, миграция и критерии завершения.
+10. [`10_architectural_audit_addendum.md`](10_architectural_audit_addendum.md) — audit hardening addendum: текущие Core-соответствия, обязательные усиления API, revised phase structure и расширенная negative matrix.
 
 ## Глобальная цель
 
@@ -56,3 +57,7 @@ source/IR intent
 ## Рекомендуемая форма изменений
 
 Каждая фаза должна завершаться одним PR или одним логически изолированным набором коммитов. До фазы 4 допускаются в основном типы, обертки и документация. Исполняемое поведение должно меняться только после появления отрицательных тестов из фазы 9.
+
+## Audit hardening note
+
+`10_architectural_audit_addendum.md` является обязательным дополнением к плану: он фиксирует найденные в текущем `master` legacy ambiguity surfaces, уточняет границы `carrier/sideband/descriptor/facts/evidence/bridge`, требует ранние negative gates до поведенческой миграции и вводит machine-checkable exit checklist.
