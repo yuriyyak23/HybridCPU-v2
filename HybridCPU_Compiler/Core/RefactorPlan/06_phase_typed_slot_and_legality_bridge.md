@@ -4,13 +4,37 @@
 
 Сделать typed-slot facts и runtime bridge формальными, но не смешивать их с runtime legality. Compiler может подготовить structural agreement, но окончательный `LegalityDecision` остается за runtime.
 
+This phase must align with the existing runtime-owned `CompilerContract` / `CompilerTypedSlotPolicyMode` vocabulary. The compiler may observe or carry a policy mode value, but it must not own runtime typed-slot policy.
+
 ## Основной принцип
 
 ```text
 typed-slot facts == compiler/runtime structural agreement input
 typed-slot facts != runtime legality
 typed-slot facts != execution authorization
+bridge ingress compatibility != execution readiness
 ```
+
+Missing typed-slot facts under compatibility mode are weaker than validated facts, not stronger.
+
+## Runtime policy ownership rule
+
+The runtime/ISE side owns typed-slot policy and contract version compatibility. Compiler-side bridge envelopes may include:
+
+- producer compiler contract version;
+- runtime contract version observed at build/test time;
+- observed `CompilerTypedSlotPolicyMode` value;
+- typed-slot facts and structural agreement;
+- evidence and diagnostics.
+
+They must not include:
+
+- final `LegalityDecision`;
+- Stage A decision;
+- Stage B decision;
+- execution ready bit;
+- commit/retire status;
+- memory/register publication authority.
 
 ## Предлагаемые типы
 
@@ -19,11 +43,31 @@ typed-slot facts != execution authorization
 ```csharp
 public sealed record TypedSlotFactsEnvelope(
     TypedSlotBundleFacts Facts,
-    CompilerTypedSlotPolicy Policy,
+    CompilerTypedSlotPolicyMode RuntimePolicyModeObserved,
     TypedSlotFactStaging Staging,
-    IrAdmissibilityAgreement Agreement,
+    IrAdmissibilityAgreementEnvelope Agreement,
+    bool StructuralEvidenceOnly,
+    bool RuntimeLegalityStillRequired,
     CompilerCoreResultHeader Header);
 ```
+
+`StructuralEvidenceOnly` must always be `true` for compiler-produced facts.
+
+### `TypedSlotFactStaging`
+
+```csharp
+public enum TypedSlotFactStaging
+{
+    MissingCompatibility,
+    PresentUnvalidated,
+    PresentValidated,
+    PresentQuarantined,
+    RejectedByRuntimeBridge,
+    FutureRequiredForAdmission
+}
+```
+
+`FutureRequiredForAdmission` is documentation/future seam only unless runtime explicitly selects such policy. It must not be used by compiler to enforce runtime admission.
 
 ### `IrAdmissibilityAgreement`
 
@@ -42,38 +86,62 @@ public sealed record IrAdmissibilityAgreement(
 
 ```csharp
 public sealed record RuntimeBridgeEnvelope(
-    CompilerContractView ContractView,
-    VliwCarrierImage? Carrier,
+    int ProducerCompilerContractVersion,
+    int RuntimeContractVersionObservedAtBuild,
+    CompilerTypedSlotPolicyMode RuntimePolicyModeObserved,
+    VliwCarrierEnvelope? Carrier,
     CompilerSidebandEnvelope? Sideband,
     DescriptorEnvelope? Descriptor,
     TypedSlotFactsEnvelope? TypedSlotFacts,
+    IrAdmissibilityAgreementEnvelope? StructuralAgreement,
     CompilerEvidenceEnvelope Evidence,
+    bool RequiresRuntimeLegalityA,
+    bool RequiresRuntimeLegalityB,
     CompilerCoreResultHeader Header);
 ```
+
+`RequiresRuntimeLegalityA` and `RequiresRuntimeLegalityB` must be true for executable carrier candidates. For no-emission/parser/helper-only outputs they must be represented through `RuntimeAuthorityDependency` and decision kind, not omitted silently.
 
 ### `BridgeAcceptanceReport`
 
 ```csharp
-public enum BridgeAcceptanceStatus
+public enum BridgeIngressStatus
 {
     Unknown,
-    BridgeAccepted,
-    BridgeRejected,
+    BridgeIngressAccepted,
+    BridgeIngressRejected,
     VersionRejected,
     AgreementFailure,
     SidebandRejected,
     DescriptorRejected,
     TypedSlotFactsRejected,
-    Quarantined
+    Quarantined,
+    CompatibilityAcceptedMissingFacts,
+    CompatibilityRecordedWithoutValidation
 }
 
 public sealed record BridgeAcceptanceReport(
-    BridgeAcceptanceStatus Status,
-    bool RuntimeLegalityStillRequired,
+    BridgeIngressStatus Status,
+    bool RuntimeLegalityAStillRequired,
+    bool RuntimeLegalityBStillRequired,
+    bool RuntimeCommitStillRequired,
+    bool RuntimeRetireStillRequired,
+    bool RuntimePublicationStillRequired,
     string Reason);
 ```
 
-Запрещены статусы `RuntimeLegal`, `ExecutionReady`, `Committed`, `Retired`.
+Prefer `BridgeIngressStatus` over `BridgeAcceptanceStatus`: bare `Accepted` is too easy to confuse with runtime execution readiness.
+
+Forbidden statuses:
+
+```text
+RuntimeLegal
+ExecutionReady
+CanExecute
+Committed
+Retired
+PublishedArchitecturalState
+```
 
 ## Bridge API
 
@@ -88,7 +156,19 @@ public interface ICompilerRuntimeBridge
 }
 ```
 
-Это bridge acceptance, а не runtime execution.
+Это bridge ingress compatibility, а не runtime execution.
+
+## Compatibility mode semantics
+
+If current runtime policy allows missing typed-slot facts:
+
+```text
+missing facts -> compatibility path only
+present validated facts -> stronger structural evidence
+present mismatch -> quarantine/reject depending on runtime policy
+```
+
+Missing facts must not be treated as stronger or equivalent to validated agreement. The bridge report must preserve the distinction.
 
 ## Tasks
 
@@ -101,15 +181,19 @@ public interface ICompilerRuntimeBridge
 Ввести отдельные имена:
 
 - `CompilerStructuralAdmissionDecision`;
+- `CompilerStructuralBundleAdmissionResult`;
+- `CompilerStructuralPlacementReport`;
 - `IrAdmissibilityAgreement`;
-- `RuntimeLegalityRequired`;
-- `RuntimeLegalityDecision` только в runtime-owned boundary.
+- `RuntimeLegalityARequired`;
+- `RuntimeLegalityBRequired`;
+- `RuntimeLegalityDecision` only in runtime-owned boundary.
 
 ### 3. Версионировать bridge
 
 `CompilerContractView` должен включать:
 
-- contract version;
+- producer compiler contract version;
+- observed runtime contract version;
 - typed-slot policy mode;
 - supported carrier shape;
 - supported sideband envelope version;
@@ -118,27 +202,62 @@ public interface ICompilerRuntimeBridge
 
 ### 4. Добавить quarantine path
 
-Если runtime bridge видит structural mismatch, stale version, unknown contour или invalid facts, результат должен быть `Quarantined` или `BridgeRejected`, но не silent fallback.
+Если runtime bridge видит structural mismatch, stale version, unknown contour или invalid facts, результат должен быть `Quarantined` или `BridgeIngressRejected`, но не silent fallback.
+
+### 5. Add Stage A/B ownership tests
+
+Add tests that ensure:
+
+```text
+BridgeIngressAccepted -> RuntimeLegalityAStillRequired == true
+BridgeIngressAccepted -> RuntimeLegalityBStillRequired == true
+StructurallyAdmissible -> not RuntimeLegal
+TypedSlotFacts present -> not RuntimeLegal
+TypedSlotFacts missing compatibility -> not stronger authority
+```
 
 ## Deliverables
 
 - `TypedSlotFactsEnvelope`.
+- `TypedSlotFactStaging`.
 - `IrAdmissibilityAgreement`.
+- `IrAdmissibilityAgreementEnvelope`.
 - `RuntimeBridgeEnvelope`.
-- `BridgeAcceptanceReport`.
+- `BridgeAcceptanceReport` with `BridgeIngressStatus`.
 - `ICompilerRuntimeBridge`.
-- Тесты на stale contract version.
-- Тесты на typed-slot mismatch.
+- Tests on stale contract version.
+- Tests on typed-slot mismatch.
+- Tests on Stage A/B runtime ownership.
+- Tests on missing facts compatibility being weaker than validated facts.
+
+Recommended namespace layout:
+
+```text
+HybridCPU.Compiler.Core.IR.Bridge
+HybridCPU.Compiler.Core.IR.Artifacts
+```
 
 ## Acceptance criteria
 
 Фаза завершена, если:
 
-1. typed-slot facts могут отсутствовать без изменения legacy compatibility path, если текущая политика это разрешает;
-2. typed-slot facts при наличии проверяются;
-3. mismatch дает diagnostic/quarantine;
-4. bridge acceptance не выдается за runtime legality;
-5. logs показывают, что Stage A/Stage B остаются runtime-owned.
+1. typed-slot facts могут отсутствовать без изменения legacy compatibility path, если текущая runtime policy это разрешает;
+2. missing facts are recorded as compatibility-only and weaker than validated facts;
+3. typed-slot facts при наличии проверяются;
+4. mismatch дает diagnostic/quarantine/reject;
+5. bridge ingress acceptance не выдается за runtime legality;
+6. logs показывают, что Stage A/Stage B остаются runtime-owned;
+7. compiler bridge types carry observed runtime policy values but do not own policy.
+
+Machine-checkable gates:
+
+```text
+[ ] No bridge status contains RuntimeLegal/ExecutionReady/Committed/Retired.
+[ ] BridgeIngressAccepted always reports runtime Legality A/B still required for executable candidates.
+[ ] StructurallyAdmissible cannot be assigned to RuntimeLegalityDecision.
+[ ] Missing typed-slot facts under compatibility policy do not strengthen authority.
+[ ] Runtime policy mode is observed/reference-only, not compiler-owned.
+```
 
 ## Non-goals
 
@@ -146,7 +265,10 @@ public interface ICompilerRuntimeBridge
 - Не делать compiler source of truth для legality.
 - Не добавлять runtime retire/commit в bridge.
 - Не менять contract version без отдельного migration PR.
+- Не превращать `RequiredForAdmission` future seam в selectable compiler policy.
 
 ## Риски
 
 Главный риск — назвать bridge acceptance словом `Legal`. Это сломает архитектурный смысл HybridCPU. Bridge может принять пакет как структурно пригодный для runtime рассмотрения, но только runtime решает legality и execution.
+
+Второй риск — продублировать runtime typed-slot policy в compiler and diverge. Compiler must observe/reference runtime-owned policy, not own it.
