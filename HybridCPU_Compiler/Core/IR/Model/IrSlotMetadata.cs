@@ -1,3 +1,4 @@
+using System;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
@@ -17,14 +18,17 @@ namespace HybridCPU.Compiler.Core.IR
         IrResourceClass ResourceClass,
         SlotClass RequiredSlotClass,
         IrSlotBindingKind BindingKind,
+        [property: Obsolete("Compiler-side LegalSlots are structurally allowed slots only; use StructurallyAllowedSlots.", false)]
         IrIssueSlotMask LegalSlots)
     {
+        public IrIssueSlotMask StructurallyAllowedSlots => LegalSlots;
+
         public static IrTypedSlotAdmissionDescriptor FromExecutionProfile(IrOpcodeExecutionProfile profile) =>
             new(
                 profile.ResourceClass,
                 profile.DerivedSlotClass,
                 profile.DerivedBindingKind,
-                profile.LegalSlots);
+                profile.StructurallyAllowedSlots);
     }
 
     /// <summary>

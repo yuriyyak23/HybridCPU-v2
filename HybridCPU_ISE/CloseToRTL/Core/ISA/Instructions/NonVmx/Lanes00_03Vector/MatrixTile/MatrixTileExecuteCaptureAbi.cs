@@ -330,7 +330,7 @@ public static class MatrixTileExecuteCaptureAbi
                 "MTILE_LOAD execution capture requires preserved Phase03 memory validation.");
         }
 
-        if (!memoryValidation.Value.IsValid)
+        if (!memoryValidation.Value.IsMemoryShapeAbiAccepted)
         {
             return MemoryFault(
                 mnemonic,
@@ -450,7 +450,7 @@ public static class MatrixTileExecuteCaptureAbi
                 "MTILE_STORE execution capture requires preserved Phase03 memory validation.");
         }
 
-        if (!memoryValidation.Value.IsValid)
+        if (!memoryValidation.Value.IsMemoryShapeAbiAccepted)
         {
             return MemoryFault(
                 mnemonic,
@@ -517,7 +517,7 @@ public static class MatrixTileExecuteCaptureAbi
                 "MTILE_MACC execution capture requires preserved Phase04 semantic validation.");
         }
 
-        if (!semanticValidation.Value.IsValid || !maccContract.HasValue)
+        if (!semanticValidation.Value.IsSemanticAbiAccepted || !maccContract.HasValue)
         {
             return SemanticFault(
                 mnemonic,
@@ -632,7 +632,7 @@ public static class MatrixTileExecuteCaptureAbi
                 "MTRANSPOSE execution capture requires preserved Phase04 semantic validation.");
         }
 
-        if (!semanticValidation.Value.IsValid || !transposeContract.HasValue)
+        if (!semanticValidation.Value.IsSemanticAbiAccepted || !transposeContract.HasValue)
         {
             return SemanticFault(
                 mnemonic,

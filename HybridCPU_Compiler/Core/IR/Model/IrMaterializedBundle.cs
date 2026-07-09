@@ -33,7 +33,7 @@ namespace HybridCPU.Compiler.Core.IR
 
             foreach (IrMaterializedBundleSlot slot in slots)
             {
-                if (!slot.IsLegalPlacement)
+                if (!slot.IsStructuralPlacement)
                 {
                     throw new ArgumentException($"Instruction {slot.Instruction?.Index} was placed into illegal slot {slot.SlotIndex}.", nameof(slots));
                 }

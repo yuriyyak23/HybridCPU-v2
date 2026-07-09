@@ -410,7 +410,7 @@ public sealed class CompilerMatrixTilePositiveEmissionTests
                 metadata.MatrixTileNumericPolicy,
                 metadata.MatrixTileLayoutPolicy);
         Assert.Equal(MatrixTileIrProjectionFaultKind.None, projection.FaultKind);
-        Assert.True(projection.SemanticValidation?.IsValid ?? true);
+        Assert.True(projection.SemanticValidation?.IsSemanticAbiAccepted ?? true);
         Assert.True(MatrixTileIrProjectionAndMaterializer.TryMaterialize(
             projection,
             out MatrixTileMaterializedInstruction materialized,

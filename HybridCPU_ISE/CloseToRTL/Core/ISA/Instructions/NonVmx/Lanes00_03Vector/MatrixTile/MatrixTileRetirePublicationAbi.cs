@@ -224,7 +224,7 @@ public static class MatrixTileRetirePublicationAbi
                     capture,
                     MatrixTileExecutionCaptureKind.TileLoad);
                 if (!capture.MemoryValidation.HasValue ||
-                    !capture.MemoryValidation.Value.IsValid)
+                    !capture.MemoryValidation.Value.IsMemoryShapeAbiAccepted)
                 {
                     throw Validation(
                         "MTILE_LOAD retire requires preserved valid memory-shape validation.");
@@ -242,7 +242,7 @@ public static class MatrixTileRetirePublicationAbi
                     capture,
                     MatrixTileExecutionCaptureKind.Macc);
                 if (!capture.SemanticValidation.HasValue ||
-                    !capture.SemanticValidation.Value.IsValid ||
+                    !capture.SemanticValidation.Value.IsSemanticAbiAccepted ||
                     !capture.AccumulatorSnapshot.IsCanonicalPacked)
                 {
                     throw Validation(
@@ -256,7 +256,7 @@ public static class MatrixTileRetirePublicationAbi
                     capture,
                     MatrixTileExecutionCaptureKind.Transpose);
                 if (!capture.SemanticValidation.HasValue ||
-                    !capture.SemanticValidation.Value.IsValid ||
+                    !capture.SemanticValidation.Value.IsSemanticAbiAccepted ||
                     !capture.SourceSnapshot.IsCanonicalPacked)
                 {
                     throw Validation(
@@ -330,7 +330,7 @@ public static class MatrixTileRetirePublicationAbi
             capture.SourceSnapshot.TileId != capture.SourceTileId ||
             !capture.SourceSnapshot.Descriptor.Equals(capture.TileDescriptor) ||
             !capture.MemoryValidation.HasValue ||
-            !capture.MemoryValidation.Value.IsValid)
+            !capture.MemoryValidation.Value.IsMemoryShapeAbiAccepted)
         {
             throw Validation(
                 "MTILE_STORE retire rejected a malformed staged store capture.");
@@ -660,7 +660,7 @@ public static class MatrixTileRetirePublicationAbi
         {
             MatrixTileMemoryShapeValidationResult validation =
                 capture.MemoryValidation.Value;
-            AddByte(ref hash, validation.IsValid ? (byte)1 : (byte)0);
+            AddByte(ref hash, validation.IsMemoryShapeAbiAccepted ? (byte)1 : (byte)0);
             AddByte(ref hash, (byte)validation.FaultKind);
             AddUInt16(ref hash, validation.FaultPoint.Row);
             AddUInt16(ref hash, validation.FaultPoint.Column);
@@ -682,7 +682,7 @@ public static class MatrixTileRetirePublicationAbi
         {
             MatrixTileSemanticValidationResult validation =
                 capture.SemanticValidation.Value;
-            AddByte(ref hash, validation.IsValid ? (byte)1 : (byte)0);
+            AddByte(ref hash, validation.IsSemanticAbiAccepted ? (byte)1 : (byte)0);
             AddByte(ref hash, (byte)validation.FaultKind);
             AddDescriptor(ref hash, validation.ResultDescriptor);
             AddUInt16(ref hash, validation.ResultElementSizeBytes);

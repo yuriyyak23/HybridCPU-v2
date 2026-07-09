@@ -232,7 +232,7 @@ public sealed class DmaStreamComputeAllOrNonePhase08Tests
                 descriptorBytes,
                 DmaStreamComputeTestDescriptorFactory.CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.ReservedFieldFault, result.Fault);
         Assert.Contains("all-or-none", result.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -416,7 +416,7 @@ public sealed class DmaStreamComputeAllOrNonePhase08Tests
             DmaStreamComputeDescriptorParser.ReadDsc2StructuralOwnerBinding(
                 descriptorBytes,
                 reference);
-        DmaStreamComputeOwnerGuardDecision guardDecision = structuralRead.IsValid
+        DmaStreamComputeOwnerGuardDecision guardDecision = structuralRead.IsStructuralDescriptorReadAccepted
             ? CreateDsc2GuardDecision(descriptorBytes, reference)
             : default;
         return DmaStreamComputeDescriptorParser.ParseDsc2ParserOnly(
@@ -441,7 +441,7 @@ public sealed class DmaStreamComputeAllOrNonePhase08Tests
             DmaStreamComputeDescriptorParser.ReadDsc2StructuralOwnerBinding(
                 descriptorBytes,
                 descriptorReference);
-        Assert.True(structuralRead.IsValid, structuralRead.Message);
+        Assert.True(structuralRead.IsStructuralDescriptorReadAccepted, structuralRead.Message);
 
         DmaStreamComputeOwnerBinding ownerBinding =
             structuralRead.RequireOwnerBindingForGuard();

@@ -122,8 +122,13 @@ public readonly record struct CompilerVmxPreflightResult(
     CompilerVmxRequestedFeature RejectedFeature,
     string Diagnostic)
 {
-    public static CompilerVmxPreflightResult Success { get; } =
+    public static CompilerVmxPreflightResult ProjectionPreflightPassed { get; } =
         new(true, CompilerVmxPreflightRejectionKind.None, CompilerVmxRequestedFeature.None, string.Empty);
+
+    [Obsolete(
+        "Compiler VMX preflight success is projection/preflight evidence only; use ProjectionPreflightPassed.",
+        false)]
+    public static CompilerVmxPreflightResult Success => ProjectionPreflightPassed;
 }
 
 public static class CompilerVmxAuthority
@@ -268,7 +273,7 @@ public static class CompilerVmxAuthority
             }
         }
 
-        return CompilerVmxPreflightResult.Success;
+        return CompilerVmxPreflightResult.ProjectionPreflightPassed;
     }
 
     private static CompilerVmxOpcodeAuthority CreateRuntimeOpcodeAuthority(

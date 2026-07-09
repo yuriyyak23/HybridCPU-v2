@@ -153,10 +153,10 @@ public static class MatrixTilePolicyBoundIdentityAbi
         {
             if (!capture.NumericPolicy.HasValue ||
                 !capture.LayoutPolicy.HasValue ||
-                !MatrixTileNumericPolicyAbi.Validate(capture.NumericPolicy).IsValid ||
+                !MatrixTileNumericPolicyAbi.Validate(capture.NumericPolicy).IsRuntimeOwnedNumericPolicyAccepted ||
                 !MatrixTileLayoutPolicyAbi.Validate(
                     capture.LayoutPolicy,
-                    MatrixTileProjectedOperationKind.Macc).IsValid ||
+                    MatrixTileProjectedOperationKind.Macc).IsRuntimeOwnedLayoutPolicyAccepted ||
                 capture.NumericPolicy.Value.AbiVersion != identity.NumericPolicyAbiVersion ||
                 capture.NumericPolicy.Value.Fingerprint != identity.NumericPolicyFingerprint ||
                 capture.LayoutPolicy.Value.AbiVersion != identity.LayoutPolicyAbiVersion ||
@@ -171,7 +171,7 @@ public static class MatrixTilePolicyBoundIdentityAbi
                 !capture.LayoutPolicy.HasValue ||
                 !MatrixTileLayoutPolicyAbi.Validate(
                     capture.LayoutPolicy,
-                    MatrixTileProjectedOperationKind.Transpose).IsValid ||
+                    MatrixTileProjectedOperationKind.Transpose).IsRuntimeOwnedLayoutPolicyAccepted ||
                 capture.LayoutPolicy.Value.AbiVersion != identity.LayoutPolicyAbiVersion ||
                 capture.LayoutPolicy.Value.Fingerprint != identity.LayoutPolicyFingerprint)
             {

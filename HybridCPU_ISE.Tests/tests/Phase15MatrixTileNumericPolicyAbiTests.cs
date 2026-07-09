@@ -46,7 +46,7 @@ public sealed class MatrixTileNumericPolicyAbiTests
             MatrixTileNumericPolicyValidationResult validation =
                 MatrixTileNumericPolicyAbi.Validate(first);
 
-            Assert.True(validation.IsValid, row.ProfileId.ToString());
+            Assert.True(validation.IsRuntimeOwnedNumericPolicyAccepted, row.ProfileId.ToString());
             Assert.Equal(row, validation.Profile);
             Assert.NotEqual(0UL, first.Fingerprint);
             Assert.Equal(first, second);

@@ -319,7 +319,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 : OperationKind == MatrixTileProjectedOperationKind.Store;
             if (!matchesOperation ||
                 !MemoryValidation.HasValue ||
-                !MemoryValidation.Value.IsValid)
+                !MemoryValidation.Value.IsMemoryShapeAbiAccepted)
             {
                 return Array.Empty<(ulong Address, ulong Length)>();
             }

@@ -15,6 +15,11 @@ namespace HybridCPU.Compiler.Core.IR
         /// <summary>
         /// Gets a value indicating whether the candidate group has a valid physical slot assignment.
         /// </summary>
-        public bool HasLegalAssignment => Analysis.HasLegalAssignment;
+        public bool HasStructuralPlacement => Analysis.HasStructuralPlacement;
+
+        [Obsolete(
+            "Compiler-side HasLegalAssignment is structural placement evidence only; use HasStructuralPlacement.",
+            false)]
+        public bool HasLegalAssignment => HasStructuralPlacement;
     }
 }

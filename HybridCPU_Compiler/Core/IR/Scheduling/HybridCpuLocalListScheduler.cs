@@ -118,7 +118,7 @@ namespace HybridCPU.Compiler.Core.IR
                 }
 
                 IrCandidateBundleAnalysis legalityAnalysis = _legalityChecker.AnalyzeCandidateBundle(cycleInstructions);
-                if (!legalityAnalysis.IsLegal)
+                if (!legalityAnalysis.IsStructurallyAdmissible)
                 {
                     throw new InvalidOperationException($"Scheduler formed an illegal cycle group for block {block.Id} at cycle {currentCycle}.");
                 }
@@ -240,7 +240,7 @@ namespace HybridCPU.Compiler.Core.IR
             }
 
             candidateInstructions.Add(candidate);
-            return _legalityChecker.AnalyzeCandidateBundle(candidateInstructions).IsLegal;
+            return _legalityChecker.AnalyzeCandidateBundle(candidateInstructions).IsStructurallyAdmissible;
         }
 
     private SchedulerProgramContext CreateProgramContext(IrProgram program)

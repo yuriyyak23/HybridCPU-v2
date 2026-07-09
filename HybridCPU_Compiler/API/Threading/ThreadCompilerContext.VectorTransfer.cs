@@ -1,4 +1,5 @@
 using HybridCPU.Compiler.Core.IR;
+using HybridCPU.Compiler.Core.IR.Lowering;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
@@ -7,36 +8,70 @@ namespace HybridCPU.Compiler.Core.Threading
 {
     public partial class HybridCpuThreadCompilerContext
     {
+        [Obsolete(
+            "This compatibility facade returns a raw VectorTransfer plan artifact. Use CompileVloadWithDecision for CompilerLoweringDecision no-authority metadata.",
+            false)]
         public CompilerVectorTransferEmissionPlan CompileVload(
             CompilerVectorTransferMemoryAddressAbi destination,
             CompilerVectorTransferMemoryAddressAbi source,
             CompilerVectorTransferShapeAbi shape,
             StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
         {
-            CompilerVectorTransferEmissionPlan plan =
-                CompilerVectorTransferEmissionLowerer.Lower(
+            return CompileVloadWithDecision(
+                    destination,
+                    source,
+                    shape,
+                    stealabilityPolicy)
+                .Plan;
+        }
+
+        public CompilerPositiveEmissionResult<CompilerVectorTransferEmissionPlan> CompileVloadWithDecision(
+            CompilerVectorTransferMemoryAddressAbi destination,
+            CompilerVectorTransferMemoryAddressAbi source,
+            CompilerVectorTransferShapeAbi shape,
+            StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
+        {
+            CompilerPositiveEmissionResult<CompilerVectorTransferEmissionPlan> result =
+                CompilerVectorTransferEmissionLowerer.LowerWithDecision(
                     CompilerVectorTransferEmissionRequest.Vload(
                         destination,
                         source,
                         shape));
-            AppendVectorTransferInstruction(plan, stealabilityPolicy);
-            return plan;
+            AppendVectorTransferInstruction(result.Plan, stealabilityPolicy);
+            return result;
         }
 
+        [Obsolete(
+            "This compatibility facade returns a raw VectorTransfer plan artifact. Use CompileVstoreWithDecision for CompilerLoweringDecision no-authority metadata.",
+            false)]
         public CompilerVectorTransferEmissionPlan CompileVstore(
             CompilerVectorTransferMemoryAddressAbi source,
             CompilerVectorTransferMemoryAddressAbi destination,
             CompilerVectorTransferShapeAbi shape,
             StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
         {
-            CompilerVectorTransferEmissionPlan plan =
-                CompilerVectorTransferEmissionLowerer.Lower(
+            return CompileVstoreWithDecision(
+                    source,
+                    destination,
+                    shape,
+                    stealabilityPolicy)
+                .Plan;
+        }
+
+        public CompilerPositiveEmissionResult<CompilerVectorTransferEmissionPlan> CompileVstoreWithDecision(
+            CompilerVectorTransferMemoryAddressAbi source,
+            CompilerVectorTransferMemoryAddressAbi destination,
+            CompilerVectorTransferShapeAbi shape,
+            StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
+        {
+            CompilerPositiveEmissionResult<CompilerVectorTransferEmissionPlan> result =
+                CompilerVectorTransferEmissionLowerer.LowerWithDecision(
                     CompilerVectorTransferEmissionRequest.Vstore(
                         source,
                         destination,
                         shape));
-            AppendVectorTransferInstruction(plan, stealabilityPolicy);
-            return plan;
+            AppendVectorTransferInstruction(result.Plan, stealabilityPolicy);
+            return result;
         }
 
         private void AppendVectorTransferInstruction(

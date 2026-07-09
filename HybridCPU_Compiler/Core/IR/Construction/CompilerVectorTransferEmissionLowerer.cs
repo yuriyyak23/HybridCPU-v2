@@ -1,4 +1,7 @@
 using System;
+using HybridCPU.Compiler.Core.IR.Contours;
+using HybridCPU.Compiler.Core.IR.Intent;
+using HybridCPU.Compiler.Core.IR.Lowering;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Arch;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
@@ -7,29 +10,105 @@ namespace HybridCPU.Compiler.Core.IR;
 
 internal static class CompilerVectorTransferEmissionLowerer
 {
+    private const string RecoverySourceApi =
+        "CompilerVectorTransferEmissionLowerer.TryRecoverFromInstruction";
+
+    private const string PositiveEmissionSourceApi =
+        "CompilerVectorTransferEmissionLowerer.Lower";
+
+    [Obsolete(
+        "Lower returns a raw VectorTransfer plan artifact. Use LowerWithDecision so positive helper carrier emission carries CompilerLoweringDecision no-authority metadata.",
+        false)]
     public static CompilerVectorTransferEmissionPlan Lower(CompilerVectorTransferEmissionRequest request)
+    {
+        return LowerWithDecision(request).Plan;
+    }
+
+    public static CompilerPositiveEmissionResult<CompilerVectorTransferEmissionPlan> LowerWithDecision(
+        CompilerVectorTransferEmissionRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
         ValidateRequest(request);
 
         VLIW_Instruction instruction = BuildInstruction(request);
-        return CreatePlan(request, instruction);
+        CompilerVectorTransferEmissionPlan plan = CreatePlan(request, instruction);
+        string reason =
+            $"{request.Mnemonic} VectorTransfer helper carrier was produced as helper/transport ABI only; runtime legality, execution, publication, commit and retire remain runtime-owned.";
+        return new CompilerPositiveEmissionResult<CompilerVectorTransferEmissionPlan>(
+            CreatePositiveEmissionDecision(request, reason),
+            plan,
+            PositiveEmissionSourceApi,
+            reason);
     }
 
+    public static CompilerHelperRecoveryResult<CompilerVectorTransferEmissionPlan> RecoverFromInstruction(
+        InstructionsEnum opcode,
+        in VLIW_Instruction instruction)
+    {
+        if (!CompilerVectorTransferPositiveEmissionAbiContract.IsVectorTransferPositiveOpcode(opcode))
+        {
+            string reason = $"{opcode} is not a VectorTransfer helper/transport opcode.";
+            return CompilerHelperRecoveryResult<CompilerVectorTransferEmissionPlan>.NotRecognized(
+                CreateRecoveryDecision(
+                    sourceValue: false,
+                    CompilerHelperRecoveryStatus.NotRecognized,
+                    reason),
+                RecoverySourceApi,
+                reason);
+        }
+
+        CompilerVectorTransferEmissionRequest request = RecoverRequest(opcode, in instruction);
+        CompilerVectorTransferEmissionPlan plan = CreatePlan(request, instruction);
+        string recoveredReason =
+            $"{opcode} VectorTransfer helper/transport ABI was recognized; recovery is helper evidence only.";
+        return CompilerHelperRecoveryResult<CompilerVectorTransferEmissionPlan>.Recovered(
+            plan,
+            CreateRecoveryDecision(
+                sourceValue: true,
+                CompilerHelperRecoveryStatus.HelperAbiRecovered,
+                recoveredReason),
+            RecoverySourceApi,
+            recoveredReason);
+    }
+
+    [Obsolete(
+        "TryRecoverFromInstruction is a legacy helper/parser bool surface. Use RecoverFromInstruction for typed LegacyApiTranslation and no-authority decision metadata.",
+        false)]
     public static bool TryRecoverFromInstruction(
         InstructionsEnum opcode,
         in VLIW_Instruction instruction,
         out CompilerVectorTransferEmissionPlan? plan)
     {
-        plan = null;
-        if (!CompilerVectorTransferPositiveEmissionAbiContract.IsVectorTransferPositiveOpcode(opcode))
-        {
-            return false;
-        }
+        CompilerHelperRecoveryResult<CompilerVectorTransferEmissionPlan> recovery =
+            RecoverFromInstruction(opcode, in instruction);
+        plan = recovery.Plan;
+        return recovery.Status == CompilerHelperRecoveryStatus.HelperAbiRecovered;
+    }
 
-        CompilerVectorTransferEmissionRequest request = RecoverRequest(opcode, in instruction);
-        plan = CreatePlan(request, instruction);
-        return true;
+    private static CompilerLoweringDecision CreateRecoveryDecision(
+        bool sourceValue,
+        CompilerHelperRecoveryStatus status,
+        string reason)
+    {
+        return CompilerLoweringDecision.FromLegacyHelperRecoveryBool(
+            sourceValue,
+            status,
+            RecoverySourceApi,
+            SemanticIntentKind.VectorStream,
+            ExecutionContourKind.StreamEngineVector,
+            reason);
+    }
+
+    private static CompilerLoweringDecision CreatePositiveEmissionDecision(
+        CompilerVectorTransferEmissionRequest request,
+        string reason)
+    {
+        return CompilerLoweringDecision.FromPositiveHelperEmission(
+            PositiveEmissionSourceApi,
+            SemanticIntentKind.VectorStream,
+            ExecutionContourKind.StreamEngineVector,
+            $"positive-helper:{request.Mnemonic}:{CompilerVectorTransferPositiveEmissionAbiContract.NoFallbackDecision}",
+            reason);
     }
 
     private static CompilerVectorTransferEmissionPlan CreatePlan(

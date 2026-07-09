@@ -174,32 +174,32 @@ namespace HybridCPU.Compiler.Core.IR
         {
             ArgumentNullException.ThrowIfNull(programSchedule);
 
-            var programLegalSlots = new IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>[programSchedule.BlockSchedules.Count];
+            var programStructurallyAllowedSlots = new IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>[programSchedule.BlockSchedules.Count];
             var legalityAnalyses = new IrCandidateBundleAnalysis[programSchedule.BlockSchedules.Count][];
             var localSearchResults = new IrBundlePlacementSearchResult[programSchedule.BlockSchedules.Count][];
             HybridCpuBackendPlacementTieBreakContext tieBreakContext = CreatePlacementTieBreakContext();
             for (int blockIndex = 0; blockIndex < programSchedule.BlockSchedules.Count; blockIndex++)
             {
                 IrBasicBlockSchedule blockSchedule = programSchedule.BlockSchedules[blockIndex];
-                var blockLegalSlots = new IReadOnlyList<IrIssueSlotMask>[blockSchedule.CycleGroups.Count];
+                var blockStructurallyAllowedSlots = new IReadOnlyList<IrIssueSlotMask>[blockSchedule.CycleGroups.Count];
                 var blockLegalityAnalyses = new IrCandidateBundleAnalysis[blockSchedule.CycleGroups.Count];
                 var blockLocalSearchResults = new IrBundlePlacementSearchResult[blockSchedule.CycleGroups.Count];
                 for (int bundleIndex = 0; bundleIndex < blockSchedule.CycleGroups.Count; bundleIndex++)
                 {
                     IrScheduleCycleGroup cycleGroup = blockSchedule.CycleGroups[bundleIndex];
                     blockLegalityAnalyses[bundleIndex] = AnalyzeLegality(blockSchedule, cycleGroup);
-                    IReadOnlyList<IrIssueSlotMask> bundleLegalSlots = GetLegalSlots(cycleGroup.Instructions);
-                    blockLegalSlots[bundleIndex] = bundleLegalSlots;
-                    blockLocalSearchResults[bundleIndex] = HybridCpuSlotModel.SearchAssignments(bundleLegalSlots, previousInstructionSlots: null, tieBreakContext);
+                    IReadOnlyList<IrIssueSlotMask> bundleStructurallyAllowedSlots = GetStructurallyAllowedSlotMasks(cycleGroup.Instructions);
+                    blockStructurallyAllowedSlots[bundleIndex] = bundleStructurallyAllowedSlots;
+                    blockLocalSearchResults[bundleIndex] = HybridCpuSlotModel.SearchStructuralAssignments(bundleStructurallyAllowedSlots, previousInstructionSlots: null, tieBreakContext);
                 }
 
-                programLegalSlots[blockIndex] = blockLegalSlots;
+                programStructurallyAllowedSlots[blockIndex] = blockStructurallyAllowedSlots;
                 legalityAnalyses[blockIndex] = blockLegalityAnalyses;
                 localSearchResults[blockIndex] = blockLocalSearchResults;
             }
 
-            IrProgramPlacementSearchResult programSearch = HybridCpuSlotModel.SearchProgramAssignments(programLegalSlots, previousInstructionSlots: null, tieBreakContext);
-            if (!programSearch.HasLegalAssignment || programSearch.BestPlacement is null)
+            IrProgramPlacementSearchResult programSearch = HybridCpuSlotModel.SearchProgramStructuralAssignments(programStructurallyAllowedSlots, previousInstructionSlots: null, tieBreakContext);
+            if (!programSearch.HasStructuralPlacement || programSearch.BestPlacement is null)
             {
                 programResult = null;
                 return false;
@@ -243,7 +243,7 @@ namespace HybridCPU.Compiler.Core.IR
             int remainingBundleCount = blockSchedule.CycleGroups.Count - cycleGroupIndex;
             var remainingCycleGroups = new IrScheduleCycleGroup[remainingBundleCount];
             var legalityAnalyses = new IrCandidateBundleAnalysis[remainingBundleCount];
-            var bundleLegalSlots = new IReadOnlyList<IrIssueSlotMask>[remainingBundleCount];
+            var bundleStructurallyAllowedSlots = new IReadOnlyList<IrIssueSlotMask>[remainingBundleCount];
             var localSearchResults = new IrBundlePlacementSearchResult[remainingBundleCount];
             HybridCpuBackendPlacementTieBreakContext tieBreakContext = CreatePlacementTieBreakContext();
             for (int remainingIndex = 0; remainingIndex < remainingBundleCount; remainingIndex++)
@@ -251,14 +251,14 @@ namespace HybridCPU.Compiler.Core.IR
                 IrScheduleCycleGroup currentCycleGroup = blockSchedule.CycleGroups[cycleGroupIndex + remainingIndex];
                 remainingCycleGroups[remainingIndex] = currentCycleGroup;
                 legalityAnalyses[remainingIndex] = AnalyzeLegality(blockSchedule, currentCycleGroup);
-                IReadOnlyList<IrIssueSlotMask> currentLegalSlots = GetLegalSlots(currentCycleGroup.Instructions);
-                bundleLegalSlots[remainingIndex] = currentLegalSlots;
-                IrBundlePlacementSearchResult localSearch = HybridCpuSlotModel.SearchAssignments(currentLegalSlots, previousInstructionSlots: null, tieBreakContext);
+                IReadOnlyList<IrIssueSlotMask> currentStructurallyAllowedSlots = GetStructurallyAllowedSlotMasks(currentCycleGroup.Instructions);
+                bundleStructurallyAllowedSlots[remainingIndex] = currentStructurallyAllowedSlots;
+                IrBundlePlacementSearchResult localSearch = HybridCpuSlotModel.SearchStructuralAssignments(currentStructurallyAllowedSlots, previousInstructionSlots: null, tieBreakContext);
                 localSearchResults[remainingIndex] = localSearch;
             }
 
-            IrGlobalBasicBlockPlacementSearchResult blockSearch = HybridCpuSlotModel.SearchGlobalBasicBlockAssignments(bundleLegalSlots, previousInstructionSlots, tieBreakContext);
-            if (!blockSearch.HasLegalAssignment || blockSearch.BestPlacement is null)
+            IrGlobalBasicBlockPlacementSearchResult blockSearch = HybridCpuSlotModel.SearchGlobalBasicBlockStructuralAssignments(bundleStructurallyAllowedSlots, previousInstructionSlots, tieBreakContext);
+            if (!blockSearch.HasStructuralPlacement || blockSearch.BestPlacement is null)
             {
                 firstBundle = null;
                 return false;
@@ -295,25 +295,25 @@ namespace HybridCPU.Compiler.Core.IR
             _ = AnalyzeLegality(blockSchedule, secondCycleGroup);
             _ = AnalyzeLegality(blockSchedule, thirdCycleGroup);
 
-            IReadOnlyList<IrIssueSlotMask> firstLegalSlots = GetLegalSlots(firstCycleGroup.Instructions);
-            IReadOnlyList<IrIssueSlotMask> secondLegalSlots = GetLegalSlots(secondCycleGroup.Instructions);
-            IReadOnlyList<IrIssueSlotMask> thirdLegalSlots = GetLegalSlots(thirdCycleGroup.Instructions);
+            IReadOnlyList<IrIssueSlotMask> firstStructurallyAllowedSlots = GetStructurallyAllowedSlotMasks(firstCycleGroup.Instructions);
+            IReadOnlyList<IrIssueSlotMask> secondStructurallyAllowedSlots = GetStructurallyAllowedSlotMasks(secondCycleGroup.Instructions);
+            IReadOnlyList<IrIssueSlotMask> thirdStructurallyAllowedSlots = GetStructurallyAllowedSlotMasks(thirdCycleGroup.Instructions);
             HybridCpuBackendPlacementTieBreakContext tieBreakContext = CreatePlacementTieBreakContext();
-            IrAdjacentBundleTripletPlacementSearchResult tripletSearch = HybridCpuSlotModel.SearchAdjacentBundleTripletAssignments(
-                firstLegalSlots,
-                secondLegalSlots,
-                thirdLegalSlots,
+            IrAdjacentBundleTripletPlacementSearchResult tripletSearch = HybridCpuSlotModel.SearchAdjacentBundleTripletStructuralAssignments(
+                firstStructurallyAllowedSlots,
+                secondStructurallyAllowedSlots,
+                thirdStructurallyAllowedSlots,
                 previousInstructionSlots,
                 tieBreakContext);
 
-            if (!tripletSearch.HasLegalAssignment || tripletSearch.BestPlacementTriplet is null)
+            if (!tripletSearch.HasStructuralPlacement || tripletSearch.BestPlacementTriplet is null)
             {
                 firstBundle = null;
                 return false;
             }
 
             IrAdjacentBundleTripletPlacementCandidate bestPlacementTriplet = tripletSearch.BestPlacementTriplet;
-            IrBundlePlacementSearchResult firstBundleSearch = HybridCpuSlotModel.SearchAssignments(firstLegalSlots, previousInstructionSlots, tieBreakContext);
+            IrBundlePlacementSearchResult firstBundleSearch = HybridCpuSlotModel.SearchStructuralAssignments(firstStructurallyAllowedSlots, previousInstructionSlots, tieBreakContext);
             firstBundle = MaterializeBundle(
                 firstCycleGroup,
                 firstLegalityAnalysis,
@@ -341,16 +341,16 @@ namespace HybridCPU.Compiler.Core.IR
 
             IrCandidateBundleAnalysis firstLegalityAnalysis = AnalyzeLegality(blockSchedule, firstCycleGroup);
             IrCandidateBundleAnalysis secondLegalityAnalysis = AnalyzeLegality(blockSchedule, secondCycleGroup);
-            IReadOnlyList<IrIssueSlotMask> firstLegalSlots = GetLegalSlots(firstCycleGroup.Instructions);
-            IReadOnlyList<IrIssueSlotMask> secondLegalSlots = GetLegalSlots(secondCycleGroup.Instructions);
+            IReadOnlyList<IrIssueSlotMask> firstStructurallyAllowedSlots = GetStructurallyAllowedSlotMasks(firstCycleGroup.Instructions);
+            IReadOnlyList<IrIssueSlotMask> secondStructurallyAllowedSlots = GetStructurallyAllowedSlotMasks(secondCycleGroup.Instructions);
             HybridCpuBackendPlacementTieBreakContext tieBreakContext = CreatePlacementTieBreakContext();
-            IrAdjacentBundlePlacementSearchResult pairSearch = HybridCpuSlotModel.SearchAdjacentBundleAssignments(
-                firstLegalSlots,
-                secondLegalSlots,
+            IrAdjacentBundlePlacementSearchResult pairSearch = HybridCpuSlotModel.SearchAdjacentBundleStructuralAssignments(
+                firstStructurallyAllowedSlots,
+                secondStructurallyAllowedSlots,
                 previousInstructionSlots,
                 tieBreakContext);
 
-            if (!pairSearch.HasLegalAssignment || pairSearch.BestPlacementPair is null)
+            if (!pairSearch.HasStructuralPlacement || pairSearch.BestPlacementPair is null)
             {
                 firstBundle = null;
                 secondBundle = null;
@@ -358,8 +358,8 @@ namespace HybridCPU.Compiler.Core.IR
             }
 
             IrAdjacentBundlePlacementCandidate bestPlacementPair = pairSearch.BestPlacementPair;
-            IrBundlePlacementSearchResult firstBundleSearch = HybridCpuSlotModel.SearchAssignments(firstLegalSlots, previousInstructionSlots, tieBreakContext);
-            IrBundlePlacementSearchResult secondBundleSearch = HybridCpuSlotModel.SearchAssignments(secondLegalSlots, bestPlacementPair.FirstInstructionSlots, tieBreakContext);
+            IrBundlePlacementSearchResult firstBundleSearch = HybridCpuSlotModel.SearchStructuralAssignments(firstStructurallyAllowedSlots, previousInstructionSlots, tieBreakContext);
+            IrBundlePlacementSearchResult secondBundleSearch = HybridCpuSlotModel.SearchStructuralAssignments(secondStructurallyAllowedSlots, bestPlacementPair.FirstInstructionSlots, tieBreakContext);
 
             firstBundle = MaterializeBundle(
                 firstCycleGroup,
@@ -412,8 +412,8 @@ namespace HybridCPU.Compiler.Core.IR
                 // Binding failed — fall through to legacy exhaustive search
             }
 
-            IrBundlePlacementSearchResult searchResult = HybridCpuSlotModel.SearchAssignments(GetLegalSlots(cycleGroup.Instructions), previousInstructionSlots, CreatePlacementTieBreakContext());
-            if (!searchResult.HasLegalAssignment)
+            IrBundlePlacementSearchResult searchResult = HybridCpuSlotModel.SearchStructuralAssignments(GetStructurallyAllowedSlotMasks(cycleGroup.Instructions), previousInstructionSlots, CreatePlacementTieBreakContext());
+            if (!searchResult.HasStructuralPlacement)
             {
                 throw new InvalidOperationException($"Cannot materialize physical slots for block {blockSchedule.BlockId} at cycle {cycleGroup.Cycle} because the candidate group has no legal slot assignment.");
             }
@@ -424,7 +424,7 @@ namespace HybridCPU.Compiler.Core.IR
         private IrCandidateBundleAnalysis AnalyzeLegality(IrBasicBlockSchedule blockSchedule, IrScheduleCycleGroup cycleGroup)
         {
             IrCandidateBundleAnalysis legalityAnalysis = _legalityChecker.AnalyzeCandidateBundle(cycleGroup.Instructions);
-            if (!legalityAnalysis.IsLegal)
+            if (!legalityAnalysis.IsStructurallyAdmissible)
             {
                 throw new InvalidOperationException($"Cannot materialize an illegal cycle group for block {blockSchedule.BlockId} at cycle {cycleGroup.Cycle}.");
             }
@@ -472,7 +472,7 @@ namespace HybridCPU.Compiler.Core.IR
                     assignedSlot,
                     instruction,
                     orderInCycle,
-                    instruction.Annotation.LegalSlots);
+                    instruction.Annotation.StructurallyAllowedSlots);
             }
 
             return new IrMaterializedBundle(cycleGroup.Cycle, cycleGroup, legalityAnalysis, slotAssignment, slots);
@@ -528,7 +528,7 @@ namespace HybridCPU.Compiler.Core.IR
                     assignedSlot,
                     instruction,
                     orderInCycle,
-                    instruction.Annotation.LegalSlots,
+                    instruction.Annotation.StructurallyAllowedSlots,
                     EmptyReason: null,
                     BindingKind: bindingResult.BindingKinds[orderInCycle],
                     AssignedClass: instruction.Annotation.RequiredSlotClass);
@@ -537,15 +537,15 @@ namespace HybridCPU.Compiler.Core.IR
             return new IrMaterializedBundle(cycleGroup.Cycle, cycleGroup, legalityAnalysis, slotAssignment, slots);
         }
 
-        private static IReadOnlyList<IrIssueSlotMask> GetLegalSlots(IReadOnlyList<IrInstruction> instructions)
+        private static IReadOnlyList<IrIssueSlotMask> GetStructurallyAllowedSlotMasks(IReadOnlyList<IrInstruction> instructions)
         {
-            var legalSlots = new List<IrIssueSlotMask>(instructions.Count);
+            var structurallyAllowedSlots = new List<IrIssueSlotMask>(instructions.Count);
             foreach (IrInstruction instruction in instructions)
             {
-                legalSlots.Add(instruction.Annotation.LegalSlots);
+                structurallyAllowedSlots.Add(instruction.Annotation.StructurallyAllowedSlots);
             }
 
-            return legalSlots;
+            return structurallyAllowedSlots;
         }
 
         private HybridCpuBackendPlacementTieBreakContext CreatePlacementTieBreakContext()

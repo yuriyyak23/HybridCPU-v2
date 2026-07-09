@@ -1,4 +1,5 @@
 using HybridCPU.Compiler.Core.IR;
+using HybridCPU.Compiler.Core.IR.Lowering;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
@@ -7,38 +8,75 @@ namespace HybridCPU.Compiler.Core.Threading
 {
     public partial class HybridCpuThreadCompilerContext
     {
+        [Obsolete(
+            "This compatibility facade returns a raw MatrixTile plan artifact. Use CompileMtileLoadWithDecision for CompilerLoweringDecision no-authority metadata.",
+            false)]
         public CompilerMatrixTileEmissionPlan CompileMtileLoad(
             CompilerMatrixTileTileOperand destinationTile,
             CompilerMatrixTileDescriptorAbi descriptor,
             CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi,
             StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
         {
-            CompilerMatrixTileEmissionPlan plan =
-                CompilerMatrixTileEmissionLowerer.Lower(
+            return CompileMtileLoadWithDecision(
+                    destinationTile,
+                    descriptor,
+                    memoryFaultAbi,
+                    stealabilityPolicy)
+                .Plan;
+        }
+
+        public CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> CompileMtileLoadWithDecision(
+            CompilerMatrixTileTileOperand destinationTile,
+            CompilerMatrixTileDescriptorAbi descriptor,
+            CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi,
+            StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
+        {
+            CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> result =
+                CompilerMatrixTileEmissionLowerer.LowerWithDecision(
                     CompilerMatrixTileEmissionRequest.MtileLoad(
                         destinationTile,
                         descriptor,
                         memoryFaultAbi));
-            AppendMatrixTileInstruction(plan, stealabilityPolicy);
-            return plan;
+            AppendMatrixTileInstruction(result.Plan, stealabilityPolicy);
+            return result;
         }
 
+        [Obsolete(
+            "This compatibility facade returns a raw MatrixTile plan artifact. Use CompileMtileStoreWithDecision for CompilerLoweringDecision no-authority metadata.",
+            false)]
         public CompilerMatrixTileEmissionPlan CompileMtileStore(
             CompilerMatrixTileTileOperand sourceTile,
             CompilerMatrixTileDescriptorAbi descriptor,
             CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi,
             StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
         {
-            CompilerMatrixTileEmissionPlan plan =
-                CompilerMatrixTileEmissionLowerer.Lower(
+            return CompileMtileStoreWithDecision(
+                    sourceTile,
+                    descriptor,
+                    memoryFaultAbi,
+                    stealabilityPolicy)
+                .Plan;
+        }
+
+        public CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> CompileMtileStoreWithDecision(
+            CompilerMatrixTileTileOperand sourceTile,
+            CompilerMatrixTileDescriptorAbi descriptor,
+            CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi,
+            StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
+        {
+            CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> result =
+                CompilerMatrixTileEmissionLowerer.LowerWithDecision(
                     CompilerMatrixTileEmissionRequest.MtileStore(
                         sourceTile,
                         descriptor,
                         memoryFaultAbi));
-            AppendMatrixTileInstruction(plan, stealabilityPolicy);
-            return plan;
+            AppendMatrixTileInstruction(result.Plan, stealabilityPolicy);
+            return result;
         }
 
+        [Obsolete(
+            "This compatibility facade returns a raw MatrixTile plan artifact. Use CompileMtileMaccWithDecision for CompilerLoweringDecision no-authority metadata.",
+            false)]
         public CompilerMatrixTileEmissionPlan CompileMtileMacc(
             CompilerMatrixTileTileOperand leftSourceTile,
             CompilerMatrixTileTileOperand rightSourceTile,
@@ -47,18 +85,39 @@ namespace HybridCPU.Compiler.Core.Threading
             CompilerMatrixTileAccumulatorPolicyAbi accumulatorPolicyAbi,
             StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
         {
-            CompilerMatrixTileEmissionPlan plan =
-                CompilerMatrixTileEmissionLowerer.Lower(
+            return CompileMtileMaccWithDecision(
+                    leftSourceTile,
+                    rightSourceTile,
+                    accumulatorTile,
+                    leftSourceDescriptor,
+                    accumulatorPolicyAbi,
+                    stealabilityPolicy)
+                .Plan;
+        }
+
+        public CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> CompileMtileMaccWithDecision(
+            CompilerMatrixTileTileOperand leftSourceTile,
+            CompilerMatrixTileTileOperand rightSourceTile,
+            CompilerMatrixTileTileOperand accumulatorTile,
+            CompilerMatrixTileDescriptorAbi leftSourceDescriptor,
+            CompilerMatrixTileAccumulatorPolicyAbi accumulatorPolicyAbi,
+            StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
+        {
+            CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> result =
+                CompilerMatrixTileEmissionLowerer.LowerWithDecision(
                     CompilerMatrixTileEmissionRequest.MtileMacc(
                         leftSourceTile,
                         rightSourceTile,
                         accumulatorTile,
                         leftSourceDescriptor,
                         accumulatorPolicyAbi));
-            AppendMatrixTileInstruction(plan, stealabilityPolicy);
-            return plan;
+            AppendMatrixTileInstruction(result.Plan, stealabilityPolicy);
+            return result;
         }
 
+        [Obsolete(
+            "This compatibility facade returns a raw MatrixTile plan artifact. Use CompileMtransposeWithDecision for CompilerLoweringDecision no-authority metadata.",
+            false)]
         public CompilerMatrixTileEmissionPlan CompileMtranspose(
             CompilerMatrixTileTileOperand sourceTile,
             CompilerMatrixTileTileOperand destinationTile,
@@ -66,15 +125,31 @@ namespace HybridCPU.Compiler.Core.Threading
             CompilerMatrixTileTransposePolicyAbi transposePolicyAbi,
             StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
         {
-            CompilerMatrixTileEmissionPlan plan =
-                CompilerMatrixTileEmissionLowerer.Lower(
+            return CompileMtransposeWithDecision(
+                    sourceTile,
+                    destinationTile,
+                    sourceDescriptor,
+                    transposePolicyAbi,
+                    stealabilityPolicy)
+                .Plan;
+        }
+
+        public CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> CompileMtransposeWithDecision(
+            CompilerMatrixTileTileOperand sourceTile,
+            CompilerMatrixTileTileOperand destinationTile,
+            CompilerMatrixTileDescriptorAbi sourceDescriptor,
+            CompilerMatrixTileTransposePolicyAbi transposePolicyAbi,
+            StealabilityPolicy stealabilityPolicy = StealabilityPolicy.NotStealable)
+        {
+            CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> result =
+                CompilerMatrixTileEmissionLowerer.LowerWithDecision(
                     CompilerMatrixTileEmissionRequest.Mtranspose(
                         sourceTile,
                         destinationTile,
                         sourceDescriptor,
                         transposePolicyAbi));
-            AppendMatrixTileInstruction(plan, stealabilityPolicy);
-            return plan;
+            AppendMatrixTileInstruction(result.Plan, stealabilityPolicy);
+            return result;
         }
 
         private void AppendMatrixTileInstruction(

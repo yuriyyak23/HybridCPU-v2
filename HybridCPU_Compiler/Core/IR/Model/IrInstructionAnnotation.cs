@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using YAKSys_Hybrid_CPU.Core;
 
@@ -35,6 +36,7 @@ namespace HybridCPU.Compiler.Core.IR
         IrResourceClass ResourceClass,
         IrLatencyClass LatencyClass,
         byte MinimumLatencyCycles,
+        [property: Obsolete("Compiler-side LegalSlots are structurally allowed slots only; use StructurallyAllowedSlots.", false)]
         IrIssueSlotMask LegalSlots,
         IrSerializationKind Serialization,
         IrStructuralResource StructuralResources,
@@ -51,5 +53,8 @@ namespace HybridCPU.Compiler.Core.IR
         IrSlotBindingKind BindingKind,
         ulong DomainTag,
         bool StealabilityHint = false,
-        string? BranchTargetSymbolName = null);
+        string? BranchTargetSymbolName = null)
+    {
+        public IrIssueSlotMask StructurallyAllowedSlots => LegalSlots;
+    }
 }

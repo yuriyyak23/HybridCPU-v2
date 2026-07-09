@@ -542,7 +542,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
         {
             ArgumentNullException.ThrowIfNull(validationResult);
 
-            if (!validationResult.IsValid)
+            if (!validationResult.IsDescriptorAbiAccepted)
             {
                 return DmaStreamComputeToken.TryAdmit(validationResult, tokenId, telemetry);
             }

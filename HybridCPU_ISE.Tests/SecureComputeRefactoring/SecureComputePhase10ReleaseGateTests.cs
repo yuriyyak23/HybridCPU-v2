@@ -1156,22 +1156,22 @@ public sealed class SecureComputePhase10ReleaseGateTests
             "HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/",
             corpus);
         Assert.Contains(
-            "The next production-oriented gate is Phase 20",
+            "The next production-oriented gate is positive runtime execution activation planning",
             corpus);
         Assert.Contains(
-            "Phase 14 closes secure completion/retire publication authority fail-closed",
+            "Secure completion/retire publication authority is closed fail-closed",
             corpus);
         Assert.Contains(
-            "Phase 15 closes secure migration/checkpoint/restore output-manifest classification fail-closed",
+            "Secure migration/checkpoint/restore output-manifest classification is closed fail-closed",
             corpus);
         Assert.Contains(
-            "Phase 16 closes secure debug/attestation visibility fail-closed",
+            "Secure debug/attestation visibility is closed fail-closed",
             corpus);
         Assert.Contains(
-            "Phase 17 closes VMX boundary zero-authority fail-closed",
+            "VMX boundary zero-authority is closed fail-closed",
             corpus);
         Assert.Contains(
-            "Phase 19 closes compiler no-emission to controlled-emission",
+            "Compiler no-emission to controlled-emission is closed",
             corpus);
         Assert.Contains(
             "For every non-ordinary secure operation class",
@@ -1180,7 +1180,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
             "An allowed I/O result is explicitly `IsPolicyAdmissionOnly`",
             corpus);
         Assert.Contains(
-            "The tasks through Phase 17 and Phase 19 are complete for the bounded closure classes",
+            "The current negative/future-gated conformance evidence matrix is closed only as release-input evidence, not authority",
             corpus);
         Assert.DoesNotContain(
             "only for non-ordinary `SecureDomainOperationClass` with an enabled descriptor",

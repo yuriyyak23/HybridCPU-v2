@@ -194,6 +194,8 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
 
         public bool IsValid => Fault == DmaStreamComputeValidationFault.None && OwnerBinding is not null;
 
+        public bool IsStructuralDescriptorReadAccepted => IsValid;
+
         public DmaStreamComputeValidationFault Fault { get; }
 
         public DmaStreamComputeDescriptorReference DescriptorReference { get; }
@@ -244,7 +246,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
 
         public DmaStreamComputeOwnerBinding RequireOwnerBindingForGuard()
         {
-            if (IsValid && OwnerBinding is not null)
+            if (IsStructuralDescriptorReadAccepted && OwnerBinding is not null)
             {
                 return OwnerBinding;
             }

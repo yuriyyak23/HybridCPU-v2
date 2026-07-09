@@ -338,7 +338,7 @@ public static class AcceleratorDescriptorParser
         AcceleratorTelemetry? telemetry)
     {
         telemetry?.RecordDescriptorParse(
-            result.IsValid,
+            result.IsDescriptorAbiAccepted,
             result.Fault,
             result.Message);
         return result;

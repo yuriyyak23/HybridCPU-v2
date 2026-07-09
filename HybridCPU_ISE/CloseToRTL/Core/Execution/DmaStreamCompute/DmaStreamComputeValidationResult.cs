@@ -43,6 +43,8 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
 
         public bool IsValid => Fault == DmaStreamComputeValidationFault.None && Descriptor is not null;
 
+        public bool IsDescriptorAbiAccepted => IsValid;
+
         public DmaStreamComputeValidationFault Fault { get; }
 
         public DmaStreamComputeDescriptor? Descriptor { get; }
@@ -74,7 +76,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
 
         public DmaStreamComputeDescriptor RequireDescriptorForAdmission()
         {
-            if (IsValid && Descriptor is not null)
+            if (IsDescriptorAbiAccepted && Descriptor is not null)
             {
                 return Descriptor;
             }

@@ -209,7 +209,7 @@ public sealed class DmaStreamComputeQueryCapsPhase07ATests
         string runtimeText = File.ReadAllText(Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "NonRTL",
+            "CloseToRTL",
             "Core",
             "Execution",
             "DmaStreamCompute",
@@ -292,7 +292,7 @@ public sealed class DmaStreamComputeQueryCapsPhase07ATests
                 descriptorBytes,
                 DmaStreamComputeTestDescriptorFactory.CreateGuardDecision(descriptorBytes, reference),
                 reference);
-        Assert.True(validation.IsValid, validation.Message);
+        Assert.True(validation.IsDescriptorAbiAccepted, validation.Message);
         return validation.RequireDescriptorForAdmission();
     }
 

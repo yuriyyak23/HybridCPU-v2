@@ -123,7 +123,7 @@ public class PlatformAsmFacade : AppAsmFacade, IPlatformAsmFacade
         CompilerVectorTransferMemoryAddressAbi source,
         CompilerVectorTransferShapeAbi shape)
     {
-        Context.CompileVload(destination, source, shape);
+        Context.CompileVloadWithDecision(destination, source, shape);
     }
 
     public void VStore(
@@ -131,7 +131,7 @@ public class PlatformAsmFacade : AppAsmFacade, IPlatformAsmFacade
         CompilerVectorTransferMemoryAddressAbi destination,
         CompilerVectorTransferShapeAbi shape)
     {
-        Context.CompileVstore(source, destination, shape);
+        Context.CompileVstoreWithDecision(source, destination, shape);
     }
 
     public void VSetVli(AsmRegister vlReg, AsmRegister avlReg, DataTypeEnum dataType)

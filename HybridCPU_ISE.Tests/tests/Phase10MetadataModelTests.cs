@@ -217,7 +217,7 @@ namespace HybridCPU_ISE.Tests
         {
             var bm = new BundleMetadata { SchemaVersion = MetadataSchemaVersion.Current };
             var result = MetadataCompatibilityValidator.Validate(bm);
-            Assert.True(result.IsValid);
+            Assert.True(result.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.None, result.Severity);
             Assert.Null(result.Message);
         }
@@ -227,7 +227,7 @@ namespace HybridCPU_ISE.Tests
         {
             var bm = new BundleMetadata { SchemaVersion = 3 };
             var result = MetadataCompatibilityValidator.Validate(bm);
-            Assert.True(result.IsValid);
+            Assert.True(result.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.Warning, result.Severity);
             Assert.NotNull(result.Message);
             Assert.Contains("older", result.Message);
@@ -238,7 +238,7 @@ namespace HybridCPU_ISE.Tests
         {
             var bm = new BundleMetadata { SchemaVersion = 5 };
             var result = MetadataCompatibilityValidator.Validate(bm);
-            Assert.True(result.IsValid);
+            Assert.True(result.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.Warning, result.Severity);
             Assert.NotNull(result.Message);
             Assert.Contains("newer", result.Message);
@@ -249,7 +249,7 @@ namespace HybridCPU_ISE.Tests
         {
             var sm = new SlotMetadata { SchemaVersion = MetadataSchemaVersion.Current };
             var result = MetadataCompatibilityValidator.Validate(sm);
-            Assert.True(result.IsValid);
+            Assert.True(result.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.None, result.Severity);
         }
 
@@ -258,7 +258,7 @@ namespace HybridCPU_ISE.Tests
         {
             var sm = new SlotMetadata { SchemaVersion = 2 };
             var result = MetadataCompatibilityValidator.Validate(sm);
-            Assert.True(result.IsValid);
+            Assert.True(result.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.Warning, result.Severity);
             Assert.Contains("older", result.Message!);
         }
@@ -268,7 +268,7 @@ namespace HybridCPU_ISE.Tests
         {
             var sm = new SlotMetadata { SchemaVersion = 10 };
             var result = MetadataCompatibilityValidator.Validate(sm);
-            Assert.True(result.IsValid);
+            Assert.True(result.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.Warning, result.Severity);
             Assert.Contains("newer", result.Message!);
         }
@@ -277,7 +277,7 @@ namespace HybridCPU_ISE.Tests
         public void ValidationResult_Ok_IsValidAndNoSeverity()
         {
             var r = ValidationResult.Ok();
-            Assert.True(r.IsValid);
+            Assert.True(r.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.None, r.Severity);
             Assert.Null(r.Message);
         }
@@ -286,7 +286,7 @@ namespace HybridCPU_ISE.Tests
         public void ValidationResult_Warning_IsValidWithMessage()
         {
             var r = ValidationResult.Warning("test warning");
-            Assert.True(r.IsValid);
+            Assert.True(r.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.Warning, r.Severity);
             Assert.Equal("test warning", r.Message);
         }
@@ -295,7 +295,7 @@ namespace HybridCPU_ISE.Tests
         public void ValidationResult_Error_IsNotValidWithMessage()
         {
             var r = ValidationResult.Error("test error");
-            Assert.False(r.IsValid);
+            Assert.False(r.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.Error, r.Severity);
             Assert.Equal("test error", r.Message);
         }

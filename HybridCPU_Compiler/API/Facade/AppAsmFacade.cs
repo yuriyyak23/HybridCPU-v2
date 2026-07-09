@@ -687,7 +687,7 @@ public class AppAsmFacade : IAppAsmFacade
         CompilerMatrixTileDescriptorAbi descriptor,
         CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi)
     {
-        Context.CompileMtileLoad(destinationTile, descriptor, memoryFaultAbi);
+        Context.CompileMtileLoadWithDecision(destinationTile, descriptor, memoryFaultAbi);
     }
 
     public void MtileStore(
@@ -695,7 +695,7 @@ public class AppAsmFacade : IAppAsmFacade
         CompilerMatrixTileDescriptorAbi descriptor,
         CompilerMatrixTileMemoryFaultAbiInputs memoryFaultAbi)
     {
-        Context.CompileMtileStore(sourceTile, descriptor, memoryFaultAbi);
+        Context.CompileMtileStoreWithDecision(sourceTile, descriptor, memoryFaultAbi);
     }
 
     public void MtileMacc(
@@ -705,7 +705,7 @@ public class AppAsmFacade : IAppAsmFacade
         CompilerMatrixTileDescriptorAbi leftSourceDescriptor,
         CompilerMatrixTileAccumulatorPolicyAbi accumulatorPolicyAbi)
     {
-        Context.CompileMtileMacc(
+        Context.CompileMtileMaccWithDecision(
             leftSourceTile,
             rightSourceTile,
             accumulatorTile,
@@ -719,7 +719,7 @@ public class AppAsmFacade : IAppAsmFacade
         CompilerMatrixTileDescriptorAbi sourceDescriptor,
         CompilerMatrixTileTransposePolicyAbi transposePolicyAbi)
     {
-        Context.CompileMtranspose(
+        Context.CompileMtransposeWithDecision(
             sourceTile,
             destinationTile,
             sourceDescriptor,

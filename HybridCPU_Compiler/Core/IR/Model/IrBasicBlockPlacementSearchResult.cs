@@ -49,8 +49,16 @@ namespace HybridCPU.Compiler.Core.IR
         public IrBasicBlockPlacementSearchSummary Summary { get; }
 
         /// <summary>
-        /// Gets a value indicating whether every bundle in the searched block window has a legal placement.
+        /// Gets a value indicating whether every bundle in the searched block window has a structural placement.
         /// </summary>
-        public bool HasLegalAssignment => BundleAnalyses.All(analysis => analysis.HasLegalAssignment) && BestPlacement is not null;
+        public bool HasStructuralPlacement => BundleAnalyses.All(analysis => analysis.HasStructuralPlacement) && BestPlacement is not null;
+
+        /// <summary>
+        /// Legacy compiler-side structural placement predicate.
+        /// </summary>
+        [Obsolete(
+            "Compiler-side HasLegalAssignment is structural placement evidence only; use HasStructuralPlacement.",
+            false)]
+        public bool HasLegalAssignment => HasStructuralPlacement;
     }
 }

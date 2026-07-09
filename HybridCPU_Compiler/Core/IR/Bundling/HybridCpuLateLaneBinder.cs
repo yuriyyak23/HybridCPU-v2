@@ -56,12 +56,12 @@ public static class HybridCpuLateLaneBinder
             IrSlotBindingKind bindingKind = instruction.Annotation.BindingKind;
             bindingKinds[originalIndex] = bindingKind;
 
-            // Use compiler-side LegalSlots (not ISE-side SlotClassLaneMap) to stay
-            // compatible with IrMaterializedBundle.IsLegalPlacement validation.
+            // Use compiler-side structural slot facts (not ISE-side SlotClassLaneMap) to stay
+            // compatible with IrMaterializedBundle.IsStructuralPlacement validation.
             // The deterministic lowest-free algorithm is the same — only the
             // coordinate system differs (compiler slots vs ISE lanes).
-            byte legalSlotMask = (byte)instruction.Annotation.LegalSlots;
-            byte freeLanes = (byte)(legalSlotMask & ~occupiedLaneMask);
+            byte structurallyAllowedSlotMask = (byte)instruction.Annotation.StructurallyAllowedSlots;
+            byte freeLanes = (byte)(structurallyAllowedSlotMask & ~occupiedLaneMask);
 
             int lane = DeterministicLaneChooser.SelectLowestFree(freeLanes);
 
@@ -74,7 +74,7 @@ public static class HybridCpuLateLaneBinder
                     OccupiedLaneMask: occupiedLaneMask,
                     FailureReason: $"No free slot for instruction {originalIndex} " +
                                    $"(class={instruction.Annotation.RequiredSlotClass}, binding={bindingKind}, " +
-                                   $"legalSlots=0b_{Convert.ToString(legalSlotMask, 2).PadLeft(8, '0')}, " +
+                                  $"structurallyAllowedSlots=0b_{Convert.ToString(structurallyAllowedSlotMask, 2).PadLeft(8, '0')}, " +
                                    $"occupied=0b_{Convert.ToString(occupiedLaneMask, 2).PadLeft(8, '0')})");
             }
 
@@ -112,9 +112,9 @@ public static class HybridCpuLateLaneBinder
             int cmp = priorityA.CompareTo(priorityB);
             if (cmp != 0) return cmp;
 
-            // Secondary: legal slot count ascending (fewest legal slots = most constrained first)
-            int capA = BitOperations.PopCount((uint)annotA.LegalSlots);
-            int capB = BitOperations.PopCount((uint)annotB.LegalSlots);
+            // Secondary: structural slot count ascending (fewest allowed slots = most constrained first)
+            int capA = BitOperations.PopCount((uint)annotA.StructurallyAllowedSlots);
+            int capB = BitOperations.PopCount((uint)annotB.StructurallyAllowedSlots);
             cmp = capA.CompareTo(capB);
             if (cmp != 0) return cmp;
 

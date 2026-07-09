@@ -137,7 +137,7 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
         string vmcsWriteSource = ReadRepositorySources(
             "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection",
             "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Decode",
-            "HybridCPU_ISE/NonRTL/Core/System/Vmcs/V2");
+            "HybridCPU_ISE/CloseToRTL/Core/System/Vmcs/V2");
 
         foreach (string forbidden in new[]
                  {

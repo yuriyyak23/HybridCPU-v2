@@ -364,7 +364,7 @@ public sealed class DmaStreamComputeCommitTokenTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         return result.RequireDescriptorForAdmission();
     }
 
@@ -372,7 +372,7 @@ public sealed class DmaStreamComputeCommitTokenTests
     {
         DmaStreamComputeStructuralReadResult structuralRead =
             DmaStreamComputeDescriptorParser.ReadStructuralOwnerBinding(descriptorBytes);
-        Assert.True(structuralRead.IsValid, structuralRead.Message);
+        Assert.True(structuralRead.IsStructuralDescriptorReadAccepted, structuralRead.Message);
         DmaStreamComputeOwnerBinding ownerBinding =
             structuralRead.RequireOwnerBindingForGuard();
         var context = new DmaStreamComputeOwnerGuardContext(

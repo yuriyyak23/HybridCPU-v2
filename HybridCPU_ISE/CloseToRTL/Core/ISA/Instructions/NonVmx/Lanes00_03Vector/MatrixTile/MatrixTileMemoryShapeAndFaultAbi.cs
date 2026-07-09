@@ -69,6 +69,8 @@ public readonly record struct MatrixTileMemoryShapeValidationResult(
     MatrixTileMemoryPublicationPolicyKind PublicationPolicy,
     MatrixTileMemoryOrderingPolicyKind OrderingPolicy)
 {
+    public bool IsMemoryShapeAbiAccepted => IsValid;
+
     public static MatrixTileMemoryShapeValidationResult Valid(
         ulong firstByteAddress,
         ulong lastByteAddress,
@@ -275,7 +277,7 @@ public static class MatrixTileMemoryShapeAndFaultAbi
         ushort byteOffsetInElement = 0)
     {
         MatrixTileMemoryShapeValidationResult validation = Validate(contract);
-        if (!validation.IsValid)
+        if (!validation.IsMemoryShapeAbiAccepted)
         {
             throw new System.InvalidOperationException(
                 $"Cannot project a precise MTILE memory fault point from invalid shape: {validation.FaultKind}.");

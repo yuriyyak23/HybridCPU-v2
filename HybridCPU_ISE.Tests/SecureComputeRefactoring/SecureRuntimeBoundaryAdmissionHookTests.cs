@@ -265,8 +265,8 @@ public sealed class SecureRuntimeBoundaryAdmissionHookTests
     public void StageASources_DoNotRequireSecureComputePolicy()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs",
-            "HybridCPU_ISE/NonRTL/Core/Pipeline/Metadata/MicroOpAdmissionMetadata.cs",
+            "HybridCPU_ISE/CloseToRTL/Core/Decoder/DecodedBundleTransportProjector.cs",
+            "HybridCPU_ISE/CloseToRTL/Core/Pipeline/Metadata/MicroOpAdmissionMetadata.cs",
             "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions");
 
         Assert.DoesNotContain("SecureCompute", source);

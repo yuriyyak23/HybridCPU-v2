@@ -58,19 +58,26 @@ public sealed record CompilerBackendLoweringRequest
 
 public sealed record CompilerBackendLoweringDecision
 {
+    private readonly bool _isAllowedObservation;
+
     private CompilerBackendLoweringDecision(
         bool isAllowed,
         CompilerBackendLoweringRequirement missingRequirements,
         string reason)
     {
-        IsAllowed = isAllowed;
+        _isAllowedObservation = isAllowed;
         MissingRequirements = missingRequirements;
         Reason = string.IsNullOrWhiteSpace(reason)
             ? "No compiler/backend lowering decision reason was supplied."
             : reason;
     }
 
-    public bool IsAllowed { get; }
+    [Obsolete(
+        "Backend lowering IsAllowed is a legacy compiler observation only; adapt with CompilerLoweringDecision.FromLegacyBackendLoweringDecision before crossing public lowering boundaries.",
+        false)]
+    public bool IsAllowed => _isAllowedObservation;
+
+    internal bool IsAllowedObservation => _isAllowedObservation;
 
     public CompilerBackendLoweringRequirement MissingRequirements { get; }
 
@@ -117,26 +124,41 @@ public static class CompilerBackendLoweringContract
         CompilerBackendLoweringRequirement.OrderCacheFaultContract |
         CompilerBackendLoweringRequirement.StagedCommitBoundary;
 
+    [Obsolete(
+        "Capability helpers are compiler observations only; they are not capability authority.",
+        false)]
     public static bool CanSelectFeature(CompilerBackendCapabilityState state) =>
         state != CompilerBackendCapabilityState.Unavailable;
 
+    [Obsolete(
+        "Descriptor evidence helpers are compiler observations only; descriptor ABI validity is not execution authority.",
+        false)]
     public static bool AllowsDescriptorEvidence(CompilerBackendCapabilityState state) =>
         state is
             CompilerBackendCapabilityState.DescriptorOnly or
             CompilerBackendCapabilityState.ExecutableExperimental or
             CompilerBackendCapabilityState.ProductionExecutable;
 
+    [Obsolete(
+        "Parser validation helpers are compiler observations only; parser success is not production lowering.",
+        false)]
     public static bool AllowsParserValidation(CompilerBackendCapabilityState state) =>
         state is
             CompilerBackendCapabilityState.ParserOnly or
             CompilerBackendCapabilityState.ExecutableExperimental or
             CompilerBackendCapabilityState.ProductionExecutable;
 
+    [Obsolete(
+        "Model/helper helpers are compiler observations only; helper success is not production lowering.",
+        false)]
     public static bool AllowsModelOrTestHelper(CompilerBackendCapabilityState state) =>
         state == CompilerBackendCapabilityState.ModelOnly;
 
+    [Obsolete(
+        "Production-selection bool is a legacy capability observation only; use a CompilerLoweringDecision adapter before new lowering boundaries.",
+        false)]
     public static bool CanSelectForProductionLowering(CompilerBackendCapabilityState state) =>
-        state == CompilerBackendCapabilityState.ProductionExecutable;
+        IsProductionExecutableState(state);
 
     public static CompilerBackendLoweringDecision EvaluateProductionDscLowering(
         CompilerBackendLoweringRequest request)
@@ -163,7 +185,7 @@ public static class CompilerBackendLoweringContract
         CompilerBackendLoweringRequirement requiredRequirements,
         string surfaceName)
     {
-        if (!CanSelectForProductionLowering(request.State))
+        if (!IsProductionExecutableState(request.State))
         {
             return CompilerBackendLoweringDecision.Reject(
                 requiredRequirements,
@@ -226,6 +248,9 @@ public static class CompilerBackendLoweringContract
         return CompilerBackendLoweringDecision.Allow(
             $"{surfaceName} production lowering is capability-complete.");
     }
+
+    private static bool IsProductionExecutableState(CompilerBackendCapabilityState state) =>
+        state == CompilerBackendCapabilityState.ProductionExecutable;
 
     private static void ValidateSurface(
         CompilerBackendLoweringRequest request,

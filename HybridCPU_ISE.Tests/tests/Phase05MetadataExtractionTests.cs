@@ -444,7 +444,7 @@ namespace HybridCPU_ISE.Tests.IsaV6
             var meta   = new SlotMetadata();
             var result = MetadataCompatibilityValidator.Validate(meta);
 
-            Assert.True(result.IsValid);
+            Assert.True(result.IsMetadataSchemaCompatible);
             Assert.Equal(ValidationSeverity.None, result.Severity);
         }
     }

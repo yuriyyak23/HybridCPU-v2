@@ -65,9 +65,17 @@ namespace HybridCPU.Compiler.Core.IR
         public IrBundlePlacementSearchSummary Summary { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the candidate group has a valid physical slot assignment.
+        /// Gets a value indicating whether the candidate group has a structural physical slot placement.
         /// </summary>
-        public bool HasLegalAssignment => Analysis.HasLegalAssignment;
+        public bool HasStructuralPlacement => Analysis.HasStructuralPlacement;
+
+        /// <summary>
+        /// Legacy compiler-side structural placement predicate.
+        /// </summary>
+        [Obsolete(
+            "Compiler-side HasLegalAssignment is structural placement evidence only; use HasStructuralPlacement.",
+            false)]
+        public bool HasLegalAssignment => HasStructuralPlacement;
 
         /// <summary>
         /// Materializes the selected deterministic slot assignment.

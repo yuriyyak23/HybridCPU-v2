@@ -164,7 +164,7 @@ public sealed class DmaStreamComputeTypedSlotTests
     public void AddsNativeIsaCompilerEmissionWithoutCustomAcceleratorRegistryPath()
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string registryText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Core", "Diagnostics"), "InstructionRegistry*.cs");
+        string registryText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Diagnostics"), "InstructionRegistry*.cs");
         string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
 
         Assert.DoesNotContain(nameof(DmaStreamComputeMicroOp), registryText, StringComparison.Ordinal);
@@ -200,7 +200,7 @@ public sealed class DmaStreamComputeTypedSlotTests
                 CreateGuardDecision(descriptorBytes, reference),
                 reference);
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         return result.RequireDescriptorForAdmission();
     }
 
@@ -212,7 +212,7 @@ public sealed class DmaStreamComputeTypedSlotTests
             DmaStreamComputeDescriptorParser.ReadStructuralOwnerBinding(
                 descriptorBytes,
                 descriptorReference);
-        Assert.True(structuralRead.IsValid, structuralRead.Message);
+        Assert.True(structuralRead.IsStructuralDescriptorReadAccepted, structuralRead.Message);
         DmaStreamComputeOwnerBinding ownerBinding =
             structuralRead.RequireOwnerBindingForGuard();
         var context = new DmaStreamComputeOwnerGuardContext(

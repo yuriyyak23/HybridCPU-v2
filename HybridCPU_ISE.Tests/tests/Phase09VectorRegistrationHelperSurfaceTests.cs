@@ -13,7 +13,7 @@ public sealed class VectorRegistrationHelperSurfaceTests
         string filePath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "NonRTL",
+            "CloseToRTL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Vector.cs");

@@ -27,13 +27,30 @@ namespace HybridCPU.Compiler.Core.IR
     public sealed record IrBundleLegalityResult(IReadOnlyList<IrHazardDiagnostic> Hazards)
     {
         /// <summary>
-        /// Gets a value indicating whether the candidate group is legal under the current hazard model.
+        /// Gets a value indicating whether the candidate group is structurally admissible
+        /// under the compiler hazard model. This is not runtime legality.
         /// </summary>
-        public bool IsLegal => Hazards.Count == 0;
+        public bool IsStructurallyAdmissible => Hazards.Count == 0;
 
         /// <summary>
-        /// Returns a legal result without hazards.
+        /// Legacy compiler-side structural admission predicate.
         /// </summary>
-        public static IrBundleLegalityResult Legal { get; } = new(Array.Empty<IrHazardDiagnostic>());
+        [Obsolete(
+            "Compiler-side IsLegal is structural admission evidence only; use CompilerStructuralAuthorityQuarantine.FromBundleLegalityResult.",
+            false)]
+        public bool IsLegal => IsStructurallyAdmissible;
+
+        /// <summary>
+        /// Returns a structural admission result without compiler hazards.
+        /// </summary>
+        public static IrBundleLegalityResult StructurallyAdmissible { get; } = new(Array.Empty<IrHazardDiagnostic>());
+
+        /// <summary>
+        /// Returns a structural admission result without compiler hazards.
+        /// </summary>
+        [Obsolete(
+            "Compiler-side Legal is structural admission evidence only; use CompilerStructuralAuthorityQuarantine.FromBundleLegalityResult.",
+            false)]
+        public static IrBundleLegalityResult Legal { get; } = StructurallyAdmissible;
     }
 }

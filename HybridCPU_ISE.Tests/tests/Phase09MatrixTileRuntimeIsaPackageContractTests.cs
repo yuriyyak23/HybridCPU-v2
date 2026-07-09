@@ -526,7 +526,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
             MatrixTileMemoryShapeAndFaultAbi.CreateLoadContract(descriptor, 0x1000UL);
         MatrixTileMemoryShapeValidationResult loadValidation =
             MatrixTileMemoryShapeAndFaultAbi.Validate(load);
-        Assert.True(loadValidation.IsValid);
+        Assert.True(loadValidation.IsMemoryShapeAbiAccepted);
         Assert.Equal(MatrixTileMemoryFaultKind.None, loadValidation.FaultKind);
         Assert.Equal(0x1000UL, loadValidation.FirstByteAddress);
         Assert.Equal(0x101BUL, loadValidation.LastByteAddress);
@@ -550,7 +550,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
                 0x2000UL);
         MatrixTileMemoryShapeValidationResult storeValidation =
             MatrixTileMemoryShapeAndFaultAbi.Validate(store);
-        Assert.True(storeValidation.IsValid);
+        Assert.True(storeValidation.IsMemoryShapeAbiAccepted);
         Assert.Equal(
             MatrixTileMemoryPublicationPolicyKind.RetireStagedStoreCommit,
             storeValidation.PublicationPolicy);
@@ -561,7 +561,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
                 row: 1,
                 column: 2,
                 byteOffsetInElement: 3);
-        Assert.False(partialFault.IsValid);
+        Assert.False(partialFault.IsMemoryShapeAbiAccepted);
         Assert.Equal(MatrixTileMemoryFaultKind.PartialMemoryFault, partialFault.FaultKind);
         Assert.True(partialFault.HasFaultPoint);
         Assert.Equal((ushort)1, partialFault.FaultPoint.Row);
@@ -720,7 +720,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
                 MatrixTileCanonicalDescriptorAbi.Create(2, 4, 4, 16));
         MatrixTileSemanticValidationResult maccResult =
             MatrixTileAccumulatorAndTransposePolicyAbi.ValidateMacc(macc);
-        Assert.True(maccResult.IsValid);
+        Assert.True(maccResult.IsSemanticAbiAccepted);
         Assert.Equal(MatrixTileSemanticFaultKind.None, maccResult.FaultKind);
         Assert.Equal((ushort)4, maccResult.ResultElementSizeBytes);
         Assert.Equal((ushort)2, maccResult.ResultDescriptor.Rows);
@@ -778,7 +778,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
                 destinationTileId: 2);
         MatrixTileSemanticValidationResult transposeResult =
             MatrixTileAccumulatorAndTransposePolicyAbi.ValidateTranspose(transpose);
-        Assert.True(transposeResult.IsValid);
+        Assert.True(transposeResult.IsSemanticAbiAccepted);
         Assert.Equal((ushort)3, transposeResult.ResultDescriptor.Rows);
         Assert.Equal((ushort)2, transposeResult.ResultDescriptor.Columns);
         Assert.True(transposeResult.RequiresRetirePublication);
@@ -791,7 +791,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
                 MatrixTileCanonicalDescriptorAbi.Create(3, 3, 4, 12),
                 sourceTileId: 4,
                 destinationTileId: 4);
-        Assert.True(MatrixTileAccumulatorAndTransposePolicyAbi.ValidateTranspose(inPlaceTranspose).IsValid);
+        Assert.True(MatrixTileAccumulatorAndTransposePolicyAbi.ValidateTranspose(inPlaceTranspose).IsSemanticAbiAccepted);
 
         Assert.Equal(
             MatrixTileSemanticFaultKind.TransposeShapeMismatch,

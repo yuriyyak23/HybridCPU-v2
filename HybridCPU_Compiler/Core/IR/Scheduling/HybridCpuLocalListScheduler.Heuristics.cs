@@ -194,7 +194,7 @@ namespace HybridCPU.Compiler.Core.IR
                 TransitiveSuccessorCount: GetTransitiveSuccessorCount(node.InstructionIndex, transitiveSuccessorCounts),
                 MinimumLatencyCycles: node.Instruction.Annotation.MinimumLatencyCycles,
                 BankAwareHintPenalty: GetBankAwareHintPenalty(node.Instruction, []),
-                SlotFlexibility: GetSlotFlexibility(node.Instruction.Annotation.LegalSlots),
+                SlotFlexibility: GetSlotFlexibility(node.Instruction.Annotation.StructurallyAllowedSlots),
                 PostFspScore: GetPostFspScore(node.Instruction),
                 LoopPhaseSelectionScore: GetLoopPhaseSelectionScore(node.Instruction, []),
                 VtAwareBackendPressureScore: GetVtAwareBackendPressureScore(node.Instruction),
@@ -630,9 +630,9 @@ namespace HybridCPU.Compiler.Core.IR
             return left.InstructionIndex.CompareTo(right.InstructionIndex);
         }
 
-        private static int GetSlotFlexibility(IrIssueSlotMask legalSlots)
+        private static int GetSlotFlexibility(IrIssueSlotMask structurallyAllowedSlots)
         {
-            uint slotMask = (uint)legalSlots;
+            uint slotMask = (uint)structurallyAllowedSlots;
             return BitOperations.PopCount(slotMask);
         }
 

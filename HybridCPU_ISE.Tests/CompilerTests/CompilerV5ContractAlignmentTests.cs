@@ -501,7 +501,7 @@ public partial class CompilerV5ContractAlignmentTests
                 HasLegalAssignment: true,
                 InstructionLegalSlots: legalSlotMasks),
             InstructionSlots: instructionSlots,
-            Quality: IrBundlePlacementQuality.Create(instructionSlots, legalSlotMasks, slotCount: 8),
+            Quality: IrBundlePlacementQuality.CreateForStructuralSlotFacts(instructionSlots, legalSlotMasks, slotCount: 8),
             SearchSummary: IrBundlePlacementSearchSummary.Empty,
             TransitionQuality: IrBundleTransitionQuality.Empty);
 

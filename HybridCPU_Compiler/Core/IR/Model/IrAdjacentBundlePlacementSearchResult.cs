@@ -56,8 +56,19 @@ namespace HybridCPU.Compiler.Core.IR
         public IrAdjacentBundlePlacementSearchSummary Summary { get; }
 
         /// <summary>
-        /// Gets a value indicating whether both bundles have a valid adjacent placement pair.
+        /// Gets a value indicating whether both bundles have a structural adjacent placement pair.
         /// </summary>
-        public bool HasLegalAssignment => FirstBundleAnalysis.HasLegalAssignment && SecondBundleAnalysis.HasLegalAssignment && BestPlacementPair is not null;
+        public bool HasStructuralPlacement =>
+            FirstBundleAnalysis.HasStructuralPlacement &&
+            SecondBundleAnalysis.HasStructuralPlacement &&
+            BestPlacementPair is not null;
+
+        /// <summary>
+        /// Legacy compiler-side structural placement predicate.
+        /// </summary>
+        [Obsolete(
+            "Compiler-side HasLegalAssignment is structural placement evidence only; use HasStructuralPlacement.",
+            false)]
+        public bool HasLegalAssignment => HasStructuralPlacement;
     }
 }

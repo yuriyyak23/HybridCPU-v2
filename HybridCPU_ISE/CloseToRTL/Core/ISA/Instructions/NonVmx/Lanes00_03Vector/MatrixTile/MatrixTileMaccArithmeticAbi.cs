@@ -38,7 +38,7 @@ public static class MatrixTileMaccArithmeticAbi
         resultImage = default;
         faultKind = MatrixTileMaccArithmeticFaultKind.None;
 
-        if (!MatrixTileNumericPolicyAbi.Validate(contract.NumericPolicy).IsValid)
+        if (!MatrixTileNumericPolicyAbi.Validate(contract.NumericPolicy).IsRuntimeOwnedNumericPolicyAccepted)
         {
             faultKind = MatrixTileMaccArithmeticFaultKind.InvalidNumericPolicy;
             return false;
@@ -46,12 +46,12 @@ public static class MatrixTileMaccArithmeticAbi
 
         if (!MatrixTileLayoutPolicyAbi.Validate(
                 contract.LayoutPolicy,
-                MatrixTileProjectedOperationKind.Macc).IsValid ||
+                MatrixTileProjectedOperationKind.Macc).IsRuntimeOwnedLayoutPolicyAccepted ||
             !MatrixTileLayoutPolicyAbi.ValidateDescriptors(
                 contract.LayoutPolicy,
                 contract.Left,
                 contract.Right,
-                contract.Accumulator).IsValid)
+                contract.Accumulator).IsRuntimeOwnedLayoutPolicyAccepted)
         {
             faultKind = MatrixTileMaccArithmeticFaultKind.InvalidLayoutPolicy;
             return false;

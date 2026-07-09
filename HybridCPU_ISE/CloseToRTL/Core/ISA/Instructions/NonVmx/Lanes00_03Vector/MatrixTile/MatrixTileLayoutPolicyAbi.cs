@@ -59,6 +59,8 @@ public readonly record struct MatrixTileLayoutPolicyValidationResult(
     bool IsValid,
     MatrixTileLayoutPolicyFaultKind FaultKind)
 {
+    public bool IsRuntimeOwnedLayoutPolicyAccepted => IsValid;
+
     public static MatrixTileLayoutPolicyValidationResult Valid() =>
         new(true, MatrixTileLayoutPolicyFaultKind.None);
 

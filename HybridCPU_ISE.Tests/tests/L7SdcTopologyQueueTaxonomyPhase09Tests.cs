@@ -154,7 +154,7 @@ public sealed class L7SdcTopologyQueueTaxonomyPhase09Tests
                 descriptorBytes,
                 reference: reference);
 
-        Assert.False(parse.IsValid);
+        Assert.False(parse.IsDescriptorAbiAccepted);
         Assert.Null(parse.Descriptor);
         Assert.Equal(AcceleratorDescriptorFault.UnsupportedAcceleratorClass, parse.Fault);
         Assert.Contains("metadata-only", parse.Message, StringComparison.OrdinalIgnoreCase);

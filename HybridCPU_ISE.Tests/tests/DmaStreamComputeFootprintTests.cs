@@ -28,7 +28,7 @@ public sealed class DmaStreamComputeFootprintTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.AliasOverlapFault, result.Fault);
         Assert.Null(result.Descriptor);
     }
@@ -52,7 +52,7 @@ public sealed class DmaStreamComputeFootprintTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.AliasOverlapFault, result.Fault);
         Assert.Contains("source/destination", result.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -76,7 +76,7 @@ public sealed class DmaStreamComputeFootprintTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         Assert.NotNull(result.Descriptor);
         Assert.Equal(DmaStreamComputeAliasPolicy.ExactInPlaceSnapshot, result.Descriptor.AliasPolicy);
         Assert.Single(result.Descriptor.NormalizedReadMemoryRanges);
@@ -214,7 +214,7 @@ public sealed class DmaStreamComputeFootprintTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.UnsupportedShape, result.Fault);
         Assert.DoesNotContain("gather", result.Message, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("scatter", result.Message, StringComparison.OrdinalIgnoreCase);
@@ -249,7 +249,7 @@ public sealed class DmaStreamComputeFootprintTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         return result.RequireDescriptorForAdmission();
     }
 
@@ -257,7 +257,7 @@ public sealed class DmaStreamComputeFootprintTests
     {
         DmaStreamComputeStructuralReadResult structuralRead =
             DmaStreamComputeDescriptorParser.ReadStructuralOwnerBinding(descriptorBytes);
-        Assert.True(structuralRead.IsValid, structuralRead.Message);
+        Assert.True(structuralRead.IsStructuralDescriptorReadAccepted, structuralRead.Message);
         DmaStreamComputeOwnerBinding ownerBinding =
             structuralRead.RequireOwnerBindingForGuard();
         var context = new DmaStreamComputeOwnerGuardContext(

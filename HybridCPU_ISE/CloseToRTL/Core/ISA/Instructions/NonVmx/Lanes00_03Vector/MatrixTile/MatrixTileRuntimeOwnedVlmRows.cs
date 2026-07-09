@@ -144,7 +144,7 @@ public static class MatrixTileRuntimeOwnedVlmRows
                 MatrixTileVlmLegalityFaultKind.MissingRuntimeOwnedVlmRow);
         }
 
-        return MatrixTileMemoryShapeAndFaultAbi.Validate(contract).IsValid
+        return MatrixTileMemoryShapeAndFaultAbi.Validate(contract).IsMemoryShapeAbiAccepted
             ? MatrixTileVlmLegalityValidationResult.Legal(InstructionsEnum.MTILE_LOAD)
             : MatrixTileVlmLegalityValidationResult.Fault(
                 InstructionsEnum.MTILE_LOAD,
@@ -161,7 +161,7 @@ public static class MatrixTileRuntimeOwnedVlmRows
                 MatrixTileVlmLegalityFaultKind.MissingRuntimeOwnedVlmRow);
         }
 
-        return MatrixTileMemoryShapeAndFaultAbi.Validate(contract).IsValid
+        return MatrixTileMemoryShapeAndFaultAbi.Validate(contract).IsMemoryShapeAbiAccepted
             ? MatrixTileVlmLegalityValidationResult.Legal(InstructionsEnum.MTILE_STORE)
             : MatrixTileVlmLegalityValidationResult.Fault(
                 InstructionsEnum.MTILE_STORE,
@@ -178,7 +178,7 @@ public static class MatrixTileRuntimeOwnedVlmRows
                 MatrixTileVlmLegalityFaultKind.MissingRuntimeOwnedVlmRow);
         }
 
-        return MatrixTileAccumulatorAndTransposePolicyAbi.ValidateMacc(contract).IsValid
+        return MatrixTileAccumulatorAndTransposePolicyAbi.ValidateMacc(contract).IsSemanticAbiAccepted
             ? MatrixTileVlmLegalityValidationResult.Legal(InstructionsEnum.MTILE_MACC)
             : MatrixTileVlmLegalityValidationResult.Fault(
                 InstructionsEnum.MTILE_MACC,
@@ -195,7 +195,7 @@ public static class MatrixTileRuntimeOwnedVlmRows
                 MatrixTileVlmLegalityFaultKind.MissingRuntimeOwnedVlmRow);
         }
 
-        return MatrixTileAccumulatorAndTransposePolicyAbi.ValidateTranspose(contract).IsValid
+        return MatrixTileAccumulatorAndTransposePolicyAbi.ValidateTranspose(contract).IsSemanticAbiAccepted
             ? MatrixTileVlmLegalityValidationResult.Legal(InstructionsEnum.MTRANSPOSE)
             : MatrixTileVlmLegalityValidationResult.Fault(
                 InstructionsEnum.MTRANSPOSE,

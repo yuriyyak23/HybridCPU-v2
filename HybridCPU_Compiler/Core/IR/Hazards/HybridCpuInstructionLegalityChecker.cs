@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HybridCPU.Compiler.Core.IR.Authority;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
 
@@ -33,11 +34,11 @@ namespace HybridCPU.Compiler.Core.IR
 
             if (instructions.Count <= 1)
             {
-                IrSlotAssignmentAnalysis trivialSlotAnalysis = HybridCpuSlotModel.AnalyzeAssignment(GetLegalSlotMasks(instructions));
+                IrSlotAssignmentAnalysis trivialSlotAnalysis = HybridCpuSlotModel.AnalyzeStructuralAssignment(GetStructurallyAllowedSlotMasks(instructions));
                 IrStructuralResourceAnalysis trivialStructuralAnalysis = HybridCpuStructuralResourceModel.AnalyzeResources(instructions);
                 return new IrCandidateBundleAnalysis(
                     Instructions: instructions,
-                    Legality: IrBundleLegalityResult.Legal,
+                    Legality: IrBundleLegalityResult.StructurallyAdmissible,
                     SlotAnalysis: trivialSlotAnalysis,
                     StructuralAnalysis: trivialStructuralAnalysis,
                     ClassCapacityResult: capacityResult);
@@ -55,7 +56,7 @@ namespace HybridCPU.Compiler.Core.IR
                 }
             }
 
-            IrSlotAssignmentAnalysis slotAnalysis = HybridCpuSlotModel.AnalyzeAssignment(GetLegalSlotMasks(instructions));
+            IrSlotAssignmentAnalysis slotAnalysis = HybridCpuSlotModel.AnalyzeStructuralAssignment(GetStructurallyAllowedSlotMasks(instructions));
             AddSlotHazards(slotAnalysis, hazards);
             IrStructuralResourceAnalysis structuralAnalysis = HybridCpuStructuralResourceModel.AnalyzeResources(instructions);
 
@@ -68,11 +69,40 @@ namespace HybridCPU.Compiler.Core.IR
         }
 
         /// <summary>
-        /// Evaluates whether the provided instructions may legally coexist in one cycle group.
+        /// Analyzes compiler structural admission for the provided instructions.
+        /// This result is evidence only; runtime Legality A/B remain runtime-owned.
         /// </summary>
+        public CompilerStructuralBundleAdmissionResult AnalyzeStructuralCandidateBundle(
+            IReadOnlyList<IrInstruction> instructions)
+        {
+            IrBundleLegalityResult result = AnalyzeCandidateBundle(instructions).Legality;
+            return CompilerStructuralAuthorityQuarantine.FromBundleLegalityResult(
+                result,
+                nameof(AnalyzeStructuralCandidateBundle));
+        }
+
+        /// <summary>
+        /// Legacy structural legality surface. Use AnalyzeStructuralCandidateBundle for typed authority.
+        /// </summary>
+        [Obsolete(
+            "EvaluateCandidateBundle returns compiler structural evidence only; use AnalyzeStructuralCandidateBundle.",
+            false)]
         public IrBundleLegalityResult EvaluateCandidateBundle(IReadOnlyList<IrInstruction> instructions)
         {
             return AnalyzeCandidateBundle(instructions).Legality;
+        }
+
+        /// <summary>
+        /// Analyzes cluster-prepared compiler structural admission for an instruction group.
+        /// This result is evidence only; runtime Legality A/B remain runtime-owned.
+        /// </summary>
+        public CompilerStructuralBundleAdmissionResult AnalyzeClusterPreparedStructuralAdmission(
+            IReadOnlyList<IrInstruction> instructions)
+        {
+            IrBundleLegalityResult result = EvaluateClusterPreparedLegalityCore(instructions);
+            return CompilerStructuralAuthorityQuarantine.FromBundleLegalityResult(
+                result,
+                nameof(AnalyzeClusterPreparedStructuralAdmission));
         }
 
         /// <summary>
@@ -83,7 +113,15 @@ namespace HybridCPU.Compiler.Core.IR
         /// </summary>
         /// <param name="instructions">The candidate instruction group.</param>
         /// <returns>Legality result including cluster-prepared-specific hazards.</returns>
+        [Obsolete(
+            "EvaluateClusterPreparedLegality returns compiler structural evidence only; use AnalyzeClusterPreparedStructuralAdmission.",
+            false)]
         public IrBundleLegalityResult EvaluateClusterPreparedLegality(IReadOnlyList<IrInstruction> instructions)
+        {
+            return EvaluateClusterPreparedLegalityCore(instructions);
+        }
+
+        private IrBundleLegalityResult EvaluateClusterPreparedLegalityCore(IReadOnlyList<IrInstruction> instructions)
         {
             ArgumentNullException.ThrowIfNull(instructions);
 
@@ -91,7 +129,7 @@ namespace HybridCPU.Compiler.Core.IR
             IrCandidateBundleAnalysis baseAnalysis = AnalyzeCandidateBundle(instructions);
 
             // If already illegal under standard checks, return as-is
-            if (!baseAnalysis.IsLegal)
+            if (!baseAnalysis.IsStructurallyAdmissible)
                 return baseAnalysis.Legality;
 
             if (instructions.Count <= 1)
@@ -103,9 +141,9 @@ namespace HybridCPU.Compiler.Core.IR
             int scalarCount = 0;
             for (int i = 0; i < instructions.Count; i++)
             {
-                IrIssueSlotMask legalSlots = instructions[i].Annotation.LegalSlots;
-                if ((legalSlots & IrIssueSlotMask.Scalar) != IrIssueSlotMask.None &&
-                    (legalSlots & ~IrIssueSlotMask.Scalar) == IrIssueSlotMask.None)
+                IrIssueSlotMask structurallyAllowedSlots = instructions[i].Annotation.StructurallyAllowedSlots;
+                if ((structurallyAllowedSlots & IrIssueSlotMask.Scalar) != IrIssueSlotMask.None &&
+                    (structurallyAllowedSlots & ~IrIssueSlotMask.Scalar) == IrIssueSlotMask.None)
                 {
                     // Instruction is scalar-only (can only go in slots 0-3)
                     scalarCount++;
@@ -171,9 +209,9 @@ namespace HybridCPU.Compiler.Core.IR
         /// </summary>
         private static bool IsScalarOnlyInstruction(IrInstruction instruction)
         {
-            IrIssueSlotMask legalSlots = instruction.Annotation.LegalSlots;
-            return (legalSlots & IrIssueSlotMask.Scalar) != IrIssueSlotMask.None &&
-                   (legalSlots & ~IrIssueSlotMask.Scalar) == IrIssueSlotMask.None;
+            IrIssueSlotMask structurallyAllowedSlots = instruction.Annotation.StructurallyAllowedSlots;
+            return (structurallyAllowedSlots & IrIssueSlotMask.Scalar) != IrIssueSlotMask.None &&
+                   (structurallyAllowedSlots & ~IrIssueSlotMask.Scalar) == IrIssueSlotMask.None;
         }
 
         /// <summary>
@@ -392,7 +430,7 @@ namespace HybridCPU.Compiler.Core.IR
                 return;
             }
 
-            if (!slotAnalysis.HasLegalAssignment)
+            if (!slotAnalysis.HasStructuralPlacement)
             {
                 hazards.Add(new IrHazardDiagnostic(
                     Category: IrHazardCategory.Slot,
@@ -400,19 +438,19 @@ namespace HybridCPU.Compiler.Core.IR
                     LeftInstructionIndex: null,
                     RightInstructionIndex: null,
                     Message: "Candidate group has no legal slot assignment under the current HybridCPU slot model.",
-                    RelevantSlots: slotAnalysis.CombinedLegalSlots));
+                    RelevantSlots: slotAnalysis.StructurallyAllowedSlots));
             }
         }
 
-        private static IReadOnlyList<IrIssueSlotMask> GetLegalSlotMasks(IReadOnlyList<IrInstruction> instructions)
+        private static IReadOnlyList<IrIssueSlotMask> GetStructurallyAllowedSlotMasks(IReadOnlyList<IrInstruction> instructions)
         {
-            var legalSlots = new List<IrIssueSlotMask>(instructions.Count);
+            var structurallyAllowedSlots = new List<IrIssueSlotMask>(instructions.Count);
             foreach (IrInstruction instruction in instructions)
             {
-                legalSlots.Add(instruction.Annotation.LegalSlots);
+                structurallyAllowedSlots.Add(instruction.Annotation.StructurallyAllowedSlots);
             }
 
-            return legalSlots;
+            return structurallyAllowedSlots;
         }
 
     }

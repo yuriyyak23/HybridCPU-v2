@@ -261,21 +261,21 @@ namespace HybridCPU.Compiler.Core.IR
                 return false;
             }
 
-            return TryGetSinglePinnedSlot(producer.Annotation.LegalSlots, out IrIssueSlotMask producerSlot) &&
-                   TryGetSinglePinnedSlot(consumer.Annotation.LegalSlots, out IrIssueSlotMask consumerSlot) &&
+            return TryGetSinglePinnedSlot(producer.Annotation.StructurallyAllowedSlots, out IrIssueSlotMask producerSlot) &&
+                   TryGetSinglePinnedSlot(consumer.Annotation.StructurallyAllowedSlots, out IrIssueSlotMask consumerSlot) &&
                    producerSlot == consumerSlot;
         }
 
-        private static bool TryGetSinglePinnedSlot(IrIssueSlotMask legalSlots, out IrIssueSlotMask singleSlot)
+        private static bool TryGetSinglePinnedSlot(IrIssueSlotMask structurallyAllowedSlots, out IrIssueSlotMask singleSlot)
         {
-            uint slotMask = (uint)legalSlots;
+            uint slotMask = (uint)structurallyAllowedSlots;
             if (slotMask == 0 || BitOperations.PopCount(slotMask) != 1)
             {
                 singleSlot = IrIssueSlotMask.None;
                 return false;
             }
 
-            singleSlot = legalSlots;
+            singleSlot = structurallyAllowedSlots;
             return true;
         }
     }

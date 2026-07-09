@@ -20,10 +20,10 @@ public sealed class MatrixTileFormalArithmeticAndLayoutTests
 
         Assert.True(MatrixTileLayoutPolicyAbi.Validate(
             macc,
-            MatrixTileProjectedOperationKind.Macc).IsValid);
+            MatrixTileProjectedOperationKind.Macc).IsRuntimeOwnedLayoutPolicyAccepted);
         Assert.True(MatrixTileLayoutPolicyAbi.Validate(
             transpose,
-            MatrixTileProjectedOperationKind.Transpose).IsValid);
+            MatrixTileProjectedOperationKind.Transpose).IsRuntimeOwnedLayoutPolicyAccepted);
         Assert.NotEqual(0UL, macc.Fingerprint);
         Assert.NotEqual(macc.Fingerprint, transpose.Fingerprint);
         Assert.Equal(

@@ -29,7 +29,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                 CreateGuardDecision(descriptorBytes, carrier),
                 carrier);
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         Assert.NotNull(result.Descriptor);
         Assert.Equal(DmaStreamComputeValidationFault.None, result.Fault);
         Assert.Equal(DmaStreamComputeOperationKind.Add, result.Descriptor.Operation);
@@ -50,7 +50,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Null(result.Descriptor);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, result.Fault);
         Assert.Contains("explicit owner/domain guard decision", result.Message, StringComparison.OrdinalIgnoreCase);
@@ -72,7 +72,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Null(result.Descriptor);
         Assert.Equal(DmaStreamComputeValidationFault.ReservedFieldFault, result.Fault);
     }
@@ -97,7 +97,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                     descriptorBytes,
                     CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Null(result.Descriptor);
         Assert.Equal(expectedFault, result.Fault);
         Assert.Throws<InvalidOperationException>(() => result.RequireDescriptorForAdmission());
@@ -116,7 +116,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Null(result.Descriptor);
         Assert.Equal(DmaStreamComputeValidationFault.UnsupportedShape, result.Fault);
         Assert.Contains("inline contiguous", result.Message, StringComparison.OrdinalIgnoreCase);
@@ -135,7 +135,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Null(result.Descriptor);
         Assert.Equal(DmaStreamComputeValidationFault.ReservedFieldFault, result.Fault);
         Assert.Contains("all-or-none", result.Message, StringComparison.OrdinalIgnoreCase);
@@ -154,7 +154,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.ZeroLengthFault, result.Fault);
     }
 
@@ -171,7 +171,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.AlignmentFault, result.Fault);
     }
 
@@ -191,7 +191,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.RangeOverflow, result.Fault);
     }
 
@@ -212,7 +212,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.TryDecodeRawVliwCarrier(in instruction, slotIndex: 6);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.DescriptorCarrierDecodeFault, result.Fault);
         Assert.Contains("word0[47:40]", result.Message, StringComparison.Ordinal);
     }
@@ -231,7 +231,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.TryDecodeRawVliwCarrier(in instruction, slotIndex: 6);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.DescriptorCarrierDecodeFault, result.Fault);
         Assert.Contains("word3[50]", result.Message, StringComparison.Ordinal);
     }
@@ -250,7 +250,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.TryDecodeRawVliwCarrier(in instruction, slotIndex: 6);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.DescriptorCarrierDecodeFault, result.Fault);
         Assert.Contains("word3[49:48]", result.Message, StringComparison.Ordinal);
     }
@@ -366,7 +366,7 @@ public sealed class DmaStreamComputeDescriptorAbiTests
             DmaStreamComputeDescriptorParser.ReadStructuralOwnerBinding(
                 descriptorBytes,
                 descriptorReference);
-        Assert.True(structuralRead.IsValid, structuralRead.Message);
+        Assert.True(structuralRead.IsStructuralDescriptorReadAccepted, structuralRead.Message);
         DmaStreamComputeOwnerBinding ownerBinding =
             structuralRead.RequireOwnerBindingForGuard();
         var context = new DmaStreamComputeOwnerGuardContext(

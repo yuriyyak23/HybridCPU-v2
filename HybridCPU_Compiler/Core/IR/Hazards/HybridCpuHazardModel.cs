@@ -21,7 +21,7 @@ namespace HybridCPU.Compiler.Core.IR
             IrSerializationKind serialization = ClassifySerialization(opcode, resourceClass);
             IrLatencyClass latencyClass = ClassifyLatency(resourceClass, serialization);
             byte minimumLatencyCycles = opcodeInfo?.ExecutionLatency ?? GetFallbackLatencyCycles(resourceClass, latencyClass);
-            IrIssueSlotMask legalSlots = HybridCpuSlotModel.GetLegalSlots(resourceClass, opcodeInfo);
+            IrIssueSlotMask structurallyAllowedSlots = HybridCpuSlotModel.GetStructurallyAllowedSlots(resourceClass, opcodeInfo);
             IrStructuralResource structuralResources = ClassifyStructuralResources(opcode, opcodeInfo, resourceClass);
             SlotClass derivedSlotClass = IrSlotClassMapping.ToSlotClass(resourceClass);
             IrSlotBindingKind derivedBindingKind = IrSlotClassMapping.DerivePinningKind(resourceClass, serialization);
@@ -31,7 +31,7 @@ namespace HybridCPU.Compiler.Core.IR
                 ResourceClass: resourceClass,
                 LatencyClass: latencyClass,
                 MinimumLatencyCycles: minimumLatencyCycles,
-                LegalSlots: legalSlots,
+                LegalSlots: structurallyAllowedSlots,
                 Serialization: serialization,
                 StructuralResources: structuralResources,
                 DerivedSlotClass: derivedSlotClass,

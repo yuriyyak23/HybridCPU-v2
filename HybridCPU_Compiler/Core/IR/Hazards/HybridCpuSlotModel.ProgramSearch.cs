@@ -10,46 +10,84 @@ namespace HybridCPU.Compiler.Core.IR
         /// <summary>
         /// Searches legal placement triplets for three adjacent bundles without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchAdjacentBundleTripletStructuralAssignments.",
+            false)]
         public static IrAdjacentBundleTripletPlacementSearchResult SearchAdjacentBundleTripletAssignments(
             IReadOnlyList<IrIssueSlotMask> firstBundleLegalSlots,
             IReadOnlyList<IrIssueSlotMask> secondBundleLegalSlots,
             IReadOnlyList<IrIssueSlotMask> thirdBundleLegalSlots)
         {
-            return SearchAdjacentBundleTripletAssignments(firstBundleLegalSlots, secondBundleLegalSlots, thirdBundleLegalSlots, previousInstructionSlots: null);
+            return SearchAdjacentBundleTripletStructuralAssignments(firstBundleLegalSlots, secondBundleLegalSlots, thirdBundleLegalSlots, previousInstructionSlots: null);
         }
 
         /// <summary>
         /// Searches legal placement triplets for three adjacent bundles with incoming previous-bundle context without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchAdjacentBundleTripletStructuralAssignments.",
+            false)]
         public static IrAdjacentBundleTripletPlacementSearchResult SearchAdjacentBundleTripletAssignments(
             IReadOnlyList<IrIssueSlotMask> firstBundleLegalSlots,
             IReadOnlyList<IrIssueSlotMask> secondBundleLegalSlots,
             IReadOnlyList<IrIssueSlotMask> thirdBundleLegalSlots,
             IReadOnlyList<int>? previousInstructionSlots)
         {
-            return SearchAdjacentBundleTripletAssignments(firstBundleLegalSlots, secondBundleLegalSlots, thirdBundleLegalSlots, previousInstructionSlots, default);
+            return SearchAdjacentBundleTripletStructuralAssignments(firstBundleLegalSlots, secondBundleLegalSlots, thirdBundleLegalSlots, previousInstructionSlots, default);
         }
 
-        internal static IrAdjacentBundleTripletPlacementSearchResult SearchAdjacentBundleTripletAssignments(
-            IReadOnlyList<IrIssueSlotMask> firstBundleLegalSlots,
-            IReadOnlyList<IrIssueSlotMask> secondBundleLegalSlots,
-            IReadOnlyList<IrIssueSlotMask> thirdBundleLegalSlots,
+        /// <summary>
+        /// Searches structural placement triplets for three adjacent bundles without changing scheduler order.
+        /// </summary>
+        public static IrAdjacentBundleTripletPlacementSearchResult SearchAdjacentBundleTripletStructuralAssignments(
+            IReadOnlyList<IrIssueSlotMask> firstBundleStructurallyAllowedSlots,
+            IReadOnlyList<IrIssueSlotMask> secondBundleStructurallyAllowedSlots,
+            IReadOnlyList<IrIssueSlotMask> thirdBundleStructurallyAllowedSlots)
+        {
+            return SearchAdjacentBundleTripletStructuralAssignments(
+                firstBundleStructurallyAllowedSlots,
+                secondBundleStructurallyAllowedSlots,
+                thirdBundleStructurallyAllowedSlots,
+                previousInstructionSlots: null);
+        }
+
+        /// <summary>
+        /// Searches structural placement triplets for three adjacent bundles with incoming previous-bundle context.
+        /// </summary>
+        public static IrAdjacentBundleTripletPlacementSearchResult SearchAdjacentBundleTripletStructuralAssignments(
+            IReadOnlyList<IrIssueSlotMask> firstBundleStructurallyAllowedSlots,
+            IReadOnlyList<IrIssueSlotMask> secondBundleStructurallyAllowedSlots,
+            IReadOnlyList<IrIssueSlotMask> thirdBundleStructurallyAllowedSlots,
+            IReadOnlyList<int>? previousInstructionSlots)
+        {
+            return SearchAdjacentBundleTripletStructuralAssignments(
+                firstBundleStructurallyAllowedSlots,
+                secondBundleStructurallyAllowedSlots,
+                thirdBundleStructurallyAllowedSlots,
+                previousInstructionSlots,
+                default);
+        }
+
+        internal static IrAdjacentBundleTripletPlacementSearchResult SearchAdjacentBundleTripletStructuralAssignments(
+            IReadOnlyList<IrIssueSlotMask> firstBundleStructurallyAllowedSlots,
+            IReadOnlyList<IrIssueSlotMask> secondBundleStructurallyAllowedSlots,
+            IReadOnlyList<IrIssueSlotMask> thirdBundleStructurallyAllowedSlots,
             IReadOnlyList<int>? previousInstructionSlots,
             HybridCpuBackendPlacementTieBreakContext tieBreakContext)
         {
-            ArgumentNullException.ThrowIfNull(firstBundleLegalSlots);
-            ArgumentNullException.ThrowIfNull(secondBundleLegalSlots);
-            ArgumentNullException.ThrowIfNull(thirdBundleLegalSlots);
+            ArgumentNullException.ThrowIfNull(firstBundleStructurallyAllowedSlots);
+            ArgumentNullException.ThrowIfNull(secondBundleStructurallyAllowedSlots);
+            ArgumentNullException.ThrowIfNull(thirdBundleStructurallyAllowedSlots);
 
-            IrSlotAssignmentAnalysis firstAnalysis = AnalyzeAssignment(firstBundleLegalSlots);
-            IrSlotAssignmentAnalysis secondAnalysis = AnalyzeAssignment(secondBundleLegalSlots);
-            IrSlotAssignmentAnalysis thirdAnalysis = AnalyzeAssignment(thirdBundleLegalSlots);
-            if (!firstAnalysis.HasLegalAssignment
-                || !secondAnalysis.HasLegalAssignment
-                || !thirdAnalysis.HasLegalAssignment
-                || firstBundleLegalSlots.Count == 0
-                || secondBundleLegalSlots.Count == 0
-                || thirdBundleLegalSlots.Count == 0)
+            IrSlotAssignmentAnalysis firstAnalysis = AnalyzeStructuralAssignment(firstBundleStructurallyAllowedSlots);
+            IrSlotAssignmentAnalysis secondAnalysis = AnalyzeStructuralAssignment(secondBundleStructurallyAllowedSlots);
+            IrSlotAssignmentAnalysis thirdAnalysis = AnalyzeStructuralAssignment(thirdBundleStructurallyAllowedSlots);
+            if (!firstAnalysis.HasStructuralPlacement
+                || !secondAnalysis.HasStructuralPlacement
+                || !thirdAnalysis.HasStructuralPlacement
+                || firstBundleStructurallyAllowedSlots.Count == 0
+                || secondBundleStructurallyAllowedSlots.Count == 0
+                || thirdBundleStructurallyAllowedSlots.Count == 0)
             {
                 return new IrAdjacentBundleTripletPlacementSearchResult(
                     firstAnalysis,
@@ -60,9 +98,9 @@ namespace HybridCPU.Compiler.Core.IR
                     IrAdjacentBundleTripletPlacementSearchSummary.Empty);
             }
 
-            List<IrBundlePlacementCandidate> firstBundleCandidates = EnumeratePlacementCandidates(firstBundleLegalSlots);
-            List<IrBundlePlacementCandidate> secondBundleCandidates = EnumeratePlacementCandidates(secondBundleLegalSlots);
-            List<IrBundlePlacementCandidate> thirdBundleCandidates = EnumeratePlacementCandidates(thirdBundleLegalSlots);
+            List<IrBundlePlacementCandidate> firstBundleCandidates = EnumerateStructuralPlacementCandidates(firstBundleStructurallyAllowedSlots);
+            List<IrBundlePlacementCandidate> secondBundleCandidates = EnumerateStructuralPlacementCandidates(secondBundleStructurallyAllowedSlots);
+            List<IrBundlePlacementCandidate> thirdBundleCandidates = EnumerateStructuralPlacementCandidates(thirdBundleStructurallyAllowedSlots);
             if (firstBundleCandidates.Count == 0 || secondBundleCandidates.Count == 0 || thirdBundleCandidates.Count == 0)
             {
                 return new IrAdjacentBundleTripletPlacementSearchResult(
@@ -130,21 +168,45 @@ namespace HybridCPU.Compiler.Core.IR
         /// <summary>
         /// Searches legal placements for a whole basic-block bundle sequence without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchBasicBlockStructuralAssignments.",
+            false)]
         public static IrBasicBlockPlacementSearchResult SearchBasicBlockAssignments(IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleLegalSlots)
         {
-            return SearchBasicBlockAssignments(bundleLegalSlots, previousInstructionSlots: null);
+            return SearchBasicBlockStructuralAssignments(bundleLegalSlots, previousInstructionSlots: null);
         }
 
         /// <summary>
         /// Searches legal placements for a whole basic-block bundle sequence with incoming previous-bundle context without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchBasicBlockStructuralAssignments.",
+            false)]
         public static IrBasicBlockPlacementSearchResult SearchBasicBlockAssignments(
             IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleLegalSlots,
             IReadOnlyList<int>? previousInstructionSlots)
         {
-            ArgumentNullException.ThrowIfNull(bundleLegalSlots);
+            return SearchBasicBlockStructuralAssignments(bundleLegalSlots, previousInstructionSlots);
+        }
 
-            if (bundleLegalSlots.Count == 0)
+        /// <summary>
+        /// Searches structural placements for a whole basic-block bundle sequence without changing scheduler order.
+        /// </summary>
+        public static IrBasicBlockPlacementSearchResult SearchBasicBlockStructuralAssignments(IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleStructurallyAllowedSlots)
+        {
+            return SearchBasicBlockStructuralAssignments(bundleStructurallyAllowedSlots, previousInstructionSlots: null);
+        }
+
+        /// <summary>
+        /// Searches structural placements for a whole basic-block bundle sequence with incoming previous-bundle context.
+        /// </summary>
+        public static IrBasicBlockPlacementSearchResult SearchBasicBlockStructuralAssignments(
+            IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleStructurallyAllowedSlots,
+            IReadOnlyList<int>? previousInstructionSlots)
+        {
+            ArgumentNullException.ThrowIfNull(bundleStructurallyAllowedSlots);
+
+            if (bundleStructurallyAllowedSlots.Count == 0)
             {
                 return new IrBasicBlockPlacementSearchResult(
                     Array.Empty<IrSlotAssignmentAnalysis>(),
@@ -153,16 +215,16 @@ namespace HybridCPU.Compiler.Core.IR
                     IrBasicBlockPlacementSearchSummary.Empty);
             }
 
-            var bundleAnalyses = new IrSlotAssignmentAnalysis[bundleLegalSlots.Count];
-            var bundleCandidates = new List<IrBundlePlacementCandidate>[bundleLegalSlots.Count];
-            for (int bundleIndex = 0; bundleIndex < bundleLegalSlots.Count; bundleIndex++)
+            var bundleAnalyses = new IrSlotAssignmentAnalysis[bundleStructurallyAllowedSlots.Count];
+            var bundleCandidates = new List<IrBundlePlacementCandidate>[bundleStructurallyAllowedSlots.Count];
+            for (int bundleIndex = 0; bundleIndex < bundleStructurallyAllowedSlots.Count; bundleIndex++)
             {
-                IReadOnlyList<IrIssueSlotMask> currentBundleLegalSlots = bundleLegalSlots[bundleIndex];
-                ArgumentNullException.ThrowIfNull(currentBundleLegalSlots);
+                IReadOnlyList<IrIssueSlotMask> currentBundleStructurallyAllowedSlots = bundleStructurallyAllowedSlots[bundleIndex];
+                ArgumentNullException.ThrowIfNull(currentBundleStructurallyAllowedSlots);
 
-                IrSlotAssignmentAnalysis analysis = AnalyzeAssignment(currentBundleLegalSlots);
+                IrSlotAssignmentAnalysis analysis = AnalyzeStructuralAssignment(currentBundleStructurallyAllowedSlots);
                 bundleAnalyses[bundleIndex] = analysis;
-                if (!analysis.HasLegalAssignment || currentBundleLegalSlots.Count == 0)
+                if (!analysis.HasStructuralPlacement || currentBundleStructurallyAllowedSlots.Count == 0)
                 {
                     return new IrBasicBlockPlacementSearchResult(
                         bundleAnalyses,
@@ -171,7 +233,7 @@ namespace HybridCPU.Compiler.Core.IR
                         IrBasicBlockPlacementSearchSummary.Empty);
                 }
 
-                List<IrBundlePlacementCandidate> evaluatedCandidates = EnumeratePlacementCandidates(currentBundleLegalSlots);
+                List<IrBundlePlacementCandidate> evaluatedCandidates = EnumerateStructuralPlacementCandidates(currentBundleStructurallyAllowedSlots);
                 if (evaluatedCandidates.Count == 0)
                 {
                     return new IrBasicBlockPlacementSearchResult(
@@ -209,29 +271,53 @@ namespace HybridCPU.Compiler.Core.IR
         /// <summary>
         /// Searches scalable global placements for a whole basic-block bundle sequence without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchGlobalBasicBlockStructuralAssignments.",
+            false)]
         public static IrGlobalBasicBlockPlacementSearchResult SearchGlobalBasicBlockAssignments(IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleLegalSlots)
         {
-            return SearchGlobalBasicBlockAssignments(bundleLegalSlots, previousInstructionSlots: null);
+            return SearchGlobalBasicBlockStructuralAssignments(bundleLegalSlots, previousInstructionSlots: null);
         }
 
         /// <summary>
         /// Searches scalable global placements for a whole basic-block bundle sequence with incoming previous-bundle context without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchGlobalBasicBlockStructuralAssignments.",
+            false)]
         public static IrGlobalBasicBlockPlacementSearchResult SearchGlobalBasicBlockAssignments(
             IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleLegalSlots,
             IReadOnlyList<int>? previousInstructionSlots)
         {
-            return SearchGlobalBasicBlockAssignments(bundleLegalSlots, previousInstructionSlots, default);
+            return SearchGlobalBasicBlockStructuralAssignments(bundleLegalSlots, previousInstructionSlots, default);
         }
 
-        internal static IrGlobalBasicBlockPlacementSearchResult SearchGlobalBasicBlockAssignments(
-            IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleLegalSlots,
+        /// <summary>
+        /// Searches scalable global structural placements for a whole basic-block bundle sequence.
+        /// </summary>
+        public static IrGlobalBasicBlockPlacementSearchResult SearchGlobalBasicBlockStructuralAssignments(IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleStructurallyAllowedSlots)
+        {
+            return SearchGlobalBasicBlockStructuralAssignments(bundleStructurallyAllowedSlots, previousInstructionSlots: null);
+        }
+
+        /// <summary>
+        /// Searches scalable global structural placements with incoming previous-bundle context.
+        /// </summary>
+        public static IrGlobalBasicBlockPlacementSearchResult SearchGlobalBasicBlockStructuralAssignments(
+            IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleStructurallyAllowedSlots,
+            IReadOnlyList<int>? previousInstructionSlots)
+        {
+            return SearchGlobalBasicBlockStructuralAssignments(bundleStructurallyAllowedSlots, previousInstructionSlots, default);
+        }
+
+        internal static IrGlobalBasicBlockPlacementSearchResult SearchGlobalBasicBlockStructuralAssignments(
+            IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleStructurallyAllowedSlots,
             IReadOnlyList<int>? previousInstructionSlots,
             HybridCpuBackendPlacementTieBreakContext tieBreakContext)
         {
-            ArgumentNullException.ThrowIfNull(bundleLegalSlots);
+            ArgumentNullException.ThrowIfNull(bundleStructurallyAllowedSlots);
 
-            if (bundleLegalSlots.Count == 0)
+            if (bundleStructurallyAllowedSlots.Count == 0)
             {
                 return new IrGlobalBasicBlockPlacementSearchResult(
                     Array.Empty<IrSlotAssignmentAnalysis>(),
@@ -239,7 +325,7 @@ namespace HybridCPU.Compiler.Core.IR
                     IrGlobalBasicBlockPlacementSearchSummary.Empty);
             }
 
-            if (!TryCollectBundlePlacementCandidates(bundleLegalSlots, out IrSlotAssignmentAnalysis[] bundleAnalyses, out List<IrBundlePlacementCandidate>[] bundleCandidates))
+            if (!TryCollectBundlePlacementCandidates(bundleStructurallyAllowedSlots, out IrSlotAssignmentAnalysis[] bundleAnalyses, out List<IrBundlePlacementCandidate>[] bundleCandidates))
             {
                 return new IrGlobalBasicBlockPlacementSearchResult(
                     bundleAnalyses,
@@ -297,29 +383,53 @@ namespace HybridCPU.Compiler.Core.IR
         /// <summary>
         /// Searches scalable global placements for a whole program without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchProgramStructuralAssignments.",
+            false)]
         public static IrProgramPlacementSearchResult SearchProgramAssignments(IReadOnlyList<IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>> programLegalSlots)
         {
-            return SearchProgramAssignments(programLegalSlots, previousInstructionSlots: null);
+            return SearchProgramStructuralAssignments(programLegalSlots, previousInstructionSlots: null);
         }
 
         /// <summary>
         /// Searches scalable global placements for a whole program with incoming previous-bundle context without changing scheduler order.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement search consumes structurally allowed slot facts only; use SearchProgramStructuralAssignments.",
+            false)]
         public static IrProgramPlacementSearchResult SearchProgramAssignments(
             IReadOnlyList<IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>> programLegalSlots,
             IReadOnlyList<int>? previousInstructionSlots)
         {
-            return SearchProgramAssignments(programLegalSlots, previousInstructionSlots, default);
+            return SearchProgramStructuralAssignments(programLegalSlots, previousInstructionSlots, default);
         }
 
-        internal static IrProgramPlacementSearchResult SearchProgramAssignments(
-            IReadOnlyList<IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>> programLegalSlots,
+        /// <summary>
+        /// Searches scalable global structural placements for a whole program.
+        /// </summary>
+        public static IrProgramPlacementSearchResult SearchProgramStructuralAssignments(IReadOnlyList<IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>> programStructurallyAllowedSlots)
+        {
+            return SearchProgramStructuralAssignments(programStructurallyAllowedSlots, previousInstructionSlots: null);
+        }
+
+        /// <summary>
+        /// Searches scalable global structural placements for a whole program with incoming previous-bundle context.
+        /// </summary>
+        public static IrProgramPlacementSearchResult SearchProgramStructuralAssignments(
+            IReadOnlyList<IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>> programStructurallyAllowedSlots,
+            IReadOnlyList<int>? previousInstructionSlots)
+        {
+            return SearchProgramStructuralAssignments(programStructurallyAllowedSlots, previousInstructionSlots, default);
+        }
+
+        internal static IrProgramPlacementSearchResult SearchProgramStructuralAssignments(
+            IReadOnlyList<IReadOnlyList<IReadOnlyList<IrIssueSlotMask>>> programStructurallyAllowedSlots,
             IReadOnlyList<int>? previousInstructionSlots,
             HybridCpuBackendPlacementTieBreakContext tieBreakContext)
         {
-            ArgumentNullException.ThrowIfNull(programLegalSlots);
+            ArgumentNullException.ThrowIfNull(programStructurallyAllowedSlots);
 
-            if (programLegalSlots.Count == 0)
+            if (programStructurallyAllowedSlots.Count == 0)
             {
                 return new IrProgramPlacementSearchResult(
                     Array.Empty<IReadOnlyList<IrSlotAssignmentAnalysis>>(),
@@ -327,29 +437,29 @@ namespace HybridCPU.Compiler.Core.IR
                     IrProgramPlacementSearchSummary.Empty);
             }
 
-            var blockBundleCounts = new int[programLegalSlots.Count];
-            var flattenedBundleLegalSlots = new List<IReadOnlyList<IrIssueSlotMask>>();
-            for (int blockIndex = 0; blockIndex < programLegalSlots.Count; blockIndex++)
+            var blockBundleCounts = new int[programStructurallyAllowedSlots.Count];
+            var flattenedBundleStructurallyAllowedSlots = new List<IReadOnlyList<IrIssueSlotMask>>();
+            for (int blockIndex = 0; blockIndex < programStructurallyAllowedSlots.Count; blockIndex++)
             {
-                IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> blockLegalSlots = programLegalSlots[blockIndex];
-                ArgumentNullException.ThrowIfNull(blockLegalSlots);
-                blockBundleCounts[blockIndex] = blockLegalSlots.Count;
-                foreach (IReadOnlyList<IrIssueSlotMask> bundleLegalSlot in blockLegalSlots)
+                IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> blockStructurallyAllowedSlots = programStructurallyAllowedSlots[blockIndex];
+                ArgumentNullException.ThrowIfNull(blockStructurallyAllowedSlots);
+                blockBundleCounts[blockIndex] = blockStructurallyAllowedSlots.Count;
+                foreach (IReadOnlyList<IrIssueSlotMask> bundleStructurallyAllowedSlots in blockStructurallyAllowedSlots)
                 {
-                    flattenedBundleLegalSlots.Add(bundleLegalSlot);
+                    flattenedBundleStructurallyAllowedSlots.Add(bundleStructurallyAllowedSlots);
                 }
             }
 
-            IrGlobalBasicBlockPlacementSearchResult globalBlockSearch = SearchGlobalBasicBlockAssignments(flattenedBundleLegalSlots, previousInstructionSlots, tieBreakContext);
+            IrGlobalBasicBlockPlacementSearchResult globalBlockSearch = SearchGlobalBasicBlockStructuralAssignments(flattenedBundleStructurallyAllowedSlots, previousInstructionSlots, tieBreakContext);
             IReadOnlyList<IReadOnlyList<IrSlotAssignmentAnalysis>> blockAnalyses = SplitBlockAnalyses(globalBlockSearch.BundleAnalyses, blockBundleCounts);
-            if (!globalBlockSearch.HasLegalAssignment || globalBlockSearch.BestPlacement is null)
+            if (!globalBlockSearch.HasStructuralPlacement || globalBlockSearch.BestPlacement is null)
             {
                 return new IrProgramPlacementSearchResult(
                     blockAnalyses,
                     bestPlacement: null,
                     new IrProgramPlacementSearchSummary(
-                        programLegalSlots.Count,
-                        flattenedBundleLegalSlots.Count,
+                        programStructurallyAllowedSlots.Count,
+                        flattenedBundleStructurallyAllowedSlots.Count,
                         globalBlockSearch.Summary.EvaluatedTransitionCount,
                         globalBlockSearch.Summary.RetainedStateCount));
             }
@@ -366,8 +476,8 @@ namespace HybridCPU.Compiler.Core.IR
                 blockAnalyses,
                 new IrProgramPlacementCandidate(blockPlacements, globalBlockSearch.BestPlacement.Quality),
                 new IrProgramPlacementSearchSummary(
-                    programLegalSlots.Count,
-                    flattenedBundleLegalSlots.Count,
+                    programStructurallyAllowedSlots.Count,
+                    flattenedBundleStructurallyAllowedSlots.Count,
                     globalBlockSearch.Summary.EvaluatedTransitionCount,
                     globalBlockSearch.Summary.RetainedStateCount));
         }

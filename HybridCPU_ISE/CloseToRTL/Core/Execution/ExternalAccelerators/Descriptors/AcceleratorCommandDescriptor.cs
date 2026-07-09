@@ -258,6 +258,8 @@ public sealed record AcceleratorDescriptorValidationResult
 
     public bool IsValid => Fault == AcceleratorDescriptorFault.None && Descriptor is not null;
 
+    public bool IsDescriptorAbiAccepted => IsValid;
+
     public AcceleratorDescriptorFault Fault { get; }
 
     public AcceleratorCommandDescriptor? Descriptor { get; }
@@ -295,7 +297,7 @@ public sealed record AcceleratorDescriptorValidationResult
 
     public AcceleratorCommandDescriptor RequireDescriptor()
     {
-        if (IsValid && Descriptor is not null)
+        if (IsDescriptorAbiAccepted && Descriptor is not null)
         {
             return Descriptor;
         }

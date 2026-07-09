@@ -47,7 +47,7 @@ public sealed class MatrixTilePackageReclosureAndCompilerConformanceTests
         string runtimeMetadataPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "NonRTL",
+            "CloseToRTL",
             "Core",
             "Contracts",
             "CompilerTransport",

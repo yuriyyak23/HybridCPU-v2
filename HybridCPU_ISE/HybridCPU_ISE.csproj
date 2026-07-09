@@ -33,12 +33,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Remove="docs\**" />
 	  <Compile Remove="Legacy\VMX\**" />
-	  <EmbeddedResource Remove="docs\**" />
+	  <Compile Remove="NonRTL\Core\**" />
 	  <EmbeddedResource Remove="Legacy\VMX\**" />
-	  <None Remove="docs\**" />
+	  <EmbeddedResource Remove="NonRTL\Core\**" />
 	  <None Remove="Legacy\VMX\**" />
+	  <None Remove="NonRTL\Core\**" />
 	</ItemGroup>
 
 
@@ -283,6 +283,7 @@
 		<Folder Include="CloseToRTL\Core\Runtime\Domains\Descriptors\TrapPolicy\" />
 		<Folder Include="CloseToRTL\Core\Runtime\Domains\Legality\" />
 		<Folder Include="CloseToRTL\Core\Runtime\Domains\Scheduling\" />
+		<Folder Include="docs\securecompute prv\Plan\" />
 		<Folder Include="CloseToRTL\Core\Runtime\Domains\Services\" />
 		<Folder Include="CloseToRTL\Core\Runtime\Domains\Validation\" />
 		<Folder Include="CloseToRTL\Core\Runtime\Events\Injection\" />
@@ -379,11 +380,13 @@
 		<Folder Include="CloseToRTL\Core\Virtualization\Sideband\CompletionTransport\" />
 		<Folder Include="CloseToRTL\Core\Virtualization\Sideband\DescriptorTransport\" />
 		<Folder Include="CloseToRTL\Core\Virtualization\Sideband\EvidenceTransport\" />
+		<Folder Include="docs\ref2\VirtualiztionRefactoringNew\" />
+		<Folder Include="docs\ref2\SecureComputerefactoringNew\" />
+		<Folder Include="docs\ref2\SecureComputeActivationPlan\" />
+		<Folder Include="docs\ref2\VirtualizationActivationPlan\" />
+		<Folder Include="docs\VMXRefactoring\SuccessClosed\" />
 		<Folder Include="Legacy\Obsolete\" />
 		<Folder Include="NonRTL\Arch\Compat\" />
-		<Folder Include="NonRTL\Core\Contracts\CompilerTransport\" />
-		<Folder Include="NonRTL\Core\ControlFlow\" />
-		<Folder Include="NonRTL\Core\Diagnostics\" />
 		<Folder Include="NonRTL\Legacy\" />
 		<Folder Include="NonRTL\Processor\Configuration\" />
 		<Folder Include="NonRTL\Processor\Core\" />

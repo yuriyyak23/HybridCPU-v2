@@ -35,11 +35,10 @@ Stream,
 MatrixTile, assist, lane6 DSC, and lane7 architecture records live in
 `Documentation/Stream WhiteBook/`.
 
+
 This README deliberately compresses the current documentation map into the repository entry point. It keeps file references minimal; for deeper detail, start with:
-- `Documentation/WhiteBook/0. chapter-index.md`
-- `Documentation/operational-semantics.md`
-- `Documentation/validation-baseline.md`
-- `Documentation/evidence-matrix.md`
+
+- [WhiteBook](Documentation/WhiteBook/0.%20chapter-index.md)
 - [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md)
 - [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md)
 - [Stream WhiteBook](Documentation/Stream%20WhiteBook/00_README.md)
@@ -49,9 +48,13 @@ This README deliberately compresses the current documentation map into the repos
 - [lane7 L7-SDC external accelerator WhiteBook](Documentation/Stream%20WhiteBook/ExternalAccelerators/00_README.md)
 - [Stream WhiteBook diagram index](Documentation/Stream%20WhiteBook/ExternalAccelerators/Diagrams/00_Diagram_Index.md)
 - [ISE_Instructions list](Documentation/ISE_Instructions_By_Lane_CodeConfirmed.md)
+
+
 - [Asm short Test Results](Documentation/AsmAppTestResults.md)
 
 When this README, the WhiteBooks, older notes, and code disagree, live code and the current proof/evidence surfaces are the authority. Historical material under old documentation paths is repository archaeology unless a current proof surface cites it.
+
+
 ## Documentation Entry Points
 
 The instruction-side closure overlay and Stream WhiteBook are current
@@ -60,6 +63,7 @@ DSC, and lane7 L7-SDC surfaces.
 
 | Area | Start here | Claim boundary |
 |---|---|---|
+| Whitebook | [WhiteBook](Documentation/WhiteBook/0.%20chapter-index.md) | Main Whitebook. |
 | Virtualization | [Virtualization WhiteBook](Documentation/Virtualization%20WhiteBook/00_README.md) | Current neutral-runtime virtualization record: VMX is a frozen compatibility frontend/projection surface, not the authority owner. |
 | SecureCompute | [SecureCompute WhiteBook](Documentation/SecureCompute%20WhiteBook/SecureCompute%20HybridCPU-v2%20WhiteBook.md) | Neutral secure-domain descriptor/admission model with policy evidence, VMX denial/projection fences, and no production secure backend execution claim. |
 | VectorStream | [VectorStream](Documentation/Stream%20WhiteBook/02_VectorStream/00_README.md) | StreamEngine orchestration, SRF transient state, BurstIO transport, and VectorALU compute; no MatrixTile/DSC publication authority. |

@@ -72,7 +72,7 @@ public sealed class L7SdcEvidenceIsNotAuthorityTests
                 L7SdcTestDescriptorFactory.CreateReference(descriptorBytes),
                 telemetry);
 
-        Assert.False(descriptorResult.IsValid);
+        Assert.False(descriptorResult.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.OwnerDomainFault, descriptorResult.Fault);
 
         L7SdcPhase07Fixture accepted =

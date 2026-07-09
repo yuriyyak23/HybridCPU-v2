@@ -27,13 +27,26 @@ public readonly record struct CompilerMatrixTileDescriptorAbi(
     MatrixTileCanonicalDescriptorAbi CanonicalDescriptor,
     DataTypeEnum ElementType)
 {
+    public static bool IsKnownMatrixTileElementType(DataTypeEnum elementType)
+    {
+        try
+        {
+            _ = DataTypeUtils.SizeOf(elementType);
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+    }
+
     public static CompilerMatrixTileDescriptorAbi Create(
         ushort rows,
         ushort columns,
         DataTypeEnum elementType,
         uint strideBytes = 0)
     {
-        if (!DataTypeUtils.IsValid(elementType))
+        if (!IsKnownMatrixTileElementType(elementType))
         {
             throw new ArgumentOutOfRangeException(nameof(elementType), elementType, "Unknown MTILE element data type.");
         }
@@ -53,7 +66,7 @@ public readonly record struct CompilerMatrixTileDescriptorAbi(
 
     public void Validate(string parameterName)
     {
-        if (!DataTypeUtils.IsValid(ElementType))
+        if (!IsKnownMatrixTileElementType(ElementType))
         {
             throw new ArgumentOutOfRangeException(parameterName, ElementType, "Unknown MTILE element data type.");
         }
@@ -379,6 +392,10 @@ public static class CompilerMatrixTilePositiveEmissionAbiContract
             RowTable.Select(static row => row.HelperName)
                 .Concat(
                 [
+                    nameof(HybridCpuThreadCompilerContext.CompileMtileLoadWithDecision),
+                    nameof(HybridCpuThreadCompilerContext.CompileMtileStoreWithDecision),
+                    nameof(HybridCpuThreadCompilerContext.CompileMtileMaccWithDecision),
+                    nameof(HybridCpuThreadCompilerContext.CompileMtransposeWithDecision),
                     nameof(IAppAsmFacade.MtileLoad),
                     nameof(IAppAsmFacade.MtileStore),
                     nameof(IAppAsmFacade.MtileMacc),

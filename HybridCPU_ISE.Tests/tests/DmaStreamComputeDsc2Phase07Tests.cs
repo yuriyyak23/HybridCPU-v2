@@ -26,7 +26,7 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
                 DmaStreamComputeTestDescriptorFactory.CreateGuardDecision(descriptorBytes, reference),
                 reference);
 
-        Assert.True(valid.IsValid, valid.Message);
+        Assert.True(valid.IsDescriptorAbiAccepted, valid.Message);
         Assert.Equal(DmaStreamComputeDescriptorParser.CurrentAbiVersion, valid.Descriptor!.AbiVersion);
         Assert.Equal(DmaStreamComputeRangeEncoding.InlineContiguous, valid.Descriptor.RangeEncoding);
         Assert.Equal(DmaStreamComputePartialCompletionPolicy.AllOrNone, valid.Descriptor.PartialCompletionPolicy);
@@ -39,14 +39,14 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
             DmaStreamComputeDescriptorParser.Parse(
                 reserved,
                 DmaStreamComputeTestDescriptorFactory.CreateGuardDecision(reserved));
-        Assert.False(reservedResult.IsValid);
+        Assert.False(reservedResult.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.ReservedFieldFault, reservedResult.Fault);
 
         byte[] unknownAbi = DmaStreamComputeTestDescriptorFactory.BuildDescriptor();
         WriteUInt16(unknownAbi, HeaderAbiVersionOffset, 2);
         DmaStreamComputeValidationResult unknownAbiResult =
             DmaStreamComputeDescriptorParser.Parse(unknownAbi);
-        Assert.False(unknownAbiResult.IsValid);
+        Assert.False(unknownAbiResult.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.UnsupportedAbiVersion, unknownAbiResult.Fault);
 
         AssertDsc1RejectsEncoding(
@@ -433,7 +433,7 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
                 descriptorBytes,
                 DmaStreamComputeTestDescriptorFactory.CreateGuardDecision(descriptorBytes));
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(expectedFault, result.Fault);
     }
 
@@ -454,7 +454,7 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
             DmaStreamComputeDescriptorParser.ReadDsc2StructuralOwnerBinding(
                 descriptorBytes,
                 reference);
-        DmaStreamComputeOwnerGuardDecision guardDecision = structuralRead.IsValid
+        DmaStreamComputeOwnerGuardDecision guardDecision = structuralRead.IsStructuralDescriptorReadAccepted
             ? CreateDsc2GuardDecision(descriptorBytes, reference)
             : default;
         return DmaStreamComputeDescriptorParser.ParseDsc2ParserOnly(
@@ -479,7 +479,7 @@ public sealed class DmaStreamComputeDsc2Phase07Tests
             DmaStreamComputeDescriptorParser.ReadDsc2StructuralOwnerBinding(
                 descriptorBytes,
                 descriptorReference);
-        Assert.True(structuralRead.IsValid, structuralRead.Message);
+        Assert.True(structuralRead.IsStructuralDescriptorReadAccepted, structuralRead.Message);
 
         DmaStreamComputeOwnerBinding ownerBinding =
             structuralRead.RequireOwnerBindingForGuard();

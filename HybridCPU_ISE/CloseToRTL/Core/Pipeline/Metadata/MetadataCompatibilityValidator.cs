@@ -5,8 +5,19 @@ namespace YAKSys_Hybrid_CPU.Core
     /// </summary>
     public readonly struct ValidationResult
     {
+        private readonly bool _isValid;
+
         /// <summary>Whether the validation passed (possibly with a warning).</summary>
-        public bool IsValid { get; }
+        [Obsolete(
+            "Metadata IsValid is schema compatibility only; use IsMetadataSchemaCompatible to avoid authority ambiguity.",
+            false)]
+        public bool IsValid => _isValid;
+
+        /// <summary>
+        /// Metadata schema compatibility only. This does not grant runtime
+        /// legality, execution, publication, commit, or retire authority.
+        /// </summary>
+        public bool IsMetadataSchemaCompatible => Severity != ValidationSeverity.Error;
 
         /// <summary>Severity of the result.</summary>
         public ValidationSeverity Severity { get; }
@@ -16,7 +27,7 @@ namespace YAKSys_Hybrid_CPU.Core
 
         private ValidationResult(bool isValid, ValidationSeverity severity, string? message)
         {
-            IsValid = isValid;
+            _isValid = isValid;
             Severity = severity;
             Message = message;
         }

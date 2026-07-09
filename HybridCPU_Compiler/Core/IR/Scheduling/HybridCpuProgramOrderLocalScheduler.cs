@@ -136,7 +136,7 @@ namespace HybridCPU.Compiler.Core.IR
             }
 
             candidateInstructions.Add(instruction);
-            return _legalityChecker.AnalyzeCandidateBundle(candidateInstructions).IsLegal;
+            return _legalityChecker.AnalyzeCandidateBundle(candidateInstructions).IsStructurallyAdmissible;
         }
 
         private sealed class ProgramOrderCycleBuilder

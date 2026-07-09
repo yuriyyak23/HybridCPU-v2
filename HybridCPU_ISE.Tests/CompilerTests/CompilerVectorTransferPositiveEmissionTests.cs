@@ -323,6 +323,7 @@ public sealed class CompilerVectorTransferPositiveEmissionTests
         [
             "CompilerVectorTransferPositiveEmissionAbiContract.cs",
             "ThreadCompilerContext.VectorTransfer.cs",
+            "ThreadCompilerContext.FacadeAudit.cs",
             "IPlatformAsmFacade.cs",
             "PlatformAsmFacade.cs"
         ];

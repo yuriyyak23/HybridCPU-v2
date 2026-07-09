@@ -13,8 +13,17 @@ namespace HybridCPU.Compiler.Core.IR
         IrClassCapacityResult? ClassCapacityResult = null)
     {
         /// <summary>
-        /// Gets a value indicating whether the candidate group is legal.
+        /// Gets a value indicating whether the candidate group is structurally admissible
+        /// under the compiler hazard model. This is not runtime legality.
         /// </summary>
-        public bool IsLegal => Legality.IsLegal;
+        public bool IsStructurallyAdmissible => Legality.IsStructurallyAdmissible;
+
+        /// <summary>
+        /// Legacy compiler-side structural admission predicate.
+        /// </summary>
+        [Obsolete(
+            "Compiler-side IsLegal is structural admission evidence only; use CompilerStructuralAuthorityQuarantine.FromCandidateBundleAnalysis or IsStructurallyAdmissible wrappers.",
+            false)]
+        public bool IsLegal => IsStructurallyAdmissible;
     }
 }

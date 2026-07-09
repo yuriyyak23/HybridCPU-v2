@@ -124,7 +124,7 @@ public sealed class VmxVmcsWriteCompatibilityControlPolicyTests
             "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs",
             "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldAliasProjection.cs",
             "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Decode/VmxCompatDecodeBoundary.cs",
-            "NonRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
+            "CloseToRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
 
         Assert.Contains("CanWrite(VmcsFieldProjectionSchemaEntry entry) => false", source);
         Assert.Contains("VmcsFieldAliasDecision.WriteDenied", source);

@@ -23,14 +23,14 @@ public sealed class DmaStreamComputeDomainGuardTests
         DmaStreamComputeValidationResult unguarded =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes);
 
-        Assert.True(structural.IsValid, structural.Message);
+        Assert.True(structural.IsStructuralDescriptorReadAccepted, structural.Message);
         Assert.NotNull(structural.OwnerBinding);
         Assert.Equal(OwnerVirtualThreadId, structural.OwnerBinding.OwnerVirtualThreadId);
         Assert.Equal(OwnerContextId, structural.OwnerBinding.OwnerContextId);
         Assert.Equal(OwnerCoreId, structural.OwnerBinding.OwnerCoreId);
         Assert.Equal(OwnerPodId, structural.OwnerBinding.OwnerPodId);
         Assert.Equal(OwnerDomainTag, structural.OwnerBinding.OwnerDomainTag);
-        Assert.False(unguarded.IsValid);
+        Assert.False(unguarded.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, unguarded.Fault);
         Assert.Null(unguarded.Descriptor);
     }
@@ -52,7 +52,7 @@ public sealed class DmaStreamComputeDomainGuardTests
         Assert.Equal(RejectKind.OwnerMismatch, guardDecision.LegalityDecision.RejectKind);
         Assert.Equal(LegalityAuthoritySource.GuardPlane, guardDecision.LegalityDecision.AuthoritySource);
         Assert.False(guardDecision.LegalityDecision.AttemptedReplayCertificateReuse);
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, result.Fault);
         Assert.DoesNotContain("length", result.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -67,7 +67,7 @@ public sealed class DmaStreamComputeDomainGuardTests
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, guardDecision);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, result.Fault);
         Assert.Equal(RejectKind.OwnerMismatch, guardDecision.LegalityDecision.RejectKind);
         Assert.Equal(CertificateRejectDetail.None, guardDecision.LegalityDecision.CertificateDetail);
@@ -85,7 +85,7 @@ public sealed class DmaStreamComputeDomainGuardTests
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, guardDecision);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, result.Fault);
         Assert.Equal(RejectKind.DomainMismatch, guardDecision.LegalityDecision.RejectKind);
         Assert.Equal(CertificateRejectDetail.None, guardDecision.LegalityDecision.CertificateDetail);
@@ -103,7 +103,7 @@ public sealed class DmaStreamComputeDomainGuardTests
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, guardDecision);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, result.Fault);
         Assert.Equal(RejectKind.DomainMismatch, guardDecision.LegalityDecision.RejectKind);
         Assert.Equal(CertificateRejectDetail.None, guardDecision.LegalityDecision.CertificateDetail);
@@ -143,7 +143,7 @@ public sealed class DmaStreamComputeDomainGuardTests
 
         Assert.False(guardDecision.IsAllowed);
         Assert.Equal(RejectKind.OwnerMismatch, guardDecision.LegalityDecision.RejectKind);
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, result.Fault);
         Assert.Contains("DeviceId", result.Message, StringComparison.Ordinal);
     }
@@ -165,10 +165,10 @@ public sealed class DmaStreamComputeDomainGuardTests
         DmaStreamComputeValidationResult guardedParse =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, guardDecision);
 
-        Assert.False(rawCarrier.IsValid);
+        Assert.False(rawCarrier.IsDescriptorAbiAccepted);
         Assert.Contains("word3[49:48]", rawCarrier.Message, StringComparison.Ordinal);
         Assert.False(guardDecision.IsAllowed);
-        Assert.False(guardedParse.IsValid);
+        Assert.False(guardedParse.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, guardedParse.Fault);
     }
 
@@ -186,7 +186,7 @@ public sealed class DmaStreamComputeDomainGuardTests
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, staleAllowDecision);
 
         Assert.True(staleAllowDecision.IsAllowed);
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, result.Fault);
         Assert.Contains("does not match", result.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -209,7 +209,7 @@ public sealed class DmaStreamComputeDomainGuardTests
         var core = new Processor.CPU_Core(0);
 
         Assert.True(guardDecision.IsAllowed);
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         Assert.Equal(guardDecision, descriptor.OwnerGuardDecision);
         Assert.Equal((int)OwnerVirtualThreadId, microOp.OwnerThreadId);
         Assert.Equal((int)OwnerVirtualThreadId, microOp.VirtualThreadId);
@@ -294,7 +294,7 @@ public sealed class DmaStreamComputeDomainGuardTests
             EvaluateGuard(descriptorBytes, ValidContext);
         DmaStreamComputeValidationResult result =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, guardDecision);
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         return new DmaStreamComputeMicroOp(result.RequireDescriptorForAdmission());
     }
 
@@ -304,7 +304,7 @@ public sealed class DmaStreamComputeDomainGuardTests
     {
         DmaStreamComputeStructuralReadResult structural =
             DmaStreamComputeDescriptorParser.ReadStructuralOwnerBinding(descriptorBytes);
-        Assert.True(structural.IsValid, structural.Message);
+        Assert.True(structural.IsStructuralDescriptorReadAccepted, structural.Message);
         return new SafetyVerifier().EvaluateDmaStreamComputeOwnerGuard(
             structural.RequireOwnerBindingForGuard(),
             context);

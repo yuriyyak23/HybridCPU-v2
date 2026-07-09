@@ -236,7 +236,7 @@ namespace HybridCPU.Compiler.Core.Threading
                     descriptorBytes,
                     ownerGuardDecision,
                     descriptorReference);
-            if (!validation.IsValid)
+            if (!validation.IsDescriptorAbiAccepted)
             {
                 throw new InvalidOperationException(
                     $"DmaStreamCompute compiler emission rejected descriptor: {validation.Fault}. {validation.Message}");
@@ -458,7 +458,12 @@ namespace HybridCPU.Compiler.Core.Threading
                     "DmaStreamCompute compiler emission requires descriptor reference identity to match the accepted payload.");
             }
 
-            if (!descriptor.OwnerGuardDecision.IsAllowed)
+            CompilerRuntimeGuardObservation ownerGuardObservation =
+                CompilerRuntimeGuardObservation.FromDmaStreamComputeOwnerGuard(
+                    descriptor.OwnerGuardDecision,
+                    "HybridCpuThreadCompilerContext.EnsureDmaStreamComputeDescriptorAdmissible",
+                    "DSC owner guard is a runtime-owned admission observation only; it grants no compiler runtime legality, execution, publication, commit or retire authority.");
+            if (!ownerGuardObservation.ObservedGuardAllowsProgress)
             {
                 throw new InvalidOperationException(
                     "DmaStreamCompute compiler emission requires an accepted owner/domain guard decision before descriptor emission.");
@@ -529,7 +534,12 @@ namespace HybridCPU.Compiler.Core.Threading
                 AcceleratorOwnerDomainGuard.Default.IsDescriptorGuardBacked(
                     descriptor,
                     out string guardBackedMessage);
-            if (!descriptor.OwnerGuardDecision.IsAllowed ||
+            CompilerRuntimeGuardObservation ownerGuardObservation =
+                CompilerRuntimeGuardObservation.FromAcceleratorDescriptorOwnerGuard(
+                    descriptor.OwnerGuardDecision,
+                    "HybridCpuThreadCompilerContext.EnsureAcceleratorCommandDescriptorAdmissible.OwnerGuard",
+                    "L7-SDC descriptor owner guard is a runtime-owned admission observation only; it grants no compiler runtime legality, execution, publication, commit or retire authority.");
+            if (!ownerGuardObservation.ObservedGuardAllowsProgress ||
                 !guardBacked)
             {
                 throw new InvalidOperationException(
@@ -541,7 +551,12 @@ namespace HybridCPU.Compiler.Core.Threading
                 AcceleratorOwnerDomainGuard.Default.EnsureBeforeSubmit(
                     descriptor,
                     descriptor.OwnerGuardDecision.Evidence);
-            if (!submitGuard.IsAllowed)
+            CompilerRuntimeGuardObservation submitGuardObservation =
+                CompilerRuntimeGuardObservation.FromAcceleratorSubmitGuard(
+                    submitGuard,
+                    "HybridCpuThreadCompilerContext.EnsureAcceleratorCommandDescriptorAdmissible.SubmitGuard",
+                    "L7-SDC submit guard is a runtime-owned admission observation only; it grants no compiler runtime legality, execution, publication, commit or retire authority.");
+            if (!submitGuardObservation.ObservedGuardAllowsProgress)
             {
                 throw new InvalidOperationException(
                     "L7-SDC compiler emission requires submit guard acceptance before native opcode emission. " +

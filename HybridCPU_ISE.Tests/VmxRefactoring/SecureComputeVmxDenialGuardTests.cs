@@ -242,7 +242,7 @@ public sealed class SecureComputeVmxDenialGuardTests
             "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Decode/VmxInstructionPayload.cs",
             "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs",
             "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
-            "NonRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
+            "CloseToRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
 
         Assert.DoesNotContain("SecureCompute", source);
         Assert.DoesNotContain("SecureDomain", source);

@@ -211,7 +211,7 @@ public sealed class VmxDescriptorReadinessPolicyAuditTests
     public void DescriptorReadinessPolicySource_HasNoVmreadProjectionOrVmcsStoreFallback()
     {
         string descriptorSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "NonRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
+            "CloseToRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
         string descriptorReadinessSource = ExtractBetween(
             descriptorSource,
             "public VmcsV2ValidationResult ValidateMigrationReadiness()",

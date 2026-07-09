@@ -152,7 +152,7 @@ public sealed class L7SdcCryptoSparseDescriptorTaxonomyPhase09Tests
         AcceleratorDescriptorValidationResult parse =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(parse.IsValid);
+        Assert.False(parse.IsDescriptorAbiAccepted);
         Assert.Null(parse.Descriptor);
         Assert.Equal(AcceleratorDescriptorFault.UnsupportedAcceleratorClass, parse.Fault);
         Assert.DoesNotContain("metadata-only", parse.Message, StringComparison.OrdinalIgnoreCase);
@@ -314,7 +314,7 @@ public sealed class L7SdcCryptoSparseDescriptorTaxonomyPhase09Tests
                 descriptorBytes,
                 reference: reference);
 
-        Assert.False(parse.IsValid);
+        Assert.False(parse.IsDescriptorAbiAccepted);
         Assert.Null(parse.Descriptor);
         Assert.Equal(AcceleratorDescriptorFault.UnsupportedAcceleratorClass, parse.Fault);
         Assert.Contains("metadata-only", parse.Message, StringComparison.OrdinalIgnoreCase);

@@ -79,7 +79,7 @@ public sealed class PolicyGapBitContractTests
     {
         string repoRoot = FindRepoRoot();
         string compatLayoutPath = Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Arch", "Compat", "VLIW_Instruction.Layout.cs");
-        string compilerContractPath = Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Core", "Contracts", "CompilerContract.cs");
+        string compilerContractPath = Path.Combine(repoRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Contracts", "CompilerContract.cs");
 
         string compatLayout = File.ReadAllText(compatLayoutPath);
         string compilerContract = File.ReadAllText(compilerContractPath);
@@ -316,7 +316,7 @@ public sealed class PolicyGapBitContractTests
                 HasLegalAssignment: true,
                 InstructionLegalSlots: legalSlotMasks),
             InstructionSlots: instructionSlots,
-            Quality: IrBundlePlacementQuality.Create(instructionSlots, legalSlotMasks, slotCount: 8),
+            Quality: IrBundlePlacementQuality.CreateForStructuralSlotFacts(instructionSlots, legalSlotMasks, slotCount: 8),
             SearchSummary: IrBundlePlacementSearchSummary.Empty,
             TransitionQuality: IrBundleTransitionQuality.Empty);
 

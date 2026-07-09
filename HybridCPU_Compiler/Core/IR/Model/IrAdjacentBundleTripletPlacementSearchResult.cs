@@ -64,11 +64,19 @@ namespace HybridCPU.Compiler.Core.IR
         public IrAdjacentBundleTripletPlacementSearchSummary Summary { get; }
 
         /// <summary>
-        /// Gets a value indicating whether all three bundles have a valid adjacent placement triplet.
+        /// Gets a value indicating whether all three bundles have a structural adjacent placement triplet.
         /// </summary>
-        public bool HasLegalAssignment => FirstBundleAnalysis.HasLegalAssignment
-            && SecondBundleAnalysis.HasLegalAssignment
-            && ThirdBundleAnalysis.HasLegalAssignment
+        public bool HasStructuralPlacement => FirstBundleAnalysis.HasStructuralPlacement
+            && SecondBundleAnalysis.HasStructuralPlacement
+            && ThirdBundleAnalysis.HasStructuralPlacement
             && BestPlacementTriplet is not null;
+
+        /// <summary>
+        /// Legacy compiler-side structural placement predicate.
+        /// </summary>
+        [Obsolete(
+            "Compiler-side HasLegalAssignment is structural placement evidence only; use HasStructuralPlacement.",
+            false)]
+        public bool HasLegalAssignment => HasStructuralPlacement;
     }
 }

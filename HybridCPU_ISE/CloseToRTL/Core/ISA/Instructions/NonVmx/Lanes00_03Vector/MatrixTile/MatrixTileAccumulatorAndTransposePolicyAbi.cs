@@ -83,6 +83,8 @@ public readonly record struct MatrixTileSemanticValidationResult(
     bool RequiresReplayIdentity,
     bool UsesFallbackPath)
 {
+    public bool IsSemanticAbiAccepted => IsValid;
+
     public static MatrixTileSemanticValidationResult Valid(
         MatrixTileCanonicalDescriptorAbi resultDescriptor,
         ushort resultElementSizeBytes)
@@ -307,7 +309,7 @@ public static class MatrixTileAccumulatorAndTransposePolicyAbi
             MatrixTileLayoutPolicyAbi.Validate(
                 contract.LayoutPolicy,
                 MatrixTileProjectedOperationKind.Macc);
-        if (!layoutValidation.IsValid)
+        if (!layoutValidation.IsRuntimeOwnedLayoutPolicyAccepted)
         {
             return MatrixTileSemanticValidationResult.Fault(
                 contract.LayoutPolicy.Equals(default(MatrixTileLayoutPolicy))
@@ -319,7 +321,7 @@ public static class MatrixTileAccumulatorAndTransposePolicyAbi
                 contract.LayoutPolicy,
                 contract.Left,
                 contract.Right,
-                contract.Accumulator).IsValid)
+                contract.Accumulator).IsRuntimeOwnedLayoutPolicyAccepted)
         {
             return MatrixTileSemanticValidationResult.Fault(
                 MatrixTileSemanticFaultKind.LayoutPolicyDescriptorMismatch);
@@ -327,7 +329,7 @@ public static class MatrixTileAccumulatorAndTransposePolicyAbi
 
         MatrixTileNumericPolicyValidationResult numericValidation =
             MatrixTileNumericPolicyAbi.Validate(contract.NumericPolicy);
-        if (!numericValidation.IsValid)
+        if (!numericValidation.IsRuntimeOwnedNumericPolicyAccepted)
         {
             return MatrixTileSemanticValidationResult.Fault(
                 contract.NumericPolicy.Equals(default(MatrixTileNumericPolicy))
@@ -410,7 +412,7 @@ public static class MatrixTileAccumulatorAndTransposePolicyAbi
             MatrixTileLayoutPolicyAbi.Validate(
                 contract.LayoutPolicy,
                 MatrixTileProjectedOperationKind.Transpose);
-        if (!layoutValidation.IsValid)
+        if (!layoutValidation.IsRuntimeOwnedLayoutPolicyAccepted)
         {
             return MatrixTileSemanticValidationResult.Fault(
                 contract.LayoutPolicy.Equals(default(MatrixTileLayoutPolicy))
@@ -421,7 +423,7 @@ public static class MatrixTileAccumulatorAndTransposePolicyAbi
         if (!MatrixTileLayoutPolicyAbi.ValidateDescriptors(
                 contract.LayoutPolicy,
                 contract.Source,
-                contract.Destination).IsValid)
+                contract.Destination).IsRuntimeOwnedLayoutPolicyAccepted)
         {
             return MatrixTileSemanticValidationResult.Fault(
                 MatrixTileSemanticFaultKind.LayoutPolicyDescriptorMismatch);

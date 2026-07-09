@@ -30,26 +30,40 @@ namespace HybridCPU.Compiler.Core.IR
         {
             ArgumentNullException.ThrowIfNull(assignedSlots);
 
-            var legalSlots = new IrIssueSlotMask[assignedSlots.Count];
-            Array.Fill(legalSlots, IrIssueSlotMask.All);
-            return Create(assignedSlots, legalSlots, slotCount);
+            var structurallyAllowedSlots = new IrIssueSlotMask[assignedSlots.Count];
+            Array.Fill(structurallyAllowedSlots, IrIssueSlotMask.All);
+            return CreateForStructuralSlotFacts(assignedSlots, structurallyAllowedSlots, slotCount);
         }
 
         /// <summary>
         /// Computes quality metrics for one assigned physical slot set against the instructions' legal-slot masks.
         /// </summary>
+        [Obsolete(
+            "Compiler-side placement quality consumes structurally allowed slot facts only; use CreateForStructuralSlotFacts.",
+            false)]
         public static IrBundlePlacementQuality Create(IReadOnlyList<int> assignedSlots, IReadOnlyList<IrIssueSlotMask> legalSlots, int slotCount)
         {
+            return CreateForStructuralSlotFacts(assignedSlots, legalSlots, slotCount);
+        }
+
+        /// <summary>
+        /// Computes quality metrics for one assigned physical slot set against structural slot facts.
+        /// </summary>
+        public static IrBundlePlacementQuality CreateForStructuralSlotFacts(
+            IReadOnlyList<int> assignedSlots,
+            IReadOnlyList<IrIssueSlotMask> structurallyAllowedSlots,
+            int slotCount)
+        {
             ArgumentNullException.ThrowIfNull(assignedSlots);
-            ArgumentNullException.ThrowIfNull(legalSlots);
+            ArgumentNullException.ThrowIfNull(structurallyAllowedSlots);
             if (slotCount < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(slotCount));
             }
 
-            if (assignedSlots.Count != legalSlots.Count)
+            if (assignedSlots.Count != structurallyAllowedSlots.Count)
             {
-                throw new ArgumentException("Assigned slot count must match legal-slot count.", nameof(legalSlots));
+                throw new ArgumentException("Assigned slot count must match structural slot fact count.", nameof(structurallyAllowedSlots));
             }
 
             int occupiedSlotCount = 0;
@@ -71,7 +85,7 @@ namespace HybridCPU.Compiler.Core.IR
                 occupiedSlotCount++;
                 occupied[slot] = true;
                 slotIndexSum += slot;
-                constrainedSlotDisplacementCost += GetConstrainedSlotDisplacementCost(legalSlots[instructionIndex], slot, slotCount);
+                constrainedSlotDisplacementCost += GetConstrainedSlotDisplacementCost(structurallyAllowedSlots[instructionIndex], slot, slotCount);
                 if (slot < minSlot)
                 {
                     minSlot = slot;
@@ -139,23 +153,23 @@ namespace HybridCPU.Compiler.Core.IR
                 constrainedSlotDisplacementCost);
         }
 
-        private static int GetConstrainedSlotDisplacementCost(IrIssueSlotMask legalSlots, int assignedSlot, int slotCount)
+        private static int GetConstrainedSlotDisplacementCost(IrIssueSlotMask structurallyAllowedSlots, int assignedSlot, int slotCount)
         {
             if (assignedSlot <= 0)
             {
                 return 0;
             }
 
-            int legalSlotCount = BitOperations.PopCount((uint)legalSlots);
-            if (legalSlotCount <= 0)
+            int structurallyAllowedSlotCount = BitOperations.PopCount((uint)structurallyAllowedSlots);
+            if (structurallyAllowedSlotCount <= 0)
             {
                 return 0;
             }
 
             uint lowerSlotMask = ((uint)1 << assignedSlot) - 1u;
-            int lowerLegalSlotCount = BitOperations.PopCount((uint)legalSlots & lowerSlotMask);
-            int constraintWeight = Math.Max(1, (slotCount - legalSlotCount) + 1);
-            return lowerLegalSlotCount * constraintWeight;
+            int lowerStructurallyAllowedSlotCount = BitOperations.PopCount((uint)structurallyAllowedSlots & lowerSlotMask);
+            int constraintWeight = Math.Max(1, (slotCount - structurallyAllowedSlotCount) + 1);
+            return lowerStructurallyAllowedSlotCount * constraintWeight;
         }
     }
 }

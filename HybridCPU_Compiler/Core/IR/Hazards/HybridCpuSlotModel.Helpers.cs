@@ -7,12 +7,12 @@ namespace HybridCPU.Compiler.Core.IR
 {
     public static partial class HybridCpuSlotModel
     {
-        private static List<int> BuildAssignmentOrder(IReadOnlyList<IrIssueSlotMask> legalSlots)
+        private static List<int> BuildStructuralAssignmentOrder(IReadOnlyList<IrIssueSlotMask> structurallyAllowedSlots)
         {
-            var order = new List<int>(legalSlots.Count);
-            for (int index = 0; index < legalSlots.Count; index++)
+            var order = new List<int>(structurallyAllowedSlots.Count);
+            for (int index = 0; index < structurallyAllowedSlots.Count; index++)
             {
-                if (legalSlots[index] == IrIssueSlotMask.None)
+                if (structurallyAllowedSlots[index] == IrIssueSlotMask.None)
                 {
                     return order;
                 }
@@ -22,21 +22,21 @@ namespace HybridCPU.Compiler.Core.IR
 
             order.Sort((left, right) =>
             {
-                int comparison = GetSlotCount(legalSlots[left]).CompareTo(GetSlotCount(legalSlots[right]));
+                int comparison = GetSlotCount(structurallyAllowedSlots[left]).CompareTo(GetSlotCount(structurallyAllowedSlots[right]));
                 return comparison != 0 ? comparison : left.CompareTo(right);
             });
 
             return order;
         }
 
-        private static bool TryAssign(IReadOnlyList<int> order, int orderIndex, IReadOnlyList<IrIssueSlotMask> legalSlots, bool[] usedSlots)
+        private static bool TryAssignStructuralSlots(IReadOnlyList<int> order, int orderIndex, IReadOnlyList<IrIssueSlotMask> structurallyAllowedSlots, bool[] usedSlots)
         {
             if (orderIndex >= order.Count)
             {
                 return true;
             }
 
-            IrIssueSlotMask slotMask = legalSlots[order[orderIndex]];
+            IrIssueSlotMask slotMask = structurallyAllowedSlots[order[orderIndex]];
             for (int slot = 0; slot < SlotCount; slot++)
             {
                 if (!AllowsSlot(slotMask, slot) || usedSlots[slot])
@@ -45,7 +45,7 @@ namespace HybridCPU.Compiler.Core.IR
                 }
 
                 usedSlots[slot] = true;
-                if (TryAssign(order, orderIndex + 1, legalSlots, usedSlots))
+                if (TryAssignStructuralSlots(order, orderIndex + 1, structurallyAllowedSlots, usedSlots))
                 {
                     return true;
                 }
@@ -56,35 +56,35 @@ namespace HybridCPU.Compiler.Core.IR
             return false;
         }
 
-        private static List<IrBundlePlacementCandidate> EnumeratePlacementCandidates(IReadOnlyList<IrIssueSlotMask> legalSlots)
+        private static List<IrBundlePlacementCandidate> EnumerateStructuralPlacementCandidates(IReadOnlyList<IrIssueSlotMask> structurallyAllowedSlots)
         {
-            List<int> order = BuildAssignmentOrder(legalSlots);
+            List<int> order = BuildStructuralAssignmentOrder(structurallyAllowedSlots);
             var usedSlots = new bool[SlotCount];
-            var candidateSlots = new int[legalSlots.Count];
+            var candidateSlots = new int[structurallyAllowedSlots.Count];
             Array.Fill(candidateSlots, -1);
             var evaluatedPlacements = new List<IrBundlePlacementCandidate>();
-            TryCollectAssignments(order, 0, legalSlots, usedSlots, candidateSlots, evaluatedPlacements);
+            TryCollectStructuralAssignments(order, 0, structurallyAllowedSlots, usedSlots, candidateSlots, evaluatedPlacements);
             return evaluatedPlacements;
         }
 
-        private static bool TryCollectAssignments(
+        private static bool TryCollectStructuralAssignments(
             IReadOnlyList<int> order,
             int orderIndex,
-            IReadOnlyList<IrIssueSlotMask> legalSlots,
+            IReadOnlyList<IrIssueSlotMask> structurallyAllowedSlots,
             bool[] usedSlots,
             int[] assignedSlots,
             List<IrBundlePlacementCandidate> evaluatedPlacements)
         {
             if (orderIndex >= order.Count)
             {
-                IrBundlePlacementQuality candidateQuality = IrBundlePlacementQuality.Create(assignedSlots, legalSlots, SlotCount);
+                IrBundlePlacementQuality candidateQuality = IrBundlePlacementQuality.CreateForStructuralSlotFacts(assignedSlots, structurallyAllowedSlots, SlotCount);
                 evaluatedPlacements.Add(new IrBundlePlacementCandidate((int[])assignedSlots.Clone(), candidateQuality));
 
                 return true;
             }
 
             int instructionIndex = order[orderIndex];
-            IrIssueSlotMask slotMask = legalSlots[instructionIndex];
+            IrIssueSlotMask slotMask = structurallyAllowedSlots[instructionIndex];
             bool foundAssignment = false;
             for (int slot = 0; slot < SlotCount; slot++)
             {
@@ -95,10 +95,10 @@ namespace HybridCPU.Compiler.Core.IR
 
                 usedSlots[slot] = true;
                 assignedSlots[instructionIndex] = slot;
-                foundAssignment |= TryCollectAssignments(
+                foundAssignment |= TryCollectStructuralAssignments(
                     order,
                     orderIndex + 1,
-                    legalSlots,
+                    structurallyAllowedSlots,
                     usedSlots,
                     assignedSlots,
                     evaluatedPlacements);
@@ -111,25 +111,25 @@ namespace HybridCPU.Compiler.Core.IR
         }
 
         private static bool TryCollectBundlePlacementCandidates(
-            IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleLegalSlots,
+            IReadOnlyList<IReadOnlyList<IrIssueSlotMask>> bundleStructurallyAllowedSlots,
             out IrSlotAssignmentAnalysis[] bundleAnalyses,
             out List<IrBundlePlacementCandidate>[] bundleCandidates)
         {
-            bundleAnalyses = new IrSlotAssignmentAnalysis[bundleLegalSlots.Count];
-            bundleCandidates = new List<IrBundlePlacementCandidate>[bundleLegalSlots.Count];
-            for (int bundleIndex = 0; bundleIndex < bundleLegalSlots.Count; bundleIndex++)
+            bundleAnalyses = new IrSlotAssignmentAnalysis[bundleStructurallyAllowedSlots.Count];
+            bundleCandidates = new List<IrBundlePlacementCandidate>[bundleStructurallyAllowedSlots.Count];
+            for (int bundleIndex = 0; bundleIndex < bundleStructurallyAllowedSlots.Count; bundleIndex++)
             {
-                IReadOnlyList<IrIssueSlotMask> currentBundleLegalSlots = bundleLegalSlots[bundleIndex];
-                ArgumentNullException.ThrowIfNull(currentBundleLegalSlots);
+                IReadOnlyList<IrIssueSlotMask> currentBundleStructurallyAllowedSlots = bundleStructurallyAllowedSlots[bundleIndex];
+                ArgumentNullException.ThrowIfNull(currentBundleStructurallyAllowedSlots);
 
-                IrSlotAssignmentAnalysis analysis = AnalyzeAssignment(currentBundleLegalSlots);
+                IrSlotAssignmentAnalysis analysis = AnalyzeStructuralAssignment(currentBundleStructurallyAllowedSlots);
                 bundleAnalyses[bundleIndex] = analysis;
-                if (!analysis.HasLegalAssignment || currentBundleLegalSlots.Count == 0)
+                if (!analysis.HasStructuralPlacement || currentBundleStructurallyAllowedSlots.Count == 0)
                 {
                     return false;
                 }
 
-                List<IrBundlePlacementCandidate> evaluatedCandidates = EnumeratePlacementCandidates(currentBundleLegalSlots);
+                List<IrBundlePlacementCandidate> evaluatedCandidates = EnumerateStructuralPlacementCandidates(currentBundleStructurallyAllowedSlots);
                 if (evaluatedCandidates.Count == 0)
                 {
                     return false;

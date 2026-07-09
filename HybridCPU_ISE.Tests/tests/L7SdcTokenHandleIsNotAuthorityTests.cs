@@ -209,7 +209,7 @@ public sealed class L7SdcTokenHandleIsNotAuthorityTests
                 iommuDomainEpoch: new AcceleratorIommuDomainEpoch(iommuDomainEpoch));
         AcceleratorDescriptorValidationResult descriptorResult =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes, evidence);
-        Assert.True(descriptorResult.IsValid, descriptorResult.Message);
+        Assert.True(descriptorResult.IsDescriptorAbiAccepted, descriptorResult.Message);
         AcceleratorCommandDescriptor descriptor = descriptorResult.RequireDescriptor();
         AcceleratorCapabilityAcceptanceResult capabilityAcceptance =
             L7SdcCapabilityRegistryTests.CreateRegistry().AcceptCapability(

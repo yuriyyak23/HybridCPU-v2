@@ -354,7 +354,7 @@ public sealed class DmaStreamComputeStatusPhase07Tests
                 descriptorBytes,
                 DmaStreamComputeTestDescriptorFactory.CreateGuardDecision(descriptorBytes, reference),
                 reference);
-        Assert.True(validation.IsValid, validation.Message);
+        Assert.True(validation.IsDescriptorAbiAccepted, validation.Message);
         return validation.RequireDescriptorForAdmission();
     }
 

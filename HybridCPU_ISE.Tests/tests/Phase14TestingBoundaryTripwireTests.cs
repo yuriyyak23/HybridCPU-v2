@@ -46,7 +46,7 @@ public sealed class TestingBoundaryTripwireTests
         string cpuCoreTestSupportPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "NonRTL",
+            "CloseToRTL",
             "Core",
             "Pipeline",
             "Core",
@@ -54,7 +54,7 @@ public sealed class TestingBoundaryTripwireTests
         string schedulerTestSupportPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "NonRTL",
+            "CloseToRTL",
             "Core",
             "Pipeline",
             "Scheduling",

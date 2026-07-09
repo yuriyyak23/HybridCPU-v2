@@ -1,4 +1,7 @@
 using System;
+using HybridCPU.Compiler.Core.IR.Contours;
+using HybridCPU.Compiler.Core.IR.Intent;
+using HybridCPU.Compiler.Core.IR.Lowering;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
@@ -9,25 +12,52 @@ namespace HybridCPU.Compiler.Core.IR;
 
 internal static class CompilerMatrixTileEmissionLowerer
 {
+    private const string RecoverySourceApi =
+        "CompilerMatrixTileEmissionLowerer.TryRecoverFromInstruction";
+
+    private const string PositiveEmissionSourceApi =
+        "CompilerMatrixTileEmissionLowerer.Lower";
+
+    [Obsolete(
+        "Lower returns a raw MatrixTile plan artifact. Use LowerWithDecision so positive helper carrier emission carries CompilerLoweringDecision no-authority metadata.",
+        false)]
     public static CompilerMatrixTileEmissionPlan Lower(CompilerMatrixTileEmissionRequest request)
+    {
+        return LowerWithDecision(request).Plan;
+    }
+
+    public static CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan> LowerWithDecision(
+        CompilerMatrixTileEmissionRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
         ValidateRequest(request);
         VLIW_Instruction instruction = BuildInstruction(request);
-        return CreatePlan(request, instruction);
+        CompilerMatrixTileEmissionPlan plan = CreatePlan(request, instruction);
+        string reason =
+            $"{request.Mnemonic} MatrixTile helper carrier was produced as helper ABI only; runtime legality, execution, publication, commit and retire remain runtime-owned.";
+        return new CompilerPositiveEmissionResult<CompilerMatrixTileEmissionPlan>(
+            CreatePositiveEmissionDecision(request, reason),
+            plan,
+            PositiveEmissionSourceApi,
+            reason);
     }
 
-    public static bool TryRecoverFromInstruction(
+    public static CompilerHelperRecoveryResult<CompilerMatrixTileEmissionPlan> RecoverFromInstruction(
         InstructionsEnum opcode,
         in VLIW_Instruction instruction,
         MatrixTileNumericPolicy? matrixTileNumericPolicy,
-        MatrixTileLayoutPolicy? matrixTileLayoutPolicy,
-        out CompilerMatrixTileEmissionPlan? plan)
+        MatrixTileLayoutPolicy? matrixTileLayoutPolicy)
     {
-        plan = null;
         if (!CompilerMatrixTilePositiveEmissionAbiContract.IsMatrixTilePositiveOpcode(opcode))
         {
-            return false;
+            string reason = $"{opcode} is not a MatrixTile helper ABI opcode.";
+            return CompilerHelperRecoveryResult<CompilerMatrixTileEmissionPlan>.NotRecognized(
+                CreateRecoveryDecision(
+                    sourceValue: false,
+                    CompilerHelperRecoveryStatus.NotRecognized,
+                    reason),
+                RecoverySourceApi,
+                reason);
         }
 
         MatrixTileInstructionIrProjection projection =
@@ -41,13 +71,103 @@ internal static class CompilerMatrixTileEmissionLowerer
                 requireExplicitNumericPolicy: true);
         if (projection.FaultKind != MatrixTileIrProjectionFaultKind.None)
         {
-            return false;
+            string reason = $"{opcode} MatrixTile helper ABI projection was rejected: {projection.FaultKind}.";
+            return CompilerHelperRecoveryResult<CompilerMatrixTileEmissionPlan>.Rejected(
+                CreateRecoveryDecision(
+                    sourceValue: false,
+                    CompilerHelperRecoveryStatus.HelperAbiRejected,
+                    reason),
+                RecoverySourceApi,
+                reason);
         }
 
         CompilerMatrixTileEmissionRequest request =
             RecoverRequest(opcode, in instruction, projection);
-        plan = CreatePlan(request, instruction);
-        return true;
+        CompilerMatrixTileEmissionPlan plan = CreatePlan(request, instruction);
+        string recoveredReason =
+            $"{opcode} MatrixTile helper ABI was recognized; recovery is helper evidence only.";
+        return CompilerHelperRecoveryResult<CompilerMatrixTileEmissionPlan>.Recovered(
+            plan,
+            CreateRecoveryDecision(
+                sourceValue: true,
+                CompilerHelperRecoveryStatus.HelperAbiRecovered,
+                recoveredReason),
+            RecoverySourceApi,
+            recoveredReason);
+    }
+
+    [Obsolete(
+        "TryRecoverFromInstruction is a legacy helper/parser bool surface. Use RecoverFromInstruction for typed LegacyApiTranslation and no-authority decision metadata.",
+        false)]
+    public static bool TryRecoverFromInstruction(
+        InstructionsEnum opcode,
+        in VLIW_Instruction instruction,
+        MatrixTileNumericPolicy? matrixTileNumericPolicy,
+        MatrixTileLayoutPolicy? matrixTileLayoutPolicy,
+        out CompilerMatrixTileEmissionPlan? plan)
+    {
+        CompilerHelperRecoveryResult<CompilerMatrixTileEmissionPlan> recovery =
+            RecoverFromInstruction(
+                opcode,
+                in instruction,
+                matrixTileNumericPolicy,
+                matrixTileLayoutPolicy);
+        plan = recovery.Plan;
+        return recovery.Status == CompilerHelperRecoveryStatus.HelperAbiRecovered;
+    }
+
+    private static CompilerLoweringDecision CreateRecoveryDecision(
+        bool sourceValue,
+        CompilerHelperRecoveryStatus status,
+        string reason)
+    {
+        return CompilerLoweringDecision.FromLegacyHelperRecoveryBool(
+            sourceValue,
+            status,
+            RecoverySourceApi,
+            SemanticIntentKind.MatrixTile,
+            ExecutionContourKind.MatrixTileHelperOnly,
+            reason);
+    }
+
+    private static CompilerLoweringDecision CreatePositiveEmissionDecision(
+        CompilerMatrixTileEmissionRequest request,
+        string reason)
+    {
+        CompilerProducedArtifactKind[] producedArtifacts =
+            request.MatrixTileNumericPolicy is null && request.MatrixTileLayoutPolicy is null
+                ? [CompilerProducedArtifactKind.Carrier, CompilerProducedArtifactKind.Evidence]
+                : [CompilerProducedArtifactKind.Carrier, CompilerProducedArtifactKind.Sideband, CompilerProducedArtifactKind.Evidence];
+        CompilerRequiredArtifactKind[] requiredArtifacts =
+        [
+            CompilerRequiredArtifactKind.RuntimeLegalityA,
+            CompilerRequiredArtifactKind.RuntimeLegalityB,
+            CompilerRequiredArtifactKind.RuntimeCommit,
+            CompilerRequiredArtifactKind.RuntimeRetire,
+            CompilerRequiredArtifactKind.RuntimePublication
+        ];
+
+        if (request.MatrixTileNumericPolicy is not null || request.MatrixTileLayoutPolicy is not null)
+        {
+            requiredArtifacts =
+            [
+                CompilerRequiredArtifactKind.PolicySideband,
+                CompilerRequiredArtifactKind.RuntimeLegalityA,
+                CompilerRequiredArtifactKind.RuntimeLegalityB,
+                CompilerRequiredArtifactKind.RuntimeCommit,
+                CompilerRequiredArtifactKind.RuntimeRetire,
+                CompilerRequiredArtifactKind.RuntimePublication
+            ];
+        }
+
+        return CompilerLoweringDecision.FromPositiveHelperEmission(
+            PositiveEmissionSourceApi,
+            SemanticIntentKind.MatrixTile,
+            ExecutionContourKind.MatrixTileHelperOnly,
+            $"positive-helper:{request.Mnemonic}:{CompilerMatrixTilePositiveEmissionAbiContract.NoFallbackDecision}",
+            reason,
+            producedArtifacts,
+            requiredArtifacts);
     }
 
     private static CompilerMatrixTileEmissionPlan CreatePlan(
@@ -246,7 +366,7 @@ internal static class CompilerMatrixTileEmissionLowerer
                 memory.PageSizeBytes);
         MatrixTileMemoryShapeValidationResult validation =
             MatrixTileMemoryShapeAndFaultAbi.Validate(contract);
-        if (!validation.IsValid)
+        if (!validation.IsMemoryShapeAbiAccepted)
         {
             throw new ArgumentException(
                 $"{request.Mnemonic} compiler helper rejected malformed tile memory/fault ABI before emission: {validation.FaultKind}.",
@@ -279,7 +399,7 @@ internal static class CompilerMatrixTileEmissionLowerer
 
         MatrixTileNumericPolicyValidationResult numericValidation =
             MatrixTileNumericPolicyAbi.Validate(numericPolicy);
-        if (!numericValidation.IsValid ||
+        if (!numericValidation.IsRuntimeOwnedNumericPolicyAccepted ||
             numericPolicy.ElementType != request.Descriptor.ElementType)
         {
             throw new ArgumentException(
@@ -291,7 +411,7 @@ internal static class CompilerMatrixTileEmissionLowerer
             MatrixTileLayoutPolicyAbi.Validate(
                 layoutPolicy,
                 MatrixTileProjectedOperationKind.Macc);
-        if (!layoutValidation.IsValid)
+        if (!layoutValidation.IsRuntimeOwnedLayoutPolicyAccepted)
         {
             throw new ArgumentException(
                 $"MTILE_MACC compiler helper rejected layout policy sideband before emission: {layoutValidation.FaultKind}.",
@@ -316,7 +436,7 @@ internal static class CompilerMatrixTileEmissionLowerer
 
         MatrixTileSemanticValidationResult validation =
             MatrixTileAccumulatorAndTransposePolicyAbi.ValidateRuntimeMacc(contract);
-        if (!validation.IsValid)
+        if (!validation.IsSemanticAbiAccepted)
         {
             throw new ArgumentException(
                 $"MTILE_MACC compiler helper rejected malformed accumulator ABI before emission: {validation.FaultKind}.",
@@ -344,7 +464,7 @@ internal static class CompilerMatrixTileEmissionLowerer
             MatrixTileLayoutPolicyAbi.Validate(
                 layoutPolicy,
                 MatrixTileProjectedOperationKind.Transpose);
-        if (!layoutValidation.IsValid)
+        if (!layoutValidation.IsRuntimeOwnedLayoutPolicyAccepted)
         {
             throw new ArgumentException(
                 $"MTRANSPOSE compiler helper rejected layout policy sideband before emission: {layoutValidation.FaultKind}.",
@@ -368,7 +488,7 @@ internal static class CompilerMatrixTileEmissionLowerer
 
         MatrixTileSemanticValidationResult validation =
             MatrixTileAccumulatorAndTransposePolicyAbi.ValidateTranspose(contract);
-        if (!validation.IsValid)
+        if (!validation.IsSemanticAbiAccepted)
         {
             throw new ArgumentException(
                 $"MTRANSPOSE compiler helper rejected malformed transpose policy ABI before emission: {validation.FaultKind}.",
@@ -394,7 +514,7 @@ internal static class CompilerMatrixTileEmissionLowerer
             case CompilerMatrixTilePositiveEmissionKind.MtileLoad:
             case CompilerMatrixTilePositiveEmissionKind.MtileStore:
                 if (projection.MemoryContract is null ||
-                    projection.MemoryValidation is not { IsValid: true })
+                    projection.MemoryValidation is not { IsMemoryShapeAbiAccepted: true })
                 {
                     throw new InvalidOperationException(
                         $"{request.Mnemonic} compiler helper lost tile memory/fault ABI projection.");

@@ -538,7 +538,7 @@ public sealed class SecureMemoryDomainPolicyTests
         string source = ReadProjectSource(
             "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/CPU_Core.System.cs",
             "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx",
-            "HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs");
+            "HybridCPU_ISE/CloseToRTL/Core/Decoder/DecodedBundleTransportProjector.cs");
 
         Assert.DoesNotContain("SecureMemory", source);
         Assert.DoesNotContain("SecureMemoryAdmission", source);

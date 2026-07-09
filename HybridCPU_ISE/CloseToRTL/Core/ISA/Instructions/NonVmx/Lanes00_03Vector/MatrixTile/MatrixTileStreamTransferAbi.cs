@@ -152,7 +152,7 @@ public sealed class MatrixTileStreamTransferSession
             _direction != MatrixTileStreamTransferDirection.TileEgress ||
             !sourceSnapshot.IsCanonicalPacked ||
             !memoryValidation.HasValue ||
-            !memoryValidation.Value.IsValid)
+            !memoryValidation.Value.IsMemoryShapeAbiAccepted)
         {
             _transportFailed = true;
             return sourceSnapshot;

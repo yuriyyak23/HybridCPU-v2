@@ -227,7 +227,7 @@ public sealed class Lane6DscContractClosureTests
             reference,
             telemetry);
 
-        Assert.True(validation.IsValid, validation.Message);
+        Assert.True(validation.IsDescriptorAbiAccepted, validation.Message);
         DmaStreamComputeDescriptor descriptor = validation.RequireDescriptorForAdmission();
         DmaStreamComputeTelemetrySnapshot parsedSnapshot = telemetry.Snapshot();
         Assert.Equal(1, parsedSnapshot.DescriptorAccepted);

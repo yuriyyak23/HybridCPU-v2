@@ -27,7 +27,7 @@ public sealed class DmaStreamComputeTelemetryTests
                 CreateGuardDecision(descriptorBytes),
                 telemetry: telemetry);
 
-        Assert.True(validation.IsValid, validation.Message);
+        Assert.True(validation.IsDescriptorAbiAccepted, validation.Message);
         DmaStreamComputeDescriptor descriptor = validation.RequireDescriptorForAdmission();
 
         DmaStreamComputeExecutionResult execution =
@@ -87,7 +87,7 @@ public sealed class DmaStreamComputeTelemetryTests
         DmaStreamComputeValidationResult validation =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, guardDecision, telemetry: telemetry);
 
-        Assert.False(validation.IsValid);
+        Assert.False(validation.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, validation.Fault);
         DmaStreamComputeTelemetrySnapshot snapshot = telemetry.Snapshot();
         Assert.Equal(1, snapshot.DescriptorParseAttempts);
@@ -167,7 +167,7 @@ public sealed class DmaStreamComputeTelemetryTests
         DmaStreamComputeValidationResult decodeReject =
             DmaStreamComputeDescriptorParser.Parse(new byte[8], telemetry: descriptorTelemetry);
 
-        Assert.False(decodeReject.IsValid);
+        Assert.False(decodeReject.IsDescriptorAbiAccepted);
         DmaStreamComputeTelemetrySnapshot descriptorSnapshot = descriptorTelemetry.Snapshot();
         Assert.Equal(1, descriptorSnapshot.DescriptorParseAttempts);
         Assert.Equal(1, descriptorSnapshot.DescriptorRejected);
@@ -193,7 +193,7 @@ public sealed class DmaStreamComputeTelemetryTests
         DmaStreamComputeValidationResult validation =
             DmaStreamComputeDescriptorParser.Parse(descriptorBytes, guardDecision, telemetry: deviceTelemetry);
 
-        Assert.False(validation.IsValid);
+        Assert.False(validation.IsDescriptorAbiAccepted);
         Assert.Equal(DmaStreamComputeValidationFault.OwnerDomainFault, validation.Fault);
         DmaStreamComputeTelemetrySnapshot deviceSnapshot = deviceTelemetry.Snapshot();
         Assert.Equal(1, deviceSnapshot.DescriptorRejected);
@@ -304,7 +304,7 @@ public sealed class DmaStreamComputeTelemetryTests
                 descriptorBytes,
                 CreateGuardDecision(descriptorBytes));
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         return result.RequireDescriptorForAdmission();
     }
 
@@ -312,7 +312,7 @@ public sealed class DmaStreamComputeTelemetryTests
     {
         DmaStreamComputeStructuralReadResult structuralRead =
             DmaStreamComputeDescriptorParser.ReadStructuralOwnerBinding(descriptorBytes);
-        Assert.True(structuralRead.IsValid, structuralRead.Message);
+        Assert.True(structuralRead.IsStructuralDescriptorReadAccepted, structuralRead.Message);
         DmaStreamComputeOwnerBinding ownerBinding =
             structuralRead.RequireOwnerBindingForGuard();
         var context = new DmaStreamComputeOwnerGuardContext(

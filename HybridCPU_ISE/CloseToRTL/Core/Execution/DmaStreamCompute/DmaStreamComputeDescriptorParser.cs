@@ -144,7 +144,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
             telemetry?.RecordDescriptorParseAttempt();
             DmaStreamComputeStructuralReadResult structuralRead =
                 ReadStructuralOwnerBinding(descriptorBytes, descriptorReference);
-            if (!structuralRead.IsValid)
+            if (!structuralRead.IsStructuralDescriptorReadAccepted)
             {
                 return Fail(
                     structuralRead.Fault,
@@ -167,7 +167,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
             telemetry?.RecordDescriptorParseAttempt();
             DmaStreamComputeStructuralReadResult structuralRead =
                 ReadStructuralOwnerBinding(descriptorBytes, descriptorReference);
-            if (!structuralRead.IsValid)
+            if (!structuralRead.IsStructuralDescriptorReadAccepted)
             {
                 return Fail(
                     structuralRead.Fault,

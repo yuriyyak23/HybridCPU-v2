@@ -208,7 +208,7 @@ public sealed class CompilerBackendLoweringPhase11Tests
                 guardDecision,
                 reference);
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         Assert.True(DmaStreamComputeDescriptorParser.ExecutionEnabled);
 
         CompilerBackendLoweringDecision productionDecision =

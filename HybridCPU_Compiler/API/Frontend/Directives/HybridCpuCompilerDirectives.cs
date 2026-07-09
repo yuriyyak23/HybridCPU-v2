@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HybridCPU.Compiler.Core.IR.Authority;
 using YAKSys_Hybrid_CPU;
 
 namespace HybridCPU.Compiler.Core
@@ -15,10 +16,54 @@ namespace HybridCPU.Compiler.Core
         /// </summary>
         public struct DirectiveParseResult
         {
-            public bool Success;
+            private bool success;
+
+            [Obsolete("Use IsDirectiveParsed or ToParseObservation(...). Success is a parse-only compatibility alias and grants no lowering/runtime authority.", false)]
+            public bool Success
+            {
+                readonly get => success;
+                set => success = value;
+            }
+
+            public readonly bool IsDirectiveParsed => success;
             public string ErrorMessage;
             public DirectiveType Type;
             public byte Value;
+
+            public readonly CompilerDirectiveParseObservation ToParseObservation(
+                string sourceApi,
+                string authoritySemantics = "directive parse result is parser evidence only and grants no runtime authority") =>
+                CompilerDirectiveParseObservation.FromParseResult(this, sourceApi, authoritySemantics);
+
+            internal static DirectiveParseResult Rejected(
+                DirectiveType type,
+                string errorMessage,
+                byte value = 0) =>
+                new DirectiveParseResult
+                {
+                    success = false,
+                    ErrorMessage = errorMessage,
+                    Type = type,
+                    Value = value
+                };
+
+            internal static DirectiveParseResult Parsed(
+                DirectiveType type,
+                byte value,
+                string message = "") =>
+                new DirectiveParseResult
+                {
+                    success = true,
+                    ErrorMessage = message,
+                    Type = type,
+                    Value = value
+                };
+
+            internal void MarkDirectiveApplyRejected(string errorMessage)
+            {
+                success = false;
+                ErrorMessage = errorMessage;
+            }
         }
 
         /// <summary>
@@ -66,16 +111,9 @@ namespace HybridCPU.Compiler.Core
         /// <returns>Parse result with success status, error message, and parsed values</returns>
         public DirectiveParseResult ParseDirective(string line)
         {
-            DirectiveParseResult result = new DirectiveParseResult();
-            result.Success = false;
-            result.Type = DirectiveType.Unknown;
-            result.Value = 0;
-            result.ErrorMessage = string.Empty;
-
             if (string.IsNullOrWhiteSpace(line))
             {
-                result.ErrorMessage = "Empty directive line";
-                return result;
+                return DirectiveParseResult.Rejected(DirectiveType.Unknown, "Empty directive line");
             }
 
             // Trim and normalize
@@ -90,8 +128,7 @@ namespace HybridCPU.Compiler.Core
 
             if (string.IsNullOrWhiteSpace(line))
             {
-                result.ErrorMessage = "Directive line contains only comments";
-                return result;
+                return DirectiveParseResult.Rejected(DirectiveType.Unknown, "Directive line contains only comments");
             }
 
             // Split directive and arguments. Commas are treated as separators too so both
@@ -100,8 +137,7 @@ namespace HybridCPU.Compiler.Core
 
             if (parts.Length < 1)
             {
-                result.ErrorMessage = "No directive found";
-                return result;
+                return DirectiveParseResult.Rejected(DirectiveType.Unknown, "No directive found");
             }
 
             string directive = parts[0].ToLowerInvariant();
@@ -130,8 +166,7 @@ namespace HybridCPU.Compiler.Core
                 return ParseCSRWriteInstruction(parts);
             }
 
-            result.ErrorMessage = $"Unknown directive: {directive}";
-            return result;
+            return DirectiveParseResult.Rejected(DirectiveType.Unknown, $"Unknown directive: {directive}");
         }
 
         /// <summary>
@@ -141,31 +176,28 @@ namespace HybridCPU.Compiler.Core
         /// </summary>
         private DirectiveParseResult ParseExceptionModeDirective(string[] parts)
         {
-            DirectiveParseResult result = new DirectiveParseResult();
-            result.Type = DirectiveType.ExceptionMode;
-            result.Success = false;
-
             if (parts.Length < 2)
             {
-                result.ErrorMessage = ".excmode directive requires a mode argument (0, 1, or 2)";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.ExceptionMode,
+                    ".excmode directive requires a mode argument (0, 1, or 2)");
             }
 
             if (!TryParseDirectiveByte(parts[1], out byte mode))
             {
-                result.ErrorMessage = $".excmode: Invalid mode value '{parts[1]}'. Expected integer literal 0, 1, or 2";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.ExceptionMode,
+                    $".excmode: Invalid mode value '{parts[1]}'. Expected integer literal 0, 1, or 2");
             }
 
             if (mode > 2)
             {
-                result.ErrorMessage = $".excmode: Mode {mode} out of range. Valid values: 0 (accumulate), 1 (trap-on-first), 2 (trap-on-any)";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.ExceptionMode,
+                    $".excmode: Mode {mode} out of range. Valid values: 0 (accumulate), 1 (trap-on-first), 2 (trap-on-any)");
             }
 
-            result.Value = mode;
-            result.Success = true;
-            return result;
+            return DirectiveParseResult.Parsed(DirectiveType.ExceptionMode, mode);
         }
 
         /// <summary>
@@ -175,31 +207,28 @@ namespace HybridCPU.Compiler.Core
         /// </summary>
         private DirectiveParseResult ParseRoundingModeDirective(string[] parts)
         {
-            DirectiveParseResult result = new DirectiveParseResult();
-            result.Type = DirectiveType.RoundingMode;
-            result.Success = false;
-
             if (parts.Length < 2)
             {
-                result.ErrorMessage = ".roundmode directive requires a mode argument (0-4)";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.RoundingMode,
+                    ".roundmode directive requires a mode argument (0-4)");
             }
 
             if (!TryParseDirectiveByte(parts[1], out byte mode))
             {
-                result.ErrorMessage = $".roundmode: Invalid mode value '{parts[1]}'. Expected integer literal 0-4";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.RoundingMode,
+                    $".roundmode: Invalid mode value '{parts[1]}'. Expected integer literal 0-4");
             }
 
             if (mode > 4)
             {
-                result.ErrorMessage = $".roundmode: Mode {mode} out of range. Valid values: 0 (RNE), 1 (RTZ), 2 (RDN), 3 (RUP), 4 (RMM)";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.RoundingMode,
+                    $".roundmode: Mode {mode} out of range. Valid values: 0 (RNE), 1 (RTZ), 2 (RDN), 3 (RUP), 4 (RMM)");
             }
 
-            result.Value = mode;
-            result.Success = true;
-            return result;
+            return DirectiveParseResult.Parsed(DirectiveType.RoundingMode, mode);
         }
 
         /// <summary>
@@ -209,14 +238,11 @@ namespace HybridCPU.Compiler.Core
         /// </summary>
         private DirectiveParseResult ParseCSRReadInstruction(string[] parts)
         {
-            DirectiveParseResult result = new DirectiveParseResult();
-            result.Type = DirectiveType.CSRRead;
-            result.Success = false;
-
             if (parts.Length < 3)
             {
-                result.ErrorMessage = "csrr instruction requires: csrr <dest_reg>, <csr_name>";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.CSRRead,
+                    "csrr instruction requires: csrr <dest_reg>, <csr_name>");
             }
 
             string destReg = parts[1];
@@ -226,14 +252,15 @@ namespace HybridCPU.Compiler.Core
             VectorCSR csrAddr;
             if (!TryParseCSRName(csrName, out csrAddr))
             {
-                result.ErrorMessage = $"csrr: Unknown CSR '{csrName}'. Valid: vxstat, vrm, vxmode";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.CSRRead,
+                    $"csrr: Unknown CSR '{csrName}'. Valid: vxstat, vrm, vxmode");
             }
 
-            result.Value = (byte)csrAddr;
-            result.Success = true;
-            result.ErrorMessage = $"Read CSR {csrName} (0x{(ushort)csrAddr:X3}) to register {destReg}";
-            return result;
+            return DirectiveParseResult.Parsed(
+                DirectiveType.CSRRead,
+                (byte)csrAddr,
+                $"Read CSR {csrName} (0x{(ushort)csrAddr:X3}) to register {destReg}");
         }
 
         /// <summary>
@@ -243,14 +270,11 @@ namespace HybridCPU.Compiler.Core
         /// </summary>
         private DirectiveParseResult ParseCSRWriteInstruction(string[] parts)
         {
-            DirectiveParseResult result = new DirectiveParseResult();
-            result.Type = DirectiveType.CSRWrite;
-            result.Success = false;
-
             if (parts.Length < 3)
             {
-                result.ErrorMessage = "csrw instruction requires: csrw <csr_name>, <src_reg>";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.CSRWrite,
+                    "csrw instruction requires: csrw <csr_name>, <src_reg>");
             }
 
             string csrName = parts[1].ToLowerInvariant();
@@ -260,14 +284,15 @@ namespace HybridCPU.Compiler.Core
             VectorCSR csrAddr;
             if (!TryParseCSRName(csrName, out csrAddr))
             {
-                result.ErrorMessage = $"csrw: Unknown CSR '{csrName}'. Valid: vxstat, vrm, vxmode";
-                return result;
+                return DirectiveParseResult.Rejected(
+                    DirectiveType.CSRWrite,
+                    $"csrw: Unknown CSR '{csrName}'. Valid: vxstat, vrm, vxmode");
             }
 
-            result.Value = (byte)csrAddr;
-            result.Success = true;
-            result.ErrorMessage = $"Write register {srcReg} to CSR {csrName} (0x{(ushort)csrAddr:X3})";
-            return result;
+            return DirectiveParseResult.Parsed(
+                DirectiveType.CSRWrite,
+                (byte)csrAddr,
+                $"Write register {srcReg} to CSR {csrName} (0x{(ushort)csrAddr:X3})");
         }
 
         /// <summary>
@@ -316,7 +341,7 @@ namespace HybridCPU.Compiler.Core
         /// <returns>True if applied successfully, false otherwise</returns>
         public bool ApplyDirective(DirectiveParseResult result)
         {
-            if (!result.Success)
+            if (!result.IsDirectiveParsed)
             {
                 return false;
             }
@@ -395,23 +420,54 @@ namespace HybridCPU.Compiler.Core
                 results.Add(result);
 
                 // Apply directive if requested and parsing succeeded
-                if (applyDirectives && result.Success)
+                if (applyDirectives && result.IsDirectiveParsed)
                 {
                     if (!ApplyDirective(result))
                     {
-                        result.Success = false;
-                        result.ErrorMessage = $"Failed to apply directive: {result.ErrorMessage}";
+                        result.MarkDirectiveApplyRejected($"Failed to apply directive: {result.ErrorMessage}");
                     }
                 }
 
                 // Stop on first error
-                if (!result.Success)
+                if (!result.IsDirectiveParsed)
                 {
                     break;
                 }
             }
 
             return results;
+        }
+    }
+
+    public readonly record struct CompilerDirectiveParseObservation(
+        HybridCpuCompilerDirectives.DirectiveParseResult ParseResult,
+        string SourceApi,
+        bool IsDirectiveParsed,
+        CompilerCoreResultHeader Header,
+        string AuthoritySemantics)
+    {
+        public static CompilerDirectiveParseObservation FromParseResult(
+            HybridCpuCompilerDirectives.DirectiveParseResult parseResult,
+            string sourceApi,
+            string authoritySemantics)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(sourceApi);
+            ArgumentException.ThrowIfNullOrWhiteSpace(authoritySemantics);
+
+            return new CompilerDirectiveParseObservation(
+                parseResult,
+                sourceApi,
+                parseResult.IsDirectiveParsed,
+                new CompilerCoreResultHeader(
+                    CompilerAuthorityClass.CompilerEvidenceProduction,
+                    CompilerAuthoritySourceKind.CompilerAbiValidator,
+                    parseResult.IsDirectiveParsed
+                        ? CompilerEvidenceClass.ParserEvidence
+                        : CompilerEvidenceClass.NegativeGateEvidence,
+                    CompilerPublicationClass.EvidenceOnly,
+                    CompilerExecutionClaim.NoExecutionClaim,
+                    CompilerRuntimeAuthorityDependency.NoRuntimeActionBecauseNoEmission),
+                authoritySemantics);
         }
     }
 }

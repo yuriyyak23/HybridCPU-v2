@@ -303,7 +303,7 @@ public static class MatrixTileIrProjectionAndMaterializer
             transposeContract: null,
             semanticValidation: null,
             vlmValidation: vlmValidation,
-            faultKind: memoryValidation.IsValid
+            faultKind: memoryValidation.IsMemoryShapeAbiAccepted
                 ? ToProjectionFault(vlmValidation)
                 : MatrixTileIrProjectionFaultKind.MemoryShapeFault,
             hasMemoryProjection: true,
@@ -336,7 +336,7 @@ public static class MatrixTileIrProjectionAndMaterializer
             transposeContract: null,
             semanticValidation: null,
             vlmValidation: vlmValidation,
-            faultKind: memoryValidation.IsValid
+            faultKind: memoryValidation.IsMemoryShapeAbiAccepted
                 ? ToProjectionFault(vlmValidation)
                 : MatrixTileIrProjectionFaultKind.MemoryShapeFault,
             hasMemoryProjection: true,
@@ -363,7 +363,7 @@ public static class MatrixTileIrProjectionAndMaterializer
             MatrixTileLayoutPolicyAbi.Validate(
                 layoutPolicy,
                 MatrixTileProjectedOperationKind.Macc);
-        if (!layoutValidation.IsValid)
+        if (!layoutValidation.IsRuntimeOwnedLayoutPolicyAccepted)
         {
             return CreateFaultProjection(
                 opcode,
@@ -389,7 +389,7 @@ public static class MatrixTileIrProjectionAndMaterializer
 
         MatrixTileNumericPolicyValidationResult numericValidation =
             MatrixTileNumericPolicyAbi.Validate(numericPolicy);
-        if (numericValidation.IsValid &&
+        if (numericValidation.IsRuntimeOwnedNumericPolicyAccepted &&
             numericPolicy!.Value.ElementType != dataType)
         {
             numericValidation = MatrixTileNumericPolicyValidationResult.Fault(
@@ -397,7 +397,7 @@ public static class MatrixTileIrProjectionAndMaterializer
                 numericValidation.Profile);
         }
 
-        if (!numericValidation.IsValid)
+        if (!numericValidation.IsRuntimeOwnedNumericPolicyAccepted)
         {
             return CreateFaultProjection(
                 opcode,
@@ -460,7 +460,7 @@ public static class MatrixTileIrProjectionAndMaterializer
             transposeContract: null,
             semanticValidation: semanticValidation,
             vlmValidation: vlmValidation,
-            faultKind: semanticValidation.IsValid
+            faultKind: semanticValidation.IsSemanticAbiAccepted
                 ? ToProjectionFault(vlmValidation)
                 : MatrixTileIrProjectionFaultKind.MaccSemanticFault,
             hasMemoryProjection: false,
@@ -499,7 +499,7 @@ public static class MatrixTileIrProjectionAndMaterializer
             MatrixTileLayoutPolicyAbi.Validate(
                 layoutPolicy,
                 MatrixTileProjectedOperationKind.Transpose);
-        if (!layoutValidation.IsValid)
+        if (!layoutValidation.IsRuntimeOwnedLayoutPolicyAccepted)
         {
             return CreateFaultProjection(
                 opcode,
@@ -548,7 +548,7 @@ public static class MatrixTileIrProjectionAndMaterializer
             transposeContract: contract,
             semanticValidation: semanticValidation,
             vlmValidation: vlmValidation,
-            faultKind: semanticValidation.IsValid
+            faultKind: semanticValidation.IsSemanticAbiAccepted
                 ? ToProjectionFault(vlmValidation)
                 : MatrixTileIrProjectionFaultKind.TransposeSemanticFault,
             hasMemoryProjection: false,
@@ -734,7 +734,7 @@ public static class MatrixTileIrProjectionAndMaterializer
     {
         dataType = (DataTypeEnum)rawDataType;
         elementKind = MatrixTileNumericElementKind.Unspecified;
-        if (!DataTypeUtils.IsValid(dataType))
+        if (!IsKnownProjectionDataType(dataType))
         {
             return false;
         }
@@ -753,6 +753,19 @@ public static class MatrixTileIrProjectionAndMaterializer
         }
 
         return true;
+    }
+
+    private static bool IsKnownProjectionDataType(DataTypeEnum dataType)
+    {
+        try
+        {
+            _ = DataTypeUtils.SizeOf(dataType);
+            return true;
+        }
+        catch (System.ArgumentOutOfRangeException)
+        {
+            return false;
+        }
     }
 
     private static MatrixTileProjectedOperationKind GetOperationKind(InstructionsEnum opcode)

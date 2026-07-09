@@ -1,6 +1,7 @@
 using HybridCPU_ISE.Arch;
 using System;
 using System.Collections.Generic;
+using HybridCPU.Compiler.Core.IR.Lowering;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
@@ -96,21 +97,23 @@ namespace HybridCPU.Compiler.Core.IR
             OpcodeInfo? opcodeInfo = HybridCpuOpcodeSemantics.GetOpcodeInfo(opcode);
             ValidateExplicitAcceleratorIntent(opcode, slotMetadata);
             ValidateCanonicalScalarZeroRs2Payload(opcode, instruction);
-            CompilerMatrixTileEmissionPlan? matrixTileEmission =
-                CompilerMatrixTileEmissionLowerer.TryRecoverFromInstruction(
+            CompilerHelperRecoveryResult<CompilerMatrixTileEmissionPlan> matrixTileRecovery =
+                CompilerMatrixTileEmissionLowerer.RecoverFromInstruction(
                     opcode,
                     in instruction,
                     slotMetadata.MatrixTileNumericPolicy,
-                    slotMetadata.MatrixTileLayoutPolicy,
-                    out CompilerMatrixTileEmissionPlan? recoveredMatrixTileEmission)
-                    ? recoveredMatrixTileEmission
+                    slotMetadata.MatrixTileLayoutPolicy);
+            CompilerMatrixTileEmissionPlan? matrixTileEmission =
+                matrixTileRecovery.Status == CompilerHelperRecoveryStatus.HelperAbiRecovered
+                    ? matrixTileRecovery.Plan
                     : null;
-            CompilerVectorTransferEmissionPlan? vectorTransferEmission =
-                CompilerVectorTransferEmissionLowerer.TryRecoverFromInstruction(
+            CompilerHelperRecoveryResult<CompilerVectorTransferEmissionPlan> vectorTransferRecovery =
+                CompilerVectorTransferEmissionLowerer.RecoverFromInstruction(
                     opcode,
-                    in instruction,
-                    out CompilerVectorTransferEmissionPlan? recoveredVectorTransferEmission)
-                    ? recoveredVectorTransferEmission
+                    in instruction);
+            CompilerVectorTransferEmissionPlan? vectorTransferEmission =
+                vectorTransferRecovery.Status == CompilerHelperRecoveryStatus.HelperAbiRecovered
+                    ? vectorTransferRecovery.Plan
                     : null;
             var operands = BuildOperands(opcode, instruction, matrixTileEmission, vectorTransferEmission);
             var defs = BuildDefs(opcode, instruction, matrixTileEmission, vectorTransferEmission);
@@ -123,7 +126,7 @@ namespace HybridCPU.Compiler.Core.IR
                 ResourceClass: admissionDescriptor.ResourceClass,
                 LatencyClass: executionProfile.LatencyClass,
                 MinimumLatencyCycles: executionProfile.MinimumLatencyCycles,
-                LegalSlots: admissionDescriptor.LegalSlots,
+                LegalSlots: admissionDescriptor.StructurallyAllowedSlots,
                 Serialization: executionProfile.Serialization,
                 StructuralResources: executionProfile.StructuralResources,
                 ControlFlowKind: ClassifyControlFlow(opcode),

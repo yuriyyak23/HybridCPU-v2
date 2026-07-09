@@ -533,7 +533,7 @@ namespace YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute
 
             DmaStreamComputeStructuralReadResult structuralRead =
                 ReadDsc2StructuralOwnerBinding(descriptorBytes, descriptorReference);
-            if (!structuralRead.IsValid)
+            if (!structuralRead.IsStructuralDescriptorReadAccepted)
             {
                 return DmaStreamComputeDsc2ValidationResult.Fail(
                     structuralRead.Fault,

@@ -180,7 +180,7 @@ public sealed class VmxMemoryIoLaneStreamBoundaryHardeningTests
     {
         string laneStreamSource = ActiveVmxConformanceHelpers.ReadProjectSource(
             "CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs",
-            "NonRTL/Core/Execution/DmaStreamCompute/VmxDmaDescriptorValidator.cs",
+            "CloseToRTL/Core/Execution/DmaStreamCompute/VmxDmaDescriptorValidator.cs",
             "CloseToRTL/Core/Runtime/Domains/Admission/Lane6/Lane6DomainRuntime.cs",
             "CloseToRTL/Core/Runtime/Domains/Admission/Lane7/Lane7DomainRuntime.cs",
             "CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs",

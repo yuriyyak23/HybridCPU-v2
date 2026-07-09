@@ -152,6 +152,8 @@ public readonly record struct MatrixTileNumericPolicyValidationResult(
     MatrixTileNumericPolicyFaultKind FaultKind,
     MatrixTileNumericProfileRow Profile)
 {
+    public bool IsRuntimeOwnedNumericPolicyAccepted => IsValid;
+
     public static MatrixTileNumericPolicyValidationResult Valid(
         MatrixTileNumericProfileRow profile) =>
         new(true, MatrixTileNumericPolicyFaultKind.None, profile);

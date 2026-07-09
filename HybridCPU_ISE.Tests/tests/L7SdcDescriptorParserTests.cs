@@ -17,7 +17,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes, reference: reference);
 
-        Assert.True(result.IsValid, result.Message);
+        Assert.True(result.IsDescriptorAbiAccepted, result.Message);
         AcceleratorCommandDescriptor descriptor = result.RequireDescriptor();
         Assert.Equal(AcceleratorDescriptorFault.None, result.Fault);
         Assert.Equal(reference, descriptor.DescriptorReference);
@@ -63,7 +63,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Null(result.Descriptor);
         Assert.Equal(expectedFault, result.Fault);
     }
@@ -80,7 +80,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.ReservedFieldFault, result.Fault);
     }
 
@@ -96,7 +96,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.DescriptorDecodeFault, result.Fault);
         Assert.Contains("fixed descriptor header", result.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -113,7 +113,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.DescriptorDecodeFault, result.Fault);
         Assert.Contains("overlap", result.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -136,7 +136,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(expectedFault, result.Fault);
     }
 
@@ -152,7 +152,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.DescriptorDecodeFault, result.Fault);
     }
 
@@ -168,7 +168,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.ZeroLengthFault, result.Fault);
     }
 
@@ -184,7 +184,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.AlignmentFault, result.Fault);
     }
 
@@ -201,7 +201,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.DescriptorDecodeFault, result.Fault);
     }
 
@@ -243,7 +243,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.DescriptorIdentityHashMismatch, result.Fault);
     }
 
@@ -263,7 +263,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.NormalizedFootprintHashMismatch, result.Fault);
     }
 
@@ -279,7 +279,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.UnsupportedPartialCompletionPolicy, result.Fault);
     }
 
@@ -295,7 +295,7 @@ public sealed class L7SdcDescriptorParserTests
         AcceleratorDescriptorValidationResult result =
             L7SdcTestDescriptorFactory.ParseWithGuard(descriptorBytes, reference: reference);
 
-        Assert.False(result.IsValid);
+        Assert.False(result.IsDescriptorAbiAccepted);
         Assert.Equal(AcceleratorDescriptorFault.DescriptorReferenceMismatch, result.Fault);
     }
 }

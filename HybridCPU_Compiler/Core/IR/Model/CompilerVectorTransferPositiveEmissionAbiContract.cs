@@ -28,13 +28,26 @@ public readonly record struct CompilerVectorTransferShapeAbi(
     ushort StrideBytes,
     byte PredicateMask = 0)
 {
+    public static bool IsKnownVectorElementType(DataTypeEnum elementType)
+    {
+        try
+        {
+            _ = DataTypeUtils.SizeOf(elementType);
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+    }
+
     public static CompilerVectorTransferShapeAbi Create(
         DataTypeEnum elementType,
         uint elementCount,
         ushort strideBytes,
         byte predicateMask = 0)
     {
-        if (!DataTypeUtils.IsValid(elementType))
+        if (!IsKnownVectorElementType(elementType))
         {
             throw new ArgumentOutOfRangeException(
                 nameof(elementType),
@@ -70,7 +83,7 @@ public readonly record struct CompilerVectorTransferShapeAbi(
         uint elementCount,
         byte predicateMask = 0)
     {
-        if (!DataTypeUtils.IsValid(elementType))
+        if (!IsKnownVectorElementType(elementType))
         {
             throw new ArgumentOutOfRangeException(
                 nameof(elementType),
@@ -86,7 +99,7 @@ public readonly record struct CompilerVectorTransferShapeAbi(
 
     public void Validate(string parameterName)
     {
-        if (!DataTypeUtils.IsValid(ElementType))
+        if (!IsKnownVectorElementType(ElementType))
         {
             throw new ArgumentOutOfRangeException(parameterName, ElementType, "Unknown vector transfer element data type.");
         }
@@ -232,7 +245,9 @@ public static class CompilerVectorTransferPositiveEmissionAbiContract
                     nameof(IPlatformAsmFacade.VLoad),
                     nameof(IPlatformAsmFacade.VStore),
                     nameof(HybridCpuThreadCompilerContext.CompileVload),
-                    nameof(HybridCpuThreadCompilerContext.CompileVstore)
+                    nameof(HybridCpuThreadCompilerContext.CompileVstore),
+                    nameof(HybridCpuThreadCompilerContext.CompileVloadWithDecision),
+                    nameof(HybridCpuThreadCompilerContext.CompileVstoreWithDecision)
                 ]),
             StringComparer.Ordinal);
 

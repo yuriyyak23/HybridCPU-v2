@@ -139,7 +139,7 @@ public sealed class L7SdcDescriptorTaxonomyPhase09Tests
                 tensorDescriptorBytes,
                 reference: reference);
 
-        Assert.False(parse.IsValid);
+        Assert.False(parse.IsDescriptorAbiAccepted);
         Assert.Null(parse.Descriptor);
         Assert.Equal(AcceleratorDescriptorFault.UnsupportedAcceleratorClass, parse.Fault);
         Assert.Contains("metadata-only", parse.Message);

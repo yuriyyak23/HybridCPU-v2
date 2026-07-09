@@ -20,6 +20,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Legacy\VMX-1\" />
+	  <Folder Include="RefPlan1\CompilerRef1Docs\" />
 	</ItemGroup>
 
 </Project>
