@@ -10,10 +10,10 @@ namespace HybridCPU.Compiler.Core.IR;
 /// surface still reports <see cref="TypedSlotFactMode.ValidationOnly"/>.
 /// </summary>
 /// <remarks>
-/// <c>DmaStreamClass</c> instructions are reported as <c>ClassFlexible</c> in the pinning mask
-/// (not pinned) because <see cref="IrSlotBindingKind.SingletonClass"/> maps to
-/// <see cref="SlotPinningKind.ClassFlexible"/>. The singleton constraint is enforced by
-/// <see cref="SlotClassLaneMap"/> topology (lane 6 only, capacity=1), not by pinning metadata.
+/// <c>DmaStreamClass</c> instructions are reported as hard-pinned lane 6 in the
+/// runtime-facing facts. The compiler keeps <see cref="IrSlotBindingKind.SingletonClass"/>
+/// as its structural binding kind, while the ISE lane-6 contour requires the
+/// corresponding hard-pinned handoff metadata for parity.
 /// </remarks>
 public static class HybridCpuTypedSlotFactsEmitter
 {
@@ -44,7 +44,9 @@ public static class HybridCpuTypedSlotFactsEmitter
             SlotClass slotClass = instruction.Annotation.RequiredSlotClass;
             slotClasses[i] = slotClass;
 
-            SlotPinningKind pinningKind = IrSlotClassMapping.ToRuntimePinningKind(instruction.Annotation.BindingKind);
+            SlotPinningKind pinningKind = instruction.Annotation.RequiredSlotClass == SlotClass.DmaStreamClass
+                ? SlotPinningKind.HardPinned
+                : IrSlotClassMapping.ToRuntimePinningKind(instruction.Annotation.BindingKind);
             if (pinningKind == SlotPinningKind.HardPinned)
             {
                 pinningMask |= (byte)(1 << i);

@@ -93,6 +93,7 @@
 
   <ItemGroup>
     <Folder Include="SafetyAndVerification\Phase1Backlog\" />
+    <Folder Include="TestResults\" />
   </ItemGroup>
 
 </Project>

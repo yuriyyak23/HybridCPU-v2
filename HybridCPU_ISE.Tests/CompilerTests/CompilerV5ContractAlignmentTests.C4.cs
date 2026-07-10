@@ -607,8 +607,10 @@ public partial class CompilerV5ContractAlignmentTests
             (dmaInstruction, 6, IrIssueSlotMask.Slot6));
 
         Assert.Equal(1, facts.DmaStreamCount);
-        Assert.Equal(1, facts.FlexibleOpCount);
-        Assert.Equal(0, facts.PinnedOpCount);
+        // Phase 10 lane6 parity: DSC remains compiler evidence, but its
+        // runtime-facing structural fact is hard-pinned to canonical lane 6.
+        Assert.Equal(0, facts.FlexibleOpCount);
+        Assert.Equal(1, facts.PinnedOpCount);
         Assert.True(HybridCpuTypedSlotFactsEmitter.ValidateEmittedFacts(facts));
     }
 

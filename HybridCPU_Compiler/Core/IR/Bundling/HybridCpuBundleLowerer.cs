@@ -181,8 +181,9 @@ namespace HybridCPU.Compiler.Core.IR
 
         private static SlotMetadata BuildSlotMetadata(IrInstruction instruction)
         {
-            SlotPinningKind runtimePinning =
-                IrSlotClassMapping.ToRuntimePinningKind(instruction.Annotation.BindingKind);
+            SlotPinningKind runtimePinning = instruction.Annotation.RequiredSlotClass == SlotClass.DmaStreamClass
+                ? SlotPinningKind.HardPinned
+                : IrSlotClassMapping.ToRuntimePinningKind(instruction.Annotation.BindingKind);
             var placement = new SlotPlacementMetadata
             {
                 RequiredSlotClass = instruction.Annotation.RequiredSlotClass,

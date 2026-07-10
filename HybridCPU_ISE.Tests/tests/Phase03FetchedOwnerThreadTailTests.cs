@@ -215,7 +215,13 @@ public sealed class FetchedOwnerThreadTailTests
     [Fact]
     public void ReplayFetch_WhenActiveThreadDiffers_ThenForegroundTransportUsesReplayCarrierOwner()
     {
-        var core = new Processor.CPU_Core(0);
+        // Replay fetch must be independent of mutable global test memory.  Other
+        // tests legitimately swap Processor.MainMemory for their own contour;
+        // this scenario only needs an in-range fetch window, so bind it explicitly.
+        var replayMemory = new Processor.MultiBankMemoryArea(1, 0x10000);
+        var core = new Processor.CPU_Core(
+            0,
+            CpuCorePlatformContext.CreateFixed(replayMemory, ProcessorMode.Emulation));
         core.PrepareExecutionStart(0x4D18, activeVtId: 0);
         core.ActiveVirtualThreadId = 0;
         core.WriteVirtualThreadPipelineState(0, PipelineState.WaitForEvent);
@@ -699,4 +705,3 @@ public sealed class FetchedOwnerThreadTailTests
             : new VliwBundleAnnotations(slotMetadata, bundleMetadata);
     }
 }
-

@@ -33,7 +33,8 @@ public enum CompilerProductionLoweringStatus
     ParserOnly,
     HelperAbiOnly,
     NoEmission,
-    FutureGated
+    FutureGated,
+    ProductionCarrierPackageRuntimeAuthorityPending
 }
 
 public enum CompilerRejectReason

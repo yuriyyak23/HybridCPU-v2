@@ -5,6 +5,7 @@ using HybridCPU.Compiler.Core.IR.Artifacts;
 using HybridCPU.Compiler.Core.IR.Authority;
 using HybridCPU.Compiler.Core.IR.Intent;
 using HybridCPU.Compiler.Core.IR.Lowering;
+using HybridCPU.Compiler.Core.IR.Lowering.Production;
 
 namespace HybridCPU.Compiler.Core.IR.Contours;
 
@@ -69,11 +70,36 @@ public interface IContourLoweringProvider
         CompilerLoweringContext context);
 }
 
+/// <summary>
+/// Separate contract for a future contour-specific production provider.
+/// Shell providers do not implement this interface and remain fail-closed.
+/// </summary>
+public interface IContourProductionLoweringProvider
+{
+    ExecutionContourKind ContourKind { get; }
+
+    CompilerProductionLoweringGateResult EvaluateProductionGates(
+        CompilerSemanticIntent intent,
+        ContourAnalysisReport analysis,
+        CompilerProductionLoweringContext context);
+
+    CompilerProductionLoweringResult TryProduce(
+        CompilerSemanticIntent intent,
+        ContourAnalysisReport analysis,
+        CompilerProductionLoweringContext context);
+}
+
 public interface IContourLoweringProviderRegistry
 {
     IContourAnalyzer ResolveAnalyzer(ExecutionContourKind contourKind);
 
     IContourLoweringProvider ResolveProvider(ExecutionContourKind contourKind);
+
+    IContourLoweringProvider ResolveShellProvider(ExecutionContourKind contourKind);
+
+    IContourProductionLoweringProvider? ResolveProductionProvider(
+        ExecutionContourKind contourKind,
+        CompilerProductionLoweringContext context);
 
     IReadOnlyList<CompilerCapabilityObservation> ObserveAll(CompilerTargetProfile target);
 }
@@ -117,6 +143,59 @@ public sealed class DefaultContourLoweringProviderRegistry : IContourLoweringPro
         _providers.TryGetValue(contourKind, out IContourLoweringProvider? provider)
             ? provider
             : _rejectedProvider;
+
+    public IContourLoweringProvider ResolveShellProvider(ExecutionContourKind contourKind) =>
+        ResolveProvider(contourKind);
+
+    public IContourProductionLoweringProvider? ResolveProductionProvider(
+        ExecutionContourKind contourKind,
+        CompilerProductionLoweringContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        // Phase 04 defines the separate resolution boundary only. No
+        // production provider is registered until a later provider phase.
+        if (context.ProductionProfile.Mode != CompilerProductionLoweringProfileMode.ExplicitlyEnabled ||
+            !context.TargetProfile.AllowsBackendEmission ||
+            !context.ProductionProfile.EnabledContours.Contains(contourKind) ||
+            !context.ProductionProfile.EnabledGateIds.Contains(CompilerProductionLoweringGateIds.Profile) ||
+            !context.ProductionProfile.EnabledGateIds.Contains(CompilerProductionLoweringGateIds.Contour(contourKind)))
+        {
+            return null;
+        }
+
+        if (contourKind == ExecutionContourKind.NativeVliwScalar)
+        {
+            return NativeVliwScalarProductionProvider.Instance;
+        }
+
+        if (contourKind == ExecutionContourKind.NativeVliwLoadStore)
+        {
+            return NativeVliwLoadStoreProductionProvider.Instance;
+        }
+
+        if (contourKind == ExecutionContourKind.NativeVliwBranchControl)
+        {
+            return NativeVliwBranchControlProductionProvider.Instance;
+        }
+
+        if (contourKind == ExecutionContourKind.StreamEngineVector)
+        {
+            return StreamEngineVectorDirectTransferProductionProvider.Instance;
+        }
+
+        if (contourKind == ExecutionContourKind.DmaStreamComputeLane6)
+        {
+            return DmaStreamComputeLane6ProductionProvider.Instance;
+        }
+
+        if (contourKind == ExecutionContourKind.L7SdcLane7)
+        {
+            return L7SdcLane7ProductionProvider.Instance;
+        }
+
+        return null;
+    }
 
     public IReadOnlyList<CompilerCapabilityObservation> ObserveAll(CompilerTargetProfile target)
     {
