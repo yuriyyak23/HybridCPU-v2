@@ -13,15 +13,18 @@ internal sealed class PostStageBIdentityTemplate
     internal PostStageBIdentityTemplate(
         AdmissionRecord admission,
         ulong workingBundleSequence,
+        SlotId workingSlotId,
         OperationAttemptIssuer attemptIssuer)
     {
         Admission = admission ?? throw new ArgumentNullException(nameof(admission));
         WorkingBundleSequence = workingBundleSequence;
+        WorkingSlotId = workingSlotId;
         AttemptIssuer = attemptIssuer ?? throw new ArgumentNullException(nameof(attemptIssuer));
     }
 
     internal AdmissionRecord Admission { get; }
     internal ulong WorkingBundleSequence { get; }
+    internal SlotId WorkingSlotId { get; }
     internal OperationAttemptIssuer AttemptIssuer { get; }
 }
 
@@ -47,14 +50,14 @@ public sealed class PostStageBIssuedAttempt
 
     internal static PostStageBIssuedAttempt CreateAfterSuccessfulStageB(
         PostStageBIdentityTemplate template,
-        int physicalLane)
+        LaneId physicalLane)
     {
         ArgumentNullException.ThrowIfNull(template);
         ScheduledOperation scheduledOperation = ScheduledOperation.CreateAfterStageB(
             template.Admission,
             template.WorkingBundleSequence,
-            physicalLane,
-            physicalLane,
+            template.WorkingSlotId.Value,
+            physicalLane.Value,
             template.AttemptIssuer);
         return new PostStageBIssuedAttempt(scheduledOperation);
     }

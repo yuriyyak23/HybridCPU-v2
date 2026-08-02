@@ -284,6 +284,7 @@ namespace YAKSys_Hybrid_CPU
                     candidate.PostStageBIdentityTemplate = new Core.PostStageBIdentityTemplate(
                         admission,
                         runtimeState.BundleSerial,
+                        Core.SlotId.Create(entry.SlotIndex),
                         rf08OperationAttemptIssuer);
                 }
                 catch (InvalidOperationException)

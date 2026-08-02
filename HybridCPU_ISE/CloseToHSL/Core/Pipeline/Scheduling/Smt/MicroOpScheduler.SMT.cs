@@ -362,7 +362,7 @@ namespace YAKSys_Hybrid_CPU.Core
             }
 
             candidate.PostStageBIssuedAttempt =
-                PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, lane);
+                PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, LaneId.Create(lane));
             candidate.PostStageBIdentityTemplate = null;
         }
 

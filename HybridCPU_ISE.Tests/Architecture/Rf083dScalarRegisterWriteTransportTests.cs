@@ -45,6 +45,37 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
     }
 
     [Fact]
+    public void StageBIdentity_PreservesSourceWorkingAndPhysicalPositionsThroughRetireProjection()
+    {
+        GeneratedStaticBinding binding = CreateBinding();
+        PostStageBIssuedAttempt attempt = CreateAttempt(
+            virtualThreadId: 2,
+            binding,
+            physicalLane: 3,
+            sourceSlotIndex: 2,
+            workingSlotIndex: 2);
+
+        attempt.CompleteScalarRegisterWrite(RetireRecord.RegisterWrite(2, 9, 0xCAFEUL));
+
+        ScalarRegisterWriteRetireEffect effect = Assert.IsType<ScalarRegisterWriteRetireEffect>(
+            attempt.ScalarRegisterWriteEffect);
+        RetireRecordIdentityProjection projection = effect.Projection;
+
+        Assert.Equal(2, attempt.ScheduledOperation.Admission.SourceProvenance.SourceSlotIndex);
+        Assert.Equal(2, attempt.ScheduledOperation.OperationId.WorkingSlotIndex);
+        Assert.Equal(3, attempt.ScheduledOperation.PhysicalLane);
+        Assert.Equal(2, attempt.ExecutionRecord.OperationId.WorkingSlotIndex);
+        Assert.Same(attempt.ScheduledOperation, attempt.ExecutionRecord.ScheduledOperation);
+        Assert.Equal(2, effect.Identity.SourceSlotIndex);
+        Assert.Equal(2, effect.Identity.WorkingSlotIndex);
+        Assert.Equal(3, effect.Identity.PhysicalLaneIndex);
+        Assert.Same(effect.Identity, projection.Identity);
+        Assert.Equal(2, projection.Identity.SourceSlotIndex);
+        Assert.Equal(2, projection.Identity.WorkingSlotIndex);
+        Assert.Equal(3, projection.Identity.PhysicalLaneIndex);
+    }
+
+    [Fact]
     public void FaultDenialAndX0_ProduceNoScalarRegisterWriteEffect()
     {
         GeneratedStaticBinding binding = CreateBinding();
@@ -129,8 +160,12 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
     private static PostStageBIssuedAttempt CreateAttempt(
         int virtualThreadId,
         GeneratedStaticBinding binding,
-        int physicalLane)
+        int physicalLane,
+        int? sourceSlotIndex = null,
+        int? workingSlotIndex = null)
     {
+        int sourceSlot = sourceSlotIndex ?? virtualThreadId;
+        int workingSlot = workingSlotIndex ?? sourceSlot;
         ExecutionContract contract = ExecutionContract.Create(
             binding,
             new RuntimeExecutionProviderBinding(binding.RuntimeExecutionProviderId, "rf08.3d-scalar"),
@@ -148,15 +183,19 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
                 SemanticInstructionKey.Create([1, 2, 3], "rf08.3d", CanonicalDecodeContext.Unbound),
                 virtualThreadId,
                 sourceBundleSerial: (ulong)(100 + virtualThreadId),
-                sourceSlotId: SlotId.Create(virtualThreadId),
+                sourceSlotId: SlotId.Create(sourceSlot),
                 fetchEpoch: 7),
             contract,
             virtualThreadId,
             ownerContextId: 20 + virtualThreadId,
             domainTag: 31);
         return PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(
-            new PostStageBIdentityTemplate(admission, (ulong)(200 + virtualThreadId), new OperationAttemptIssuer()),
-            physicalLane);
+            new PostStageBIdentityTemplate(
+                admission,
+                (ulong)(200 + virtualThreadId),
+                SlotId.Create(workingSlot),
+                new OperationAttemptIssuer()),
+            LaneId.Create(physicalLane));
     }
 
     private static GeneratedStaticBinding CreateBinding()

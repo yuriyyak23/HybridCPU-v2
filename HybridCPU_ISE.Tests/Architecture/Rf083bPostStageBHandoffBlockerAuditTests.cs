@@ -47,7 +47,7 @@ public sealed class Rf083bPostStageBHandoffBlockerAuditTests
         Assert.Contains("result[lane] = candidate;", scheduler, StringComparison.Ordinal);
         Assert.Contains("private bool TryMaterializeLane(", admission, StringComparison.Ordinal);
 
-        Assert.Contains("PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, lane)", scheduler, StringComparison.Ordinal);
+        Assert.Contains("PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, LaneId.Create(lane))", scheduler, StringComparison.Ordinal);
         Assert.DoesNotContain("CreateAfterSuccessfulStageB(template, slot)", scheduler, StringComparison.Ordinal);
         Assert.DoesNotContain("ScheduledOperation", admission, StringComparison.Ordinal);
         Assert.DoesNotContain("ExecutionRecord", admission, StringComparison.Ordinal);
