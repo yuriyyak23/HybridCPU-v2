@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-This whitebook documents the current `TestAssemblerConsoleApps` SPEC-like diagnostic harness, the measured results on large iteration counts, the root cause of the earlier IPC collapse, and the engineering decisions that restored truthful high-throughput behavior.
+This whitebook documents the `TestAssemblerConsoleApps` SPEC-like diagnostic harness and a historical large-iteration result snapshot. It is not a post-Ref1/RF-10 timing baseline.
 
 The goal is not to claim "official SPEC CPU" equivalence. The goal is narrower and more honest:
 
@@ -17,6 +17,25 @@ Primary evidence bundle for this whitebook:
 - iteration budget: `2000`
 - artifact root:
   `bin/Debug/net10.0/TestResults/TestAssemblerConsoleApps/20260421_125521_579_matrix`
+
+## Current comparison status after Ref1
+
+The external post-Ref1 audit is retained at
+`HybridCPU-v2-архитектура.md`. It confirms functional scenarios, retirement
+composition, replay, safety, Stream/Vector and MatrixTile checks, but observes
+different total-cycle and memory-wait behavior after the RF-10 timing model.
+Therefore the numbers below remain **Pre-Ref1 / pre-RF-10 historical evidence**;
+they must not be used as a timing or wall-clock pass/fail baseline for a current
+run.
+
+Each simple execution profile now emits
+`post_ref1_timing_memory_report.json` alongside `metrics.json`. The artifact
+separates functional comparison from timing comparison, records the available
+coarse cycle buckets, and reports when legacy burst/byte counters are zero while
+pipeline memory waits are non-zero. Such a zero means `unavailable while memory
+wait is observed`, not “no memory activity”. Fine-grained fetch, admission,
+memory-completion, execute, writeback and early-return cycle buckets still
+require producer telemetry from the RF-10 memory owner.
 
 ## 2. Executive Summary
 
@@ -94,7 +113,10 @@ This behavior is implemented in:
 - `Program.cs`
   `ComputeAutoTimeoutMs`
 
-## 4. Top-Line Results at 2000 Iterations
+## 4. Historical Top-Line Results at 2000 Iterations
+
+The values in this section predate the post-Ref1 audit. They are retained to
+preserve reproducibility of the historical run, not as a current timing target.
 
 ### 4.1 Throughput summary
 
@@ -140,6 +162,10 @@ Two IPC metrics are printed, and they should not be treated as interchangeable.
 ### 5.1 Raw cycle IPC
 
 `Raw cycle IPC = InstructionsRetired / CycleCount`
+
+For a post-Ref1 run, compare this only to a separately created post-RF-10 timing
+baseline. `post_ref1_timing_memory_report.json` records this policy with the
+observed cycle and memory-telemetry state.
 
 This is the main top-line throughput number for article use because it is end-to-end with total cycles in the denominator.
 

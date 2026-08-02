@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.Subsystem;
+using HybridCPU_ISE.CloseToHSL.Memory.Subsystem;
 using System;
 
 namespace YAKSys_Hybrid_CPU

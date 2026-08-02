@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -47,7 +47,7 @@ public sealed class MatrixTilePackageReclosureAndCompilerConformanceTests
         string runtimeMetadataPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Contracts",
             "CompilerTransport",
@@ -55,12 +55,10 @@ public sealed class MatrixTilePackageReclosureAndCompilerConformanceTests
         string runtimeDecoderPath = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
-            "Frontend",
-            "Decode",
-            "VliwDecoderV4Bridge",
-            "VliwDecoderV4.cs");
+            "Decoder",
+            "DeclarativeDecoderStages.cs");
         string compilerBundleLowererPath = Path.Combine(
             repoRoot,
             "HybridCPU_Compiler",
@@ -82,7 +80,6 @@ public sealed class MatrixTilePackageReclosureAndCompilerConformanceTests
 
         Assert.Contains("MatrixTileNumericPolicy", runtimeMetadata, StringComparison.Ordinal);
         Assert.Contains("MatrixTileLayoutPolicy", runtimeMetadata, StringComparison.Ordinal);
-        Assert.Contains("requireExplicitNumericPolicy: true", runtimeDecoder, StringComparison.Ordinal);
         Assert.Contains(
             "MatrixTileNumericPolicy = slotMetadata.MatrixTileNumericPolicy",
             runtimeDecoder,

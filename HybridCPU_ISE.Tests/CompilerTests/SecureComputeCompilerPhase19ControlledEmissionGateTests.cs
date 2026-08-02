@@ -129,8 +129,8 @@ public sealed class SecureComputeCompilerPhase19ControlledEmissionGateTests
     public void CompilerGateSources_DoNotCreateSecureCompilerEmissionShortcut()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Conformance/NoEmission/SecureComputeNoEmissionContract.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Conformance/NoEmission/SecureComputeControlledEmissionGatePolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Conformance/NoEmission/SecureComputeNoEmissionContract.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Conformance/NoEmission/SecureComputeControlledEmissionGatePolicy.cs");
         string compilerSource = ReadProjectSource(
             "HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs",
             "HybridCPU_Compiler/API/Compilation/HybridCpuCanonicalCompiler.cs",

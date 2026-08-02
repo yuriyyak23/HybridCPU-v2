@@ -157,7 +157,27 @@ internal sealed partial class SimpleAsmApp
             _dynamicRetirementTarget != 0 ? _dynamicRetirementTarget : (ulong)_emittedVirtualThreadIds.Count,
             _workloadShape,
             _sliceExecutionCount,
-            _referenceSliceIterations);
+            _referenceSliceIterations,
+            performance.MemoryCycleTelemetrySchemaVersion,
+            performance.MemoryCycleTelemetryAvailable,
+            Convert.ToUInt64(performance.MemoryControllerCycles),
+            Convert.ToUInt64(performance.MemoryReadServiceCycles),
+            Convert.ToUInt64(performance.MemoryStoreReadinessServiceCycles),
+            Convert.ToUInt64(performance.MemoryCompletionPublicationCycles),
+            Convert.ToUInt64(performance.MemoryAcceptedRequests),
+            Convert.ToUInt64(performance.MemoryCompletedRequests),
+            Convert.ToUInt64(performance.DataReadAcceptedRequests),
+            Convert.ToUInt64(performance.DataReadCompletedRequests),
+            Convert.ToUInt64(performance.DataWriteAcceptedRequests),
+            Convert.ToUInt64(performance.DataWriteCompletedRequests),
+            Convert.ToUInt64(performance.DataReadBytes),
+            Convert.ToUInt64(performance.CommittedDataWriteBytes),
+            performance.InstructionFetchReadBytesTelemetryAvailable,
+            Convert.ToUInt64(performance.InstructionFetchReadBytes),
+            performance.InstructionFetchRequestTelemetryAvailable,
+            Convert.ToUInt64(performance.MemoryQueueFullRejects),
+            performance.MemoryBankConflictRejectTelemetryAvailable,
+            Convert.ToUInt64(performance.MemoryBankConflictRejects));
     }
 
     private CompilerPackingDiagnostics AnalyzeCompilerPacking(HybridCpuCompiledProgram compiledProgram)

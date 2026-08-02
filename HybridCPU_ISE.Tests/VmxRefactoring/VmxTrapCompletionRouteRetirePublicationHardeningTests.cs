@@ -244,18 +244,18 @@ public sealed class VmxTrapCompletionRouteRetirePublicationHardeningTests
     public void RouteAndRetirePublicationSource_DoesNotIntroduceVmCallPublicationShortcuts()
     {
         string routeSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs");
+            "CloseToHSL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs");
         string fenceSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs");
+            "CloseToHSL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs");
         string compatibilityCompletionSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionRecordCompatibilityProjection.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionProjectionService.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionRecordCompatibilityProjection.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionProjectionService.cs");
         string vmcallFrontendSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs");
         string productionCallers = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
-            "CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+            "CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
 
         Assert.Contains("TrapCompletionRouteDescriptor.ProjectionOnlyDenied", routeSource);
         Assert.Contains(

@@ -9,8 +9,8 @@ namespace HybridCPU_ISE.Tests.DocumentationContracts
     {
         [Theory]
         [InlineData("README.md")]
-        [InlineData("Documentation\\WhiteBook\\1. introduction.md")]
-        [InlineData("Documentation\\WhiteBook\\18. conclusion.md")]
+        [InlineData("Documentation\\Documentation\\WhiteBook\\1. introduction.md")]
+        [InlineData("Documentation\\Documentation\\WhiteBook\\18. conclusion.md")]
         public void T9_08n_PrimaryArchitectureEntryPoints_BoundDeterminismClaimsToReplayEvidenceEnvelope(string relativePath)
         {
             string text = ReadRepoFile(relativePath);
@@ -56,8 +56,8 @@ namespace HybridCPU_ISE.Tests.DocumentationContracts
         public void T9_08q_ReadmeEntryPoint_PointsToCurrentAuthority_AndNarrowsTypedSlotFactClaims()
         {
             string text = ReadRepoFile("README.md");
-            string layoutText = ReadRepoFile("Documentation\\WhiteBook\\14. repository-layout-and-code-map.md");
-            string referencesText = ReadRepoFile("Documentation\\WhiteBook\\19. references-and-reading-order.md");
+            string layoutText = ReadRepoFile("Documentation\\Documentation\\WhiteBook\\14. repository-layout-and-code-map.md");
+            string referencesText = ReadRepoFile("Documentation\\ArchitectureAuthorityRefactor\\Reference\\references-and-reading-order.md");
 
             Assert.Contains("Documentation/operational-semantics.md", text, StringComparison.Ordinal);
             Assert.Contains("Documentation/WhiteBook/", text, StringComparison.Ordinal);

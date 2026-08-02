@@ -139,9 +139,9 @@ public sealed class SecureMigrationCheckpointRestoreOutputManifestPhase15Tests
     public void SecureOutputManifestSources_DoNotCreateVmxVmreadPublicationBackendOrCompilerAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureOutputManifestClassificationPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureOutputManifestClassificationPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs");
 
         Assert.Contains("DeniedHostOwnedEvidence", source);
         Assert.Contains("DeniedVmcsProjectionAuthority", source);

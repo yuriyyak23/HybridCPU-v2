@@ -136,7 +136,27 @@ internal readonly record struct SimpleAsmAppMetrics(
     ulong DynamicRetirementTarget,
     string WorkloadShape,
     ulong SliceExecutionCount,
-    ulong ReferenceSliceIterations)
+    ulong ReferenceSliceIterations,
+    string MemoryCycleTelemetrySchemaVersion,
+    bool MemoryCycleTelemetryAvailable,
+    ulong MemoryControllerCycles,
+    ulong MemoryReadServiceCycles,
+    ulong MemoryStoreReadinessServiceCycles,
+    ulong MemoryCompletionPublicationCycles,
+    ulong MemoryAcceptedRequests,
+    ulong MemoryCompletedRequests,
+    ulong DataReadAcceptedRequests,
+    ulong DataReadCompletedRequests,
+    ulong DataWriteAcceptedRequests,
+    ulong DataWriteCompletedRequests,
+    ulong DataReadBytes,
+    ulong CommittedDataWriteBytes,
+    bool InstructionFetchReadBytesTelemetryAvailable,
+    ulong InstructionFetchReadBytes,
+    bool InstructionFetchRequestTelemetryAvailable,
+    ulong MemoryQueueFullRejects,
+    bool MemoryBankConflictRejectTelemetryAvailable,
+    ulong MemoryBankConflictRejects)
 {
     public ulong ActiveCycles => CycleCount > StallCycles ? CycleCount - StallCycles : 0;
 

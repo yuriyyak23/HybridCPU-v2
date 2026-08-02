@@ -582,28 +582,28 @@ if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
 $vmcsFieldSchema = Read-JsonArtifact "docs/VMXRefactoring/schemas/vmcs-field-projection-schema.v1.json"
 Assert-RequiredSchemaSwitches $vmcsFieldSchema "vmcs-field-projection-schema" "VmcsFieldProjectionGenerator"
 $vmcsGeneratedPath = Assert-GeneratedSourceMatches `
-    "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs" `
+    "CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs" `
     "VmcsFieldProjectionSchema.expected.cs" `
     (New-VmcsFieldProjectionSchemaSource $vmcsFieldSchema)
 
 $compatAliasSchema = Read-JsonArtifact "docs/VMXRefactoring/schemas/compat-alias-schema.v1.json"
 Assert-RequiredSchemaSwitches $compatAliasSchema "compat-alias-schema" "CompatAliasMapGenerator"
 $compatGeneratedPath = Assert-GeneratedSourceMatches `
-    "CloseToRTL/Core/Virtualization/Compatibility/Generated/AliasMaps/CompatAliasMap.cs" `
+    "CloseToHSL/Core/Virtualization/Compatibility/Generated/AliasMaps/CompatAliasMap.cs" `
     "CompatAliasMap.expected.cs" `
     (New-CompatAliasMapSource $compatAliasSchema)
 
 $vmxCapsSchema = Read-JsonArtifact "docs/VMXRefactoring/schemas/vmxcaps-capability-bit-schema.v1.json"
 Assert-RequiredSchemaSwitches $vmxCapsSchema "vmxcaps-capability-bit-schema" "VmxCapsCapabilityBitGenerator"
 $vmxCapsGeneratedPath = Assert-GeneratedSourceMatches `
-    "CloseToRTL/Core/Virtualization/Compatibility/Generated/CapabilityProjection/CapabilityDescriptorSetSchema.cs" `
+    "CloseToHSL/Core/Virtualization/Compatibility/Generated/CapabilityProjection/CapabilityDescriptorSetSchema.cs" `
     "CapabilityDescriptorSetSchema.expected.cs" `
     (New-VmxCapsCapabilityBitSchemaSource $vmxCapsSchema)
 
 $compatSpecSchema = Read-JsonArtifact "docs/VMXRefactoring/schemas/compat-spec-artifact-schema.v1.json"
 Assert-RequiredSchemaSwitches $compatSpecSchema "compat-spec-artifact-schema" "CompatSpecArtifactSetGenerator"
 $compatSpecGeneratedPath = Assert-GeneratedSourceMatches `
-    "CloseToRTL/Core/Virtualization/Compatibility/Generated/SpecArtifacts/CompatSpecArtifactSet.cs" `
+    "CloseToHSL/Core/Virtualization/Compatibility/Generated/SpecArtifacts/CompatSpecArtifactSet.cs" `
     "CompatSpecArtifactSet.expected.cs" `
     (New-CompatSpecArtifactSetSource $compatSpecSchema)
 

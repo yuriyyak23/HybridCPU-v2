@@ -227,8 +227,31 @@ public sealed class FetchedOwnerThreadTailTests
         core.WriteVirtualThreadPipelineState(0, PipelineState.WaitForEvent);
         core.WriteVirtualThreadPipelineState(3, PipelineState.Task);
 
-        MicroOp replayCarrier = MicroOpTestHelper.CreateScalarALU(3, destReg: 4, src1Reg: 5, src2Reg: 6);
-        core.TestPrimeReplayPhase(0x4D18, totalIterations: 2, replayCarrier);
+        VLIW_Instruction[] rawSlots =
+            CreateBundle(
+                CreateScalarInstruction(
+                    InstructionsEnum.ADDI,
+                    rd: 4,
+                    rs1: 5,
+                    immediate: 6));
+        VliwBundleAnnotations annotations = CreateUniformOwnerAnnotations(3);
+        var decodedForReplay = new YAKSys_Hybrid_CPU.Core.Decoder.VliwDecoderV4()
+            .DecodeInstructionBundle(
+                rawSlots,
+                annotations,
+                0x4D18,
+                bundleSerial: 0,
+                core.TestCaptureReplayDecodeContext());
+        InstructionSlotMetadata frozenSlotMetadata = decodedForReplay.CanonicalBundle!
+            .GetSlot(0)
+            .SlotSideband
+            .Deserialize<InstructionSlotMetadata>();
+        Assert.Equal(3, frozenSlotMetadata.VirtualThreadId.Value);
+        core.TestPrimeSemanticReplayPhase(
+            0x4D18,
+            totalIterations: 2,
+            rawSlots,
+            annotations);
 
         core.ExecutePipelineCycle();
 
@@ -238,8 +261,8 @@ public sealed class FetchedOwnerThreadTailTests
         Assert.False(fetchStage.HasBundleAnnotations);
         DecodedBundleTransportFacts transportFacts = core.TestReadCurrentDecodedBundleTransportFacts();
 
-        Assert.Equal(DecodedBundleStateKind.Replay, transportFacts.StateKind);
-        Assert.Equal(DecodedBundleStateOrigin.ReplayBundleLoad, transportFacts.StateOrigin);
+        Assert.Equal(DecodedBundleStateKind.Canonical, transportFacts.StateKind);
+        Assert.Equal(DecodedBundleStateOrigin.CanonicalDecode, transportFacts.StateOrigin);
         Assert.NotNull(transportFacts.Slots[0].MicroOp);
         Assert.Equal(3, transportFacts.Slots[0].MicroOp!.VirtualThreadId);
         Assert.Equal(3, transportFacts.Slots[0].MicroOp!.OwnerThreadId);

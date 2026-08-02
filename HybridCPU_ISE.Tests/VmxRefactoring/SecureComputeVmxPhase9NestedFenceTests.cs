@@ -6,9 +6,9 @@ public sealed class SecureComputeVmxPhase9NestedFenceTests
     public void SecureComputeVmxNestedSources_KeepShadowVmcsAsCompatibilityBridgeOnly()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs");
 
         Assert.Contains("DeniedNestedVmcsAuthority", source);
         Assert.Contains("DeniedMutableShadowVmcsAuthority", source);

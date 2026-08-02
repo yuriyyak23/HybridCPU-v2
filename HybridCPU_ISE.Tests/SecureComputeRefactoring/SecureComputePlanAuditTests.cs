@@ -128,7 +128,7 @@ public sealed class SecureComputePlanAuditTests
         string legacyPath = Path.Combine(
             root,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Runtime",
             "Domains",
@@ -150,7 +150,7 @@ public sealed class SecureComputePlanAuditTests
         string legacyPath = Path.Combine(
             root,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Runtime",
             "Domains",

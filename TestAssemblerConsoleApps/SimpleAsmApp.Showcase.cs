@@ -27,7 +27,7 @@ internal sealed partial class SimpleAsmApp
 
     private ShowcaseRuntimeReport RunShowcaseRuntimeProbes()
     {
-        Processor.CPU_Core core = _runtime.GetCore();
+        Processor.CPU_Core core = _runtime.GetCoreRef();
         core.Csr.Write(CsrAddresses.Mtvec, ShowcaseTrapVectorPc, PrivilegeLevel.Machine);
         core.Csr.Write(CsrAddresses.Mscratch, 0x1234UL, PrivilegeLevel.Machine);
         core.Csr.HardwareWrite(CsrAddresses.VmxEnable, 0UL);
@@ -298,7 +298,6 @@ internal sealed partial class SimpleAsmApp
             vtId: 0);
 
         ApplyLiveStateAdapter(state);
-        core = _runtime.GetCore();
 
         bool coversAdmission = VerifyAdmissionAndCertificateCompatibility();
         bool coversSurfaceContract = VerifyExecutionSurfaceContracts(core);
@@ -406,7 +405,6 @@ internal sealed partial class SimpleAsmApp
         }
 
         ApplyLiveStateAdapter(state);
-        core = _runtime.GetCore();
 
         PipelineState currentPipelineState = core.ReadVirtualThreadPipelineState(vtId);
         core.TestApplyExecutionDispatcherRetireWindowPublications(
@@ -421,7 +419,6 @@ internal sealed partial class SimpleAsmApp
             fsmTransitionCount++;
         }
 
-        _runtime.SetCore(core);
         state = _runtime.CreateLiveCpuStateAdapter(vtId);
         state.SetCurrentPipelineState(nextPipelineState);
     }

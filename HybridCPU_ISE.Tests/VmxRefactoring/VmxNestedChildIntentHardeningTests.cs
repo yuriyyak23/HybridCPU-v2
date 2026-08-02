@@ -227,24 +227,24 @@ public sealed class VmxNestedChildIntentHardeningTests
     public void NestedChildIntentSource_DoesNotIntroduceExecutionPublicationOrVmcsAuthority()
     {
         string runtimeNestedSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Nested/Descriptors/NestedDomainDescriptor.cs",
-            "CloseToRTL/Core/Runtime/Nested/Projection/NestedProjectionService.cs",
-            "CloseToRTL/Core/Runtime/Nested/CapabilityFilter/NestedCapabilityFilter.cs",
-            "CloseToRTL/Core/Runtime/Nested/Policies/NestedEvidencePolicy.cs",
-            "CloseToRTL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs",
-            "CloseToRTL/Core/Runtime/Domains/Admission/Nested/NestedDomainRuntime.cs");
+            "CloseToHSL/Core/Runtime/Nested/Descriptors/NestedDomainDescriptor.cs",
+            "CloseToHSL/Core/Runtime/Nested/Projection/NestedProjectionService.cs",
+            "CloseToHSL/Core/Runtime/Nested/CapabilityFilter/NestedCapabilityFilter.cs",
+            "CloseToHSL/Core/Runtime/Nested/Policies/NestedEvidencePolicy.cs",
+            "CloseToHSL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs",
+            "CloseToHSL/Core/Runtime/Domains/Admission/Nested/NestedDomainRuntime.cs");
         string secureNestedSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Nested/SecureChildDomainIntentDescriptor.cs",
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs");
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Nested/SecureChildDomainIntentDescriptor.cs",
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs");
         string compatibilityNestedSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Nested/ChildDomainIntentDescriptor.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Nested/NestedCompletionMapper.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/NestedDomainControllerCompatibilityProjection.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Nested/ChildDomainIntentDescriptor.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Nested/NestedCompletionMapper.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/NestedDomainControllerCompatibilityProjection.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs");
         string productionCallers = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
-            "CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
+            "CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
 
         Assert.Contains("NestedProjectionService", runtimeNestedSource);
         Assert.Contains("NestedCapabilityFilter", runtimeNestedSource);

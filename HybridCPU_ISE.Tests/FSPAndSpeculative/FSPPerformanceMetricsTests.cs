@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using HybridCPU_ISE.CloseToRTL.Memory.Banks;
+using HybridCPU_ISE.CloseToHSL.Memory.Banks;
 
 namespace HybridCPU_ISE.Tests
 {

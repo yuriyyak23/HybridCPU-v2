@@ -13,8 +13,8 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlRoli = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RoliInstruction;
-using CloseToRtlRori = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RoriInstruction;
+using CloseToHSLRoli = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RoliInstruction;
+using CloseToHSLRori = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RoriInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -42,7 +42,7 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
 
     [Theory]
     [MemberData(nameof(RotateImmediateOpcodeCases))]
-    public void RotateImmediate_OpcodeStatusAndCloseToRtlObjects_AreRuntimeClosed(
+    public void RotateImmediate_OpcodeStatusAndCloseToHSLObjects_AreRuntimeClosed(
         InstructionsEnum opcode,
         string mnemonic,
         int expectedOpcode,
@@ -70,7 +70,7 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalDisabledOpcodes);
 
-        AssertCloseToRtlObject(opcode, mnemonic);
+        AssertCloseToHSLObject(opcode, mnemonic);
     }
 
     [Theory]
@@ -221,7 +221,7 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
             rs1,
             3,
             immediate: imm6);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0x7820, 101));
 
         VLIW_Instruction outOfRange = InstructionEncoder.EncodeScalar(
@@ -231,7 +231,7 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
             rs1,
             0,
             immediate: 64);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(outOfRange), 0x7840, 102));
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -245,7 +245,7 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void RotateImmediate_ScalarAluCloseToRtlAndGoldenVectors_DefineImm6Edges(
+    public void RotateImmediate_ScalarAluCloseToHSLAndGoldenVectors_DefineImm6Edges(
         InstructionsEnum opcode,
         ulong source,
         ushort immediate6,
@@ -258,14 +258,14 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
             immediate: immediate6);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, ExecuteCloseToRtlObject(opcode, source, immediate6));
+        Assert.Equal(expected, ExecuteCloseToHSLObject(opcode, source, immediate6));
 
         foreach ((ulong goldenSource, ushort goldenImmediate, ulong goldenExpected) in GetGoldenVectors(opcode))
         {
             Assert.Equal(
                 goldenExpected,
                 ScalarAluOps.Compute((uint)opcode, goldenSource, op2: 0, immediate: goldenImmediate));
-            Assert.Equal(goldenExpected, ExecuteCloseToRtlObject(opcode, goldenSource, goldenImmediate));
+            Assert.Equal(goldenExpected, ExecuteCloseToHSLObject(opcode, goldenSource, goldenImmediate));
         }
     }
 
@@ -469,8 +469,8 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
         Assert.DoesNotContain("Roli", compilerSource, StringComparison.Ordinal);
         Assert.DoesNotContain("Rori", compilerSource, StringComparison.Ordinal);
 
-        Assert.False(CloseToRtlRoli.RequiresVmxProjection);
-        Assert.False(CloseToRtlRori.RequiresVmxProjection);
+        Assert.False(CloseToHSLRoli.RequiresVmxProjection);
+        Assert.False(CloseToHSLRori.RequiresVmxProjection);
     }
 
     private static ushort ResolveOpcodeValue(InstructionsEnum opcode) =>
@@ -481,49 +481,49 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar rotate-immediate opcode.")
         };
 
-    private static void AssertCloseToRtlObject(InstructionsEnum opcode, string mnemonic)
+    private static void AssertCloseToHSLObject(InstructionsEnum opcode, string mnemonic)
     {
         switch (opcode)
         {
             case InstructionsEnum.ROLI:
-                Assert.Equal(CloseToRtlRoli.Mnemonic, mnemonic);
-                Assert.Equal("ExecutableScalarAlu", CloseToRtlRoli.EvidenceBoundary);
-                Assert.Equal(64, CloseToRtlRoli.XLen);
-                Assert.Equal(6, CloseToRtlRoli.ImmediateBits);
-                Assert.Equal(0x3F, CloseToRtlRoli.ImmediateMask);
-                Assert.Equal((ushort)opcode, CloseToRtlRoli.Opcode);
-                Assert.True(CloseToRtlRoli.HasOpcodeAllocation);
-                Assert.True(CloseToRtlRoli.IsExecutable);
-                Assert.True(CloseToRtlRoli.WritesScalarRegister);
-                Assert.False(CloseToRtlRoli.HasSideEffects);
-                Assert.False(CloseToRtlRoli.CompilerHelperAllowed);
+                Assert.Equal(CloseToHSLRoli.Mnemonic, mnemonic);
+                Assert.Equal("ExecutableScalarAlu", CloseToHSLRoli.EvidenceBoundary);
+                Assert.Equal(64, CloseToHSLRoli.XLen);
+                Assert.Equal(6, CloseToHSLRoli.ImmediateBits);
+                Assert.Equal(0x3F, CloseToHSLRoli.ImmediateMask);
+                Assert.Equal((ushort)opcode, CloseToHSLRoli.Opcode);
+                Assert.True(CloseToHSLRoli.HasOpcodeAllocation);
+                Assert.True(CloseToHSLRoli.IsExecutable);
+                Assert.True(CloseToHSLRoli.WritesScalarRegister);
+                Assert.False(CloseToHSLRoli.HasSideEffects);
+                Assert.False(CloseToHSLRoli.CompilerHelperAllowed);
                 break;
             case InstructionsEnum.RORI:
-                Assert.Equal(CloseToRtlRori.Mnemonic, mnemonic);
-                Assert.Equal("ExecutableScalarAlu", CloseToRtlRori.EvidenceBoundary);
-                Assert.Equal(64, CloseToRtlRori.XLen);
-                Assert.Equal(6, CloseToRtlRori.ImmediateBits);
-                Assert.Equal(0x3F, CloseToRtlRori.ImmediateMask);
-                Assert.Equal((ushort)opcode, CloseToRtlRori.Opcode);
-                Assert.True(CloseToRtlRori.HasOpcodeAllocation);
-                Assert.True(CloseToRtlRori.IsExecutable);
-                Assert.True(CloseToRtlRori.WritesScalarRegister);
-                Assert.False(CloseToRtlRori.HasSideEffects);
-                Assert.False(CloseToRtlRori.CompilerHelperAllowed);
+                Assert.Equal(CloseToHSLRori.Mnemonic, mnemonic);
+                Assert.Equal("ExecutableScalarAlu", CloseToHSLRori.EvidenceBoundary);
+                Assert.Equal(64, CloseToHSLRori.XLen);
+                Assert.Equal(6, CloseToHSLRori.ImmediateBits);
+                Assert.Equal(0x3F, CloseToHSLRori.ImmediateMask);
+                Assert.Equal((ushort)opcode, CloseToHSLRori.Opcode);
+                Assert.True(CloseToHSLRori.HasOpcodeAllocation);
+                Assert.True(CloseToHSLRori.IsExecutable);
+                Assert.True(CloseToHSLRori.WritesScalarRegister);
+                Assert.False(CloseToHSLRori.HasSideEffects);
+                Assert.False(CloseToHSLRori.CompilerHelperAllowed);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar rotate-immediate opcode.");
         }
     }
 
-    private static ulong ExecuteCloseToRtlObject(
+    private static ulong ExecuteCloseToHSLObject(
         InstructionsEnum opcode,
         ulong source,
         ushort immediate6) =>
         opcode switch
         {
-            InstructionsEnum.ROLI => CloseToRtlRoli.Execute(source, immediate6),
-            InstructionsEnum.RORI => CloseToRtlRori.Execute(source, immediate6),
+            InstructionsEnum.ROLI => CloseToHSLRoli.Execute(source, immediate6),
+            InstructionsEnum.RORI => CloseToHSLRori.Execute(source, immediate6),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar rotate-immediate opcode.")
         };
 
@@ -532,9 +532,9 @@ public sealed class NonVmxPhase02RotateImmediateExecutableTests
     {
         return opcode switch
         {
-            InstructionsEnum.ROLI => CloseToRtlRoli.GetLocalGoldenVectors()
+            InstructionsEnum.ROLI => CloseToHSLRoli.GetLocalGoldenVectors()
                 .Select(static vector => (vector.Source, vector.Immediate6, vector.Expected)),
-            InstructionsEnum.RORI => CloseToRtlRori.GetLocalGoldenVectors()
+            InstructionsEnum.RORI => CloseToHSLRori.GetLocalGoldenVectors()
                 .Select(static vector => (vector.Source, vector.Immediate6, vector.Expected)),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar rotate-immediate opcode.")
         };

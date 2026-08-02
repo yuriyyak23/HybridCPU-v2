@@ -9,7 +9,7 @@ namespace HybridCPU_ISE.Machine
     {
         MachineStateSourceProvenance SourceProvenance { get; }
         int GetCoreCount();
-        Processor.CPU_Core GetCore(int coreId);
+        CpuCoreDiagnosticSnapshot GetCoreSnapshot(int coreId);
         int GetPodCount();
         PodController? GetPod(int podIndex);
         byte[] ReadMemory(ulong address, int length);

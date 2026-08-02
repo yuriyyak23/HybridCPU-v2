@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using YAKSys_Hybrid_CPU.Arch.Generated;
 
 namespace YAKSys_Hybrid_CPU.Arch
 {
@@ -23,12 +24,9 @@ namespace YAKSys_Hybrid_CPU.Arch
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static InstructionClass GetClass(ushort opcode)
         {
-            if (OpcodeRegistry.TryGetPublishedSemantics(
-                opcode,
-                out InstructionClass publishedClass,
-                out _))
+            if (GeneratedIsaCatalog.TryGetDescriptor(opcode, out GeneratedIsaDescriptor descriptor))
             {
-                return publishedClass;
+                return descriptor.StaticClass;
             }
 
             return GetClass((Processor.CPU_Core.InstructionsEnum)opcode);
@@ -37,12 +35,9 @@ namespace YAKSys_Hybrid_CPU.Arch
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static InstructionClass GetClass(Processor.CPU_Core.InstructionsEnum opcode)
         {
-            if (OpcodeRegistry.TryGetPublishedSemantics(
-                opcode,
-                out InstructionClass publishedClass,
-                out _))
+            if (GeneratedIsaCatalog.TryGetDescriptor((uint)opcode, out GeneratedIsaDescriptor descriptor))
             {
-                return publishedClass;
+                return descriptor.StaticClass;
             }
 
             return opcode switch
@@ -243,12 +238,9 @@ namespace YAKSys_Hybrid_CPU.Arch
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SerializationClass GetSerializationClass(ushort opcode)
         {
-            if (OpcodeRegistry.TryGetPublishedSemantics(
-                opcode,
-                out _,
-                out SerializationClass publishedSerialization))
+            if (GeneratedIsaCatalog.TryGetDescriptor(opcode, out GeneratedIsaDescriptor descriptor))
             {
-                return publishedSerialization;
+                return descriptor.Serialization;
             }
 
             return GetSerializationClass((Processor.CPU_Core.InstructionsEnum)opcode);
@@ -257,12 +249,9 @@ namespace YAKSys_Hybrid_CPU.Arch
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SerializationClass GetSerializationClass(Processor.CPU_Core.InstructionsEnum opcode)
         {
-            if (OpcodeRegistry.TryGetPublishedSemantics(
-                opcode,
-                out _,
-                out SerializationClass publishedSerialization))
+            if (GeneratedIsaCatalog.TryGetDescriptor((uint)opcode, out GeneratedIsaDescriptor descriptor))
             {
-                return publishedSerialization;
+                return descriptor.Serialization;
             }
 
             return opcode switch

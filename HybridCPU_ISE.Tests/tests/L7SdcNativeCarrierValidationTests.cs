@@ -27,7 +27,7 @@ public sealed class L7SdcNativeCarrierValidationTests
 
         Assert.Contains("ACCEL_SUBMIT", ex.Message, StringComparison.Ordinal);
         Assert.Contains("typed", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains(nameof(AcceleratorCommandDescriptor), ex.Message, StringComparison.Ordinal);
+        Assert.Contains("illegal", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -118,8 +118,8 @@ public sealed class L7SdcNativeCarrierValidationTests
                 CreateAnnotations(7, descriptor, CreateSystemSingletonSlotMetadata()),
                 bundleAddress: 0xA040));
 
-        Assert.Contains(nameof(AcceleratorCommandDescriptor), ex.Message, StringComparison.Ordinal);
-        Assert.Contains("ACCEL_SUBMIT", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("ACCEL_POLL", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("illegal", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]

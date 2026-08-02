@@ -16,7 +16,7 @@ using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
 using YAKSys_Hybrid_CPU.Memory;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 
 namespace HybridCPU_ISE.Tests;
 

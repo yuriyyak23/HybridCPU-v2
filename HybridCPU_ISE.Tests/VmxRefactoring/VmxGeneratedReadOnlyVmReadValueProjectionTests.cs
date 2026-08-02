@@ -90,8 +90,8 @@ public sealed class VmxGeneratedReadOnlyVmReadValueProjectionTests
     public void VmReadProjectionPath_SourceUsesSchemaOwnerAndNoVmcsFieldStoreFallback()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
 
         Assert.Contains("RuntimeBoundaryAdmissionService", source);
         Assert.Contains("DomainRuntimeOperationKind.ReadCompatibilityProjection", source);

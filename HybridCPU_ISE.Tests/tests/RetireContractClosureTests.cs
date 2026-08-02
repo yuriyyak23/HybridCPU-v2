@@ -14,7 +14,7 @@ using YAKSys_Hybrid_CPU.Memory;
 using HybridCPU_ISE.Tests.TestHelpers;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 using HybridCPU_ISE.Arch;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 
 namespace HybridCPU_ISE.Tests
 {
@@ -480,11 +480,14 @@ namespace HybridCPU_ISE.Tests
             };
             microOp.InitializeMetadata();
 
-            core.TestRetireExplicitPacketLaneMicroOp(
-                laneIndex: 0,
-                microOp,
-                pc: 0x3400,
-                vtId: 2);
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+                () => core.TestRetireExplicitPacketLaneMicroOp(
+                    laneIndex: 0,
+                    microOp,
+                    pc: 0x3400,
+                    vtId: 2));
+
+            Assert.Contains("[FailClosed/InvalidInternalOp]", ex.Message, StringComparison.Ordinal);
 
             Assert.Equal(0UL, core.ReadArch(2, 9));
 
@@ -7860,7 +7863,7 @@ namespace HybridCPU_ISE.Tests
         [Theory]
         [InlineData(InstructionsEnum.VLOAD)]
         [InlineData(InstructionsEnum.VSTORE)]
-        public void VectorTransferMicroOp_WhenStreamLengthIsNonZero_ThenExecutes1DTransferThroughPublishedReadWriteRanges(
+        public void VectorTransferMicroOp_WhenBoundAndNonZero_ThenCompletesReadWithoutEarlyDestinationPublication(
             InstructionsEnum opcode)
         {
             const ulong destSrc1Pointer = 0x280UL;
@@ -7900,6 +7903,8 @@ namespace HybridCPU_ISE.Tests
                 (ResolveVectorTransferWritePointer(opcode, destSrc1Pointer, src2Pointer), 16UL),
                 Assert.Single(microOp.AdmissionMetadata.WriteMemoryRanges));
 
+            Assert.False(microOp.Execute(ref core));
+            Processor.Memory.AdvanceCycles(2);
             Assert.True(microOp.Execute(ref core));
 
             Assert.Equal(
@@ -7908,7 +7913,7 @@ namespace HybridCPU_ISE.Tests
                     ResolveVectorTransferReadPointer(opcode, destSrc1Pointer, src2Pointer),
                     sourceBytes.Length));
             Assert.Equal(
-                sourceBytes,
+                destinationSeed,
                 ReadMainMemoryBytes(
                     ResolveVectorTransferWritePointer(opcode, destSrc1Pointer, src2Pointer),
                     sourceBytes.Length));
@@ -7970,8 +7975,24 @@ namespace HybridCPU_ISE.Tests
                 pc: retiredPc);
 
             var executeStage = core.TestReadExecuteStageStatus();
+            Assert.False(executeStage.ResultReady);
+
+            Processor.Memory.AdvanceCycles(2);
+            core.TestRunExecuteStageWithDecodedInstruction(
+                instruction,
+                microOp,
+                isVectorOp: true,
+                isMemoryOp: false,
+                pc: retiredPc);
+
+            executeStage = core.TestReadExecuteStageStatus();
             Assert.True(executeStage.ResultReady);
             Assert.True(executeStage.VectorComplete);
+            Assert.Equal(
+                destinationSeed,
+                ReadMainMemoryBytes(
+                    ResolveVectorTransferWritePointer(opcode, destSrc1Pointer, src2Pointer),
+                    sourceBytes.Length));
 
             core.TestRunMemoryAndWriteBackStagesFromCurrentExecuteState();
 
@@ -8170,11 +8191,14 @@ namespace HybridCPU_ISE.Tests
             };
             microOp.InitializeMetadata();
 
-            core.TestRetireExplicitPacketLaneMicroOp(
-                laneIndex: 0,
-                microOp,
-                pc: 0x1D00,
-                vtId: 2);
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+                () => core.TestRetireExplicitPacketLaneMicroOp(
+                    laneIndex: 0,
+                    microOp,
+                    pc: 0x1D00,
+                    vtId: 2));
+
+            Assert.Contains("[FailClosed/InvalidInternalOp]", ex.Message, StringComparison.Ordinal);
 
             Assert.Equal(0UL, core.ReadArch(2, 9));
 

@@ -69,9 +69,10 @@ public sealed class PolicyGapBitContractTests
         InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
             () => decoder.Decode(in legacyInstruction, slotIndex: 0));
 
-        Assert.Equal(
-            "Instruction at slot 0 has word3[50] set. This retired legacy scheduling-policy bit must be zero in production decoded streams.",
-            ex.Message);
+        Assert.Contains("ADDI", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("slot 0", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Word3[50]", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("must be zero", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -79,7 +80,7 @@ public sealed class PolicyGapBitContractTests
     {
         string repoRoot = FindRepoRoot();
         string compatLayoutPath = Path.Combine(repoRoot, "HybridCPU_ISE", "NonRTL", "Arch", "Compat", "VLIW_Instruction.Layout.cs");
-        string compilerContractPath = Path.Combine(repoRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Contracts", "CompilerContract.cs");
+        string compilerContractPath = Path.Combine(repoRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Contracts", "CompilerContract.cs");
 
         string compatLayout = File.ReadAllText(compatLayoutPath);
         string compilerContract = File.ReadAllText(compilerContractPath);

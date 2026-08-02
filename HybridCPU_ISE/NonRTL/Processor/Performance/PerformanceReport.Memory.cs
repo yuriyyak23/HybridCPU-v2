@@ -99,6 +99,31 @@ namespace YAKSys_Hybrid_CPU
         public double AverageMemoryLatency { get; set; }
 
         /// <summary>
+        /// Additive RF-10 producer telemetry. Availability flags distinguish
+        /// a measured zero from a contour that has no truthful producer.
+        /// </summary>
+        public string MemoryCycleTelemetrySchemaVersion { get; set; } = string.Empty;
+        public bool MemoryCycleTelemetryAvailable { get; set; }
+        public long MemoryControllerCycles { get; set; }
+        public long MemoryReadServiceCycles { get; set; }
+        public long MemoryStoreReadinessServiceCycles { get; set; }
+        public long MemoryCompletionPublicationCycles { get; set; }
+        public long MemoryAcceptedRequests { get; set; }
+        public long MemoryCompletedRequests { get; set; }
+        public long DataReadAcceptedRequests { get; set; }
+        public long DataReadCompletedRequests { get; set; }
+        public long DataWriteAcceptedRequests { get; set; }
+        public long DataWriteCompletedRequests { get; set; }
+        public long DataReadBytes { get; set; }
+        public long CommittedDataWriteBytes { get; set; }
+        public bool InstructionFetchReadBytesTelemetryAvailable { get; set; }
+        public long InstructionFetchReadBytes { get; set; }
+        public bool InstructionFetchRequestTelemetryAvailable { get; set; }
+        public long MemoryQueueFullRejects { get; set; }
+        public bool MemoryBankConflictRejectTelemetryAvailable { get; set; }
+        public long MemoryBankConflictRejects { get; set; }
+
+        /// <summary>
         /// Stalls on load operations
         /// </summary>
         public long LoadStalls { get; set; }

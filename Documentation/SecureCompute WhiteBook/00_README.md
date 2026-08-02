@@ -4,7 +4,7 @@ Status date: 2026-06-18.
 
 ## Purpose
 
-This is the split architectural WhiteBook for SecureCompute in HybridCPU-v2 / CloseToRTL.
+This is the split architectural WhiteBook for SecureCompute in HybridCPU-v2 / CloseToHSL.
 
 The normative source for development order, phase status, release requirements and future gates is:
 

@@ -247,10 +247,10 @@ public sealed class SecureMeasurementEvidencePolicyTests
     public void SecureMeasurementSources_DoNotCreateVmcsVmxCapsOrVmreadAttestationAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Measurement/DomainMeasurementDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Measurement/SecureMeasurementAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Measurement/DomainMeasurementDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Measurement/SecureMeasurementAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
 
         Assert.DoesNotContain("VmcsField", source);
         Assert.DoesNotContain("VmxCaps", source);

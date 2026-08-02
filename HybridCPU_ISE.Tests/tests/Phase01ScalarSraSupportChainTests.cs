@@ -107,10 +107,10 @@ public sealed class ScalarSraSupportChainTests
         VLIW_Instruction instruction = CreateScalarSraInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -308,10 +308,10 @@ public sealed class ScalarAddiwSupportChainTests
         VLIW_Instruction instruction = CreateScalarAddiwInstruction(rd: 7, rs1: 5, imm: 1);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -529,10 +529,10 @@ public sealed class ScalarAddwSupportChainTests
         VLIW_Instruction instruction = CreateScalarAddwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -730,10 +730,10 @@ public sealed class ScalarSubwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSubwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -931,10 +931,10 @@ public sealed class ScalarSllwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSllwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1132,10 +1132,10 @@ public sealed class ScalarSrlwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSrlwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1333,10 +1333,10 @@ public sealed class ScalarSrawSupportChainTests
         VLIW_Instruction instruction = CreateScalarSrawInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1534,10 +1534,10 @@ public sealed class ScalarSlliwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSlliwInstruction(rd: 7, rs1: 5, imm: 1);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1551,10 +1551,10 @@ public sealed class ScalarSlliwSupportChainTests
             reg3: 6,
             immediate: 1);
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1631,7 +1631,7 @@ public sealed class ScalarSlliwSupportChainTests
         DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
             () => InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.SLLIW, context));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1793,10 +1793,10 @@ public sealed class ScalarSrliwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSrliwInstruction(rd: 7, rs1: 5, imm: 1);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1810,10 +1810,10 @@ public sealed class ScalarSrliwSupportChainTests
             reg3: 6,
             immediate: 1);
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1890,7 +1890,7 @@ public sealed class ScalarSrliwSupportChainTests
         DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
             () => InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.SRLIW, context));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -2052,10 +2052,10 @@ public sealed class ScalarSraiwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSraiwInstruction(rd: 7, rs1: 5, imm: 1);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -2069,10 +2069,10 @@ public sealed class ScalarSraiwSupportChainTests
             reg3: 6,
             immediate: 1);
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -2149,7 +2149,7 @@ public sealed class ScalarSraiwSupportChainTests
         DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
             () => InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.SRAIW, context));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -2312,10 +2312,10 @@ public sealed class ScalarMulwSupportChainTests
         VLIW_Instruction instruction = CreateScalarMulwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -2516,10 +2516,10 @@ public sealed class ScalarDivwSupportChainTests
         VLIW_Instruction instruction = CreateScalarDivwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -2748,10 +2748,10 @@ public sealed class ScalarDivuwSupportChainTests
         VLIW_Instruction instruction = CreateScalarDivuwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -2980,10 +2980,10 @@ public sealed class ScalarRemwSupportChainTests
         VLIW_Instruction instruction = CreateScalarRemwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3212,10 +3212,10 @@ public sealed class ScalarRemuwSupportChainTests
         VLIW_Instruction instruction = CreateScalarRemuwInstruction(rd: 7, rs1: 5, rs2: 6);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3443,10 +3443,10 @@ public sealed class ScalarSextwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSextwInstruction(rd: 7, rs1: 5);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3455,10 +3455,10 @@ public sealed class ScalarSextwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSextwInstruction(rd: 7, rs1: 5);
         instruction.Word1 = VLIW_Instruction.PackArchRegs(7, 5, 6);
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3467,10 +3467,10 @@ public sealed class ScalarSextwSupportChainTests
         VLIW_Instruction instruction = CreateScalarSextwInstruction(rd: 7, rs1: 5);
         instruction.Immediate = 1;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("Immediate-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3542,7 +3542,7 @@ public sealed class ScalarSextwSupportChainTests
         DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
             () => InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.SEXT_W, context));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3561,7 +3561,7 @@ public sealed class ScalarSextwSupportChainTests
         DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
             () => InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.SEXT_W, context));
 
-        Assert.Contains("Immediate-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -3730,10 +3730,10 @@ public sealed class ScalarZextwSupportChainTests
         VLIW_Instruction instruction = CreateScalarZextwInstruction(rd: 7, rs1: 5);
         instruction.Word1 = 32;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("legacy/global register encoding", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("non-canonical packed", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3742,10 +3742,10 @@ public sealed class ScalarZextwSupportChainTests
         VLIW_Instruction instruction = CreateScalarZextwInstruction(rd: 7, rs1: 5);
         instruction.Word1 = VLIW_Instruction.PackArchRegs(7, 5, 6);
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3754,10 +3754,10 @@ public sealed class ScalarZextwSupportChainTests
         VLIW_Instruction instruction = CreateScalarZextwInstruction(rd: 7, rs1: 5);
         instruction.Immediate = 1;
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+        InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => new VliwDecoderV4().Decode(in instruction, slotIndex: 0));
 
-        Assert.Contains("Immediate-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3829,7 +3829,7 @@ public sealed class ScalarZextwSupportChainTests
         DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
             () => InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.ZEXT_W, context));
 
-        Assert.Contains("Register-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("rs2", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -3848,7 +3848,7 @@ public sealed class ScalarZextwSupportChainTests
         DecodeProjectionFaultException exception = Assert.Throws<DecodeProjectionFaultException>(
             () => InstructionRegistry.CreateMicroOp((uint)InstructionsEnum.ZEXT_W, context));
 
-        Assert.Contains("Immediate-form aliasing", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
     }
 
     [Theory]

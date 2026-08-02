@@ -217,7 +217,7 @@ public sealed class CompilerPhase05CompilerToIseParityHarnessTests
             CreateLoadStorePackage);
     }
 
-    private static CompilerEmissionPackage CreateScalarPackage() =>
+    internal static CompilerEmissionPackage CreateScalarPackage() =>
         Project(
             CreateContextWithInstruction(
                 InstructionsEnum.ADD,
@@ -227,7 +227,7 @@ public sealed class CompilerPhase05CompilerToIseParityHarnessTests
             ExecutionContourKind.NativeVliwScalar,
             "Phase 05 scalar parity fixture");
 
-    private static CompilerEmissionPackage CreateLoadStorePackage() =>
+    internal static CompilerEmissionPackage CreateLoadStorePackage() =>
         Project(
             CreateContextWithInstruction(
                 InstructionsEnum.LW,
@@ -237,7 +237,7 @@ public sealed class CompilerPhase05CompilerToIseParityHarnessTests
             ExecutionContourKind.NativeVliwLoadStore,
             "Phase 05 load/store parity fixture");
 
-    private static CompilerEmissionPackage CreateVectorPackage()
+    internal static CompilerEmissionPackage CreateVectorPackage()
     {
         var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
         context.CompileVloadWithDecision(
@@ -251,7 +251,7 @@ public sealed class CompilerPhase05CompilerToIseParityHarnessTests
             "Phase 05 vector parity fixture");
     }
 
-    private static CompilerEmissionPackage CreateMatrixTilePackage()
+    internal static CompilerEmissionPackage CreateMatrixTilePackage()
     {
         var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
         context.CompileMtileLoadWithDecision(
@@ -265,7 +265,7 @@ public sealed class CompilerPhase05CompilerToIseParityHarnessTests
             "Phase 05 MatrixTile parity fixture");
     }
 
-    private static CompilerEmissionPackage CreateDscPackage()
+    internal static CompilerEmissionPackage CreateDscPackage()
     {
         var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
         context.CompileDmaStreamCompute(DmaStreamComputeTestDescriptorFactory.CreateDescriptor());
@@ -276,7 +276,7 @@ public sealed class CompilerPhase05CompilerToIseParityHarnessTests
             "Phase 05 DSC parity fixture");
     }
 
-    private static CompilerEmissionPackage CreateL7Package()
+    internal static CompilerEmissionPackage CreateL7Package()
     {
         AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
         HybridCpuThreadCompilerContext context =
@@ -291,7 +291,7 @@ public sealed class CompilerPhase05CompilerToIseParityHarnessTests
             "Phase 05 L7 parity fixture");
     }
 
-    private static CompilerEmissionPackage CreateBranchPackage()
+    internal static CompilerEmissionPackage CreateBranchPackage()
     {
         var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
 #pragma warning disable CS0618

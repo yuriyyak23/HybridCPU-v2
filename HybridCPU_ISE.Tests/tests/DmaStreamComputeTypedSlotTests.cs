@@ -157,6 +157,7 @@ public sealed class DmaStreamComputeTypedSlotTests
         Assert.Equal(10, (byte)TypedSlotRejectReason.AssistBackpressureReject);
         Assert.Equal(11, (byte)TypedSlotRejectReason.PinnedLaneConflict);
         Assert.Equal(12, (byte)TypedSlotRejectReason.LateBindingConflict);
+        Assert.Equal(13, (byte)TypedSlotRejectReason.InvalidPinnedLane);
         Assert.Equal(20, (byte)TypedSlotRejectReason.FairnessDeferred);
     }
 
@@ -164,7 +165,7 @@ public sealed class DmaStreamComputeTypedSlotTests
     public void AddsNativeIsaCompilerEmissionWithoutCustomAcceleratorRegistryPath()
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string registryText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Diagnostics"), "InstructionRegistry*.cs");
+        string registryText = ReadAllSourceText(Path.Combine(repoRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Diagnostics"), "InstructionRegistry*.cs");
         string compilerText = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
 
         Assert.DoesNotContain(nameof(DmaStreamComputeMicroOp), registryText, StringComparison.Ordinal);

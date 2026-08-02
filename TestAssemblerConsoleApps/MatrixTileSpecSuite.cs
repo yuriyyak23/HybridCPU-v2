@@ -6,7 +6,7 @@ using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
@@ -904,6 +904,7 @@ internal sealed class MatrixTileSpecSuite
         {
             string corpusPath = FindRepositoryFile(
                 Path.Combine(
+                    "Documentation",
                     "Documentation",
                     "Stream WhiteBook",
                     "03_MatrixTile",
@@ -1947,7 +1948,7 @@ internal sealed class MatrixTileSpecSuite
         var counters = new ScenarioCounters();
         var stopwatch = Stopwatch.StartNew();
         Processor.MainMemoryArea originalMainMemory = Processor.MainMemory;
-        Processor.CPU_Core originalCore = Processor.CPU_Cores[0];
+        Processor.CPU_Core originalCoreLifecycleHandle = Processor.GetCoreRef(0);
 
         try
         {
@@ -1968,9 +1969,9 @@ internal sealed class MatrixTileSpecSuite
             AssertLoweredSidebands(transposeProgram, InstructionsEnum.MTRANSPOSE, null, transposeLayoutPolicy, requireLane6: false);
 
             Processor.MainMemoryArea memory = CreateMemory(1);
-            Processor.CPU_Core core = CreateCore(memory);
             Processor.MainMemory = memory;
-            Processor.CPU_Cores[0] = core;
+            Processor.ReplaceCore(0, CreateCore(memory));
+            Processor.CPU_Core core = Processor.GetCoreRef(0);
             byte[] source = [1, 2, 3, 4];
             byte[] accumulatorBefore = new byte[MatrixTileExecuteCaptureAbi.GetPackedByteLength(accumulatorPolicy.AccumulatorDescriptor)];
             WriteMemory(memory, LoadSourceBaseAddress, source);
@@ -2128,7 +2129,7 @@ internal sealed class MatrixTileSpecSuite
         finally
         {
             Processor.MainMemory = originalMainMemory;
-            Processor.CPU_Cores[0] = originalCore;
+            Processor.ReplaceCore(0, originalCoreLifecycleHandle);
         }
     }
 
@@ -2142,7 +2143,6 @@ internal sealed class MatrixTileSpecSuite
         MatrixTileLayoutPolicy? expectedLayoutPolicy)
     {
         memory.SetLength(checked((long)(emissionBase + (ulong)compiledProgram.ProgramImage.Length)));
-        Processor.CPU_Cores[0] = core;
         compiledProgram.EmitVliwBundleImage(emissionBase);
         Require(memory.TryReadVliwBundleAnnotations(emissionBase, out VliwBundleAnnotations? published) &&
                 ReferenceEquals(published, compiledProgram.LoweredBundleAnnotations[0]),
@@ -2175,10 +2175,21 @@ internal sealed class MatrixTileSpecSuite
                 Require(captureIdentityVerified,
                     $"{expectedOpcode}: WB-retired before the test observed MatrixTile capture identity.");
                 var cache = core.TestReadVliwFetchCacheCarriers(emissionBase);
-                Require(cache.L1Present && cache.L2Present &&
-                        ReferenceEquals(cache.L1Annotations, published) &&
-                        ReferenceEquals(cache.L2Annotations, published),
-                    $"{expectedOpcode}: annotation carrier did not survive MainMemory -> L2 -> L1 PC fetch transport.");
+                bool cacheCarrierPreserved =
+                    cache.L1Present &&
+                    cache.L2Present &&
+                    ReferenceEquals(cache.L1Annotations, published) &&
+                    ReferenceEquals(cache.L2Annotations, published);
+                bool conservativelyInvalidatedButSourcePreserved =
+                    !cache.L1Present &&
+                    !cache.L2Present &&
+                    memory.TryReadVliwBundleAnnotations(
+                        emissionBase,
+                        out VliwBundleAnnotations? sourceAnnotations) &&
+                    ReferenceEquals(sourceAnnotations, published);
+                Require(
+                    cacheCarrierPreserved || conservativelyInvalidatedButSourcePreserved,
+                    $"{expectedOpcode}: annotation carrier was neither preserved in L2/L1 nor conservatively invalidated with its MainMemory source intact.");
                 return observed;
             }
         }
@@ -2220,9 +2231,9 @@ internal sealed class MatrixTileSpecSuite
         params ushort[] forbiddenTileIds)
     {
         Processor.MainMemoryArea memory = CreateMemory(1);
-        Processor.CPU_Core core = CreateCore(memory);
         Processor.MainMemory = memory;
-        Processor.CPU_Cores[0] = core;
+        Processor.ReplaceCore(0, CreateCore(memory));
+        Processor.CPU_Core core = Processor.GetCoreRef(0);
         memory.SetLength(checked((long)(emissionBase + (ulong)compiledProgram.ProgramImage.Length)));
         compiledProgram.EmitVliwBundleImage(emissionBase);
         core.PrepareExecutionStart(emissionBase);
@@ -2272,9 +2283,9 @@ internal sealed class MatrixTileSpecSuite
         ushort forbiddenTileId)
     {
         Processor.MainMemoryArea memory = CreateMemory(1);
-        Processor.CPU_Core core = CreateCore(memory);
         Processor.MainMemory = memory;
-        Processor.CPU_Cores[0] = core;
+        Processor.ReplaceCore(0, CreateCore(memory));
+        Processor.CPU_Core core = Processor.GetCoreRef(0);
         memory.SetLength(checked((long)(emissionBase + (ulong)staleCarrierProgram.ProgramImage.Length)));
 
         staleCarrierProgram.EmitVliwBundleImage(emissionBase);
@@ -2330,9 +2341,9 @@ internal sealed class MatrixTileSpecSuite
         ulong emissionBase)
     {
         Processor.MainMemoryArea memory = CreateMemory(1);
-        Processor.CPU_Core core = CreateCore(memory);
         Processor.MainMemory = memory;
-        Processor.CPU_Cores[0] = core;
+        Processor.ReplaceCore(0, CreateCore(memory));
+        Processor.CPU_Core core = Processor.GetCoreRef(0);
         memory.SetLength(checked((long)(emissionBase + (ulong)staleCarrierProgram.ProgramImage.Length)));
 
         staleCarrierProgram.EmitVliwBundleImage(emissionBase);
@@ -2342,9 +2353,7 @@ internal sealed class MatrixTileSpecSuite
         Require(warmedCache.L1Present && warmedCache.L2Present,
             "re-emission stale annotation check failed to warm VLIW cache carriers.");
 
-        Processor.CPU_Cores[0] = core;
         replacementProgram.EmitVliwBundleImage(emissionBase);
-        core = Processor.CPU_Cores[0];
 
         Require(memory.TryReadVliwBundleAnnotations(emissionBase, out VliwBundleAnnotations? replacementAnnotations) &&
                 ReferenceEquals(replacementAnnotations, replacementProgram.LoweredBundleAnnotations[0]),

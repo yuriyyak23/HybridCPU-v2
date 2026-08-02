@@ -6,7 +6,7 @@ VMCS and VMCSv2 are compatibility projections. They are not the runtime substrat
 
 The generated projection schema is in:
 
-- `CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs`
 
 The schema records:
 

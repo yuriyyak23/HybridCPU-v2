@@ -34,7 +34,8 @@ public sealed class L7SdcCapabilityIsNotAuthorityTests
 
         void Decode() => decoder.Decode(in instruction, slotIndex: 7);
         InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>((Action)Decode);
-        Assert.Contains("canonical ISA v4 opcode space", ex.Message);
+        Assert.Contains("0xC000", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("no generated ISA descriptor", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

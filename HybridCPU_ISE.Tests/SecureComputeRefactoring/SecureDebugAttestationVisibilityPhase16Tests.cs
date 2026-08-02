@@ -214,11 +214,11 @@ public sealed class SecureDebugAttestationVisibilityPhase16Tests
     public void DebugAttestationVisibilitySources_DoNotCreateVmxVmreadMigrationPublicationBackendOrCompilerAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Debug/SecureDebugPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Debug/SecureDebugAttestationVisibilityPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/HostInspection/SecureHostInspectionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Measurement/DomainMeasurementDescriptor.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Debug/SecureDebugPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Debug/SecureDebugAttestationVisibilityPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/HostInspection/SecureHostInspectionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Measurement/DomainMeasurementDescriptor.cs");
 
         Assert.Contains("DeniedMigrationAuthority", source);
         Assert.Contains("DeniedVmreadAuthority", source);

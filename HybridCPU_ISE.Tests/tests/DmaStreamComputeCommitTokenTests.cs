@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.DMA;
+using HybridCPU_ISE.CloseToHSL.Memory.DMA;
 using System;
 using System.Buffers.Binary;
 using Xunit;

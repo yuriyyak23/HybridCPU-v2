@@ -190,8 +190,8 @@ public sealed class SecureBackendOwnerRfcGateTests
     public void SecureBackendOwnerGateSources_DoNotUseVmxVmcsOrVmxCapsAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Backend/SecureBackendOwnerDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureBackendOwnerAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Backend/SecureBackendOwnerDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureBackendOwnerAdmissionPolicy.cs");
 
         Assert.Contains("DeniedBackendExecutionClosed", source);
         Assert.Contains("AllowedProofOnlyNoExecution", source);
@@ -304,7 +304,7 @@ public sealed class SecureBackendOwnerRfcGateTests
         string legacyPath = Path.Combine(
             root,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Runtime",
             "Domains",

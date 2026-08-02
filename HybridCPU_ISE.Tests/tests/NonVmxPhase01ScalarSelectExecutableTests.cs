@@ -12,8 +12,8 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlCsel = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
-using CloseToRtlCzeroNez = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ZeroingSelect.CzeroNezInstruction;
+using CloseToHSLCsel = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
+using CloseToHSLCzeroNez = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ZeroingSelect.CzeroNezInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests.InstructionsRefactor;
@@ -21,7 +21,7 @@ namespace HybridCPU_ISE.Tests.InstructionsRefactor;
 public sealed class NonVmxPhase01ScalarSelectExecutableTests
 {
     [Fact]
-    public void CzeroNez_OpcodeStatusAndCloseToRtlObject_AreRuntimeClosedWhileCselStaysGated()
+    public void CzeroNez_OpcodeStatusAndCloseToHSLObject_AreRuntimeClosedWhileCselStaysGated()
     {
         Assert.Equal(333, (int)InstructionsEnum.CZERO_NEZ);
         Assert.Equal((ushort)InstructionsEnum.CZERO_NEZ, IsaOpcodeValues.CZERO_NEZ);
@@ -45,36 +45,36 @@ public sealed class NonVmxPhase01ScalarSelectExecutableTests
         Assert.DoesNotContain("CZERO.NEZ", IsaV4Surface.MandatoryCoreOpcodes);
         Assert.DoesNotContain("CZERO.NEZ", IsaV4Surface.OptionalDisabledOpcodes);
 
-        Assert.Equal("CZERO.NEZ", CloseToRtlCzeroNez.Mnemonic);
-        Assert.Equal("rd, rs1, rs2", CloseToRtlCzeroNez.OperandShape);
-        Assert.Equal("ExecutableScalarAlu", CloseToRtlCzeroNez.EvidenceBoundary);
-        Assert.Equal("ConditionNotEqualZeroProducesZero", CloseToRtlCzeroNez.Polarity);
-        Assert.Equal(64, CloseToRtlCzeroNez.XLen);
-        Assert.Equal((ushort)InstructionsEnum.CZERO_NEZ, CloseToRtlCzeroNez.Opcode);
-        Assert.True(CloseToRtlCzeroNez.PolarityProofClosed);
-        Assert.True(CloseToRtlCzeroNez.SeparateFromClosedCzeroEqz);
-        Assert.True(CloseToRtlCzeroNez.HasOpcodeAllocation);
-        Assert.True(CloseToRtlCzeroNez.IsExecutable);
-        Assert.True(CloseToRtlCzeroNez.WritesScalarRegister);
-        Assert.False(CloseToRtlCzeroNez.HasSideEffects);
-        Assert.False(CloseToRtlCzeroNez.CompilerHelperAllowed);
-        Assert.False(CloseToRtlCzeroNez.RequiresVmxProjection);
+        Assert.Equal("CZERO.NEZ", CloseToHSLCzeroNez.Mnemonic);
+        Assert.Equal("rd, rs1, rs2", CloseToHSLCzeroNez.OperandShape);
+        Assert.Equal("ExecutableScalarAlu", CloseToHSLCzeroNez.EvidenceBoundary);
+        Assert.Equal("ConditionNotEqualZeroProducesZero", CloseToHSLCzeroNez.Polarity);
+        Assert.Equal(64, CloseToHSLCzeroNez.XLen);
+        Assert.Equal((ushort)InstructionsEnum.CZERO_NEZ, CloseToHSLCzeroNez.Opcode);
+        Assert.True(CloseToHSLCzeroNez.PolarityProofClosed);
+        Assert.True(CloseToHSLCzeroNez.SeparateFromClosedCzeroEqz);
+        Assert.True(CloseToHSLCzeroNez.HasOpcodeAllocation);
+        Assert.True(CloseToHSLCzeroNez.IsExecutable);
+        Assert.True(CloseToHSLCzeroNez.WritesScalarRegister);
+        Assert.False(CloseToHSLCzeroNez.HasSideEffects);
+        Assert.False(CloseToHSLCzeroNez.CompilerHelperAllowed);
+        Assert.False(CloseToHSLCzeroNez.RequiresVmxProjection);
 
         InstructionSupportStatus cselStatus = InstructionSupportStatusCatalog.GetStatus("CSEL");
         Assert.Equal(IsaInstructionStatus.Reserved, cselStatus.Status);
         Assert.Equal(RuntimeInstructionEvidence.None, cselStatus.RuntimeEvidence);
         Assert.False(cselStatus.IsExecutableClaim);
-        Assert.Equal("ScalarSelectAbiDeferredNoEmission", CloseToRtlCsel.EvidenceBoundary);
-        Assert.Equal("Phase01ECarrierGateClosedNoApprovedCarrier", CloseToRtlCsel.CarrierGateDecision);
-        Assert.True(CloseToRtlCsel.RequiresFourRegisterCarrierAbi);
-        Assert.True(CloseToRtlCsel.FourSourceCarrierDecisionClosed);
-        Assert.True(CloseToRtlCsel.ExternalCarrierGateClosed);
-        Assert.False(CloseToRtlCsel.ApprovedFourSourceCarrier);
-        Assert.False(CloseToRtlCsel.ExternalCarrierApprovedInPhase01);
-        Assert.False(CloseToRtlCsel.CurrentPackedScalarIrSupportsCarrier);
-        Assert.True(CloseToRtlCsel.RequiresExternalCarrierAbi);
-        Assert.False(CloseToRtlCsel.HasOpcodeAllocation);
-        Assert.False(CloseToRtlCsel.IsExecutable);
+        Assert.Equal("ScalarSelectAbiDeferredNoEmission", CloseToHSLCsel.EvidenceBoundary);
+        Assert.Equal("Phase01ECarrierGateClosedNoApprovedCarrier", CloseToHSLCsel.CarrierGateDecision);
+        Assert.True(CloseToHSLCsel.RequiresFourRegisterCarrierAbi);
+        Assert.True(CloseToHSLCsel.FourSourceCarrierDecisionClosed);
+        Assert.True(CloseToHSLCsel.ExternalCarrierGateClosed);
+        Assert.False(CloseToHSLCsel.ApprovedFourSourceCarrier);
+        Assert.False(CloseToHSLCsel.ExternalCarrierApprovedInPhase01);
+        Assert.False(CloseToHSLCsel.CurrentPackedScalarIrSupportsCarrier);
+        Assert.True(CloseToHSLCsel.RequiresExternalCarrierAbi);
+        Assert.False(CloseToHSLCsel.HasOpcodeAllocation);
+        Assert.False(CloseToHSLCsel.IsExecutable);
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public sealed class NonVmxPhase01ScalarSelectExecutableTests
             rs1,
             rs2,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0xC340, 431));
     }
 
@@ -204,7 +204,7 @@ public sealed class NonVmxPhase01ScalarSelectExecutableTests
     [InlineData(0x0123_4567_89AB_CDEFUL, 1UL, 0UL)]
     [InlineData(ulong.MaxValue, 0UL, ulong.MaxValue)]
     [InlineData(ulong.MaxValue, 0x8000_0000_0000_0000UL, 0UL)]
-    public void CzeroNez_ScalarAluCloseToRtlAndGoldenVectors_DefineSeparateNonzeroPolarity(
+    public void CzeroNez_ScalarAluCloseToHSLAndGoldenVectors_DefineSeparateNonzeroPolarity(
         ulong source,
         ulong condition,
         ulong expected)
@@ -216,10 +216,10 @@ public sealed class NonVmxPhase01ScalarSelectExecutableTests
             immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, CloseToRtlCzeroNez.Execute(source, condition));
-        Assert.Equal(expected, CloseToRtlCzeroNez.EvaluateXLen64(source, condition));
+        Assert.Equal(expected, CloseToHSLCzeroNez.Execute(source, condition));
+        Assert.Equal(expected, CloseToHSLCzeroNez.EvaluateXLen64(source, condition));
 
-        foreach (var vector in CloseToRtlCzeroNez.GetLocalGoldenVectors())
+        foreach (var vector in CloseToHSLCzeroNez.GetLocalGoldenVectors())
         {
             Assert.Equal(
                 vector.Result,

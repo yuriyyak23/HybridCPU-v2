@@ -1,0 +1,6 @@
+namespace HybridCPU_ISE.Tests.Architecture;
+public sealed class Rf129yLane6VirtualTokenInvalidInputInventoryTests
+{
+ [Fact] public void DefaultAndMalformedMappingFailBeforePublication(){string r=Read("HybridCPU_ISE","CloseToHSL","Core","Runtime","Lanes","Lane6","Lane6QueueRuntime.cs");string e=Read("HybridCPU_ISE","CloseToHSL","Core","Runtime","Lanes","Lane6","HostOwnedEvidence","Lane6HostOwnedEvidenceStore.cs");Assert.Contains("virtualToken = default",r,StringComparison.Ordinal);Assert.Contains("!queue.IsValid || guestTokenId == 0 || hostHandle.IsDefault",r,StringComparison.Ordinal);Assert.Contains("DmaFaultKind.QueueOwnershipFault",r,StringComparison.Ordinal);Assert.Contains("if (!virtualToken.IsValid || hostHandle.IsDefault)",e,StringComparison.Ordinal);Assert.Contains("Lane6HostEvidenceRestoreResult.Rejected",e,StringComparison.Ordinal);}
+ private static string Read(params string[] p)=>File.ReadAllText(Path.Combine(new[]{Root()}.Concat(p).ToArray()));private static string Root(){DirectoryInfo? c=new(AppContext.BaseDirectory);while(c is not null){if(Directory.Exists(Path.Combine(c.FullName,"HybridCPU_ISE")))return c.FullName;c=c.Parent;}throw new DirectoryNotFoundException();}
+}

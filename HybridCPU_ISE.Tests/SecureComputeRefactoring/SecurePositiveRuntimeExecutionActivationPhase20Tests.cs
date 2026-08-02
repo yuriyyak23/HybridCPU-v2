@@ -260,7 +260,7 @@ public sealed class SecurePositiveRuntimeExecutionActivationPhase20Tests
     public void Sources_DoNotCreateBackendPublicationVmxNestedReleaseOrCompilerAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Runtime/SecurePositiveRuntimeExecutionActivationPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Runtime/SecurePositiveRuntimeExecutionActivationPolicy.cs");
 
         Assert.Contains("DeniedPhase13ProofOnlyAdmission", source);
         Assert.Contains("DeniedAdmittedDeniedHypercallAdmission", source);

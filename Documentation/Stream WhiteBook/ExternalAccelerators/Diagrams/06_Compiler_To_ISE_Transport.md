@@ -35,6 +35,6 @@ execution, or production compiler/backend lowering.
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
 - `HybridCPU_Compiler/Core/IR/Bundling/HybridCpuBundleLowerer.cs`
 - `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
 - `HybridCPU_ISE.Tests/CompilerTests/L7SdcCompilerPhase12Tests.cs`

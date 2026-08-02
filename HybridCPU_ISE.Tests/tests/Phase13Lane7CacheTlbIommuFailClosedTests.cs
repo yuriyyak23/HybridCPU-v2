@@ -11,13 +11,13 @@ using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlDcacheClean = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.DcacheCleanInstruction;
-using CloseToRtlDcacheFlush = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.DcacheFlushInstruction;
-using CloseToRtlDcacheInval = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.DcacheInvalInstruction;
-using CloseToRtlIcacheInval = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.IcacheInvalInstruction;
-using CloseToRtlIommuFence = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Iommu.IommuFenceInstruction;
-using CloseToRtlIotlbInv = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Iommu.IotlbInvInstruction;
-using CloseToRtlSfenceVma = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.TranslationFences.SfenceVmaInstruction;
+using CloseToHSLDcacheClean = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.DcacheCleanInstruction;
+using CloseToHSLDcacheFlush = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.DcacheFlushInstruction;
+using CloseToHSLDcacheInval = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.DcacheInvalInstruction;
+using CloseToHSLIcacheInval = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.CacheMaintenance.IcacheInvalInstruction;
+using CloseToHSLIommuFence = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Iommu.IommuFenceInstruction;
+using CloseToHSLIotlbInv = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Iommu.IotlbInvInstruction;
+using CloseToHSLSfenceVma = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.TranslationFences.SfenceVmaInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -59,7 +59,7 @@ public sealed class Lane7CacheTlbIommuFailClosedTests
     [Fact]
     public void TranslationFenceLeafMarkers_RecordPhase13NegativeDecisionGate()
     {
-        Type templateType = typeof(CloseToRtlSfenceVma);
+        Type templateType = typeof(CloseToHSLSfenceVma);
 
         Assert.Equal("SFENCE.VMA", GetConstant<string>(templateType, "Mnemonic"));
         Assert.Equal("Lane7TranslationFenceDeferred", GetConstant<string>(templateType, "EvidenceBoundary"));
@@ -75,10 +75,10 @@ public sealed class Lane7CacheTlbIommuFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlIcacheInval), "ICACHE_INVAL", "RequiresInstructionFetchCoherencyModel")]
-    [InlineData(typeof(CloseToRtlDcacheClean), "DCACHE_CLEAN", "RequiresDataCacheCoherencyModel")]
-    [InlineData(typeof(CloseToRtlDcacheInval), "DCACHE_INVAL", "RequiresDataCacheCoherencyModel")]
-    [InlineData(typeof(CloseToRtlDcacheFlush), "DCACHE_FLUSH", "RequiresDataCacheCoherencyModel")]
+    [InlineData(typeof(CloseToHSLIcacheInval), "ICACHE_INVAL", "RequiresInstructionFetchCoherencyModel")]
+    [InlineData(typeof(CloseToHSLDcacheClean), "DCACHE_CLEAN", "RequiresDataCacheCoherencyModel")]
+    [InlineData(typeof(CloseToHSLDcacheInval), "DCACHE_INVAL", "RequiresDataCacheCoherencyModel")]
+    [InlineData(typeof(CloseToHSLDcacheFlush), "DCACHE_FLUSH", "RequiresDataCacheCoherencyModel")]
     public void CacheMaintenanceLeafMarkers_RecordPhase13NegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -98,8 +98,8 @@ public sealed class Lane7CacheTlbIommuFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlIotlbInv), "IOTLB_INV", "RequiresIotlbInvalidationModel")]
-    [InlineData(typeof(CloseToRtlIommuFence), "IOMMU_FENCE", "RequiresIommuFenceCompletionModel")]
+    [InlineData(typeof(CloseToHSLIotlbInv), "IOTLB_INV", "RequiresIotlbInvalidationModel")]
+    [InlineData(typeof(CloseToHSLIommuFence), "IOMMU_FENCE", "RequiresIommuFenceCompletionModel")]
     public void IommuMaintenanceLeafMarkers_RecordPhase13NegativeDecisionGate(
         Type templateType,
         string mnemonic,

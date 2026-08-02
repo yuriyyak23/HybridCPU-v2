@@ -11,25 +11,25 @@ using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlDsc2DShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.Dsc2DShapeContour;
-using CloseToRtlDscAbsDiff = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscAbsDiffDescriptorOp;
-using CloseToRtlDscClamp = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscClampDescriptorOp;
-using CloseToRtlDscCompare = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscCompareDescriptorOp;
-using CloseToRtlDscConvert = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.TypeConversion.DscConvertDescriptorOp;
-using CloseToRtlDscMax = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMaxDescriptorOp;
-using CloseToRtlDscMin = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMinDescriptorOp;
-using CloseToRtlDscMultiRangeShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscMultiRangeShapeContour;
-using CloseToRtlDscReduceAnd = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceAndDescriptorOp;
-using CloseToRtlDscReduceMax = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMaxDescriptorOp;
-using CloseToRtlDscReduceMin = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMinDescriptorOp;
-using CloseToRtlDscReduceOr = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceOrDescriptorOp;
-using CloseToRtlDscReduceSum = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceSumDescriptorOp;
-using CloseToRtlDscReduceXor = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceXorDescriptorOp;
-using CloseToRtlDscScatterGatherShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscScatterGatherShapeContour;
-using CloseToRtlDscSelect = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscSelectDescriptorOp;
-using CloseToRtlDscStridedShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscStridedShapeContour;
-using CloseToRtlDscSub = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscSubDescriptorOp;
-using CloseToRtlDscTiledShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscTiledShapeContour;
+using CloseToHSLDsc2DShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.Dsc2DShapeContour;
+using CloseToHSLDscAbsDiff = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscAbsDiffDescriptorOp;
+using CloseToHSLDscClamp = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscClampDescriptorOp;
+using CloseToHSLDscCompare = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscCompareDescriptorOp;
+using CloseToHSLDscConvert = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.TypeConversion.DscConvertDescriptorOp;
+using CloseToHSLDscMax = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMaxDescriptorOp;
+using CloseToHSLDscMin = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMinDescriptorOp;
+using CloseToHSLDscMultiRangeShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscMultiRangeShapeContour;
+using CloseToHSLDscReduceAnd = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceAndDescriptorOp;
+using CloseToHSLDscReduceMax = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMaxDescriptorOp;
+using CloseToHSLDscReduceMin = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMinDescriptorOp;
+using CloseToHSLDscReduceOr = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceOrDescriptorOp;
+using CloseToHSLDscReduceSum = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceSumDescriptorOp;
+using CloseToHSLDscReduceXor = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceXorDescriptorOp;
+using CloseToHSLDscScatterGatherShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscScatterGatherShapeContour;
+using CloseToHSLDscSelect = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscSelectDescriptorOp;
+using CloseToHSLDscStridedShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscStridedShapeContour;
+using CloseToHSLDscSub = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscSubDescriptorOp;
+using CloseToHSLDscTiledShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscTiledShapeContour;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -56,20 +56,20 @@ public sealed class Lane6DescriptorOpsFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscSub), "DmaStreamCompute.SUB", "RequiresArithmeticPolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscMin), "DmaStreamCompute.MIN", "RequiresSignednessTypePolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscMax), "DmaStreamCompute.MAX", "RequiresSignednessTypePolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscAbsDiff), "DmaStreamCompute.ABSDIFF", "RequiresOverflowPolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscClamp), "DmaStreamCompute.CLAMP", "RequiresBoundsPolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscConvert), "DmaStreamCompute.CONVERT", "RequiresConversionPolicyAbi", "RequiresRoundingSaturationTrapPolicy")]
-    [InlineData(typeof(CloseToRtlDscCompare), "DmaStreamCompute.COMPARE", "RequiresPredicateFootprintAbi", "")]
-    [InlineData(typeof(CloseToRtlDscSelect), "DmaStreamCompute.SELECT", "RequiresPredicateFootprintAbi", "RequiresSelectResultFootprintAbi")]
-    [InlineData(typeof(CloseToRtlDscReduceSum), "DmaStreamCompute.REDUCE_SUM", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceMin), "DmaStreamCompute.REDUCE_MIN", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceMax), "DmaStreamCompute.REDUCE_MAX", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceAnd), "DmaStreamCompute.REDUCE_AND", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceOr), "DmaStreamCompute.REDUCE_OR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceXor), "DmaStreamCompute.REDUCE_XOR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscSub), "DmaStreamCompute.SUB", "RequiresArithmeticPolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscMin), "DmaStreamCompute.MIN", "RequiresSignednessTypePolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscMax), "DmaStreamCompute.MAX", "RequiresSignednessTypePolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscAbsDiff), "DmaStreamCompute.ABSDIFF", "RequiresOverflowPolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscClamp), "DmaStreamCompute.CLAMP", "RequiresBoundsPolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscConvert), "DmaStreamCompute.CONVERT", "RequiresConversionPolicyAbi", "RequiresRoundingSaturationTrapPolicy")]
+    [InlineData(typeof(CloseToHSLDscCompare), "DmaStreamCompute.COMPARE", "RequiresPredicateFootprintAbi", "")]
+    [InlineData(typeof(CloseToHSLDscSelect), "DmaStreamCompute.SELECT", "RequiresPredicateFootprintAbi", "RequiresSelectResultFootprintAbi")]
+    [InlineData(typeof(CloseToHSLDscReduceSum), "DmaStreamCompute.REDUCE_SUM", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceMin), "DmaStreamCompute.REDUCE_MIN", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceMax), "DmaStreamCompute.REDUCE_MAX", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceAnd), "DmaStreamCompute.REDUCE_AND", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceOr), "DmaStreamCompute.REDUCE_OR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceXor), "DmaStreamCompute.REDUCE_XOR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
     public void DescriptorOpLeafMarkers_RecordPhase10NegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -90,11 +90,11 @@ public sealed class Lane6DescriptorOpsFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscStridedShape), "DSC_SHAPE_STRIDED", "RequiresStrideAbi")]
-    [InlineData(typeof(CloseToRtlDscTiledShape), "DSC_SHAPE_TILED", "RequiresTileShapeAbi")]
-    [InlineData(typeof(CloseToRtlDscScatterGatherShape), "DSC_SHAPE_SCATTER_GATHER", "RequiresIndexSurfaceAbi")]
-    [InlineData(typeof(CloseToRtlDsc2DShape), "DSC_SHAPE_2D", "Requires2DShapeAbi")]
-    [InlineData(typeof(CloseToRtlDscMultiRangeShape), "DSC_SHAPE_MULTI_RANGE", "RequiresMultiRangeAbi")]
+    [InlineData(typeof(CloseToHSLDscStridedShape), "DSC_SHAPE_STRIDED", "RequiresStrideAbi")]
+    [InlineData(typeof(CloseToHSLDscTiledShape), "DSC_SHAPE_TILED", "RequiresTileShapeAbi")]
+    [InlineData(typeof(CloseToHSLDscScatterGatherShape), "DSC_SHAPE_SCATTER_GATHER", "RequiresIndexSurfaceAbi")]
+    [InlineData(typeof(CloseToHSLDsc2DShape), "DSC_SHAPE_2D", "Requires2DShapeAbi")]
+    [InlineData(typeof(CloseToHSLDscMultiRangeShape), "DSC_SHAPE_MULTI_RANGE", "RequiresMultiRangeAbi")]
     public void ShapeContourLeafMarkers_RecordPhase10NegativeDecisionGate(
         Type templateType,
         string mnemonic,

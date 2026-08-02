@@ -16,34 +16,34 @@ This file lists the source documents, code anchors, and useful check commands fo
 
 ## Runtime Code Anchors
 
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Services\RuntimeBoundaryAdmissionService.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Domains\Services\DomainRuntimeOperation.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Domains\Descriptors\ExecutionDomain\ExecutionDomainDescriptor.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Domains\Descriptors\ExecutionDomain\ExecutionDomainReadOnlyStateView.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Domains\Descriptors\MemoryDomain\MemoryDomainDescriptor.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Memory\Translation\MemoryDomainReadOnlyTranslationView.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Events\Traps\TrapRequest.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Events\Traps\TrapPolicyBitmap.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Events\Traps\NeutralTrapResult.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Events\Hypercalls\HypercallBackendAdmissionPolicy.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Completion\Routing\TrapCompletionRoutePolicy.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Completion\Records\TrapCompletionPublicationFence.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Completion\Records\CompletionRecord.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Domains\SecureCompute\**`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Services\RuntimeBoundaryAdmissionService.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Domains\Services\DomainRuntimeOperation.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Domains\Descriptors\ExecutionDomain\ExecutionDomainDescriptor.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Domains\Descriptors\ExecutionDomain\ExecutionDomainReadOnlyStateView.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Domains\Descriptors\MemoryDomain\MemoryDomainDescriptor.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Memory\Translation\MemoryDomainReadOnlyTranslationView.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Events\Traps\TrapRequest.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Events\Traps\TrapPolicyBitmap.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Events\Traps\NeutralTrapResult.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Events\Hypercalls\HypercallBackendAdmissionPolicy.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Completion\Routing\TrapCompletionRoutePolicy.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Completion\Records\TrapCompletionPublicationFence.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Completion\Records\CompletionRecord.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Domains\SecureCompute\**`
 
 ## Compatibility Code Anchors
 
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Handlers\VmxCompatibilityAdmissionService.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Handlers\VmxCompatibilityAdmissionService.Traps.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Projection\VmcsRead\VmcsReadOnlyValueProjectionService.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Projection\Events\VmxTrapProjectionMapper.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Projection\Events\TrapDecision.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Projection\Completion\CompletionProjectionService.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Projection\Completion\CompletionRecordCompatibilityProjection.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend\Retire\VmxRetireModel.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Generated\AliasMaps\CompatAliasMap.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Generated\VmcsProjection\VmcsFieldProjectionSchema.cs`
-- `\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\SecureCompute\Compatibility\Projection\SecureComputeCompatibilityBoundaryMatrixPolicy.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Handlers\VmxCompatibilityAdmissionService.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Handlers\VmxCompatibilityAdmissionService.Traps.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Projection\VmcsRead\VmcsReadOnlyValueProjectionService.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Projection\Events\VmxTrapProjectionMapper.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Projection\Events\TrapDecision.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Projection\Completion\CompletionProjectionService.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Projection\Completion\CompletionRecordCompatibilityProjection.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend\Retire\VmxRetireModel.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Generated\AliasMaps\CompatAliasMap.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Generated\VmcsProjection\VmcsFieldProjectionSchema.cs`
+- `\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\SecureCompute\Compatibility\Projection\SecureComputeCompatibilityBoundaryMatrixPolicy.cs`
 
 ## Test Anchors
 
@@ -73,32 +73,32 @@ This file lists the source documents, code anchors, and useful check commands fo
 
 ```powershell
 rg -n "NeutralTrapResult|TrapRequest|TrapPolicyBitmap|TrapCompletionPublicationFence|TrapCompletionRouteService|HypercallBackendAdmissionService|RuntimeBoundaryAdmissionService" `
-  "\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime" `
+  "\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime" `
   --glob "*.cs" --glob "!bin/**" --glob "!obj/**"
 ```
 
 ```powershell
 rg -n "RuntimeOwnedCompletionPublication|RuntimeOwnedPublication|CompletionPublicationAuthorizedOnly|IsFullyRetirable|CompletionPublishedRetireDenied|TrapCompletionMigrationClass" `
-  "\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Runtime\Completion" `
+  "\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Runtime\Completion" `
   "\HybridCPU ISE\HybridCPU_ISE.Tests\VmxRefactoring"
 ```
 
 ```powershell
 rg -n "TrapCompletionRouteDescriptor\.(RuntimeOwnedCompletionPublication|RuntimeOwnedPublication)" `
-  "\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility\Frontend"
+  "\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility\Frontend"
 ```
 
 The second scan must have no matches until an accepted owner-specific RFC/ADR and the corresponding completion/retire implementation gates exist.
 
 ```powershell
 rg -n "VmcsReadOnlyValueProjectionService|ExecutionDomainReadOnlyStateView|MemoryDomainReadOnlyTranslationView|PrivilegedExecutionStateProjectionDenied|HostAddressSpaceOwnerMissing|HostExecutionStateOwnerMissing|CompatibilityControlValueProjectionDenied" `
-  "\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core" `
+  "\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core" `
   --glob "*.cs" --glob "!bin/**" --glob "!obj/**"
 ```
 
 ```powershell
 rg -n "VmExitReason|TrapDecision|VmxTrapProjectionMapper|CompletionProjectionService|VmxRetireEffect" `
-  "\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization\Compatibility" `
+  "\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization\Compatibility" `
   --glob "*.cs" --glob "!bin/**" --glob "!obj/**"
 ```
 
@@ -107,12 +107,12 @@ rg --files "\HybridCPU ISE\HybridCPU_ISE" `
   --glob "VmxExecutionUnit.cs" `
   --glob "VmcsManager.cs" `
   --glob "IVmcsManager.cs" `
-  --glob "!CloseToRTL/**"
+  --glob "!CloseToHSL/**"
 ```
 
 ```powershell
 rg -n "VmxExecutionUnit|VmcsManager|IVmcsManager|VmcsManagerAdapter|VmxRuntimeManager|VmcsProjectionRuntimeManager|VmcsV2RuntimeManager|ReadFieldValue\(|WriteFieldValue\(|HardwareWrite\(|DirectWrite\(" `
-  "\HybridCPU ISE\HybridCPU_ISE\CloseToRTL\Core\Virtualization" `
+  "\HybridCPU ISE\HybridCPU_ISE\CloseToHSL\Core\Virtualization" `
   --glob "*.cs" --glob "!bin/**" --glob "!obj/**"
 ```
 

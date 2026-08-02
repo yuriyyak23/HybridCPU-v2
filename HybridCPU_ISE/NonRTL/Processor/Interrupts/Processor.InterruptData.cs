@@ -102,7 +102,7 @@ namespace YAKSys_Hybrid_CPU
                     return 0xFD; // Invalid core ID
                 }
 
-                ref CPU_Core targetCore = ref CPU_Cores[CoreID];
+                CPU_Core targetCore = GetCoreRef(checked((int)CoreID));
 
                 // Route through the external-interrupt contour unless the core
                 // already has a live interrupt-handler frame in flight.
@@ -203,7 +203,7 @@ namespace YAKSys_Hybrid_CPU
                     return;
                 }
 
-                ref CPU_Core core = ref CPU_Cores[coreID];
+                CPU_Core core = GetCoreRef(checked((int)coreID));
                 ref CPU_Core.VectorExceptionStatus status = ref core.ExceptionStatus;
 
                 // Log exception information (in real hardware, this might write to a trace buffer)

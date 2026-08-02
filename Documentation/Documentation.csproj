@@ -9,14 +9,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="ActualRefactoring\**" />
-	  <Compile Remove="Refactoring\**" />
 	  <Compile Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
-	  <EmbeddedResource Remove="ActualRefactoring\**" />
-	  <EmbeddedResource Remove="Refactoring\**" />
 	  <EmbeddedResource Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
-	  <None Remove="ActualRefactoring\**" />
-	  <None Remove="Refactoring\**" />
 	  <None Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
 	</ItemGroup>
 

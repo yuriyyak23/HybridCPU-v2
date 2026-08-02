@@ -2,7 +2,7 @@
 
 Status date: 2026-06-12.
 
-This WhiteBook is the split architecture record for the current HybridCPU ISE virtualization layer. It is written against the live `CloseToRTL/Core/Runtime` and `CloseToRTL/Core/Virtualization` code contours plus the VMX refactoring audit corpus.
+This WhiteBook is the split architecture record for the current HybridCPU ISE virtualization layer. It is written against the live `CloseToHSL/Core/Runtime` and `CloseToHSL/Core/Virtualization` code contours plus the VMX refactoring audit corpus.
 
 The development source of truth is `HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/`. When roadmap wording or current/future classification differs, the activation plan wins. This WhiteBook explains that plan and the confirmed implementation state; it does not independently approve activation.
 
@@ -43,8 +43,8 @@ This pack is grounded in:
 - `HybridCPU_ISE/docs/VMXRefactoring/deep-research-report (6).md`
 - `HybridCPU_ISE/docs/VMXRefactoring/ОСНОВЫ и ПРАВИЛА VMX.md`
 - `HybridCPU_ISE/docs/VMXRefactoring/Оценка рефакторинга VMX security-centric.md`
-- `HybridCPU_ISE/CloseToRTL/Core/Runtime/**`
-- `HybridCPU_ISE/CloseToRTL/Core/Virtualization/**`
+- `HybridCPU_ISE/CloseToHSL/Core/Runtime/**`
+- `HybridCPU_ISE/CloseToHSL/Core/Virtualization/**`
 - `HybridCPU_ISE.Tests/VmxRefactoring/**`
 - `HybridCPU_ISE.Tests/SecureComputeRefactoring/**`
 

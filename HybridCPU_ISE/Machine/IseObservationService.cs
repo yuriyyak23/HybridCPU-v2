@@ -58,7 +58,7 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 ReadCoreObservationSnapshot(core, out Processor.CPU_Core.PipelineObservationSnapshot observation);
                 return BuildVirtualThreadLivePcs(core, observation.ActiveVirtualThreadId, observation.ActiveLivePc);
             }
@@ -74,7 +74,7 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 ReadCoreObservationSnapshot(core, out Processor.CPU_Core.PipelineObservationSnapshot observation);
                 Processor.CPU_Core.PipelineControl pipeState = observation.PipelineControl;
                 return BuildVirtualThreadStalledSnapshot(core, observation.ActiveVirtualThreadId, in pipeState);
@@ -91,7 +91,7 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 ReadCoreObservationSnapshot(core, out Processor.CPU_Core.PipelineObservationSnapshot observation);
                 Processor.CPU_Core.PipelineControl pipeState = observation.PipelineControl;
                 bool[] stalled = BuildVirtualThreadStalledSnapshot(core, observation.ActiveVirtualThreadId, in pipeState);
@@ -109,21 +109,11 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 var exceptions = new Processor.CPU_Core.FPExceptionContext[4];
 
-                if (core.ThreadFPContexts == null || core.ThreadFPContexts.Length < 4)
-                {
-                    for (int i = 0; i < 4; i++)
-                        exceptions[i] = new Processor.CPU_Core.FPExceptionContext();
-                    return exceptions;
-                }
-
                 for (int vt = 0; vt < 4; vt++)
-                {
-                    // Copy the struct (value type, so automatic deep copy)
-                    exceptions[vt] = core.ThreadFPContexts[vt];
-                }
+                    exceptions[vt] = core.ReadThreadFpContext(vt);
 
                 return exceptions;
             }
@@ -143,7 +133,7 @@ namespace HybridCPU_ISE
                 ValidateCoreId(coreId);
                 ValidateVtId(vtId);
 
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 return BuildVirtualThreadRegisters(core, vtId);
             }
         }
@@ -158,7 +148,7 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                return GetCore(coreId).GetPipelineObservationSnapshot().ActiveLivePc;
+                return GetCoreSnapshot(coreId).GetPipelineObservationSnapshot().ActiveLivePc;
             }
         }
 
@@ -172,7 +162,7 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                return GetCore(coreId).GetPipelineObservationSnapshot().ActiveVirtualThreadId;
+                return GetCoreSnapshot(coreId).GetPipelineObservationSnapshot().ActiveVirtualThreadId;
             }
         }
 
@@ -185,15 +175,15 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 var flags = core.CoreFlagsRegister;
 
                 return new StackFlagsSnapshot
                 {
-                    CallStackDepth = core.Call_Callback_Addresses?.Count ?? 0,
-                    CallStackTop = core.Call_Callback_Addresses?.Count > 0 ? core.Call_Callback_Addresses[core.Call_Callback_Addresses.Count - 1] : 0,
-                    InterruptStackDepth = core.Interrupt_Callback_Addresses?.Count ?? 0,
-                    InterruptStackTop = core.Interrupt_Callback_Addresses?.Count > 0 ? core.Interrupt_Callback_Addresses[core.Interrupt_Callback_Addresses.Count - 1] : 0,
+                    CallStackDepth = core.CallStackDepth,
+                    CallStackTop = core.CallStackTop,
+                    InterruptStackDepth = core.InterruptStackDepth,
+                    InterruptStackTop = core.InterruptStackTop,
 
                     AluZero = flags.Zero_Flag,
                     AluSign = flags.Sign_Flag,
@@ -279,14 +269,14 @@ namespace HybridCPU_ISE
         }
 
         private static void ReadCoreObservationSnapshot(
-            Processor.CPU_Core core,
+            CpuCoreDiagnosticSnapshot core,
             out Processor.CPU_Core.PipelineObservationSnapshot observation)
         {
             observation = core.GetPipelineObservationSnapshot();
         }
 
         private static string DetermineStallReason(
-            Processor.CPU_Core core,
+            CpuCoreDiagnosticSnapshot core,
             int vtId,
             in Processor.CPU_Core.PipelineObservationSnapshot observation)
         {
@@ -321,7 +311,7 @@ namespace HybridCPU_ISE
         }
 
         private static ulong[] BuildVirtualThreadLivePcs(
-            Processor.CPU_Core core,
+            CpuCoreDiagnosticSnapshot core,
             int activeVtId,
             ulong activeLivePc)
         {
@@ -335,7 +325,7 @@ namespace HybridCPU_ISE
             return pcs;
         }
 
-        private static ulong[] BuildVirtualThreadCommittedPcs(Processor.CPU_Core core)
+        private static ulong[] BuildVirtualThreadCommittedPcs(CpuCoreDiagnosticSnapshot core)
         {
             ulong[] pcs = new ulong[Processor.CPU_Core.SmtWays];
 
@@ -346,16 +336,13 @@ namespace HybridCPU_ISE
         }
 
         private static bool[] BuildVirtualThreadStalledSnapshot(
-            Processor.CPU_Core core,
+            CpuCoreDiagnosticSnapshot core,
             int activeVtId,
             in Processor.CPU_Core.PipelineControl pipeState)
         {
             bool[] stalled = new bool[Processor.CPU_Core.SmtWays];
-            if (core.VirtualThreadStalled != null)
-            {
-                int copyLength = Math.Min(stalled.Length, core.VirtualThreadStalled.Length);
-                Array.Copy(core.VirtualThreadStalled, stalled, copyLength);
-            }
+            for (int vt = 0; vt < stalled.Length; vt++)
+                stalled[vt] = core.ReadVirtualThreadStalled(vt);
 
             if (pipeState.Enabled && pipeState.Stalled)
             {
@@ -369,7 +356,7 @@ namespace HybridCPU_ISE
         }
 
         private static string[] BuildVirtualThreadStallReasons(
-            Processor.CPU_Core core,
+            CpuCoreDiagnosticSnapshot core,
             bool[] stalled,
             in Processor.CPU_Core.PipelineObservationSnapshot observation)
         {
@@ -391,7 +378,7 @@ namespace HybridCPU_ISE
             return reasons;
         }
 
-        private static ulong[] BuildVirtualThreadRegisters(Processor.CPU_Core core, int vtId)
+        private static ulong[] BuildVirtualThreadRegisters(CpuCoreDiagnosticSnapshot core, int vtId)
         {
             ulong[] registers = new ulong[32];
 
@@ -401,15 +388,9 @@ namespace HybridCPU_ISE
             return registers;
         }
 
-        private static bool IsVirtualThreadMemoryStalled(Processor.CPU_Core core, int vtId)
+        private static bool IsVirtualThreadMemoryStalled(CpuCoreDiagnosticSnapshot core, int vtId)
         {
-            if (core.VirtualThreadStalled == null)
-            {
-                return false;
-            }
-
-            return (uint)vtId < (uint)core.VirtualThreadStalled.Length &&
-                   core.VirtualThreadStalled[vtId];
+            return (uint)vtId < Processor.CPU_Core.SmtWays && core.ReadVirtualThreadStalled(vtId);
         }
 
         private static CoreTimebaseSnapshot BuildCoreTimebaseSnapshot(
@@ -490,7 +471,7 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 return core.HasAnyVirtualThreadPipelineState(PipelineState.WaitForClusterSync);
             }
         }
@@ -519,7 +500,7 @@ namespace HybridCPU_ISE
             lock (_syncLock)
             {
                 ValidateCoreId(coreId);
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
 
                 // Get GRLB banks (4 × 32-bit banks = 128 bits total)
                 var banks = core.GetGrlbBanks();
@@ -553,7 +534,7 @@ namespace HybridCPU_ISE
                         "Resource bit must be between 0 and 127");
                 }
 
-                var core = GetCore(coreId);
+                var core = GetCoreSnapshot(coreId);
                 var banks = core.GetGrlbBanks();
 
                 int bankIndex = resourceBit / 32;
@@ -582,7 +563,7 @@ namespace HybridCPU_ISE
                 ValidateCoreId(coreId);
                 int podIndex = coreId / 16;
                 bool isClockGated =
-                    GetCore(coreId).HasAnyVirtualThreadPipelineState(PipelineState.ClockGatedDonor);
+                    GetCoreSnapshot(coreId).HasAnyVirtualThreadPipelineState(PipelineState.ClockGatedDonor);
 
                 if ((uint)podIndex < (uint)GetPodCount())
                 {
@@ -830,7 +811,7 @@ namespace HybridCPU_ISE
         private static CoreStateSnapshot BuildCoreStateSnapshot(IIseMachineStateSource machineStateSource, int coreId)
         {
             ValidateCoreId(machineStateSource, coreId);
-            var core = GetCore(machineStateSource, coreId);
+            var core = GetCoreSnapshot(machineStateSource, coreId);
             ReadCoreObservationSnapshot(core, out Processor.CPU_Core.PipelineObservationSnapshot observation);
             Processor.CPU_Core.PipelineControl pipeState = observation.PipelineControl;
             CoreTimebaseSnapshot timebase = BuildCoreTimebaseSnapshot(in pipeState);
@@ -840,30 +821,30 @@ namespace HybridCPU_ISE
             string[] stallReasons = BuildVirtualThreadStallReasons(core, stalled, in observation);
             ulong[] activeVtRegisters = BuildVirtualThreadRegisters(core, observation.ActiveVirtualThreadId);
             Processor.CPU_Core.CorePowerState currentPowerState =
-                PowerControlCsr.DecodePowerState(core.Csr.DirectRead(CsrAddresses.MpowerState));
+                PowerControlCsr.DecodePowerState(core.PowerStateCsrValue);
             uint currentPerformanceLevel =
-                PowerControlCsr.DecodePerformanceLevel(core.Csr.DirectRead(CsrAddresses.MperfLevel));
+                PowerControlCsr.DecodePerformanceLevel(core.PerformanceLevelCsrValue);
 
             return new CoreStateSnapshot
             {
-                CoreId = (int)core.CoreID,
+                CoreId = (int)core.CoreId,
                 LiveInstructionPointer = observation.ActiveLivePc,
                 CycleCount = timebase.CycleCount,
                 CurrentState = observation.CurrentVirtualThreadPipelineState.ToString(),
                 CurrentPowerState = currentPowerState,
                 CurrentPerformanceLevel = currentPerformanceLevel,
                 IsStalled = timebase.IsStalled,
-                HasExceptions = core.ExceptionStatus.HasExceptions(),
+                HasExceptions = core.HasExceptions,
                 ActiveVirtualThreadId = observation.ActiveVirtualThreadId,
                 VirtualThreadLivePcs = livePcs,
                 VirtualThreadCommittedPcs = committedPcs,
                 VirtualThreadStalled = stalled,
                 VirtualThreadStallReasons = stallReasons,
                 ActiveVirtualThreadRegisters = activeVtRegisters,
-                L1VliwBundleCount = core.L1_VLIWBundles?.Length ?? 0,
-                L1DataEntryCount = core.L1_Data?.Length ?? 0,
-                L2VliwBundleCount = core.L2_VLIWBundles?.Length ?? 0,
-                L2DataEntryCount = core.L2_Data?.Length ?? 0,
+                L1VliwBundleCount = core.L1VliwBundleCount,
+                L1DataEntryCount = core.L1DataEntryCount,
+                L2VliwBundleCount = core.L2VliwBundleCount,
+                L2DataEntryCount = core.L2DataEntryCount,
                 PipelineEnabled = pipeState.Enabled,
                 Timebase = timebase,
                 PipelineIPC = pipeState.GetIPC(),
@@ -893,9 +874,9 @@ namespace HybridCPU_ISE
                 DecodePublicationCertificate = observation.DecodePublicationCertificate,
                 ExecuteCompletionCertificate = observation.ExecuteCompletionCertificate,
                 RetireVisibilityCertificate = observation.RetireVisibilityCertificate,
-                VectorLength = core.VectorConfig.VL,
-                VectorTailAgnostic = core.VectorConfig.TailAgnostic,
-                VectorMaskAgnostic = core.VectorConfig.MaskAgnostic
+                VectorLength = core.VectorLength,
+                VectorTailAgnostic = core.VectorTailAgnostic,
+                VectorMaskAgnostic = core.VectorMaskAgnostic
             };
         }
 
@@ -1128,4 +1109,152 @@ namespace HybridCPU_ISE
     }
 
     #endregion
+}
+
+namespace HybridCPU_ISE.Machine
+{
+    /// <summary>
+    /// Detached, read-only diagnostic projection of one CPU core. It contains no
+    /// live runtime owner reference and cannot be written back as a core facade.
+    /// </summary>
+    public sealed class CpuCoreDiagnosticSnapshot
+    {
+        private readonly ulong[] _committedPcs;
+        private readonly ulong[] _architecturalRegisters;
+        private readonly bool[] _virtualThreadStalled;
+        private readonly PipelineState[] _virtualThreadPipelineStates;
+        private readonly Processor.CPU_Core.FPExceptionContext[] _threadFpContexts;
+        private readonly uint[] _grlbBanks;
+        private readonly Processor.CPU_Core.PipelineObservationSnapshot _pipelineObservation;
+
+        private CpuCoreDiagnosticSnapshot(
+            uint coreId,
+            ulong[] committedPcs,
+            ulong[] architecturalRegisters,
+            bool[] virtualThreadStalled,
+            PipelineState[] virtualThreadPipelineStates,
+            Processor.CPU_Core.FPExceptionContext[] threadFpContexts,
+            Processor.CPU_Core.FlagsRegister coreFlagsRegister,
+            int callStackDepth,
+            ulong callStackTop,
+            int interruptStackDepth,
+            ulong interruptStackTop,
+            uint[] grlbBanks,
+            ulong structuralStalls,
+            bool hasExceptions,
+            int l1VliwBundleCount,
+            int l1DataEntryCount,
+            int l2VliwBundleCount,
+            int l2DataEntryCount,
+            ulong powerStateCsrValue,
+            ulong performanceLevelCsrValue,
+            ulong vectorLength,
+            byte vectorTailAgnostic,
+            byte vectorMaskAgnostic,
+            Processor.CPU_Core.PipelineObservationSnapshot pipelineObservation,
+            ReplayPhaseMetrics replayPhaseMetrics,
+            SchedulerPhaseMetrics schedulerPhaseMetrics)
+        {
+            CoreId = coreId;
+            _committedPcs = (ulong[])committedPcs.Clone();
+            _architecturalRegisters = (ulong[])architecturalRegisters.Clone();
+            _virtualThreadStalled = (bool[])virtualThreadStalled.Clone();
+            _virtualThreadPipelineStates = (PipelineState[])virtualThreadPipelineStates.Clone();
+            _threadFpContexts = (Processor.CPU_Core.FPExceptionContext[])threadFpContexts.Clone();
+            CoreFlagsRegister = coreFlagsRegister;
+            CallStackDepth = callStackDepth;
+            CallStackTop = callStackTop;
+            InterruptStackDepth = interruptStackDepth;
+            InterruptStackTop = interruptStackTop;
+            _grlbBanks = (uint[])grlbBanks.Clone();
+            StructuralStalls = structuralStalls;
+            HasExceptions = hasExceptions;
+            L1VliwBundleCount = l1VliwBundleCount;
+            L1DataEntryCount = l1DataEntryCount;
+            L2VliwBundleCount = l2VliwBundleCount;
+            L2DataEntryCount = l2DataEntryCount;
+            PowerStateCsrValue = powerStateCsrValue;
+            PerformanceLevelCsrValue = performanceLevelCsrValue;
+            VectorLength = vectorLength;
+            VectorTailAgnostic = vectorTailAgnostic;
+            VectorMaskAgnostic = vectorMaskAgnostic;
+            _pipelineObservation = pipelineObservation;
+            ReplayPhaseMetrics = replayPhaseMetrics;
+            SchedulerPhaseMetrics = schedulerPhaseMetrics;
+        }
+
+        public uint CoreId { get; }
+        public Processor.CPU_Core.FlagsRegister CoreFlagsRegister { get; }
+        public int CallStackDepth { get; }
+        public ulong CallStackTop { get; }
+        public int InterruptStackDepth { get; }
+        public ulong InterruptStackTop { get; }
+        public ulong StructuralStalls { get; }
+        public bool HasExceptions { get; }
+        public int L1VliwBundleCount { get; }
+        public int L1DataEntryCount { get; }
+        public int L2VliwBundleCount { get; }
+        public int L2DataEntryCount { get; }
+        public ulong PowerStateCsrValue { get; }
+        public ulong PerformanceLevelCsrValue { get; }
+        public ulong VectorLength { get; }
+        public byte VectorTailAgnostic { get; }
+        public byte VectorMaskAgnostic { get; }
+        public ReplayPhaseMetrics ReplayPhaseMetrics { get; }
+        public SchedulerPhaseMetrics SchedulerPhaseMetrics { get; }
+
+        public ulong ReadActiveLivePc() => _pipelineObservation.ActiveLivePc;
+        public int ReadActiveVirtualThreadId() => _pipelineObservation.ActiveVirtualThreadId;
+        public Processor.CPU_Core.PipelineControl GetPipelineControl() => _pipelineObservation.PipelineControl;
+        public ReplayPhaseMetrics GetReplayPhaseMetrics() => ReplayPhaseMetrics;
+        public SchedulerPhaseMetrics GetSchedulerPhaseMetrics() => SchedulerPhaseMetrics;
+        public ulong ReadCommittedPc(int virtualThreadId) => _committedPcs[virtualThreadId];
+        public ulong ReadArch(int virtualThreadId, int registerId) =>
+            _architecturalRegisters[(virtualThreadId * 32) + registerId];
+        public bool ReadVirtualThreadStalled(int virtualThreadId) => _virtualThreadStalled[virtualThreadId];
+        public Processor.CPU_Core.FPExceptionContext ReadThreadFpContext(int virtualThreadId) =>
+            _threadFpContexts[virtualThreadId];
+        public bool HasAnyVirtualThreadPipelineState(PipelineState state) =>
+            Array.IndexOf(_virtualThreadPipelineStates, state) >= 0;
+        public uint[] GetGrlbBanks() => (uint[])_grlbBanks.Clone();
+
+        internal Processor.CPU_Core.PipelineObservationSnapshot GetPipelineObservationSnapshot() =>
+            _pipelineObservation;
+
+        internal static CpuCoreDiagnosticSnapshot Capture(Processor.CPU_Core core)
+        {
+            var committedPcs = new ulong[Processor.CPU_Core.SmtWays];
+            var architecturalRegisters = new ulong[Processor.CPU_Core.SmtWays * 32];
+            var virtualThreadStalled = new bool[Processor.CPU_Core.SmtWays];
+            var virtualThreadPipelineStates = new PipelineState[Processor.CPU_Core.SmtWays];
+            var threadFpContexts = new Processor.CPU_Core.FPExceptionContext[Processor.CPU_Core.SmtWays];
+
+            for (int vt = 0; vt < Processor.CPU_Core.SmtWays; vt++)
+            {
+                committedPcs[vt] = core.ReadCommittedPc(vt);
+                for (int registerId = 0; registerId < 32; registerId++)
+                    architecturalRegisters[(vt * 32) + registerId] = core.ReadArch(vt, registerId);
+                virtualThreadStalled[vt] = core.VirtualThreadStalled != null &&
+                    vt < core.VirtualThreadStalled.Length && core.VirtualThreadStalled[vt];
+                virtualThreadPipelineStates[vt] = core.VirtualThreadPipelineStates != null &&
+                    vt < core.VirtualThreadPipelineStates.Length ? core.VirtualThreadPipelineStates[vt] : default;
+                threadFpContexts[vt] = core.ThreadFPContexts != null && vt < core.ThreadFPContexts.Length
+                    ? core.ThreadFPContexts[vt] : default;
+            }
+
+            int callStackDepth = core.Call_Callback_Addresses?.Count ?? 0;
+            int interruptStackDepth = core.Interrupt_Callback_Addresses?.Count ?? 0;
+            return new CpuCoreDiagnosticSnapshot(
+                core.CoreID, committedPcs, architecturalRegisters, virtualThreadStalled,
+                virtualThreadPipelineStates, threadFpContexts, core.CoreFlagsRegister,
+                callStackDepth, callStackDepth == 0 ? 0 : core.Call_Callback_Addresses[callStackDepth - 1],
+                interruptStackDepth, interruptStackDepth == 0 ? 0 : core.Interrupt_Callback_Addresses[interruptStackDepth - 1],
+                core.GetGrlbBanks(), core.StructuralStalls, core.ExceptionStatus.HasExceptions(),
+                core.L1_VLIWBundles?.Length ?? 0, core.L1_Data?.Length ?? 0,
+                core.L2_VLIWBundles?.Length ?? 0, core.L2_Data?.Length ?? 0,
+                core.Csr.DirectRead(CsrAddresses.MpowerState), core.Csr.DirectRead(CsrAddresses.MperfLevel),
+                core.VectorConfig.VL, core.VectorConfig.TailAgnostic, core.VectorConfig.MaskAgnostic,
+                core.GetPipelineObservationSnapshot(), core.GetReplayPhaseMetrics(), core.GetSchedulerPhaseMetrics());
+        }
+    }
 }

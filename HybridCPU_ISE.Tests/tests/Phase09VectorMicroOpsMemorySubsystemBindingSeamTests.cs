@@ -3,7 +3,7 @@ using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Memory;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -49,8 +49,8 @@ public sealed class VectorMicroOpsMemorySubsystemBindingSeamTests
             var replacementSubsystem = new MemorySubsystem(ref proc);
             Processor.Memory = replacementSubsystem;
 
-            int seededQueuedBefore = seededSubsystem.CurrentQueuedRequests;
-            int replacementQueuedBefore = replacementSubsystem.CurrentQueuedRequests;
+            int seededQueuedBefore = seededSubsystem.CycleController.OutstandingVectorSegmentLoads;
+            int replacementQueuedBefore = replacementSubsystem.CycleController.OutstandingVectorSegmentLoads;
 
             var instruction = new VLIW_Instruction();
             instruction.DestSrc1Pointer = address;
@@ -65,13 +65,15 @@ public sealed class VectorMicroOpsMemorySubsystemBindingSeamTests
             bool completed = load.Execute(ref core);
             Assert.False(completed, "LoadSegmentMicroOp.Execute should return false on first call (async enqueue).");
 
-            // The seeded (bound) subsystem should have received the enqueue
-            Assert.True(seededSubsystem.CurrentQueuedRequests > seededQueuedBefore,
-                "The bound (seeded) MemorySubsystem should have received the EnqueueRead, " +
-                "but its queued request count did not increase.");
+            // The seeded (bound) controller should own the accepted request.
+            Assert.True(
+                seededSubsystem.CycleController.OutstandingVectorSegmentLoads > seededQueuedBefore,
+                "The bound (seeded) MemoryCycleController should own the accepted vector read.");
 
             // The replacement subsystem should remain untouched
-            Assert.Equal(replacementQueuedBefore, replacementSubsystem.CurrentQueuedRequests);
+            Assert.Equal(
+                replacementQueuedBefore,
+                replacementSubsystem.CycleController.OutstandingVectorSegmentLoads);
         }
         finally
         {

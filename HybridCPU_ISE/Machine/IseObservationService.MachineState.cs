@@ -25,9 +25,10 @@ namespace HybridCPU_ISE
 
         private static int GetCoreCount(IIseMachineStateSource machineStateSource) => machineStateSource.GetCoreCount();
 
-        private Processor.CPU_Core GetCore(int coreId) => GetCore(_machineStateSource, coreId);
+        private CpuCoreDiagnosticSnapshot GetCoreSnapshot(int coreId) => GetCoreSnapshot(_machineStateSource, coreId);
 
-        private static Processor.CPU_Core GetCore(IIseMachineStateSource machineStateSource, int coreId) => machineStateSource.GetCore(coreId);
+        private static CpuCoreDiagnosticSnapshot GetCoreSnapshot(IIseMachineStateSource machineStateSource, int coreId) =>
+            machineStateSource.GetCoreSnapshot(coreId);
 
         private int GetPodCount() => GetPodCount(_machineStateSource);
 

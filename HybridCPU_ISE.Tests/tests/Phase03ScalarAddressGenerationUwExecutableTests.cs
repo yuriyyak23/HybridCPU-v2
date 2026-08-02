@@ -13,13 +13,13 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlAddUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.AddUwInstruction;
-using CloseToRtlSh1addUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh1addUwInstruction;
-using CloseToRtlSh2add = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addInstruction;
-using CloseToRtlSh2addUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addUwInstruction;
-using CloseToRtlSh3add = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addInstruction;
-using CloseToRtlSh3addUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addUwInstruction;
-using CloseToRtlSlliUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.SlliUwInstruction;
+using CloseToHSLAddUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.AddUwInstruction;
+using CloseToHSLSh1addUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh1addUwInstruction;
+using CloseToHSLSh2add = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addInstruction;
+using CloseToHSLSh2addUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addUwInstruction;
+using CloseToHSLSh3add = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addInstruction;
+using CloseToHSLSh3addUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addUwInstruction;
+using CloseToHSLSlliUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.SlliUwInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -50,7 +50,7 @@ public sealed class ScalarAddressGenerationUwExecutableTests
 
     [Theory]
     [MemberData(nameof(AddressGenerationOpcodeCases))]
-    public void AddressGeneration_OpcodeStatusSurfaceAndCloseToRtlObjects_AreRuntimeClosed(
+    public void AddressGeneration_OpcodeStatusSurfaceAndCloseToHSLObjects_AreRuntimeClosed(
         InstructionsEnum opcode,
         string mnemonic,
         int expectedOpcode,
@@ -81,7 +81,7 @@ public sealed class ScalarAddressGenerationUwExecutableTests
             mnemonic.Replace(".", "_", StringComparison.Ordinal),
             out InstructionsEnum _));
         Assert.Contains(OpcodeRegistry.Opcodes, info => string.Equals(info.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
-        AssertCloseToRtlObject(opcode, mnemonic);
+        AssertCloseToHSLObject(opcode, mnemonic);
     }
 
     [Theory]
@@ -209,7 +209,7 @@ public sealed class ScalarAddressGenerationUwExecutableTests
                 rs1,
                 rs2,
                 immediate: imm6);
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<InvalidOpcodeException>(() =>
                 decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0x8A20, 141));
 
             VLIW_Instruction outOfRange = InstructionEncoder.EncodeScalar(
@@ -219,7 +219,7 @@ public sealed class ScalarAddressGenerationUwExecutableTests
                 rs1,
                 0,
                 immediate: 64);
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<InvalidOpcodeException>(() =>
                 decoder.DecodeInstructionBundle(CreateBundle(outOfRange), 0x8A40, 142));
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -233,14 +233,14 @@ public sealed class ScalarAddressGenerationUwExecutableTests
         else
         {
             VLIW_Instruction immediateAlias = CreateScalarInstruction(opcode, rd, rs1, rs2, immediate: 1);
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<InvalidOpcodeException>(() =>
                 decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x8A60, 143));
         }
     }
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void AddressGeneration_ScalarAluCloseToRtlAndGoldenVectors_DefineXlen64Semantics(
+    public void AddressGeneration_ScalarAluCloseToHSLAndGoldenVectors_DefineXlen64Semantics(
         InstructionsEnum opcode,
         ulong source,
         ulong addend,
@@ -250,12 +250,12 @@ public sealed class ScalarAddressGenerationUwExecutableTests
         ulong actual = ScalarAluOps.Compute((uint)opcode, source, addend, immediate);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, ExecuteCloseToRtlObject(opcode, source, addend, immediate));
+        Assert.Equal(expected, ExecuteCloseToHSLObject(opcode, source, addend, immediate));
 
         foreach ((ulong goldenSource, ulong goldenAddend, ulong goldenImmediate, ulong goldenExpected) in GetGoldenVectors(opcode))
         {
             Assert.Equal(goldenExpected, ScalarAluOps.Compute((uint)opcode, goldenSource, goldenAddend, goldenImmediate));
-            Assert.Equal(goldenExpected, ExecuteCloseToRtlObject(opcode, goldenSource, goldenAddend, goldenImmediate));
+            Assert.Equal(goldenExpected, ExecuteCloseToHSLObject(opcode, goldenSource, goldenAddend, goldenImmediate));
         }
     }
 
@@ -525,27 +525,27 @@ public sealed class ScalarAddressGenerationUwExecutableTests
             Assert.DoesNotContain(forbidden, compilerSource, StringComparison.Ordinal);
         }
 
-        Assert.False(CloseToRtlSh2add.RequiresVmxProjection);
-        Assert.False(CloseToRtlSh3add.RequiresVmxProjection);
-        Assert.False(CloseToRtlAddUw.RequiresVmxProjection);
-        Assert.False(CloseToRtlSh1addUw.RequiresVmxProjection);
-        Assert.False(CloseToRtlSh2addUw.RequiresVmxProjection);
-        Assert.False(CloseToRtlSh3addUw.RequiresVmxProjection);
-        Assert.False(CloseToRtlSlliUw.RequiresVmxProjection);
-        Assert.True(CloseToRtlSh2add.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlSh3add.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlAddUw.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlSh1addUw.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlSh2addUw.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlSh3addUw.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlSlliUw.NoHiddenMultiOpEmission);
-        Assert.False(CloseToRtlSh2add.CompilerHelperAllowed);
-        Assert.False(CloseToRtlSh3add.CompilerHelperAllowed);
-        Assert.False(CloseToRtlAddUw.CompilerHelperAllowed);
-        Assert.False(CloseToRtlSh1addUw.CompilerHelperAllowed);
-        Assert.False(CloseToRtlSh2addUw.CompilerHelperAllowed);
-        Assert.False(CloseToRtlSh3addUw.CompilerHelperAllowed);
-        Assert.False(CloseToRtlSlliUw.CompilerHelperAllowed);
+        Assert.False(CloseToHSLSh2add.RequiresVmxProjection);
+        Assert.False(CloseToHSLSh3add.RequiresVmxProjection);
+        Assert.False(CloseToHSLAddUw.RequiresVmxProjection);
+        Assert.False(CloseToHSLSh1addUw.RequiresVmxProjection);
+        Assert.False(CloseToHSLSh2addUw.RequiresVmxProjection);
+        Assert.False(CloseToHSLSh3addUw.RequiresVmxProjection);
+        Assert.False(CloseToHSLSlliUw.RequiresVmxProjection);
+        Assert.True(CloseToHSLSh2add.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLSh3add.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLAddUw.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLSh1addUw.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLSh2addUw.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLSh3addUw.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLSlliUw.NoHiddenMultiOpEmission);
+        Assert.False(CloseToHSLSh2add.CompilerHelperAllowed);
+        Assert.False(CloseToHSLSh3add.CompilerHelperAllowed);
+        Assert.False(CloseToHSLAddUw.CompilerHelperAllowed);
+        Assert.False(CloseToHSLSh1addUw.CompilerHelperAllowed);
+        Assert.False(CloseToHSLSh2addUw.CompilerHelperAllowed);
+        Assert.False(CloseToHSLSh3addUw.CompilerHelperAllowed);
+        Assert.False(CloseToHSLSlliUw.CompilerHelperAllowed);
     }
 
     [Fact]
@@ -631,7 +631,7 @@ public sealed class ScalarAddressGenerationUwExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar address-generation opcode.")
         };
 
-    private static void AssertCloseToRtlObject(InstructionsEnum opcode, string mnemonic)
+    private static void AssertCloseToHSLObject(InstructionsEnum opcode, string mnemonic)
     {
         Assert.Equal("ExecutableScalarAlu", GetEvidenceBoundary(opcode));
         Assert.Equal(64, GetXLen(opcode));
@@ -645,60 +645,60 @@ public sealed class ScalarAddressGenerationUwExecutableTests
         switch (opcode)
         {
             case InstructionsEnum.SH2ADD:
-                Assert.Equal(CloseToRtlSh2add.Mnemonic, mnemonic);
-                Assert.Equal((ushort)opcode, CloseToRtlSh2add.Opcode);
-                Assert.Equal("rd, rs1, rs2", CloseToRtlSh2add.OperandShape);
-                Assert.True(CloseToRtlSh2add.RetireWritesDestination(1));
-                Assert.False(CloseToRtlSh2add.RetireWritesDestination(0));
+                Assert.Equal(CloseToHSLSh2add.Mnemonic, mnemonic);
+                Assert.Equal((ushort)opcode, CloseToHSLSh2add.Opcode);
+                Assert.Equal("rd, rs1, rs2", CloseToHSLSh2add.OperandShape);
+                Assert.True(CloseToHSLSh2add.RetireWritesDestination(1));
+                Assert.False(CloseToHSLSh2add.RetireWritesDestination(0));
                 break;
             case InstructionsEnum.SH3ADD:
-                Assert.Equal(CloseToRtlSh3add.Mnemonic, mnemonic);
-                Assert.Equal((ushort)opcode, CloseToRtlSh3add.Opcode);
-                Assert.Equal("rd, rs1, rs2", CloseToRtlSh3add.OperandShape);
-                Assert.True(CloseToRtlSh3add.RetireWritesDestination(1));
-                Assert.False(CloseToRtlSh3add.RetireWritesDestination(0));
+                Assert.Equal(CloseToHSLSh3add.Mnemonic, mnemonic);
+                Assert.Equal((ushort)opcode, CloseToHSLSh3add.Opcode);
+                Assert.Equal("rd, rs1, rs2", CloseToHSLSh3add.OperandShape);
+                Assert.True(CloseToHSLSh3add.RetireWritesDestination(1));
+                Assert.False(CloseToHSLSh3add.RetireWritesDestination(0));
                 break;
             case InstructionsEnum.ADD_UW:
-                Assert.Equal(CloseToRtlAddUw.Mnemonic, mnemonic);
-                Assert.Equal((ushort)opcode, CloseToRtlAddUw.Opcode);
-                Assert.Equal("rd, rs1, rs2", CloseToRtlAddUw.OperandShape);
-                Assert.Equal(32, CloseToRtlAddUw.SourceWidth);
-                Assert.True(CloseToRtlAddUw.RetireWritesDestination(1));
-                Assert.False(CloseToRtlAddUw.RetireWritesDestination(0));
+                Assert.Equal(CloseToHSLAddUw.Mnemonic, mnemonic);
+                Assert.Equal((ushort)opcode, CloseToHSLAddUw.Opcode);
+                Assert.Equal("rd, rs1, rs2", CloseToHSLAddUw.OperandShape);
+                Assert.Equal(32, CloseToHSLAddUw.SourceWidth);
+                Assert.True(CloseToHSLAddUw.RetireWritesDestination(1));
+                Assert.False(CloseToHSLAddUw.RetireWritesDestination(0));
                 break;
             case InstructionsEnum.SH1ADD_UW:
-                Assert.Equal(CloseToRtlSh1addUw.Mnemonic, mnemonic);
-                Assert.Equal((ushort)opcode, CloseToRtlSh1addUw.Opcode);
-                Assert.Equal("rd, rs1, rs2", CloseToRtlSh1addUw.OperandShape);
-                Assert.Equal(32, CloseToRtlSh1addUw.SourceWidth);
-                Assert.True(CloseToRtlSh1addUw.RetireWritesDestination(1));
-                Assert.False(CloseToRtlSh1addUw.RetireWritesDestination(0));
+                Assert.Equal(CloseToHSLSh1addUw.Mnemonic, mnemonic);
+                Assert.Equal((ushort)opcode, CloseToHSLSh1addUw.Opcode);
+                Assert.Equal("rd, rs1, rs2", CloseToHSLSh1addUw.OperandShape);
+                Assert.Equal(32, CloseToHSLSh1addUw.SourceWidth);
+                Assert.True(CloseToHSLSh1addUw.RetireWritesDestination(1));
+                Assert.False(CloseToHSLSh1addUw.RetireWritesDestination(0));
                 break;
             case InstructionsEnum.SH2ADD_UW:
-                Assert.Equal(CloseToRtlSh2addUw.Mnemonic, mnemonic);
-                Assert.Equal((ushort)opcode, CloseToRtlSh2addUw.Opcode);
-                Assert.Equal("rd, rs1, rs2", CloseToRtlSh2addUw.OperandShape);
-                Assert.Equal(32, CloseToRtlSh2addUw.SourceWidth);
-                Assert.True(CloseToRtlSh2addUw.RetireWritesDestination(1));
-                Assert.False(CloseToRtlSh2addUw.RetireWritesDestination(0));
+                Assert.Equal(CloseToHSLSh2addUw.Mnemonic, mnemonic);
+                Assert.Equal((ushort)opcode, CloseToHSLSh2addUw.Opcode);
+                Assert.Equal("rd, rs1, rs2", CloseToHSLSh2addUw.OperandShape);
+                Assert.Equal(32, CloseToHSLSh2addUw.SourceWidth);
+                Assert.True(CloseToHSLSh2addUw.RetireWritesDestination(1));
+                Assert.False(CloseToHSLSh2addUw.RetireWritesDestination(0));
                 break;
             case InstructionsEnum.SH3ADD_UW:
-                Assert.Equal(CloseToRtlSh3addUw.Mnemonic, mnemonic);
-                Assert.Equal((ushort)opcode, CloseToRtlSh3addUw.Opcode);
-                Assert.Equal("rd, rs1, rs2", CloseToRtlSh3addUw.OperandShape);
-                Assert.Equal(32, CloseToRtlSh3addUw.SourceWidth);
-                Assert.True(CloseToRtlSh3addUw.RetireWritesDestination(1));
-                Assert.False(CloseToRtlSh3addUw.RetireWritesDestination(0));
+                Assert.Equal(CloseToHSLSh3addUw.Mnemonic, mnemonic);
+                Assert.Equal((ushort)opcode, CloseToHSLSh3addUw.Opcode);
+                Assert.Equal("rd, rs1, rs2", CloseToHSLSh3addUw.OperandShape);
+                Assert.Equal(32, CloseToHSLSh3addUw.SourceWidth);
+                Assert.True(CloseToHSLSh3addUw.RetireWritesDestination(1));
+                Assert.False(CloseToHSLSh3addUw.RetireWritesDestination(0));
                 break;
             case InstructionsEnum.SLLI_UW:
-                Assert.Equal(CloseToRtlSlliUw.Mnemonic, mnemonic);
-                Assert.Equal((ushort)opcode, CloseToRtlSlliUw.Opcode);
-                Assert.Equal("rd, rs1, imm6", CloseToRtlSlliUw.OperandShape);
-                Assert.Equal(32, CloseToRtlSlliUw.SourceWidth);
-                Assert.Equal(6, CloseToRtlSlliUw.ImmediateBits);
-                Assert.Equal(0x3F, CloseToRtlSlliUw.ImmediateMask);
-                Assert.True(CloseToRtlSlliUw.RetireWritesDestination(1));
-                Assert.False(CloseToRtlSlliUw.RetireWritesDestination(0));
+                Assert.Equal(CloseToHSLSlliUw.Mnemonic, mnemonic);
+                Assert.Equal((ushort)opcode, CloseToHSLSlliUw.Opcode);
+                Assert.Equal("rd, rs1, imm6", CloseToHSLSlliUw.OperandShape);
+                Assert.Equal(32, CloseToHSLSlliUw.SourceWidth);
+                Assert.Equal(6, CloseToHSLSlliUw.ImmediateBits);
+                Assert.Equal(0x3F, CloseToHSLSlliUw.ImmediateMask);
+                Assert.True(CloseToHSLSlliUw.RetireWritesDestination(1));
+                Assert.False(CloseToHSLSlliUw.RetireWritesDestination(0));
                 break;
         }
     }
@@ -706,134 +706,134 @@ public sealed class ScalarAddressGenerationUwExecutableTests
     private static string GetEvidenceBoundary(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.EvidenceBoundary,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.EvidenceBoundary,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.EvidenceBoundary,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.EvidenceBoundary,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.EvidenceBoundary,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.EvidenceBoundary,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.EvidenceBoundary,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.EvidenceBoundary,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.EvidenceBoundary,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.EvidenceBoundary,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.EvidenceBoundary,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.EvidenceBoundary,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.EvidenceBoundary,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.EvidenceBoundary,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static int GetXLen(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.XLen,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.XLen,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.XLen,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.XLen,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.XLen,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.XLen,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.XLen,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.XLen,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.XLen,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.XLen,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.XLen,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.XLen,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.XLen,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.XLen,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static bool GetNoLsuBypassAuthority(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.NoLsuBypassAuthority,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.NoLsuBypassAuthority,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.NoLsuBypassAuthority,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.NoLsuBypassAuthority,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.NoLsuBypassAuthority,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.NoLsuBypassAuthority,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.NoLsuBypassAuthority,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.NoLsuBypassAuthority,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.NoLsuBypassAuthority,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.NoLsuBypassAuthority,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.NoLsuBypassAuthority,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.NoLsuBypassAuthority,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.NoLsuBypassAuthority,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.NoLsuBypassAuthority,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static bool GetNoHiddenMultiOpEmission(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.NoHiddenMultiOpEmission,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.NoHiddenMultiOpEmission,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.NoHiddenMultiOpEmission,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.NoHiddenMultiOpEmission,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.NoHiddenMultiOpEmission,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.NoHiddenMultiOpEmission,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.NoHiddenMultiOpEmission,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.NoHiddenMultiOpEmission,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.NoHiddenMultiOpEmission,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.NoHiddenMultiOpEmission,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.NoHiddenMultiOpEmission,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.NoHiddenMultiOpEmission,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.NoHiddenMultiOpEmission,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.NoHiddenMultiOpEmission,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static bool GetCompilerHelperAllowed(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.CompilerHelperAllowed,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.CompilerHelperAllowed,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.CompilerHelperAllowed,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.CompilerHelperAllowed,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.CompilerHelperAllowed,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.CompilerHelperAllowed,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.CompilerHelperAllowed,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.CompilerHelperAllowed,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.CompilerHelperAllowed,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.CompilerHelperAllowed,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.CompilerHelperAllowed,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.CompilerHelperAllowed,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.CompilerHelperAllowed,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.CompilerHelperAllowed,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static bool GetRequiresVmxProjection(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.RequiresVmxProjection,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.RequiresVmxProjection,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.RequiresVmxProjection,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.RequiresVmxProjection,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.RequiresVmxProjection,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.RequiresVmxProjection,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.RequiresVmxProjection,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.RequiresVmxProjection,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.RequiresVmxProjection,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.RequiresVmxProjection,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.RequiresVmxProjection,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.RequiresVmxProjection,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.RequiresVmxProjection,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.RequiresVmxProjection,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static bool GetHasOpcodeAllocation(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.HasOpcodeAllocation,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.HasOpcodeAllocation,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.HasOpcodeAllocation,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.HasOpcodeAllocation,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.HasOpcodeAllocation,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.HasOpcodeAllocation,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.HasOpcodeAllocation,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.HasOpcodeAllocation,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.HasOpcodeAllocation,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.HasOpcodeAllocation,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.HasOpcodeAllocation,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.HasOpcodeAllocation,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.HasOpcodeAllocation,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.HasOpcodeAllocation,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static bool GetIsExecutable(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.IsExecutable,
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.IsExecutable,
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.IsExecutable,
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.IsExecutable,
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.IsExecutable,
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.IsExecutable,
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.IsExecutable,
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.IsExecutable,
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.IsExecutable,
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.IsExecutable,
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.IsExecutable,
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.IsExecutable,
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.IsExecutable,
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.IsExecutable,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static ulong ExecuteCloseToRtlObject(
+    private static ulong ExecuteCloseToHSLObject(
         InstructionsEnum opcode,
         ulong source,
         ulong addend,
         ulong immediate) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.Execute(source, addend),
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.Execute(source, addend),
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.Execute(source, addend),
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.Execute(source, addend),
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.Execute(source, addend),
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.Execute(source, addend),
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.Execute(source, immediate),
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.Execute(source, addend),
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.Execute(source, addend),
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.Execute(source, addend),
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.Execute(source, addend),
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.Execute(source, addend),
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.Execute(source, addend),
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.Execute(source, immediate),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static IEnumerable<(ulong Source, ulong Addend, ulong Immediate, ulong Expected)> GetGoldenVectors(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.SH2ADD => CloseToRtlSh2add.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
-            InstructionsEnum.SH3ADD => CloseToRtlSh3add.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
-            InstructionsEnum.ADD_UW => CloseToRtlAddUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
-            InstructionsEnum.SH1ADD_UW => CloseToRtlSh1addUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
-            InstructionsEnum.SH2ADD_UW => CloseToRtlSh2addUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
-            InstructionsEnum.SH3ADD_UW => CloseToRtlSh3addUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
-            InstructionsEnum.SLLI_UW => CloseToRtlSlliUw.GetLocalGoldenVectors().Select(vector => (vector.Source, 0UL, (ulong)vector.Immediate6, vector.Expected)),
+            InstructionsEnum.SH2ADD => CloseToHSLSh2add.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
+            InstructionsEnum.SH3ADD => CloseToHSLSh3add.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
+            InstructionsEnum.ADD_UW => CloseToHSLAddUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
+            InstructionsEnum.SH1ADD_UW => CloseToHSLSh1addUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
+            InstructionsEnum.SH2ADD_UW => CloseToHSLSh2addUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
+            InstructionsEnum.SH3ADD_UW => CloseToHSLSh3addUw.GetLocalGoldenVectors().Select(vector => (vector.Source, vector.Addend, 0UL, vector.Expected)),
+            InstructionsEnum.SLLI_UW => CloseToHSLSlliUw.GetLocalGoldenVectors().Select(vector => (vector.Source, 0UL, (ulong)vector.Immediate6, vector.Expected)),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 

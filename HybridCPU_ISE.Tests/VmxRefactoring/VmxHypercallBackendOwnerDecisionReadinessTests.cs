@@ -58,13 +58,13 @@ public sealed class VmxHypercallBackendOwnerDecisionReadinessTests
         Assert.Equal(8, (ushort)VmxFunctionLeaf.Lane7Submit);
 
         string vmCallAbiSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Decode/VmxInstructionPayload.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/FrozenAbi/VmcsFieldAliases/VmxExitQualification.cs",
-            "CloseToRTL/Core/Runtime/Events/Hypercalls/NeutralHypercallBackendOwnerDescriptor.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Decode/VmxInstructionPayload.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/FrozenAbi/VmcsFieldAliases/VmxExitQualification.cs",
+            "CloseToHSL/Core/Runtime/Events/Hypercalls/NeutralHypercallBackendOwnerDescriptor.cs");
         string secureHypercallDescriptorSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs");
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs");
         string secureHypercallRegistrySource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallBackendOwnerAbiRegistry.cs");
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallBackendOwnerAbiRegistry.cs");
 
         Assert.Contains("CandidateOnlyNoNumericLeaf", vmCallAbiSource);
         Assert.DoesNotContain("enum VmxHypercallLeaf", vmCallAbiSource);
@@ -298,18 +298,18 @@ public sealed class VmxHypercallBackendOwnerDecisionReadinessTests
     public void VmCallOwnerDecisionSource_DoesNotIntroduceBackendOrPublicationShortcuts()
     {
         string hypercallSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs",
-            "CloseToRTL/Core/Runtime/Events/Hypercalls/NeutralHypercallBackendOwnerDescriptor.cs");
+            "CloseToHSL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs",
+            "CloseToHSL/Core/Runtime/Events/Hypercalls/NeutralHypercallBackendOwnerDescriptor.cs");
         string vmcallFrontendSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Events/VmxTrapProjectionMapper.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Events/VmxTrapProjectionMapper.cs");
         string routeAndFenceSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs",
-            "CloseToRTL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs");
+            "CloseToHSL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs",
+            "CloseToHSL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs");
         string productionCallers = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
-            "CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+            "CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
 
         Assert.Contains("HypercallBackendAdmissionService", hypercallSource);
         Assert.Contains("DeniedNeutralBackendOwnerMissing", hypercallSource);

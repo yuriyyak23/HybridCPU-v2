@@ -12,11 +12,11 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlCpop = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.CpopInstruction;
-using CloseToRtlPopcnt = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.PopcntInstruction;
-using CloseToRtlCsel = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
-using CloseToRtlSeqz = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SeqzInstruction;
-using CloseToRtlSnez = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SnezInstruction;
+using CloseToHSLCpop = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.CpopInstruction;
+using CloseToHSLPopcnt = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.PopcntInstruction;
+using CloseToHSLCsel = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
+using CloseToHSLSeqz = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SeqzInstruction;
+using CloseToHSLSnez = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SnezInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests.InstructionsRefactor;
@@ -44,16 +44,16 @@ public sealed class NonVmxPhase01BitCountExecutableTests
         Assert.DoesNotContain("CPOP", IsaV4Surface.MandatoryCoreOpcodes);
         Assert.DoesNotContain("CPOP", IsaV4Surface.OptionalDisabledOpcodes);
 
-        Assert.Equal("CPOP", CloseToRtlCpop.Mnemonic);
-        Assert.Equal("ExecutableScalarAlu", CloseToRtlCpop.EvidenceBoundary);
-        Assert.Equal((ushort)InstructionsEnum.CPOP, CloseToRtlCpop.Opcode);
-        Assert.True(CloseToRtlCpop.CanonicalMnemonicDecisionClosed);
-        Assert.True(CloseToRtlCpop.PopcntAliasNoEmissionPolicyClosed);
-        Assert.True(CloseToRtlCpop.HasOpcodeAllocation);
-        Assert.True(CloseToRtlCpop.IsExecutable);
-        Assert.True(CloseToRtlCpop.WritesScalarRegister);
-        Assert.False(CloseToRtlCpop.HasSideEffects);
-        Assert.False(CloseToRtlCpop.CompilerHelperAllowed);
+        Assert.Equal("CPOP", CloseToHSLCpop.Mnemonic);
+        Assert.Equal("ExecutableScalarAlu", CloseToHSLCpop.EvidenceBoundary);
+        Assert.Equal((ushort)InstructionsEnum.CPOP, CloseToHSLCpop.Opcode);
+        Assert.True(CloseToHSLCpop.CanonicalMnemonicDecisionClosed);
+        Assert.True(CloseToHSLCpop.PopcntAliasNoEmissionPolicyClosed);
+        Assert.True(CloseToHSLCpop.HasOpcodeAllocation);
+        Assert.True(CloseToHSLCpop.IsExecutable);
+        Assert.True(CloseToHSLCpop.WritesScalarRegister);
+        Assert.False(CloseToHSLCpop.HasSideEffects);
+        Assert.False(CloseToHSLCpop.CompilerHelperAllowed);
 
         InstructionSupportStatus popcnt = InstructionSupportStatusCatalog.GetStatus("POPCNT");
         Assert.Equal(IsaInstructionStatus.Reserved, popcnt.Status);
@@ -61,32 +61,32 @@ public sealed class NonVmxPhase01BitCountExecutableTests
         Assert.False(popcnt.IsExecutableClaim);
         Assert.False(popcnt.HasNumericOpcode);
         Assert.False(HasEnumOrRegistryMnemonic("POPCNT"));
-        Assert.Equal("FacadeAliasNoEmissionClosed", CloseToRtlPopcnt.EvidenceBoundary);
-        Assert.True(CloseToRtlPopcnt.CanonicalMnemonicDecisionClosed);
-        Assert.True(CloseToRtlPopcnt.SelectedAsNoEmissionAlias);
-        Assert.False(CloseToRtlPopcnt.SelectedAsRuntimeMnemonic);
-        Assert.False(CloseToRtlPopcnt.HasOpcodeAllocation);
-        Assert.False(CloseToRtlPopcnt.IsExecutable);
+        Assert.Equal("FacadeAliasNoEmissionClosed", CloseToHSLPopcnt.EvidenceBoundary);
+        Assert.True(CloseToHSLPopcnt.CanonicalMnemonicDecisionClosed);
+        Assert.True(CloseToHSLPopcnt.SelectedAsNoEmissionAlias);
+        Assert.False(CloseToHSLPopcnt.SelectedAsRuntimeMnemonic);
+        Assert.False(CloseToHSLPopcnt.HasOpcodeAllocation);
+        Assert.False(CloseToHSLPopcnt.IsExecutable);
     }
 
     [Fact]
     public void FacadeAndCarrierDecisions_StayClosedWithoutHiddenRuntimeAuthority()
     {
-        Assert.Equal("FacadeOnlyNoEmissionClosed", CloseToRtlSeqz.EvidenceBoundary);
-        Assert.True(CloseToRtlSeqz.FacadeDecisionClosed);
-        Assert.True(CloseToRtlSeqz.SelectedFacadeOnly);
-        Assert.False(CloseToRtlSeqz.SelectedHardwareOpcode);
-        Assert.False(CloseToRtlSeqz.HiddenLoweringAllowed);
-        Assert.False(CloseToRtlSeqz.HasOpcodeAllocation);
-        Assert.False(CloseToRtlSeqz.IsExecutable);
+        Assert.Equal("FacadeOnlyNoEmissionClosed", CloseToHSLSeqz.EvidenceBoundary);
+        Assert.True(CloseToHSLSeqz.FacadeDecisionClosed);
+        Assert.True(CloseToHSLSeqz.SelectedFacadeOnly);
+        Assert.False(CloseToHSLSeqz.SelectedHardwareOpcode);
+        Assert.False(CloseToHSLSeqz.HiddenLoweringAllowed);
+        Assert.False(CloseToHSLSeqz.HasOpcodeAllocation);
+        Assert.False(CloseToHSLSeqz.IsExecutable);
 
-        Assert.Equal("FacadeOnlyNoEmissionClosed", CloseToRtlSnez.EvidenceBoundary);
-        Assert.True(CloseToRtlSnez.FacadeDecisionClosed);
-        Assert.True(CloseToRtlSnez.SelectedFacadeOnly);
-        Assert.False(CloseToRtlSnez.SelectedHardwareOpcode);
-        Assert.False(CloseToRtlSnez.HiddenLoweringAllowed);
-        Assert.False(CloseToRtlSnez.HasOpcodeAllocation);
-        Assert.False(CloseToRtlSnez.IsExecutable);
+        Assert.Equal("FacadeOnlyNoEmissionClosed", CloseToHSLSnez.EvidenceBoundary);
+        Assert.True(CloseToHSLSnez.FacadeDecisionClosed);
+        Assert.True(CloseToHSLSnez.SelectedFacadeOnly);
+        Assert.False(CloseToHSLSnez.SelectedHardwareOpcode);
+        Assert.False(CloseToHSLSnez.HiddenLoweringAllowed);
+        Assert.False(CloseToHSLSnez.HasOpcodeAllocation);
+        Assert.False(CloseToHSLSnez.IsExecutable);
 
         foreach (string mnemonic in new[] { "SEQZ", "SNEZ" })
         {
@@ -98,17 +98,17 @@ public sealed class NonVmxPhase01BitCountExecutableTests
             Assert.False(HasEnumOrRegistryMnemonic(mnemonic));
         }
 
-        Assert.Equal("ScalarSelectAbiDeferredNoEmission", CloseToRtlCsel.EvidenceBoundary);
-        Assert.Equal("Phase01ECarrierGateClosedNoApprovedCarrier", CloseToRtlCsel.CarrierGateDecision);
-        Assert.True(CloseToRtlCsel.RequiresFourRegisterCarrierAbi);
-        Assert.True(CloseToRtlCsel.FourSourceCarrierDecisionClosed);
-        Assert.True(CloseToRtlCsel.ExternalCarrierGateClosed);
-        Assert.False(CloseToRtlCsel.ApprovedFourSourceCarrier);
-        Assert.False(CloseToRtlCsel.ExternalCarrierApprovedInPhase01);
-        Assert.False(CloseToRtlCsel.CurrentPackedScalarIrSupportsCarrier);
-        Assert.True(CloseToRtlCsel.RequiresExternalCarrierAbi);
-        Assert.False(CloseToRtlCsel.HasOpcodeAllocation);
-        Assert.False(CloseToRtlCsel.IsExecutable);
+        Assert.Equal("ScalarSelectAbiDeferredNoEmission", CloseToHSLCsel.EvidenceBoundary);
+        Assert.Equal("Phase01ECarrierGateClosedNoApprovedCarrier", CloseToHSLCsel.CarrierGateDecision);
+        Assert.True(CloseToHSLCsel.RequiresFourRegisterCarrierAbi);
+        Assert.True(CloseToHSLCsel.FourSourceCarrierDecisionClosed);
+        Assert.True(CloseToHSLCsel.ExternalCarrierGateClosed);
+        Assert.False(CloseToHSLCsel.ApprovedFourSourceCarrier);
+        Assert.False(CloseToHSLCsel.ExternalCarrierApprovedInPhase01);
+        Assert.False(CloseToHSLCsel.CurrentPackedScalarIrSupportsCarrier);
+        Assert.True(CloseToHSLCsel.RequiresExternalCarrierAbi);
+        Assert.False(CloseToHSLCsel.HasOpcodeAllocation);
+        Assert.False(CloseToHSLCsel.IsExecutable);
     }
 
     [Fact]
@@ -196,11 +196,11 @@ public sealed class NonVmxPhase01BitCountExecutableTests
         Assert.Equal(VLIW_Instruction.NoReg, scalar.Src2RegID);
 
         VLIW_Instruction registerAlias = CreateScalarInstruction(InstructionsEnum.CPOP, rd, rs1, rs2: 3);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0xCA20, 501));
 
         VLIW_Instruction immediateAlias = CreateScalarInstruction(InstructionsEnum.CPOP, rd, rs1, immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0xCA40, 502));
     }
 
@@ -210,17 +210,17 @@ public sealed class NonVmxPhase01BitCountExecutableTests
     [InlineData(0x8000_0000_0000_0000UL, 1UL)]
     [InlineData(0x0123_4567_89AB_CDEFUL, 32UL)]
     [InlineData(ulong.MaxValue, 64UL)]
-    public void Cpop_ScalarAluCloseToRtlAndGoldenVectors_DefineXlen64PopulationCount(
+    public void Cpop_ScalarAluCloseToHSLAndGoldenVectors_DefineXlen64PopulationCount(
         ulong source,
         ulong expected)
     {
         ulong actual = ScalarAluOps.Compute((uint)InstructionsEnum.CPOP, source, op2: 0, immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, CloseToRtlCpop.Execute(source));
-        Assert.Equal(expected, CloseToRtlCpop.EvaluateXLen64(source));
+        Assert.Equal(expected, CloseToHSLCpop.Execute(source));
+        Assert.Equal(expected, CloseToHSLCpop.EvaluateXLen64(source));
 
-        foreach (var vector in CloseToRtlCpop.GetLocalGoldenVectors())
+        foreach (var vector in CloseToHSLCpop.GetLocalGoldenVectors())
         {
             Assert.Equal(
                 vector.Result,

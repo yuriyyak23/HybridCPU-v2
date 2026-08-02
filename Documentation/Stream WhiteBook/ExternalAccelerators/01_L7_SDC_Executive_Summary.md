@@ -25,10 +25,10 @@ branch-control authority surface.
 
 Code anchors:
 
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/Scheduling/SlotLegality/SlotClassDefinitions.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/SlotLegality/SlotClassDefinitions.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
 - `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/ExternalAcceleratorRuntime.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcHardPinnedPlacementTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNoBranchControlAuthorityTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcPhase08ExecutableTests.cs`
@@ -42,7 +42,7 @@ helpers after native submit emission.
 
 Code anchors:
 
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs`
 - `HybridCPU_ISE/NonRTL/Core/Execution/DmaStreamCompute/*`
 - `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/*`
 - `HybridCPU_ISE.Tests/tests/L7SdcDmaStreamComputeConflictTests.cs`

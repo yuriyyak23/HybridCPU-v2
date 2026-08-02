@@ -1,6 +1,6 @@
 using System;
-using HybridCPU_ISE.CloseToRTL.Memory.Banks;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.Banks;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using HybridCPU_ISE.Legacy;
 using Xunit;
 using YAKSys_Hybrid_CPU;

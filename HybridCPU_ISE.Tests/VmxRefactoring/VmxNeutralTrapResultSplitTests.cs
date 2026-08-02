@@ -25,10 +25,10 @@ public sealed class VmxNeutralTrapResultSplitTests
         Assert.Equal(TrapTargetKind.CompatibilityOperation, result.Request.TargetKind);
 
         string runtimeTrapSource = ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Events/Traps/NeutralTrapResult.cs",
-            "CloseToRTL/Core/Runtime/Events/Traps/TrapRequest.cs",
-            "CloseToRTL/Core/Runtime/Events/Traps/TrapPolicyBitmap.cs",
-            "CloseToRTL/Core/Runtime/Events/Traps/SchedulingBudgetTimer.cs");
+            "CloseToHSL/Core/Runtime/Events/Traps/NeutralTrapResult.cs",
+            "CloseToHSL/Core/Runtime/Events/Traps/TrapRequest.cs",
+            "CloseToHSL/Core/Runtime/Events/Traps/TrapPolicyBitmap.cs",
+            "CloseToHSL/Core/Runtime/Events/Traps/SchedulingBudgetTimer.cs");
 
         Assert.DoesNotContain("VmExitReason", runtimeTrapSource);
         Assert.DoesNotContain("VmxExitQualification", runtimeTrapSource);
@@ -62,9 +62,9 @@ public sealed class VmxNeutralTrapResultSplitTests
     public void TrapPolicyService_UsesMapperInsteadOfVmExitReasonAsAuthority()
     {
         string serviceSource = ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Events/TrapPolicyService.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Events/TrapPolicyService.cs");
         string mapperSource = ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Events/VmxTrapProjectionMapper.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Events/VmxTrapProjectionMapper.cs");
 
         Assert.Contains("NeutralTrapResult", serviceSource);
         Assert.Contains("VmxTrapProjectionMapper.Default.Project", serviceSource);
@@ -78,9 +78,9 @@ public sealed class VmxNeutralTrapResultSplitTests
     public void ProductionVmxRetirePaths_DoNotUseInterceptSuccessFactoriesAsAuthority()
     {
         string productionCallers = ReadProjectSource(
-            "CloseToRTL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
-            "CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+            "CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
 
         Assert.Contains("VmxRetireEffect.Fault", productionCallers);
         Assert.DoesNotContain("VmxRetireEffect.InterceptExit", productionCallers);

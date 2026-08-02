@@ -11,12 +11,12 @@ using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlAccelBindQueue = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.QueueBinding.AccelBindQueueInstruction;
-using CloseToRtlAccelClose = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Lifecycle.AccelCloseInstruction;
-using CloseToRtlAccelOpen = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Lifecycle.AccelOpenInstruction;
-using CloseToRtlAccelQueryAbi = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Topology.AccelQueryAbiInstruction;
-using CloseToRtlAccelQueryTopology = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Topology.AccelQueryTopologyInstruction;
-using CloseToRtlAccelUnbindQueue = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.QueueBinding.AccelUnbindQueueInstruction;
+using CloseToHSLAccelBindQueue = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.QueueBinding.AccelBindQueueInstruction;
+using CloseToHSLAccelClose = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Lifecycle.AccelCloseInstruction;
+using CloseToHSLAccelOpen = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Lifecycle.AccelOpenInstruction;
+using CloseToHSLAccelQueryAbi = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Topology.AccelQueryAbiInstruction;
+using CloseToHSLAccelQueryTopology = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.Topology.AccelQueryTopologyInstruction;
+using CloseToHSLAccelUnbindQueue = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.AcceleratorControl.QueueBinding.AccelUnbindQueueInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -54,8 +54,8 @@ public sealed class Lane7AcceleratorControlFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlAccelQueryAbi), "ACCEL_QUERY_ABI", "RequiresAcceleratorAbiQueryContract", "RequiresBoundedCapabilityResultFootprint")]
-    [InlineData(typeof(CloseToRtlAccelQueryTopology), "ACCEL_QUERY_TOPOLOGY", "RequiresAcceleratorTopologyAbi", "RequiresBoundedTopologyResultFootprint")]
+    [InlineData(typeof(CloseToHSLAccelQueryAbi), "ACCEL_QUERY_ABI", "RequiresAcceleratorAbiQueryContract", "RequiresBoundedCapabilityResultFootprint")]
+    [InlineData(typeof(CloseToHSLAccelQueryTopology), "ACCEL_QUERY_TOPOLOGY", "RequiresAcceleratorTopologyAbi", "RequiresBoundedTopologyResultFootprint")]
     public void TopologyCapabilityLeafMarkers_RecordPhase14NegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -78,8 +78,8 @@ public sealed class Lane7AcceleratorControlFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlAccelOpen), "ACCEL_OPEN")]
-    [InlineData(typeof(CloseToRtlAccelClose), "ACCEL_CLOSE")]
+    [InlineData(typeof(CloseToHSLAccelOpen), "ACCEL_OPEN")]
+    [InlineData(typeof(CloseToHSLAccelClose), "ACCEL_CLOSE")]
     public void LifecycleLeafMarkers_RecordPhase14NegativeDecisionGate(
         Type templateType,
         string mnemonic)
@@ -101,8 +101,8 @@ public sealed class Lane7AcceleratorControlFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlAccelBindQueue), "ACCEL_BIND_QUEUE")]
-    [InlineData(typeof(CloseToRtlAccelUnbindQueue), "ACCEL_UNBIND_QUEUE")]
+    [InlineData(typeof(CloseToHSLAccelBindQueue), "ACCEL_BIND_QUEUE")]
+    [InlineData(typeof(CloseToHSLAccelUnbindQueue), "ACCEL_UNBIND_QUEUE")]
     public void QueueBindingLeafMarkers_RecordPhase14NegativeDecisionGate(
         Type templateType,
         string mnemonic)

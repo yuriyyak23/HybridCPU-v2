@@ -237,12 +237,12 @@ public sealed class SecureComputeVmxDenialGuardTests
     public void VmcsAndVmxCapsProductionSources_DoNotExposeSecureComputeAuthority()
     {
         string source = ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/CsrProjection/VmxCapsProjection.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/CapabilityProjection/CapabilityDescriptorSetSchema.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Decode/VmxInstructionPayload.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
-            "CloseToRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/CsrProjection/VmxCapsProjection.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/CapabilityProjection/CapabilityDescriptorSetSchema.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Decode/VmxInstructionPayload.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
+            "CloseToHSL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
 
         Assert.DoesNotContain("SecureCompute", source);
         Assert.DoesNotContain("SecureDomain", source);

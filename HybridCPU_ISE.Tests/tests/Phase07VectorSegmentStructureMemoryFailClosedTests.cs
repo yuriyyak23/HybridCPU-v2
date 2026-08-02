@@ -6,20 +6,20 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlVdeinterleave = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VdeinterleaveInstruction;
-using CloseToRtlVgatherIndexed2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VgatherIndexed2DContour;
-using CloseToRtlVinterleave = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VinterleaveInstruction;
-using CloseToRtlVldseg2 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg2Instruction;
-using CloseToRtlVldseg4 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg4Instruction;
-using CloseToRtlVldseg8 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg8Instruction;
-using CloseToRtlVload2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vload2DContour;
-using CloseToRtlVscatterIndexed2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VscatterIndexed2DContour;
-using CloseToRtlVstseg2 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg2Instruction;
-using CloseToRtlVstseg4 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg4Instruction;
-using CloseToRtlVstseg8 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg8Instruction;
-using CloseToRtlVstore2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vstore2DContour;
-using CloseToRtlVunzip = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VunzipInstruction;
-using CloseToRtlVzip = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VzipInstruction;
+using CloseToHSLVdeinterleave = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VdeinterleaveInstruction;
+using CloseToHSLVgatherIndexed2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VgatherIndexed2DContour;
+using CloseToHSLVinterleave = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VinterleaveInstruction;
+using CloseToHSLVldseg2 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg2Instruction;
+using CloseToHSLVldseg4 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg4Instruction;
+using CloseToHSLVldseg8 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg8Instruction;
+using CloseToHSLVload2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vload2DContour;
+using CloseToHSLVscatterIndexed2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VscatterIndexed2DContour;
+using CloseToHSLVstseg2 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg2Instruction;
+using CloseToHSLVstseg4 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg4Instruction;
+using CloseToHSLVstseg8 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg8Instruction;
+using CloseToHSLVstore2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vstore2DContour;
+using CloseToHSLVunzip = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VunzipInstruction;
+using CloseToHSLVzip = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VzipInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -56,10 +56,10 @@ public sealed class VectorSegmentStructureMemoryFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVzip), "VZIP")]
-    [InlineData(typeof(CloseToRtlVunzip), "VUNZIP")]
-    [InlineData(typeof(CloseToRtlVinterleave), "VINTERLEAVE")]
-    [InlineData(typeof(CloseToRtlVdeinterleave), "VDEINTERLEAVE")]
+    [InlineData(typeof(CloseToHSLVzip), "VZIP")]
+    [InlineData(typeof(CloseToHSLVunzip), "VUNZIP")]
+    [InlineData(typeof(CloseToHSLVinterleave), "VINTERLEAVE")]
+    [InlineData(typeof(CloseToHSLVdeinterleave), "VDEINTERLEAVE")]
     public void StructureMovementRows_RecordPhase07ANegativeDecisionGate(
         Type templateType,
         string mnemonic)
@@ -77,12 +77,12 @@ public sealed class VectorSegmentStructureMemoryFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVldseg2), "VLDSEG2", 2, true)]
-    [InlineData(typeof(CloseToRtlVldseg4), "VLDSEG4", 4, true)]
-    [InlineData(typeof(CloseToRtlVldseg8), "VLDSEG8", 8, true)]
-    [InlineData(typeof(CloseToRtlVstseg2), "VSTSEG2", 2, false)]
-    [InlineData(typeof(CloseToRtlVstseg4), "VSTSEG4", 4, false)]
-    [InlineData(typeof(CloseToRtlVstseg8), "VSTSEG8", 8, false)]
+    [InlineData(typeof(CloseToHSLVldseg2), "VLDSEG2", 2, true)]
+    [InlineData(typeof(CloseToHSLVldseg4), "VLDSEG4", 4, true)]
+    [InlineData(typeof(CloseToHSLVldseg8), "VLDSEG8", 8, true)]
+    [InlineData(typeof(CloseToHSLVstseg2), "VSTSEG2", 2, false)]
+    [InlineData(typeof(CloseToHSLVstseg4), "VSTSEG4", 4, false)]
+    [InlineData(typeof(CloseToHSLVstseg8), "VSTSEG8", 8, false)]
     public void SegmentRows_RecordPhase07BNegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -118,10 +118,10 @@ public sealed class VectorSegmentStructureMemoryFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVload2D), "VLOAD", "2D", false, true)]
-    [InlineData(typeof(CloseToRtlVstore2D), "VSTORE", "2D", false, false)]
-    [InlineData(typeof(CloseToRtlVgatherIndexed2D), "VGATHER", "Indexed2D", true, true)]
-    [InlineData(typeof(CloseToRtlVscatterIndexed2D), "VSCATTER", "Indexed2D", true, false)]
+    [InlineData(typeof(CloseToHSLVload2D), "VLOAD", "2D", false, true)]
+    [InlineData(typeof(CloseToHSLVstore2D), "VSTORE", "2D", false, false)]
+    [InlineData(typeof(CloseToHSLVgatherIndexed2D), "VGATHER", "Indexed2D", true, true)]
+    [InlineData(typeof(CloseToHSLVscatterIndexed2D), "VSCATTER", "Indexed2D", true, false)]
     public void MemoryContourRows_RecordPhase07CNegativeDecisionGate(
         Type templateType,
         string mnemonic,

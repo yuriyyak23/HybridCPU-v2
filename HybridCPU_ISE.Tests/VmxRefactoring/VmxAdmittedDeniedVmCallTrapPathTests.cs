@@ -106,12 +106,12 @@ public sealed class VmxAdmittedDeniedVmCallTrapPathTests
     public void VmCallTrapPath_SourceUsesRuntimeAdmissionNeutralTrapAndMapperWithoutBackendMarkers()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs");
         string dispatcherAndRetireSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
-            "CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+            "CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
 
         Assert.Contains("RuntimeBoundaryAdmissionService", source);
         Assert.Contains("DomainRuntimeOperationKind.ProjectCompatibilityTrap", source);

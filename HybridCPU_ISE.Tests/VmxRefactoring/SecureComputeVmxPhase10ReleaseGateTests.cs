@@ -147,9 +147,9 @@ public sealed class SecureComputeVmxPhase10ReleaseGateTests
         string repositoryRoot = FindRepositoryRoot();
         string[] roots =
         {
-            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Virtualization", "SecureCompute", "Compatibility"),
-            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Virtualization", "SecureCompute", "Generated"),
-            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Virtualization", "Compatibility", "Generated", "VmcsProjection"),
+            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Virtualization", "SecureCompute", "Compatibility"),
+            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Virtualization", "SecureCompute", "Generated"),
+            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Virtualization", "Compatibility", "Generated", "VmcsProjection"),
         };
 
         return roots
@@ -176,7 +176,7 @@ public sealed class SecureComputeVmxPhase10ReleaseGateTests
         Path.Combine(
             FindRepositoryRoot(),
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Runtime",
             "Domains",

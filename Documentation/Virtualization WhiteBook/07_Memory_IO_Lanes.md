@@ -15,11 +15,11 @@ Neutral memory translation owns:
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Memory/Translation/NestedPageWalker.cs`
-- `CloseToRTL/Core/Runtime/Memory/Translation/NestedTranslationResult.cs`
-- `CloseToRTL/Core/Runtime/Memory/Translation/MemoryTranslationPolicy.cs`
-- `CloseToRTL/Core/Runtime/Memory/Invalidation/TranslationInvalidationService.cs`
-- `CloseToRTL/Core/Runtime/Memory/DirtyTracking/DirtyTrackingServiceDescriptor.cs`
+- `CloseToHSL/Core/Runtime/Memory/Translation/NestedPageWalker.cs`
+- `CloseToHSL/Core/Runtime/Memory/Translation/NestedTranslationResult.cs`
+- `CloseToHSL/Core/Runtime/Memory/Translation/MemoryTranslationPolicy.cs`
+- `CloseToHSL/Core/Runtime/Memory/Invalidation/TranslationInvalidationService.cs`
+- `CloseToHSL/Core/Runtime/Memory/DirtyTracking/DirtyTrackingServiceDescriptor.cs`
 
 VMX-compatible names such as EPT violation, EPT misconfiguration, VPID, and invalidation scopes are projected from these neutral results. They are not direct owners of the memory model.
 
@@ -35,11 +35,11 @@ Neutral I/O owns:
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/IO/Dma/DmaWindowDescriptor.cs`
-- `CloseToRTL/Core/Runtime/IO/Dma/DmaDomainBinding.cs`
-- `CloseToRTL/Core/Runtime/IO/Dma/DmaAuthorityService.cs`
-- `CloseToRTL/Core/Runtime/IO/Iotlb/IotlbInvalidationService.cs`
-- `CloseToRTL/Core/Runtime/Memory/Iommu/IommuDomainDescriptor.cs`
+- `CloseToHSL/Core/Runtime/IO/Dma/DmaWindowDescriptor.cs`
+- `CloseToHSL/Core/Runtime/IO/Dma/DmaDomainBinding.cs`
+- `CloseToHSL/Core/Runtime/IO/Dma/DmaAuthorityService.cs`
+- `CloseToHSL/Core/Runtime/IO/Iotlb/IotlbInvalidationService.cs`
+- `CloseToHSL/Core/Runtime/Memory/Iommu/IommuDomainDescriptor.cs`
 
 VMX I/O aliases must remain aliases. They do not bypass domain binding or IOMMU authority.
 
@@ -49,8 +49,8 @@ Lane 6 runtime owns queue state, token namespace, fences, and host-owned evidenc
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Lanes/Lane6/**`
-- `CloseToRTL/Core/Runtime/Domains/Admission/Lane6/Lane6DomainRuntime.cs`
+- `CloseToHSL/Core/Runtime/Lanes/Lane6/**`
+- `CloseToHSL/Core/Runtime/Domains/Admission/Lane6/Lane6DomainRuntime.cs`
 
 Compatibility projection can report lane-related evidence only if it passes the evidence and domain boundaries. It cannot use VMX to publish lane state.
 
@@ -60,8 +60,8 @@ Lane 7 runtime owns accelerator token namespaces, handles, backend binding polic
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Lanes/Lane7/**`
-- `CloseToRTL/Core/Runtime/Domains/Admission/Lane7/Lane7DomainRuntime.cs`
+- `CloseToHSL/Core/Runtime/Lanes/Lane7/**`
+- `CloseToHSL/Core/Runtime/Domains/Admission/Lane7/Lane7DomainRuntime.cs`
 
 Lane 7 virtualization is not a VMX feature. VMX can at most project compatibility facts after neutral Lane 7 authority has accepted them.
 
@@ -76,8 +76,8 @@ Vector stream virtualization is descriptor-owned:
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Lanes/VectorStream/**`
-- `CloseToRTL/Core/Runtime/Domains/Admission/VectorStream/VectorStreamDomainRuntime.cs`
-- `CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Lanes/**`
+- `CloseToHSL/Core/Runtime/Lanes/VectorStream/**`
+- `CloseToHSL/Core/Runtime/Domains/Admission/VectorStream/VectorStreamDomainRuntime.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Lanes/**`
 
 The VMCSv2 vector-stream projection is compatibility evidence. The vector stream state remains neutral runtime state.

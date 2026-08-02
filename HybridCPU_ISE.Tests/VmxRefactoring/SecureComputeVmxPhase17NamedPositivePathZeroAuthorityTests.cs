@@ -100,13 +100,13 @@ public sealed class SecureComputeVmxPhase17NamedPositivePathZeroAuthorityTests
     public void VmxZeroAuthoritySources_DoNotCreateRuntimeBackendPublicationOrCompilerAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Conformance/AuthorityBoundary/SecureComputeNamedPathVmxZeroAuthorityPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Conformance/AuthorityBoundary/SecureComputeVmxAuthorityBoundaryContract.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeCompatibilityBoundaryMatrixPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmReadVisibilityPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmWriteDenyPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmcsProjectionFence.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmxCapsProjectionFence.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Conformance/AuthorityBoundary/SecureComputeNamedPathVmxZeroAuthorityPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Conformance/AuthorityBoundary/SecureComputeVmxAuthorityBoundaryContract.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeCompatibilityBoundaryMatrixPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmReadVisibilityPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmWriteDenyPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmcsProjectionFence.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmxCapsProjectionFence.cs");
 
         Assert.Contains("DeniedVmxActivation", source);
         Assert.Contains("DeniedVmxCapsAuthority", source);

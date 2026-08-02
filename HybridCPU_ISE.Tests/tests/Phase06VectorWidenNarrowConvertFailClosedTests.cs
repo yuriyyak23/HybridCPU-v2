@@ -6,19 +6,19 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlVcvtF = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtFInstruction;
-using CloseToRtlVcvtI = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtIInstruction;
-using CloseToRtlVcvtU = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtUInstruction;
-using CloseToRtlVnsra = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsraInstruction;
-using CloseToRtlVnsrl = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsrlInstruction;
-using CloseToRtlVsext = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VsextInstruction;
-using CloseToRtlVwadd = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwaddInstruction;
-using CloseToRtlVwaddu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwadduInstruction;
-using CloseToRtlVwmacc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmaccInstruction;
-using CloseToRtlVwmul = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmulInstruction;
-using CloseToRtlVwmulu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmuluInstruction;
-using CloseToRtlVwsub = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubInstruction;
-using CloseToRtlVwsubu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubuInstruction;
+using CloseToHSLVcvtF = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtFInstruction;
+using CloseToHSLVcvtI = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtIInstruction;
+using CloseToHSLVcvtU = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtUInstruction;
+using CloseToHSLVnsra = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsraInstruction;
+using CloseToHSLVnsrl = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsrlInstruction;
+using CloseToHSLVsext = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VsextInstruction;
+using CloseToHSLVwadd = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwaddInstruction;
+using CloseToHSLVwaddu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwadduInstruction;
+using CloseToHSLVwmacc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmaccInstruction;
+using CloseToHSLVwmul = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmulInstruction;
+using CloseToHSLVwmulu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmuluInstruction;
+using CloseToHSLVwsub = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubInstruction;
+using CloseToHSLVwsubu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubuInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -54,13 +54,13 @@ public sealed class VectorWidenNarrowConvertFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVwadd), "VWADD", false, "signed widening add")]
-    [InlineData(typeof(CloseToRtlVwaddu), "VWADDU", false, "unsigned widening add")]
-    [InlineData(typeof(CloseToRtlVwsub), "VWSUB", false, "signed widening subtract")]
-    [InlineData(typeof(CloseToRtlVwsubu), "VWSUBU", false, "unsigned widening subtract")]
-    [InlineData(typeof(CloseToRtlVwmul), "VWMUL", false, "signed widening multiply")]
-    [InlineData(typeof(CloseToRtlVwmulu), "VWMULU", false, "unsigned widening multiply")]
-    [InlineData(typeof(CloseToRtlVwmacc), "VWMACC", true, "widening multiply-accumulate")]
+    [InlineData(typeof(CloseToHSLVwadd), "VWADD", false, "signed widening add")]
+    [InlineData(typeof(CloseToHSLVwaddu), "VWADDU", false, "unsigned widening add")]
+    [InlineData(typeof(CloseToHSLVwsub), "VWSUB", false, "signed widening subtract")]
+    [InlineData(typeof(CloseToHSLVwsubu), "VWSUBU", false, "unsigned widening subtract")]
+    [InlineData(typeof(CloseToHSLVwmul), "VWMUL", false, "signed widening multiply")]
+    [InlineData(typeof(CloseToHSLVwmulu), "VWMULU", false, "unsigned widening multiply")]
+    [InlineData(typeof(CloseToHSLVwmacc), "VWMACC", true, "widening multiply-accumulate")]
     public void WideningRows_RecordPhase06ANegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -89,8 +89,8 @@ public sealed class VectorWidenNarrowConvertFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVnsrl), "VNSRL", "logical shift")]
-    [InlineData(typeof(CloseToRtlVnsra), "VNSRA", "arithmetic shift")]
+    [InlineData(typeof(CloseToHSLVnsrl), "VNSRL", "logical shift")]
+    [InlineData(typeof(CloseToHSLVnsra), "VNSRA", "arithmetic shift")]
     public void NarrowingRows_RecordPhase06BNegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -114,7 +114,7 @@ public sealed class VectorWidenNarrowConvertFailClosedTests
     [Fact]
     public void Vsext_RecordsPhase06CSignExtensionGateAndDoesNotInheritVzext()
     {
-        Type templateType = typeof(CloseToRtlVsext);
+        Type templateType = typeof(CloseToHSLVsext);
 
         Assert.Equal("VSEXT", GetConstant<string>(templateType, "Mnemonic"));
         AssertCommonFailClosedMarkers(templateType);
@@ -128,9 +128,9 @@ public sealed class VectorWidenNarrowConvertFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVcvtI), "VCVT.I", "signed integer")]
-    [InlineData(typeof(CloseToRtlVcvtU), "VCVT.U", "unsigned integer")]
-    [InlineData(typeof(CloseToRtlVcvtF), "VCVT.F", "floating-point")]
+    [InlineData(typeof(CloseToHSLVcvtI), "VCVT.I", "signed integer")]
+    [InlineData(typeof(CloseToHSLVcvtU), "VCVT.U", "unsigned integer")]
+    [InlineData(typeof(CloseToHSLVcvtF), "VCVT.F", "floating-point")]
     public void ConversionRows_RecordPhase06CConversionPolicyGate(
         Type templateType,
         string mnemonic,

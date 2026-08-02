@@ -9,15 +9,9 @@ namespace HybridCPU_ISE.Tests;
 public sealed class PhaseAuditMainMemoryAtomicMemoryUnitBindingTests
 {
     [Fact]
-    public void ParameterlessCtor_WhenExplicitBindingIsMissing_ThrowsTypedFault()
+    public void ParameterlessCtor_IsNoLongerPublished()
     {
-#pragma warning disable CS0618
-        MainMemoryBindingUnavailableException ex = Assert.Throws<MainMemoryBindingUnavailableException>(
-            () => new MainMemoryAtomicMemoryUnit());
-#pragma warning restore CS0618
-
-        Assert.Equal(nameof(MainMemoryAtomicMemoryUnit), ex.BindingSurface);
-        Assert.Contains("parameterless construction", ex.Message, StringComparison.Ordinal);
+        Assert.Null(typeof(MainMemoryAtomicMemoryUnit).GetConstructor(Type.EmptyTypes));
     }
 
     [Fact]

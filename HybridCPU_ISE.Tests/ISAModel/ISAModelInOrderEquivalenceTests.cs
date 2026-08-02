@@ -166,10 +166,7 @@ namespace HybridCPU_ISE.Tests
             // Primary thread exceptions match in-order baseline
 
             // Arrange: Initialize core
-            if (Processor.CPU_Cores == null || Processor.CPU_Cores.Length == 0)
-            {
-                Processor.CPU_Cores = new Processor.CPU_Core[1024];
-            }
+            Processor.EnsureCoreTableForTesting(4);
             Processor.CPU_Cores[0].ExceptionStatus.Reset();
 
             // Simulate exception
@@ -186,10 +183,7 @@ namespace HybridCPU_ISE.Tests
             // Background thread exceptions don't affect primary thread
 
             // Arrange
-            if (Processor.CPU_Cores == null || Processor.CPU_Cores.Length == 0)
-            {
-                Processor.CPU_Cores = new Processor.CPU_Core[1024];
-            }
+            Processor.EnsureCoreTableForTesting(4);
             Processor.CPU_Cores[0].ExceptionStatus.Reset();
 
             var scheduler = new MicroOpScheduler();
@@ -214,10 +208,7 @@ namespace HybridCPU_ISE.Tests
             // Exception model maintains precise state
 
             // Arrange
-            if (Processor.CPU_Cores == null || Processor.CPU_Cores.Length == 0)
-            {
-                Processor.CPU_Cores = new Processor.CPU_Core[1024];
-            }
+            Processor.EnsureCoreTableForTesting(4);
             Processor.CPU_Cores[0].ExceptionStatus.Reset();
 
             // Multiple exception types
@@ -447,10 +438,7 @@ namespace HybridCPU_ISE.Tests
             // FSP and baseline have identical exception behavior
 
             // Arrange
-            if (Processor.CPU_Cores == null || Processor.CPU_Cores.Length == 0)
-            {
-                Processor.CPU_Cores = new Processor.CPU_Core[1024];
-            }
+            Processor.EnsureCoreTableForTesting(4);
 
             // Baseline exception
             Processor.CPU_Cores[0].ExceptionStatus.Reset();

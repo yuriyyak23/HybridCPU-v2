@@ -66,8 +66,8 @@ public sealed class VmxVmcsWriteCompatibilityControlPolicyTests
         Assert.Contains("read-only control view", reason);
 
         string source = ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Capabilities/CompatibilityControls/CompatibilityControlDescriptor.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
+            "CloseToHSL/Core/Runtime/Capabilities/CompatibilityControls/CompatibilityControlDescriptor.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
 
         Assert.Contains("CompatibilityControlValueProjectionDenied", source);
         Assert.Contains("KeepsControlValuesUnprojected", source);
@@ -121,10 +121,10 @@ public sealed class VmxVmcsWriteCompatibilityControlPolicyTests
     public void VmcsWritePolicySource_DoesNotIntroduceMutableVmcsStoreOrRuntimeManager()
     {
         string source = ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldAliasProjection.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Decode/VmxCompatDecodeBoundary.cs",
-            "CloseToRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldProjectionSchema.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/VmcsFieldAliasProjection.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Decode/VmxCompatDecodeBoundary.cs",
+            "CloseToHSL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
 
         Assert.Contains("CanWrite(VmcsFieldProjectionSchemaEntry entry) => false", source);
         Assert.Contains("VmcsFieldAliasDecision.WriteDenied", source);

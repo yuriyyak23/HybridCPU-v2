@@ -71,11 +71,42 @@ public sealed class SingleLaneExecuteFaultTailTests
         public override string GetDescription() => "Synthetic single-lane non-fault failure carrier";
     }
 
+    private sealed class ThrowingExistingExecutionFaultMicroOp : ThrowingSingleLaneMicroOp
+    {
+        public ThrowingExistingExecutionFaultMicroOp()
+            : base((uint)InstructionsEnum.ADD)
+        {
+        }
+
+        public override bool Execute(ref Processor.CPU_Core core)
+        {
+            throw ExecutionFaultContract.CreateWrappedException(
+                ExecutionFaultCategory.InvalidInternalOp,
+                "synthetic pre-categorized single-lane fault",
+                new InvalidOperationException("synthetic categorized inner failure"));
+        }
+
+        public override string GetDescription() => "Synthetic pre-categorized single-lane failure carrier";
+    }
+
+    private sealed class RetryWithoutMutationMicroOp : ThrowingSingleLaneMicroOp
+    {
+        public RetryWithoutMutationMicroOp()
+            : base((uint)InstructionsEnum.ADD)
+        {
+        }
+
+        public override bool Execute(ref Processor.CPU_Core core) => false;
+
+        public override string GetDescription() => "Synthetic single-lane legacy retry carrier";
+    }
+
     [Fact]
     public void SingleLaneMicroOp_WhenExecuteThrowsPageFault_ThenPropagatesStageAwareFault()
     {
         var core = new Processor.CPU_Core(0);
         core.InitializePipeline();
+        ulong retiredBefore = core.GetPipelineControl().InstructionsRetired;
 
         PageFaultException ex = Assert.Throws<PageFaultException>(
             () => core.TestRunExecuteStageWithDecodedInstruction(
@@ -88,6 +119,9 @@ public sealed class SingleLaneExecuteFaultTailTests
         Assert.Equal(0xCAFEUL, ex.FaultAddress);
         Assert.False(ex.IsWrite);
         Assert.False(core.GetExecuteStage().Valid);
+        Assert.False(core.TestGetExecuteForwardingPath().Valid);
+        Assert.Equal(retiredBefore, core.GetPipelineControl().InstructionsRetired);
+        Assert.Equal(0UL, core.TestGetReferenceRawFallbackCount());
     }
 
     [Fact]
@@ -95,6 +129,7 @@ public sealed class SingleLaneExecuteFaultTailTests
     {
         var core = new Processor.CPU_Core(0);
         core.InitializePipeline();
+        ulong retiredBefore = core.GetPipelineControl().InstructionsRetired;
 
         PageFaultException ex = Assert.Throws<PageFaultException>(
             () => core.TestRunExecuteStageWithDecodedInstruction(
@@ -108,6 +143,9 @@ public sealed class SingleLaneExecuteFaultTailTests
         Assert.True(ex.IsWrite);
         Assert.IsType<MemoryAlignmentException>(ex.InnerException);
         Assert.False(core.GetExecuteStage().Valid);
+        Assert.False(core.TestGetExecuteForwardingPath().Valid);
+        Assert.Equal(retiredBefore, core.GetPipelineControl().InstructionsRetired);
+        Assert.Equal(0UL, core.TestGetReferenceRawFallbackCount());
     }
 
     [Fact]
@@ -149,6 +187,48 @@ public sealed class SingleLaneExecuteFaultTailTests
         Assert.False(executeStage.Valid);
         Assert.False(forwardEx.Valid);
         Assert.Equal(0UL, core.TestGetReferenceRawFallbackCount());
+    }
+
+    [Fact]
+    public void SingleLaneMicroOp_WhenExecuteThrowsExistingExecutionFault_ThenTypedFatalAdapterPreservesCategoryAndCleanup()
+    {
+        var core = new Processor.CPU_Core(0);
+        core.InitializePipeline();
+
+        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+            () => core.TestRunExecuteStageWithDecodedInstruction(
+                CreateScalarInstruction(InstructionsEnum.ADD, rd: 8),
+                new ThrowingExistingExecutionFaultMicroOp(),
+                writesRegister: true,
+                reg1Id: 8,
+                pc: 0x8510UL));
+
+        Assert.Equal(ExecutionFaultCategory.InvalidInternalOp, ExecutionFaultContract.GetCategory(ex));
+        Assert.IsType<InvalidOperationException>(ex.InnerException);
+        Assert.False(core.GetExecuteStage().Valid);
+        Assert.False(core.TestGetExecuteForwardingPath().Valid);
+        Assert.Equal(0UL, core.TestGetReferenceRawFallbackCount());
+    }
+
+    [Fact]
+    public void SingleLaneMicroOp_WhenExecuteReturnsFalse_ThenLegacyNotReadyContourRemainsUnclassifiedAndUnchanged()
+    {
+        var core = new Processor.CPU_Core(0);
+        core.InitializePipeline();
+        ulong retiredBefore = core.GetPipelineControl().InstructionsRetired;
+
+        core.TestRunExecuteStageWithDecodedInstruction(
+            CreateScalarInstruction(InstructionsEnum.ADD, rd: 9),
+            new RetryWithoutMutationMicroOp(),
+            writesRegister: true,
+            reg1Id: 9,
+            pc: 0x8520UL);
+
+        Processor.CPU_Core.ExecuteStage executeStage = core.GetExecuteStage();
+        Assert.True(executeStage.Valid);
+        Assert.False(executeStage.ResultReady);
+        Assert.Equal(retiredBefore, core.GetPipelineControl().InstructionsRetired);
+        Assert.False(core.TestGetExecuteForwardingPath().Valid);
     }
 
     private static VLIW_Instruction CreateScalarInstruction(

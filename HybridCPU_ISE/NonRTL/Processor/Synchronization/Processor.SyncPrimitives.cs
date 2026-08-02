@@ -194,14 +194,12 @@ namespace YAKSys_Hybrid_CPU
         /// <summary>
         /// Per-core synchronization state
         /// </summary>
-        public partial struct CPU_Core
+        public sealed partial class CPU_Core
         {
             /// <summary>
             /// Core-local synchronization counter
             /// Used for tracking synchronization events
             /// </summary>
-            private ulong syncCounter;
-
             /// <summary>
             /// Increment synchronization counter atomically
             /// </summary>

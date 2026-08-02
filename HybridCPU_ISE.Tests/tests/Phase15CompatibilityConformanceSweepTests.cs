@@ -7,7 +7,7 @@ using HybridCPU_ISE.Arch;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.CompatibilityConformance;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.CompatibilityConformance;
 using YAKSys_Hybrid_CPU.Core;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 

@@ -6,8 +6,8 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlVmerge = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmergeInstruction;
-using CloseToRtlVselect = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VselectInstruction;
+using CloseToHSLVmerge = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmergeInstruction;
+using CloseToHSLVselect = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VselectInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -39,9 +39,9 @@ public sealed class VectorPredicateSelectFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVmerge), "VMERGE")]
-    [InlineData(typeof(CloseToRtlVselect), "VSELECT")]
-    public void VmergeVselect_CloseToRtlMarkers_RecordPhase05ANegativeDecisionGate(
+    [InlineData(typeof(CloseToHSLVmerge), "VMERGE")]
+    [InlineData(typeof(CloseToHSLVselect), "VSELECT")]
+    public void VmergeVselect_CloseToHSLMarkers_RecordPhase05ANegativeDecisionGate(
         Type templateType,
         string mnemonic)
     {

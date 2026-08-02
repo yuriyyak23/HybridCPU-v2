@@ -7,16 +7,16 @@ using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlMtileLoad = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileLoadInstruction;
-using CloseToRtlMtileMacc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileMaccInstruction;
-using CloseToRtlMtileStore = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileStoreInstruction;
-using CloseToRtlMtranspose = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtransposeInstruction;
-using CloseToRtlVdotAccum = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotAccumInstruction;
-using CloseToRtlVdotBlockscale = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotBlockscaleInstruction;
-using CloseToRtlVdotWideI16 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI16Instruction;
-using CloseToRtlVdotWideI32 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI32Instruction;
+using CloseToHSLMtileLoad = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileLoadInstruction;
+using CloseToHSLMtileMacc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileMaccInstruction;
+using CloseToHSLMtileStore = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileStoreInstruction;
+using CloseToHSLMtranspose = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtransposeInstruction;
+using CloseToHSLVdotAccum = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotAccumInstruction;
+using CloseToHSLVdotBlockscale = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotBlockscaleInstruction;
+using CloseToHSLVdotWideI16 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI16Instruction;
+using CloseToHSLVdotWideI32 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI32Instruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -85,10 +85,10 @@ public sealed class DotMatrixDeferralBoundaryTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVdotBlockscale), "VDOT.BLOCKSCALE", true, false, false)]
-    [InlineData(typeof(CloseToRtlVdotAccum), "VDOT.ACCUM", false, true, false)]
-    [InlineData(typeof(CloseToRtlVdotWideI16), "VDOT.WIDE.I16", false, false, true)]
-    [InlineData(typeof(CloseToRtlVdotWideI32), "VDOT.WIDE.I32", false, false, true)]
+    [InlineData(typeof(CloseToHSLVdotBlockscale), "VDOT.BLOCKSCALE", true, false, false)]
+    [InlineData(typeof(CloseToHSLVdotAccum), "VDOT.ACCUM", false, true, false)]
+    [InlineData(typeof(CloseToHSLVdotWideI16), "VDOT.WIDE.I16", false, false, true)]
+    [InlineData(typeof(CloseToHSLVdotWideI32), "VDOT.WIDE.I32", false, false, true)]
     public void AdvancedDotLeafMarkers_RecordPhase09NegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -217,10 +217,10 @@ public sealed class DotMatrixDeferralBoundaryTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlMtileLoad), "MTILE_LOAD", true, false, false, true)]
-    [InlineData(typeof(CloseToRtlMtileStore), "MTILE_STORE", true, false, false, false)]
-    [InlineData(typeof(CloseToRtlMtileMacc), "MTILE_MACC", false, true, false, true)]
-    [InlineData(typeof(CloseToRtlMtranspose), "MTRANSPOSE", false, false, true, true)]
+    [InlineData(typeof(CloseToHSLMtileLoad), "MTILE_LOAD", true, false, false, true)]
+    [InlineData(typeof(CloseToHSLMtileStore), "MTILE_STORE", true, false, false, false)]
+    [InlineData(typeof(CloseToHSLMtileMacc), "MTILE_MACC", false, true, false, true)]
+    [InlineData(typeof(CloseToHSLMtranspose), "MTRANSPOSE", false, false, true, true)]
     public void MatrixTileLeafMarkers_RecordPhase14ExecutableHandoffDecision(
         Type templateType,
         string mnemonic,

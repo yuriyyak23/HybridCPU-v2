@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Vmcs.V2;
 using YAKSys_Hybrid_CPU.Memory;
@@ -179,20 +179,20 @@ public sealed class VmxMemoryIoLaneStreamBoundaryHardeningTests
     public void Source_DoesNotWireLaneStreamHelpersIntoVmxBackendPublicationOrSecureCompute()
     {
         string laneStreamSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs",
-            "CloseToRTL/Core/Execution/DmaStreamCompute/VmxDmaDescriptorValidator.cs",
-            "CloseToRTL/Core/Runtime/Domains/Admission/Lane6/Lane6DomainRuntime.cs",
-            "CloseToRTL/Core/Runtime/Domains/Admission/Lane7/Lane7DomainRuntime.cs",
-            "CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs",
-            "CloseToRTL/Core/Runtime/Lanes/Lane7/Completion/Lane7CompletionPolicy.cs");
+            "CloseToHSL/Core/Pipeline/MicroOps/Lane6DmaStream/DmaStreamComputeMicroOp.cs",
+            "CloseToHSL/Core/Execution/DmaStreamCompute/VmxDmaDescriptorValidator.cs",
+            "CloseToHSL/Core/Runtime/Domains/Admission/Lane6/Lane6DomainRuntime.cs",
+            "CloseToHSL/Core/Runtime/Domains/Admission/Lane7/Lane7DomainRuntime.cs",
+            "CloseToHSL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs",
+            "CloseToHSL/Core/Runtime/Lanes/Lane7/Completion/Lane7CompletionPolicy.cs");
         string vmxFrontendSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
-            "CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
+            "CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
         string secureComputeProjectionSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmxCapsProjectionFence.cs",
-            "CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmcsProjectionFence.cs");
+            "CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmxCapsProjectionFence.cs",
+            "CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/SecureComputeVmcsProjectionFence.cs");
 
         Assert.Contains("Guest Lane6 compatibility execution is fail-closed", laneStreamSource);
         Assert.Contains("Guest Lane7 compatibility execution is fail-closed", laneStreamSource);
@@ -230,12 +230,12 @@ public sealed class VmxMemoryIoLaneStreamBoundaryHardeningTests
     public void Source_KeepsMutableVmcsStoresAndCompatibilityExecutionManagersAbsent()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Adapters/IO/IommuVmxCompatibilityAliases.cs",
-            "CloseToRTL/Core/Runtime/IO/Iotlb/IotlbInvalidationService.cs",
-            "CloseToRTL/Core/Runtime/IO/Dma/DmaAuthorityService.cs",
-            "CloseToRTL/Core/Runtime/Nested/MemoryComposition/NestedMemoryDomainComposer.cs",
-            "CloseToRTL/Core/Runtime/Domains/Admission/Memory/MemoryDomainRuntime.cs",
-            "CloseToRTL/Core/Runtime/Domains/Admission/IO/IoDomainRuntime.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Adapters/IO/IommuVmxCompatibilityAliases.cs",
+            "CloseToHSL/Core/Runtime/IO/Iotlb/IotlbInvalidationService.cs",
+            "CloseToHSL/Core/Runtime/IO/Dma/DmaAuthorityService.cs",
+            "CloseToHSL/Core/Runtime/Nested/MemoryComposition/NestedMemoryDomainComposer.cs",
+            "CloseToHSL/Core/Runtime/Domains/Admission/Memory/MemoryDomainRuntime.cs",
+            "CloseToHSL/Core/Runtime/Domains/Admission/IO/IoDomainRuntime.cs");
 
         Assert.Contains("VmxCompatibilityIoAliasesAreReadOnlyDenied", source);
         Assert.Contains("RuntimeAuthorityMissing", source);
@@ -256,7 +256,7 @@ public sealed class VmxMemoryIoLaneStreamBoundaryHardeningTests
     {
         string source = ReadRepositorySources(
             "HybridCPU_Compiler/Core",
-            "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx");
+            "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions/NonVmx");
 
         foreach (string forbidden in new[]
                  {

@@ -8,9 +8,9 @@ using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Execution;
 using YAKSys_Hybrid_CPU.Memory;
 using HybridCPU_ISE.Arch;
-using HybridCPU_ISE.CloseToRTL.Memory.Banks;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
-using HybridCPU_ISE.CloseToRTL.Memory.DMA;
+using HybridCPU_ISE.CloseToHSL.Memory.Banks;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.DMA;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -183,7 +183,7 @@ public sealed class DeferredMemoryBoundaryProofTests
     }
 
     [Fact]
-    public void StoreMicroOp_WhenAsyncWriteCompletesUnsuccessfully_ThenFailsClosedBeforeMemoryVisibleSuccess()
+    public void StoreMicroOp_WhenAsyncReadinessCompletes_ThenDoesNotPublishMemoryBeforeRetire()
     {
         InitializeCpuMainMemoryIdentityMap(0x1000);
         InitializeMemorySubsystem();
@@ -198,14 +198,14 @@ public sealed class DeferredMemoryBoundaryProofTests
             BaseRegID = 1
         };
         store.InitializeMetadata();
+        ulong memoryMutationEpochBefore = Processor.MainMemory.ReplayRelevantMutationEpoch;
 
         Assert.False(store.Execute(ref core));
         AdvanceAllMemoryWork();
 
-        PageFaultException ex = Assert.Throws<PageFaultException>(() => store.Execute(ref core));
-        Assert.NotNull(ex.InnerException);
-        Assert.Contains("StoreMicroOp.Execute()", ex.InnerException!.Message, StringComparison.Ordinal);
-        Assert.Contains("did not materialize successfully", ex.InnerException.Message, StringComparison.Ordinal);
+        Assert.True(store.Execute(ref core));
+        Assert.Equal(memoryMutationEpochBefore, Processor.MainMemory.ReplayRelevantMutationEpoch);
+        Assert.Equal(0, Processor.Memory!.CycleController.OutstandingSingleLaneScalarStores);
     }
 
     [Fact]
@@ -231,9 +231,10 @@ public sealed class DeferredMemoryBoundaryProofTests
         Assert.False(microOp.Execute(ref core));
         AdvanceAllMemoryWork();
 
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => microOp.Execute(ref core));
-        Assert.Contains("LoadSegmentMicroOp.Execute()", ex.Message, StringComparison.Ordinal);
-        Assert.Contains("did not materialize successfully", ex.Message, StringComparison.Ordinal);
+        PageFaultException ex = Assert.Throws<PageFaultException>(() => microOp.Execute(ref core));
+        Assert.Equal(0x2000UL, ex.FaultAddress);
+        Assert.False(ex.IsWrite);
+        Assert.Contains("failed completed controller read", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -260,9 +261,10 @@ public sealed class DeferredMemoryBoundaryProofTests
         Assert.False(microOp.Execute(ref core));
         AdvanceAllMemoryWork();
 
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => microOp.Execute(ref core));
-        Assert.Contains("StoreSegmentMicroOp.Execute()", ex.Message, StringComparison.Ordinal);
-        Assert.Contains("did not materialize successfully", ex.Message, StringComparison.Ordinal);
+        PageFaultException ex = Assert.Throws<PageFaultException>(() => microOp.Execute(ref core));
+        Assert.Equal(0x2000UL, ex.FaultAddress);
+        Assert.True(ex.IsWrite);
+        Assert.Contains("failed completed write token", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -330,7 +332,7 @@ public sealed class DeferredMemoryBoundaryProofTests
         var core = new Processor.CPU_Core(0);
         core.WriteCommittedArch(vtId, destinationRegister, originalDestinationValue);
 
-        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
+        PageFaultException ex = Assert.Throws<PageFaultException>(
             () => core.TestPrepareExplicitPacketLoadForWriteBack(
                 laneIndex: 4,
                 pc: 0x2840,
@@ -339,8 +341,9 @@ public sealed class DeferredMemoryBoundaryProofTests
                 accessSize: 4,
                 vtId));
 
-        Assert.Contains("explicit-packet memory lane", ex.Message, StringComparison.Ordinal);
-        Assert.Contains("did not materialize successfully", ex.Message, StringComparison.Ordinal);
+        Assert.Equal(0x2000UL, ex.FaultAddress);
+        Assert.False(ex.IsWrite);
+        Assert.Contains("failed completed controller request", ex.Message, StringComparison.Ordinal);
         Assert.Equal(originalDestinationValue, core.ReadArch(vtId, destinationRegister));
     }
 

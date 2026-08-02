@@ -209,9 +209,9 @@ public sealed class VmxExecutionOwnedVmReadValueProjectionTests
     public void VmReadProjectionPath_ExecutionOwnedSourceUsesNeutralDescriptorAndNoVmcsStoreFallback()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Domains/Descriptors/ExecutionDomain/ExecutionDomainDescriptor.cs",
-            "CloseToRTL/Core/Runtime/Domains/Descriptors/ExecutionDomain/ExecutionDomainReadOnlyStateView.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
+            "CloseToHSL/Core/Runtime/Domains/Descriptors/ExecutionDomain/ExecutionDomainDescriptor.cs",
+            "CloseToHSL/Core/Runtime/Domains/Descriptors/ExecutionDomain/ExecutionDomainReadOnlyStateView.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
 
         Assert.Contains("VmcsFieldProjectionOwner.ExecutionDomainDescriptor", source);
         Assert.Contains("ExecutionDomainReadOnlyStateView", source);
@@ -241,7 +241,7 @@ public sealed class VmxExecutionOwnedVmReadValueProjectionTests
         Assert.DoesNotContain("VmxExecutionUnit", source);
 
         string projectionSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
         Assert.Contains("CurrentPrivilegedExecutionStateEpoch", projectionSource);
         Assert.DoesNotContain("request.Execution.ReadOnlyState.StateEpoch", projectionSource);
     }

@@ -10,9 +10,9 @@ Authoritative current evidence lives in:
 
 - `Documentation/validation-baseline.md`
 - `Documentation/evidence-matrix.md`
-- `Documentation/WhiteBook/13. validation-status-and-test-evidence.md`
+- `Documentation/ArchitectureAuthorityRefactor/Evidence/RF00/validation-status-and-test-evidence.md`
 - `HybridCPU_ISE.Tests/EVALUATION_TESTS_README.md`
-- `build/recount-validation-evidence.ps1`
+- `eng/validate.ps1 -Stage Documentation`
 
 ## Current Interpretation
 

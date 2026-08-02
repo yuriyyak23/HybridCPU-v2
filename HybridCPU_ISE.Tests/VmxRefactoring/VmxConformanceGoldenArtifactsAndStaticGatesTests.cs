@@ -74,7 +74,7 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
         string generatedParityRoot = Path.Combine(
             repositoryRoot,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Virtualization",
             "Conformance",
@@ -112,10 +112,10 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
     public void ConsolidatedPositiveShortcutSourceScan_HasNoRuntimeAuthorityMatches()
     {
         string productionSource = ReadRepositorySources(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers",
-            "HybridCPU_ISE/CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers",
+            "HybridCPU_ISE/CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
 
         foreach (string forbidden in new[]
                  {
@@ -135,9 +135,9 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
         }
 
         string vmcsWriteSource = ReadRepositorySources(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Decode",
-            "HybridCPU_ISE/CloseToRTL/Core/System/Vmcs/V2");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Decode",
+            "HybridCPU_ISE/CloseToHSL/Core/System/Vmcs/V2");
 
         foreach (string forbidden in new[]
                  {
@@ -158,7 +158,7 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
         string compilerAndNonVmxSource = ReadRepositorySources(
             "HybridCPU_Compiler/API",
             "HybridCPU_Compiler/Core",
-            "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx");
+            "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions/NonVmx");
 
         foreach (string forbidden in new[]
                  {

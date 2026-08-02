@@ -13,9 +13,9 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlSextB = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.Extension.SextBInstruction;
-using CloseToRtlSextH = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.Extension.SextHInstruction;
-using CloseToRtlZextH = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.Extension.ZextHInstruction;
+using CloseToHSLSextB = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.Extension.SextBInstruction;
+using CloseToHSLSextH = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.Extension.SextHInstruction;
+using CloseToHSLZextH = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.Extension.ZextHInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -52,7 +52,7 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
 
     [Theory]
     [MemberData(nameof(ExtensionOpcodeCases))]
-    public void ScalarExtension_OpcodeStatusAndCloseToRtlObjects_AreRuntimeClosed(
+    public void ScalarExtension_OpcodeStatusAndCloseToHSLObjects_AreRuntimeClosed(
         InstructionsEnum opcode,
         string mnemonic,
         int expectedOpcode,
@@ -84,7 +84,7 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalDisabledOpcodes);
 
-        AssertCloseToRtlObject(opcode, mnemonic);
+        AssertCloseToHSLObject(opcode, mnemonic);
     }
 
     [Theory]
@@ -208,7 +208,7 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
             rd: rd,
             rs1: rs1,
             rs2: 3);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0x6B20, 71));
 
         VLIW_Instruction immediateAlias = CreateScalarInstruction(
@@ -216,13 +216,13 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
             rd: rd,
             rs1: rs1,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x6B40, 72));
     }
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void ScalarExtension_ScalarAluAndCloseToRtlObjects_DefineLowFieldExtensionEdges(
+    public void ScalarExtension_ScalarAluAndCloseToHSLObjects_DefineLowFieldExtensionEdges(
         InstructionsEnum opcode,
         ulong source,
         ulong expected)
@@ -234,7 +234,7 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
             immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, ExecuteCloseToRtlObject(opcode, source));
+        Assert.Equal(expected, ExecuteCloseToHSLObject(opcode, source));
     }
 
     [Theory]
@@ -465,45 +465,45 @@ public sealed class NonVmxIteration03BScalarExtensionExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar extension opcode.")
         };
 
-    private static void AssertCloseToRtlObject(InstructionsEnum opcode, string mnemonic)
+    private static void AssertCloseToHSLObject(InstructionsEnum opcode, string mnemonic)
     {
         switch (opcode)
         {
             case InstructionsEnum.SEXT_B:
-                Assert.Equal(CloseToRtlSextB.Mnemonic, mnemonic);
-                Assert.Equal(8, CloseToRtlSextB.SourceBits);
-                Assert.Equal(64, CloseToRtlSextB.XLen);
-                Assert.Equal((ushort)opcode, CloseToRtlSextB.Opcode);
-                Assert.True(CloseToRtlSextB.WritesScalarRegister);
-                Assert.False(CloseToRtlSextB.HasSideEffects);
+                Assert.Equal(CloseToHSLSextB.Mnemonic, mnemonic);
+                Assert.Equal(8, CloseToHSLSextB.SourceBits);
+                Assert.Equal(64, CloseToHSLSextB.XLen);
+                Assert.Equal((ushort)opcode, CloseToHSLSextB.Opcode);
+                Assert.True(CloseToHSLSextB.WritesScalarRegister);
+                Assert.False(CloseToHSLSextB.HasSideEffects);
                 break;
             case InstructionsEnum.SEXT_H:
-                Assert.Equal(CloseToRtlSextH.Mnemonic, mnemonic);
-                Assert.Equal(16, CloseToRtlSextH.SourceBits);
-                Assert.Equal(64, CloseToRtlSextH.XLen);
-                Assert.Equal((ushort)opcode, CloseToRtlSextH.Opcode);
-                Assert.True(CloseToRtlSextH.WritesScalarRegister);
-                Assert.False(CloseToRtlSextH.HasSideEffects);
+                Assert.Equal(CloseToHSLSextH.Mnemonic, mnemonic);
+                Assert.Equal(16, CloseToHSLSextH.SourceBits);
+                Assert.Equal(64, CloseToHSLSextH.XLen);
+                Assert.Equal((ushort)opcode, CloseToHSLSextH.Opcode);
+                Assert.True(CloseToHSLSextH.WritesScalarRegister);
+                Assert.False(CloseToHSLSextH.HasSideEffects);
                 break;
             case InstructionsEnum.ZEXT_H:
-                Assert.Equal(CloseToRtlZextH.Mnemonic, mnemonic);
-                Assert.Equal(16, CloseToRtlZextH.SourceBits);
-                Assert.Equal(64, CloseToRtlZextH.XLen);
-                Assert.Equal((ushort)opcode, CloseToRtlZextH.Opcode);
-                Assert.True(CloseToRtlZextH.WritesScalarRegister);
-                Assert.False(CloseToRtlZextH.HasSideEffects);
+                Assert.Equal(CloseToHSLZextH.Mnemonic, mnemonic);
+                Assert.Equal(16, CloseToHSLZextH.SourceBits);
+                Assert.Equal(64, CloseToHSLZextH.XLen);
+                Assert.Equal((ushort)opcode, CloseToHSLZextH.Opcode);
+                Assert.True(CloseToHSLZextH.WritesScalarRegister);
+                Assert.False(CloseToHSLZextH.HasSideEffects);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar extension opcode.");
         }
     }
 
-    private static ulong ExecuteCloseToRtlObject(InstructionsEnum opcode, ulong source) =>
+    private static ulong ExecuteCloseToHSLObject(InstructionsEnum opcode, ulong source) =>
         opcode switch
         {
-            InstructionsEnum.SEXT_B => CloseToRtlSextB.Execute(source),
-            InstructionsEnum.SEXT_H => CloseToRtlSextH.Execute(source),
-            InstructionsEnum.ZEXT_H => CloseToRtlZextH.Execute(source),
+            InstructionsEnum.SEXT_B => CloseToHSLSextB.Execute(source),
+            InstructionsEnum.SEXT_H => CloseToHSLSextH.Execute(source),
+            InstructionsEnum.ZEXT_H => CloseToHSLZextH.Execute(source),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar extension opcode.")
         };
 

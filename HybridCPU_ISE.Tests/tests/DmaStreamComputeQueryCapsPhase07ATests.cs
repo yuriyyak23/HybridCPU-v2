@@ -59,7 +59,8 @@ public sealed class DmaStreamComputeQueryCapsPhase07ATests
             0);
         InvalidOpcodeException sourceFault = Assert.Throws<InvalidOpcodeException>(
             () => decoder.Decode(in sourceRegister, slotIndex: 6));
-        Assert.Contains("x0, x0", sourceFault.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("DSC_QUERY_CAPS", sourceFault.Message, StringComparison.Ordinal);
+        Assert.Contains("violates", sourceFault.Message, StringComparison.OrdinalIgnoreCase);
 
         MicroOp registryMicroOp = InstructionRegistry.CreateMicroOp(
             (uint)InstructionsEnum.DSC_QUERY_CAPS,
@@ -179,7 +180,9 @@ public sealed class DmaStreamComputeQueryCapsPhase07ATests
         wrongSlot[5] = CreateQueryCapsInstruction(QueryRegister);
         InvalidOpcodeException laneFault = Assert.Throws<InvalidOpcodeException>(
             () => decoder.DecodeInstructionBundle(wrongSlot, bundleAddress: 0x7A80));
-        Assert.Contains("lane6", laneFault.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("DSC_QUERY_CAPS", laneFault.Message, StringComparison.Ordinal);
+        Assert.Contains("slot 5", laneFault.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("illegal", laneFault.Message, StringComparison.OrdinalIgnoreCase);
 
         foreach (string mnemonic in new[] { "DSC_QUERY_BACKEND", "DSC_QUERY_SHAPE" })
         {
@@ -209,7 +212,7 @@ public sealed class DmaStreamComputeQueryCapsPhase07ATests
         string runtimeText = File.ReadAllText(Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Execution",
             "DmaStreamCompute",

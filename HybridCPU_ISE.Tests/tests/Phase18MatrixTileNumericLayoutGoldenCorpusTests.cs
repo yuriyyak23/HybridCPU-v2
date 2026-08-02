@@ -8,7 +8,7 @@ using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
@@ -19,7 +19,7 @@ namespace HybridCPU_ISE.Tests;
 public sealed class MatrixTileNumericLayoutGoldenCorpusTests
 {
     private const string CorpusRelativePath =
-        "Documentation/Stream WhiteBook/03_MatrixTile/Golden/matrix_tile_numeric_layout_golden_v1.json";
+        "Documentation/Documentation/Stream WhiteBook/03_MatrixTile/Golden/matrix_tile_numeric_layout_golden_v1.json";
 
     [Fact]
     public void CorpusSchema_IsVersionedRuntimeOwnedAndCompilerIndependent()

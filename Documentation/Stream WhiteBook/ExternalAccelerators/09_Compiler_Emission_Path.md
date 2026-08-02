@@ -26,7 +26,7 @@ Code anchors:
 - `HybridCPU_Compiler/Core/IR/Model/IrSlotMetadata.cs`
 - `HybridCPU_Compiler/Core/IR/Bundling/HybridCpuBundleLowerer.cs`
 - `HybridCPU_ISE/NonRTL/Core/Contracts/CompilerTransport/InstructionSlotMetadata.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 
 ## Compile-time strategy boundary
 

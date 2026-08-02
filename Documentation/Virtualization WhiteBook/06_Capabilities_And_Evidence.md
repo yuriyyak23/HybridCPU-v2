@@ -6,11 +6,11 @@ Capabilities and evidence keep virtualization authority grant-first and visibili
 
 The capability substrate is under:
 
-- `CloseToRTL/Core/Runtime/Capabilities/Descriptors/CapabilityDescriptorSet.cs`
-- `CloseToRTL/Core/Runtime/Capabilities/Grants/CapabilityGrant.cs`
-- `CloseToRTL/Core/Runtime/Capabilities/Negotiation/CapabilityNegotiationService.cs`
-- `CloseToRTL/Core/Runtime/Capabilities/Publication/CapabilityPublicationPolicy.cs`
-- `CloseToRTL/Core/Runtime/Capabilities/CapabilityBoundaryRequirement.cs`
+- `CloseToHSL/Core/Runtime/Capabilities/Descriptors/CapabilityDescriptorSet.cs`
+- `CloseToHSL/Core/Runtime/Capabilities/Grants/CapabilityGrant.cs`
+- `CloseToHSL/Core/Runtime/Capabilities/Negotiation/CapabilityNegotiationService.cs`
+- `CloseToHSL/Core/Runtime/Capabilities/Publication/CapabilityPublicationPolicy.cs`
+- `CloseToHSL/Core/Runtime/Capabilities/CapabilityBoundaryRequirement.cs`
 
 The authority contract is:
 
@@ -24,7 +24,7 @@ hardware support
   -> guest-visible compatibility projection
 ```
 
-VMX capability projections live under `CloseToRTL/Core/Virtualization/Compatibility/Generated/CapabilityProjection`. The generated schema can expose compatibility bits such as VMX instruction capability names, but the bits are aliases over a neutral `CapabilityDescriptorSet`.
+VMX capability projections live under `CloseToHSL/Core/Virtualization/Compatibility/Generated/CapabilityProjection`. The generated schema can expose compatibility bits such as VMX instruction capability names, but the bits are aliases over a neutral `CapabilityDescriptorSet`.
 
 ## Evidence Ownership
 
@@ -32,11 +32,11 @@ Host evidence is not guest ABI. It is not migration payload. It is not VMREAD-vi
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Evidence/**`
-- `CloseToRTL/Core/Runtime/Evidence/HostOwned/HostOwnedEvidenceBoundary.cs`
-- `CloseToRTL/Core/Runtime/Evidence/GuestVisible/GuestVisibleEvidenceProjection.cs`
-- `CloseToRTL/Core/Runtime/Evidence/DebugTrace/DebugTraceExportPolicy.cs`
-- `CloseToRTL/Core/Virtualization/Sideband/EvidenceTransport/EvidenceSidebandEnvelope.cs`
+- `CloseToHSL/Core/Runtime/Evidence/**`
+- `CloseToHSL/Core/Runtime/Evidence/HostOwned/HostOwnedEvidenceBoundary.cs`
+- `CloseToHSL/Core/Runtime/Evidence/GuestVisible/GuestVisibleEvidenceProjection.cs`
+- `CloseToHSL/Core/Runtime/Evidence/DebugTrace/DebugTraceExportPolicy.cs`
+- `CloseToHSL/Core/Virtualization/Sideband/EvidenceTransport/EvidenceSidebandEnvelope.cs`
 
 Evidence policy decides whether a fact is:
 

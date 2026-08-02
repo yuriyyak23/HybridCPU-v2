@@ -133,7 +133,7 @@ public sealed class ScalarBitmanipClzExecutableTests
             rd: rd,
             rs1: rs1,
             rs2: 3);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0x6120, 62));
 
         VLIW_Instruction immediateAlias = CreateScalarInstruction(
@@ -141,7 +141,7 @@ public sealed class ScalarBitmanipClzExecutableTests
             rd: rd,
             rs1: rs1,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x6140, 63));
     }
 

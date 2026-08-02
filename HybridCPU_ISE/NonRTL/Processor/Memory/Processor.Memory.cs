@@ -2,6 +2,7 @@ using HybridCPU_ISE.Arch;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace YAKSys_Hybrid_CPU
 {
@@ -17,8 +18,11 @@ namespace YAKSys_Hybrid_CPU
 
         public class MainMemoryArea : System.IO.Stream
         {
+            private static long _nextReplayAddressSpaceIdentity;
             protected MemoryStream SystemMemory = new MemoryStream();
             private readonly Dictionary<ulong, VliwBundleAnnotations> _vliwBundleAnnotationsByAddress = new();
+            private readonly object _replayMutationEpochGate = new();
+            private ulong _replayRelevantMutationEpoch;
 
             [ThreadStatic]
             protected static bool _isPhysicalAccessContext = false;
@@ -28,7 +32,45 @@ namespace YAKSys_Hybrid_CPU
 
             public MainMemoryArea()
             {
-                // Initialize SystemMemory or other properties if needed
+                long identity = Interlocked.Increment(ref _nextReplayAddressSpaceIdentity);
+                if (identity <= 0)
+                {
+                    throw new InvalidOperationException(
+                        "Main-memory replay address-space identity exhausted its positive monotonic range.");
+                }
+
+                ReplayAddressSpaceIdentity = unchecked((ulong)identity);
+            }
+
+            /// <summary>
+            /// Process-local identity of this exact bound physical-memory instance.
+            /// It is a semantic replay context factor, not an architectural address
+            /// translation theorem or a persisted machine identity.
+            /// </summary>
+            public ulong ReplayAddressSpaceIdentity { get; }
+
+            /// <summary>
+            /// Conservative executable-memory invalidation epoch. Every successful
+            /// physical write advances the epoch because this memory model has no
+            /// authoritative executable-page ownership map.
+            /// </summary>
+            public ulong ReplayRelevantMutationEpoch
+            {
+                get
+                {
+                    lock (_replayMutationEpochGate)
+                    {
+                        return _replayRelevantMutationEpoch;
+                    }
+                }
+            }
+
+            protected void NotifyReplayRelevantMutation()
+            {
+                lock (_replayMutationEpochGate)
+                {
+                    _replayRelevantMutationEpoch = checked(_replayRelevantMutationEpoch + 1UL);
+                }
             }
 
             /// <summary>
@@ -331,6 +373,7 @@ namespace YAKSys_Hybrid_CPU
                     YAKSys_Hybrid_CPU.Core.Memory.MainMemoryAtomicMemoryUnit.NotifyPhysicalWrite(
                         physicalAddress,
                         count);
+                    NotifyReplayRelevantMutation();
                 }
                 else
                 {
@@ -383,6 +426,7 @@ namespace YAKSys_Hybrid_CPU
                     YAKSys_Hybrid_CPU.Core.Memory.MainMemoryAtomicMemoryUnit.NotifyPhysicalWrite(
                         physicalAddress,
                         1);
+                    NotifyReplayRelevantMutation();
                 }
                 else
                 {
@@ -440,6 +484,8 @@ namespace YAKSys_Hybrid_CPU
                 {
                     _vliwBundleAnnotationsByAddress[ioVirtualAddress] = bundleAnnotations;
                 }
+
+                NotifyReplayRelevantMutation();
             }
 
             public virtual bool TryReadVliwBundleAnnotations(
@@ -463,9 +509,15 @@ namespace YAKSys_Hybrid_CPU
 
             public virtual void ClearVliwBundleAnnotations(ulong ioVirtualAddress)
             {
+                bool removed;
                 lock (_vliwBundleAnnotationsByAddress)
                 {
-                    _vliwBundleAnnotationsByAddress.Remove(ioVirtualAddress);
+                    removed = _vliwBundleAnnotationsByAddress.Remove(ioVirtualAddress);
+                }
+
+                if (removed)
+                {
+                    NotifyReplayRelevantMutation();
                 }
             }
 
@@ -544,16 +596,16 @@ namespace YAKSys_Hybrid_CPU
 
             private static void ResetPhysicalSilentSquashTrackingIfNeeded()
             {
-                if (Processor.MainMemory is global::HybridCPU_ISE.CloseToRTL.Memory.Banks.MultiBankMemoryArea)
+                if (Processor.MainMemory is global::HybridCPU_ISE.CloseToHSL.Memory.Banks.MultiBankMemoryArea)
                 {
-                    global::HybridCPU_ISE.CloseToRTL.Memory.Banks.MultiBankMemoryArea.ResetLastAccessSilentSquashFlag();
+                    global::HybridCPU_ISE.CloseToHSL.Memory.Banks.MultiBankMemoryArea.ResetLastAccessSilentSquashFlag();
                 }
             }
 
             private static bool ConsumePhysicalSilentSquashTrackingIfNeeded()
             {
-                return Processor.MainMemory is global::HybridCPU_ISE.CloseToRTL.Memory.Banks.MultiBankMemoryArea &&
-                       global::HybridCPU_ISE.CloseToRTL.Memory.Banks.MultiBankMemoryArea.ConsumeLastAccessSilentSquashFlag();
+                return Processor.MainMemory is global::HybridCPU_ISE.CloseToHSL.Memory.Banks.MultiBankMemoryArea &&
+                       global::HybridCPU_ISE.CloseToHSL.Memory.Banks.MultiBankMemoryArea.ConsumeLastAccessSilentSquashFlag();
             }
 
             public void AllocateMemory(ulong physicalPosition, ulong length)
@@ -694,6 +746,7 @@ namespace YAKSys_Hybrid_CPU
                     YAKSys_Hybrid_CPU.Core.Memory.MainMemoryAtomicMemoryUnit.NotifyPhysicalWrite(
                         physicalAddress,
                         count);
+                    NotifyReplayRelevantMutation();
                 }
                 else
                 {

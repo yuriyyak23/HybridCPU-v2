@@ -227,7 +227,9 @@ public sealed class DmaStreamComputeStatusPhase07Tests
         wrongSlot[5] = CreateStatusInstruction(destinationRegister: 5, tokenRegister: 4);
         InvalidOpcodeException laneFault = Assert.Throws<InvalidOpcodeException>(
             () => decoder.DecodeInstructionBundle(wrongSlot, bundleAddress: 0x7200));
-        Assert.Contains("lane6", laneFault.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("DSC_STATUS", laneFault.Message, StringComparison.Ordinal);
+        Assert.Contains("slot 5", laneFault.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("illegal", laneFault.Message, StringComparison.OrdinalIgnoreCase);
 
         string[] closedQueueControls =
         [

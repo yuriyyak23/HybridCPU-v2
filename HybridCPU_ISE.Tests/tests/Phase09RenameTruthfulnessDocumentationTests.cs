@@ -8,7 +8,7 @@ namespace HybridCPU_ISE.Tests.DocumentationContracts
     public sealed class RenameTruthfulnessDocumentationTests
     {
         [Theory]
-        [InlineData("Documentation\\WhiteBook\\17. current-state-and-modernization-tracks.md")]
+        [InlineData("Documentation\\Documentation\\WhiteBook\\17. current-state-and-modernization-tracks.md")]
         [InlineData("HybridCPU_ISE.Tests\\EVALUATION_TESTS_README.md")]
         [InlineData("HybridCPU_ISE.Tests\\ISA_MODEL_TEST_STATUS.md")]
         public void T9_08g_PrimaryRepositorySummaries_DoNotDescribeLiveImplementationAsRenamingFree(string relativePath)
@@ -20,7 +20,7 @@ namespace HybridCPU_ISE.Tests.DocumentationContracts
         [Fact]
         public void T9_08h_CurrentStateSummary_StatesExplicitRenameCommitBackendSubstrate()
         {
-            string text = ReadRepoFile("Documentation\\WhiteBook\\17. current-state-and-modernization-tracks.md");
+            string text = ReadRepoFile("Documentation\\Documentation\\WhiteBook\\17. current-state-and-modernization-tracks.md");
 
             Assert.Contains("PhysicalRegisterFile", text, StringComparison.Ordinal);
             Assert.Contains("RenameMap", text, StringComparison.Ordinal);

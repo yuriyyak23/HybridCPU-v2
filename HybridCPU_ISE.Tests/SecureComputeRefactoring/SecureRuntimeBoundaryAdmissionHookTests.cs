@@ -233,7 +233,7 @@ public sealed class SecureRuntimeBoundaryAdmissionHookTests
     public void RuntimeBoundaryAdmission_NoEnabledDescriptorGuardBypassContractTests()
     {
         string runtimeAdmission = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
 
         Assert.Contains(
             "request.SecureOperationClass != SecureDomainOperationClass.Ordinary",
@@ -265,9 +265,9 @@ public sealed class SecureRuntimeBoundaryAdmissionHookTests
     public void StageASources_DoNotRequireSecureComputePolicy()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Decoder/DecodedBundleTransportProjector.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Pipeline/Metadata/MicroOpAdmissionMetadata.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions");
+            "HybridCPU_ISE/Legacy/CloseToHSL/Core/Decoder/DecodedBundleTransportProjector.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Metadata/MicroOpAdmissionMetadata.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions");
 
         Assert.DoesNotContain("SecureCompute", source);
         Assert.DoesNotContain("SecureDomainAdmission", source);

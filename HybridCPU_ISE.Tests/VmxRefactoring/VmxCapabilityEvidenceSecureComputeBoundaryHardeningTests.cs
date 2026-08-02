@@ -188,16 +188,16 @@ public sealed class VmxCapabilityEvidenceSecureComputeBoundaryHardeningTests
     public void AuthoritySeparationSources_DoNotContainExecutionPublicationShortcuts()
     {
         string source = ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs",
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Backend",
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Backend",
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Evidence",
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Migration",
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Io",
-            "CloseToRTL/Core/Runtime/Domains/SecureCompute/Publication",
-            "CloseToRTL/Core/Virtualization/SecureCompute/Compatibility",
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/CsrProjection/VmxCapsProjection.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Generated/CapabilityProjection/CapabilityDescriptorSetSchema.cs");
+            "CloseToHSL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs",
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Backend",
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Backend",
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Evidence",
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Migration",
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Io",
+            "CloseToHSL/Core/Runtime/Domains/SecureCompute/Publication",
+            "CloseToHSL/Core/Virtualization/SecureCompute/Compatibility",
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/CsrProjection/VmxCapsProjection.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Generated/CapabilityProjection/CapabilityDescriptorSetSchema.cs");
 
         Assert.Contains("AllowedProofOnlyNoExecution", source);
         Assert.Contains("DeniedBackendExecutionClosed", source);

@@ -196,7 +196,7 @@ public sealed class SecureCompletionRetirePublicationAuthorityPhase14Tests
         AssertNoPublication(result);
 
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Publication/SecureCompletionRetirePublicationAuthorityPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Publication/SecureCompletionRetirePublicationAuthorityPolicy.cs");
 
         Assert.Contains("owner/path reachability", source);
         Assert.DoesNotContain("TrapCompletionRouteDescriptor", source);

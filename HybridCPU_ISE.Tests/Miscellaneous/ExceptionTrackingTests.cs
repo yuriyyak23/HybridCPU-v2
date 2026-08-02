@@ -11,10 +11,7 @@ namespace HybridCPU_ISE.Tests
     {
         private void InitializeTestCore(ulong coreID = 0)
         {
-            if (Processor.CPU_Cores == null || Processor.CPU_Cores.Length == 0)
-            {
-                Processor.CPU_Cores = new Processor.CPU_Core[1024];
-            }
+            Processor.EnsureCoreTableForTesting(checked((int)coreID + 1));
 
             // Reset exception status to defaults
             Processor.CPU_Cores[coreID].ExceptionStatus.Reset();

@@ -17,9 +17,9 @@ placement, or retire authority.
 Current code roots:
 
 - `NonRTL/Core/Execution/StreamEngine/`
-- `CloseToRTL/Core/Execution/StreamEngine/`
-- `CloseToRTL/Core/Execution/Vector/`
-- `CloseToRTL/Memory/Registers/StreamRegisterFile*.cs`
+- `CloseToHSL/Core/Execution/StreamEngine/`
+- `CloseToHSL/Core/Execution/Vector/`
+- `CloseToHSL/Memory/Registers/StreamRegisterFile*.cs`
 - `NonRTL/Core/Execution/BurstIO/`
 
 Addressing includes bounded 1D, strided, 2D, and descriptor-backed indexed or

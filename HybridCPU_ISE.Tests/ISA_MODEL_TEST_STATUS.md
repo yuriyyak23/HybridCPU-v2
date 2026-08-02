@@ -10,7 +10,7 @@ Use these entry points for current authority instead:
 
 - `Documentation/validation-baseline.md`
 - `Documentation/evidence-matrix.md`
-- `Documentation/WhiteBook/13. validation-status-and-test-evidence.md`
+- `Documentation/ArchitectureAuthorityRefactor/Evidence/RF00/validation-status-and-test-evidence.md`
 - `HybridCPU_ISE.Tests/EVALUATION_TESTS_README.md`
 
 ## What This Historical Note Still Tells You

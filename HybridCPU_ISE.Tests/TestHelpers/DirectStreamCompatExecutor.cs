@@ -6,7 +6,7 @@ namespace HybridCPU_ISE.Tests.TestHelpers;
 internal static class DirectStreamCompatExecutor
 {
     internal static void ExecuteDirectStreamCompat(
-        this ref Processor.CPU_Core core,
+        this Processor.CPU_Core core,
         in VLIW_Instruction instruction,
         int ownerThreadId = -1)
     {

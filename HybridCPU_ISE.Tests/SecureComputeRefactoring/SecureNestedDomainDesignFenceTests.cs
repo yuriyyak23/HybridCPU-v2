@@ -263,8 +263,8 @@ public sealed class SecureNestedDomainDesignFenceTests
     public void SecureNestedSources_DoNotIntroduceIsaOrVmxAuthorityBackend()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Nested/SecureChildDomainIntentDescriptor.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Nested/SecureChildDomainIntentDescriptor.cs");
 
         Assert.Contains("DeniedNestedVmcsAuthority", source);
         Assert.Contains("DeniedMutableShadowVmcsAuthority", source);

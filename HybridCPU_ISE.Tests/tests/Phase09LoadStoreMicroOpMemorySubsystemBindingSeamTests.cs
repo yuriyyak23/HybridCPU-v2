@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using System;
 using Xunit;
 using YAKSys_Hybrid_CPU;
@@ -13,7 +13,7 @@ namespace HybridCPU_ISE.Tests;
 /// instead of the mutable global <see cref="Processor.Memory"/> static.
 ///
 /// Pattern: seed MemorySubsystem → construct CPU_Core (captures) → swap global →
-/// Execute micro-op → verify the seeded subsystem received the enqueue.
+/// Execute micro-op → verify the seeded subsystem received controller admission.
 /// </summary>
 public sealed class LoadStoreMicroOpMemorySubsystemBindingSeamTests
 {
@@ -50,8 +50,8 @@ public sealed class LoadStoreMicroOpMemorySubsystemBindingSeamTests
             var replacementSubsystem = new MemorySubsystem(ref proc);
             Processor.Memory = replacementSubsystem;
 
-            int seededQueuedBefore = seededSubsystem.CurrentQueuedRequests;
-            int replacementQueuedBefore = replacementSubsystem.CurrentQueuedRequests;
+            int seededQueuedBefore = seededSubsystem.CycleController.OutstandingSingleLaneScalarLoads;
+            int replacementQueuedBefore = replacementSubsystem.CycleController.OutstandingSingleLaneScalarLoads;
 
             var load = new LoadMicroOp
             {
@@ -67,13 +67,16 @@ public sealed class LoadStoreMicroOpMemorySubsystemBindingSeamTests
             bool completed = load.Execute(ref core);
             Assert.False(completed, "LoadMicroOp.Execute should return false on first call (async enqueue).");
 
-            // The seeded (bound) subsystem should have received the enqueue
-            Assert.True(seededSubsystem.CurrentQueuedRequests > seededQueuedBefore,
-                "The bound (seeded) MemorySubsystem should have received the EnqueueRead, " +
-                "but its queued request count did not increase.");
+            // The seeded (bound) subsystem should have received controller admission.
+            Assert.True(
+                seededSubsystem.CycleController.OutstandingSingleLaneScalarLoads > seededQueuedBefore,
+                "The bound (seeded) MemorySubsystem should have accepted the controller request, " +
+                "but its single-lane outstanding count did not increase.");
 
             // The replacement subsystem should remain untouched
-            Assert.Equal(replacementQueuedBefore, replacementSubsystem.CurrentQueuedRequests);
+            Assert.Equal(
+                replacementQueuedBefore,
+                replacementSubsystem.CycleController.OutstandingSingleLaneScalarLoads);
         }
         finally
         {
@@ -127,17 +130,16 @@ public sealed class LoadStoreMicroOpMemorySubsystemBindingSeamTests
             };
             store.InitializeMetadata();
 
-            // First Execute should enqueue an async write and return false
+            // First Execute should accept controller readiness and return false.
             bool completed = store.Execute(ref core);
             Assert.False(completed, "StoreMicroOp.Execute should return false on first call (async enqueue).");
 
-            // The seeded (bound) subsystem should have received the enqueue
-            Assert.True(seededSubsystem.CurrentQueuedRequests > seededQueuedBefore,
-                "The bound (seeded) MemorySubsystem should have received the EnqueueWrite, " +
-                "but its queued request count did not increase.");
+            Assert.Equal(seededQueuedBefore, seededSubsystem.CurrentQueuedRequests);
+            Assert.Equal(1, seededSubsystem.CycleController.OutstandingSingleLaneScalarStores);
 
             // The replacement subsystem should remain untouched
             Assert.Equal(replacementQueuedBefore, replacementSubsystem.CurrentQueuedRequests);
+            Assert.Equal(0, replacementSubsystem.CycleController.OutstandingSingleLaneScalarStores);
         }
         finally
         {

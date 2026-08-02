@@ -13,8 +13,8 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlBrev8 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.ByteBitReverse.Brev8Instruction;
-using CloseToRtlRev8 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.ByteBitReverse.Rev8Instruction;
+using CloseToHSLBrev8 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.ByteBitReverse.Brev8Instruction;
+using CloseToHSLRev8 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.ByteBitReverse.Rev8Instruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests.InstructionsRefactor;
@@ -41,7 +41,7 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
 
     [Theory]
     [MemberData(nameof(ByteBitReverseOpcodeCases))]
-    public void ByteBitReverse_OpcodeStatusAndCloseToRtlObjects_AreRuntimeClosed(
+    public void ByteBitReverse_OpcodeStatusAndCloseToHSLObjects_AreRuntimeClosed(
         InstructionsEnum opcode,
         string mnemonic,
         int expectedOpcode,
@@ -69,7 +69,7 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalDisabledOpcodes);
 
-        AssertCloseToRtlObject(opcode, mnemonic);
+        AssertCloseToHSLObject(opcode, mnemonic);
     }
 
     [Theory]
@@ -204,7 +204,7 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
         Assert.Equal(new[] { (int)rs1 }, scalar.ReadRegisters);
 
         VLIW_Instruction registerAlias = CreateScalarInstruction(opcode, rd, rs1, rs2: 10);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0xB240, 421));
 
         VLIW_Instruction immediateAlias = CreateScalarInstruction(
@@ -212,13 +212,13 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
             rd,
             rs1,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0xB260, 422));
     }
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void ByteBitReverse_ScalarAluCloseToRtlAndGoldenVectors_DefineXlen64Ordering(
+    public void ByteBitReverse_ScalarAluCloseToHSLAndGoldenVectors_DefineXlen64Ordering(
         InstructionsEnum opcode,
         ulong value,
         ulong expected)
@@ -226,15 +226,15 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
         ulong actual = ScalarAluOps.Compute((uint)opcode, value, op2: 0, immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, CloseToRtlExecute(opcode, value));
-        Assert.Equal(expected, CloseToRtlEvaluate(opcode, value));
+        Assert.Equal(expected, CloseToHSLExecute(opcode, value));
+        Assert.Equal(expected, CloseToHSLEvaluate(opcode, value));
 
         foreach ((ulong vectorValue, ulong vectorResult) in GetLocalGoldenVectors(opcode))
         {
             Assert.Equal(
                 vectorResult,
                 ScalarAluOps.Compute((uint)opcode, vectorValue, op2: 0, immediate: 0));
-            Assert.Equal(vectorResult, CloseToRtlExecute(opcode, vectorValue));
+            Assert.Equal(vectorResult, CloseToHSLExecute(opcode, vectorValue));
         }
     }
 
@@ -464,21 +464,21 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
         }
     }
 
-    private static void AssertCloseToRtlObject(
+    private static void AssertCloseToHSLObject(
         InstructionsEnum opcode,
         string mnemonic)
     {
-        Assert.Equal(mnemonic, CloseToRtlMnemonic(opcode));
-        Assert.Equal("rd, rs1", CloseToRtlOperandShape(opcode));
-        Assert.Equal("ExecutableScalarAlu", CloseToRtlEvidenceBoundary(opcode));
-        Assert.Equal(64, CloseToRtlXLen(opcode));
-        Assert.Equal((ushort)opcode, CloseToRtlOpcode(opcode));
-        Assert.True(CloseToRtlHasOpcodeAllocation(opcode));
-        Assert.True(CloseToRtlIsExecutable(opcode));
-        Assert.True(CloseToRtlWritesScalarRegister(opcode));
-        Assert.False(CloseToRtlHasSideEffects(opcode));
-        Assert.False(CloseToRtlCompilerHelperAllowed(opcode));
-        Assert.False(CloseToRtlRequiresVmxProjection(opcode));
+        Assert.Equal(mnemonic, CloseToHSLMnemonic(opcode));
+        Assert.Equal("rd, rs1", CloseToHSLOperandShape(opcode));
+        Assert.Equal("ExecutableScalarAlu", CloseToHSLEvidenceBoundary(opcode));
+        Assert.Equal(64, CloseToHSLXLen(opcode));
+        Assert.Equal((ushort)opcode, CloseToHSLOpcode(opcode));
+        Assert.True(CloseToHSLHasOpcodeAllocation(opcode));
+        Assert.True(CloseToHSLIsExecutable(opcode));
+        Assert.True(CloseToHSLWritesScalarRegister(opcode));
+        Assert.False(CloseToHSLHasSideEffects(opcode));
+        Assert.False(CloseToHSLCompilerHelperAllowed(opcode));
+        Assert.False(CloseToHSLRequiresVmxProjection(opcode));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(
@@ -601,116 +601,116 @@ public sealed class NonVmxPhase01ByteBitReverseExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static string CloseToRtlMnemonic(InstructionsEnum opcode) =>
+    private static string CloseToHSLMnemonic(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.Mnemonic,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.Mnemonic,
+            InstructionsEnum.REV8 => CloseToHSLRev8.Mnemonic,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.Mnemonic,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static string CloseToRtlOperandShape(InstructionsEnum opcode) =>
+    private static string CloseToHSLOperandShape(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.OperandShape,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.OperandShape,
+            InstructionsEnum.REV8 => CloseToHSLRev8.OperandShape,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.OperandShape,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static string CloseToRtlEvidenceBoundary(InstructionsEnum opcode) =>
+    private static string CloseToHSLEvidenceBoundary(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.EvidenceBoundary,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.EvidenceBoundary,
+            InstructionsEnum.REV8 => CloseToHSLRev8.EvidenceBoundary,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.EvidenceBoundary,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static int CloseToRtlXLen(InstructionsEnum opcode) =>
+    private static int CloseToHSLXLen(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.XLen,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.XLen,
+            InstructionsEnum.REV8 => CloseToHSLRev8.XLen,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.XLen,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static ushort CloseToRtlOpcode(InstructionsEnum opcode) =>
+    private static ushort CloseToHSLOpcode(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.Opcode,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.Opcode,
+            InstructionsEnum.REV8 => CloseToHSLRev8.Opcode,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.Opcode,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlHasOpcodeAllocation(InstructionsEnum opcode) =>
+    private static bool CloseToHSLHasOpcodeAllocation(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.HasOpcodeAllocation,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.HasOpcodeAllocation,
+            InstructionsEnum.REV8 => CloseToHSLRev8.HasOpcodeAllocation,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.HasOpcodeAllocation,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlIsExecutable(InstructionsEnum opcode) =>
+    private static bool CloseToHSLIsExecutable(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.IsExecutable,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.IsExecutable,
+            InstructionsEnum.REV8 => CloseToHSLRev8.IsExecutable,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.IsExecutable,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlWritesScalarRegister(InstructionsEnum opcode) =>
+    private static bool CloseToHSLWritesScalarRegister(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.WritesScalarRegister,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.WritesScalarRegister,
+            InstructionsEnum.REV8 => CloseToHSLRev8.WritesScalarRegister,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.WritesScalarRegister,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlHasSideEffects(InstructionsEnum opcode) =>
+    private static bool CloseToHSLHasSideEffects(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.HasSideEffects,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.HasSideEffects,
+            InstructionsEnum.REV8 => CloseToHSLRev8.HasSideEffects,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.HasSideEffects,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlCompilerHelperAllowed(InstructionsEnum opcode) =>
+    private static bool CloseToHSLCompilerHelperAllowed(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.CompilerHelperAllowed,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.CompilerHelperAllowed,
+            InstructionsEnum.REV8 => CloseToHSLRev8.CompilerHelperAllowed,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.CompilerHelperAllowed,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlRequiresVmxProjection(InstructionsEnum opcode) =>
+    private static bool CloseToHSLRequiresVmxProjection(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.RequiresVmxProjection,
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.RequiresVmxProjection,
+            InstructionsEnum.REV8 => CloseToHSLRev8.RequiresVmxProjection,
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.RequiresVmxProjection,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static ulong CloseToRtlExecute(InstructionsEnum opcode, ulong value) =>
+    private static ulong CloseToHSLExecute(InstructionsEnum opcode, ulong value) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.Execute(value),
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.Execute(value),
+            InstructionsEnum.REV8 => CloseToHSLRev8.Execute(value),
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.Execute(value),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static ulong CloseToRtlEvaluate(InstructionsEnum opcode, ulong value) =>
+    private static ulong CloseToHSLEvaluate(InstructionsEnum opcode, ulong value) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.EvaluateXLen64(value),
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.EvaluateXLen64(value),
+            InstructionsEnum.REV8 => CloseToHSLRev8.EvaluateXLen64(value),
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.EvaluateXLen64(value),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static IEnumerable<(ulong Value, ulong Result)> GetLocalGoldenVectors(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.REV8 => CloseToRtlRev8.GetLocalGoldenVectors()
+            InstructionsEnum.REV8 => CloseToHSLRev8.GetLocalGoldenVectors()
                 .Select(vector => (vector.Value, vector.Result)),
-            InstructionsEnum.BREV8 => CloseToRtlBrev8.GetLocalGoldenVectors()
+            InstructionsEnum.BREV8 => CloseToHSLBrev8.GetLocalGoldenVectors()
                 .Select(vector => (vector.Value, vector.Result)),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };

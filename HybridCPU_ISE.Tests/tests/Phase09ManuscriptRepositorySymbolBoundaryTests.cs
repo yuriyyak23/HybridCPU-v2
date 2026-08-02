@@ -19,10 +19,6 @@ namespace HybridCPU_ISE.Tests.DocumentationContracts
             "TryMaterializeLane",
             "ResolveNextInjectableSlot",
             "TryPassOuterCap",
-            "TypedSlotEnabled",
-            "RenameMap",
-            "CommitMap",
-            "FreeList",
             "SCHED1",
             "SCHED2"
         };

@@ -85,9 +85,9 @@ public sealed class VmxCompatibilityControlOwnerDesignTests
     public void CompatibilityControlOwnerSource_RemainsNeutralAndDisconnectedFromVmreadProjection()
     {
         string runtimeSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Capabilities/CompatibilityControls/CompatibilityControlDescriptor.cs");
+            "CloseToHSL/Core/Runtime/Capabilities/CompatibilityControls/CompatibilityControlDescriptor.cs");
         string projectionSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
 
         Assert.Contains("CompatibilityControlDescriptor", runtimeSource);
         Assert.Contains("TryCreateReadOnlyControlView", runtimeSource);

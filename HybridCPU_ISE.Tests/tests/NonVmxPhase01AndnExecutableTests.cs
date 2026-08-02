@@ -13,7 +13,7 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlAndn = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BooleanInvert.AndnInstruction;
+using CloseToHSLAndn = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BooleanInvert.AndnInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests.InstructionsRefactor;
@@ -30,7 +30,7 @@ public sealed class NonVmxPhase01AndnExecutableTests
     }
 
     [Fact]
-    public void Andn_OpcodeStatusAndCloseToRtlObject_AreRuntimeClosed()
+    public void Andn_OpcodeStatusAndCloseToHSLObject_AreRuntimeClosed()
     {
         Assert.Equal(65, (int)InstructionsEnum.ANDN);
         Assert.Equal((ushort)InstructionsEnum.ANDN, IsaOpcodeValues.ANDN);
@@ -54,17 +54,17 @@ public sealed class NonVmxPhase01AndnExecutableTests
         Assert.DoesNotContain("ANDN", IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain("ANDN", IsaV4Surface.OptionalDisabledOpcodes);
 
-        Assert.Equal("ANDN", CloseToRtlAndn.Mnemonic);
-        Assert.Equal("rd, rs1, rs2", CloseToRtlAndn.OperandShape);
-        Assert.Equal("ExecutableScalarAlu", CloseToRtlAndn.EvidenceBoundary);
-        Assert.Equal(64, CloseToRtlAndn.XLen);
-        Assert.Equal((ushort)InstructionsEnum.ANDN, CloseToRtlAndn.Opcode);
-        Assert.True(CloseToRtlAndn.HasOpcodeAllocation);
-        Assert.True(CloseToRtlAndn.IsExecutable);
-        Assert.True(CloseToRtlAndn.WritesScalarRegister);
-        Assert.False(CloseToRtlAndn.HasSideEffects);
-        Assert.False(CloseToRtlAndn.CompilerHelperAllowed);
-        Assert.False(CloseToRtlAndn.RequiresVmxProjection);
+        Assert.Equal("ANDN", CloseToHSLAndn.Mnemonic);
+        Assert.Equal("rd, rs1, rs2", CloseToHSLAndn.OperandShape);
+        Assert.Equal("ExecutableScalarAlu", CloseToHSLAndn.EvidenceBoundary);
+        Assert.Equal(64, CloseToHSLAndn.XLen);
+        Assert.Equal((ushort)InstructionsEnum.ANDN, CloseToHSLAndn.Opcode);
+        Assert.True(CloseToHSLAndn.HasOpcodeAllocation);
+        Assert.True(CloseToHSLAndn.IsExecutable);
+        Assert.True(CloseToHSLAndn.WritesScalarRegister);
+        Assert.False(CloseToHSLAndn.HasSideEffects);
+        Assert.False(CloseToHSLAndn.CompilerHelperAllowed);
+        Assert.False(CloseToHSLAndn.RequiresVmxProjection);
     }
 
     [Fact]
@@ -181,13 +181,13 @@ public sealed class NonVmxPhase01AndnExecutableTests
             rs1,
             rs2,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x8240, 122));
     }
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void Andn_ScalarAluCloseToRtlAndGoldenVectors_DefineXlen64Edges(
+    public void Andn_ScalarAluCloseToHSLAndGoldenVectors_DefineXlen64Edges(
         ulong left,
         ulong right,
         ulong expected)
@@ -199,15 +199,15 @@ public sealed class NonVmxPhase01AndnExecutableTests
             immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, CloseToRtlAndn.Execute(left, right));
-        Assert.Equal(expected, CloseToRtlAndn.EvaluateXLen64(left, right));
+        Assert.Equal(expected, CloseToHSLAndn.Execute(left, right));
+        Assert.Equal(expected, CloseToHSLAndn.EvaluateXLen64(left, right));
 
-        foreach (var vector in CloseToRtlAndn.GetLocalGoldenVectors())
+        foreach (var vector in CloseToHSLAndn.GetLocalGoldenVectors())
         {
             Assert.Equal(
                 vector.Result,
                 ScalarAluOps.Compute((uint)InstructionsEnum.ANDN, vector.Left, vector.Right, immediate: 0));
-            Assert.Equal(vector.Result, CloseToRtlAndn.Execute(vector.Left, vector.Right));
+            Assert.Equal(vector.Result, CloseToHSLAndn.Execute(vector.Left, vector.Right));
         }
     }
 

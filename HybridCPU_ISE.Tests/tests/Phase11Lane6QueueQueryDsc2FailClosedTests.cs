@@ -10,14 +10,14 @@ using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlDsc2 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.CarrierV2.Dsc2DescriptorCarrier;
-using CloseToRtlDscCancel = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCancelInstruction;
-using CloseToRtlDscCommit = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCommitInstruction;
-using CloseToRtlDscFence = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscFenceInstruction;
-using CloseToRtlDscPoll = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscPollInstruction;
-using CloseToRtlDscQueryBackend = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryBackendInstruction;
-using CloseToRtlDscQueryShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryShapeInstruction;
-using CloseToRtlDscWait = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscWaitInstruction;
+using CloseToHSLDsc2 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.CarrierV2.Dsc2DescriptorCarrier;
+using CloseToHSLDscCancel = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCancelInstruction;
+using CloseToHSLDscCommit = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCommitInstruction;
+using CloseToHSLDscFence = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscFenceInstruction;
+using CloseToHSLDscPoll = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscPollInstruction;
+using CloseToHSLDscQueryBackend = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryBackendInstruction;
+using CloseToHSLDscQueryShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryShapeInstruction;
+using CloseToHSLDscWait = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscWaitInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -46,11 +46,11 @@ public sealed class Lane6QueueQueryDsc2FailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscPoll), "DSC_POLL", "RequiresRetireOwnedPublication", "")]
-    [InlineData(typeof(CloseToRtlDscWait), "DSC_WAIT", "RequiresCommandScopeAbi", "RequiresRetireOwnedPublication")]
-    [InlineData(typeof(CloseToRtlDscCancel), "DSC_CANCEL", "RequiresCommandScopeAbi", "RequiresRetireOwnedSideEffect")]
-    [InlineData(typeof(CloseToRtlDscFence), "DSC_FENCE", "RequiresQueueOrderingAbi", "RequiresRetireOwnedSideEffect")]
-    [InlineData(typeof(CloseToRtlDscCommit), "DSC_COMMIT", "RequiresStagedCommitAuthority", "RequiresRetireOwnedSideEffect")]
+    [InlineData(typeof(CloseToHSLDscPoll), "DSC_POLL", "RequiresRetireOwnedPublication", "")]
+    [InlineData(typeof(CloseToHSLDscWait), "DSC_WAIT", "RequiresCommandScopeAbi", "RequiresRetireOwnedPublication")]
+    [InlineData(typeof(CloseToHSLDscCancel), "DSC_CANCEL", "RequiresCommandScopeAbi", "RequiresRetireOwnedSideEffect")]
+    [InlineData(typeof(CloseToHSLDscFence), "DSC_FENCE", "RequiresQueueOrderingAbi", "RequiresRetireOwnedSideEffect")]
+    [InlineData(typeof(CloseToHSLDscCommit), "DSC_COMMIT", "RequiresStagedCommitAuthority", "RequiresRetireOwnedSideEffect")]
     public void QueueLeafMarkers_RecordPhase11NegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -85,8 +85,8 @@ public sealed class Lane6QueueQueryDsc2FailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscQueryBackend), "DSC_QUERY_BACKEND", "RequiresBackendCapabilityAbi")]
-    [InlineData(typeof(CloseToRtlDscQueryShape), "DSC_QUERY_SHAPE", "RequiresShapeQueryAbi")]
+    [InlineData(typeof(CloseToHSLDscQueryBackend), "DSC_QUERY_BACKEND", "RequiresBackendCapabilityAbi")]
+    [InlineData(typeof(CloseToHSLDscQueryShape), "DSC_QUERY_SHAPE", "RequiresShapeQueryAbi")]
     public void QueryLeafMarkers_RecordPhase11NegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -119,7 +119,7 @@ public sealed class Lane6QueueQueryDsc2FailClosedTests
     [Fact]
     public void Dsc2LeafMarkers_RecordPhase11ParserOnlyNegativeDecisionGate()
     {
-        Type templateType = typeof(CloseToRtlDsc2);
+        Type templateType = typeof(CloseToHSLDsc2);
 
         Assert.Equal("DSC2", GetConstant<string>(templateType, "Mnemonic"));
         Assert.False(string.IsNullOrWhiteSpace(GetConstant<string>(templateType, "OperandShape")));

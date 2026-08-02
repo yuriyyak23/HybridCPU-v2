@@ -13,10 +13,10 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlMax = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MaxInstruction;
-using CloseToRtlMaxu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MaxuInstruction;
-using CloseToRtlMin = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MinInstruction;
-using CloseToRtlMinu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MinuInstruction;
+using CloseToHSLMax = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MaxInstruction;
+using CloseToHSLMaxu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MaxuInstruction;
+using CloseToHSLMin = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MinInstruction;
+using CloseToHSLMinu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ScalarMinMax.MinuInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests.InstructionsRefactor;
@@ -49,7 +49,7 @@ public sealed class NonVmxPhase01ScalarMinMaxExecutableTests
 
     [Theory]
     [MemberData(nameof(ScalarMinMaxOpcodeCases))]
-    public void ScalarMinMax_OpcodeStatusAndCloseToRtlObjects_AreRuntimeClosed(
+    public void ScalarMinMax_OpcodeStatusAndCloseToHSLObjects_AreRuntimeClosed(
         InstructionsEnum opcode,
         string mnemonic,
         int expectedOpcode,
@@ -77,7 +77,7 @@ public sealed class NonVmxPhase01ScalarMinMaxExecutableTests
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalDisabledOpcodes);
 
-        AssertCloseToRtlObject(opcode, mnemonic);
+        AssertCloseToHSLObject(opcode, mnemonic);
     }
 
     [Theory]
@@ -208,13 +208,13 @@ public sealed class NonVmxPhase01ScalarMinMaxExecutableTests
             rs1,
             rs2,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0xA240, 322));
     }
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void ScalarMinMax_ScalarAluCloseToRtlAndGoldenVectors_DefineXlen64Edges(
+    public void ScalarMinMax_ScalarAluCloseToHSLAndGoldenVectors_DefineXlen64Edges(
         InstructionsEnum opcode,
         ulong left,
         ulong right,
@@ -223,15 +223,15 @@ public sealed class NonVmxPhase01ScalarMinMaxExecutableTests
         ulong actual = ScalarAluOps.Compute((uint)opcode, left, right, immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, CloseToRtlExecute(opcode, left, right));
-        Assert.Equal(expected, CloseToRtlEvaluate(opcode, left, right));
+        Assert.Equal(expected, CloseToHSLExecute(opcode, left, right));
+        Assert.Equal(expected, CloseToHSLEvaluate(opcode, left, right));
 
         foreach ((ulong vectorLeft, ulong vectorRight, ulong vectorResult) in GetLocalGoldenVectors(opcode))
         {
             Assert.Equal(
                 vectorResult,
                 ScalarAluOps.Compute((uint)opcode, vectorLeft, vectorRight, immediate: 0));
-            Assert.Equal(vectorResult, CloseToRtlExecute(opcode, vectorLeft, vectorRight));
+            Assert.Equal(vectorResult, CloseToHSLExecute(opcode, vectorLeft, vectorRight));
         }
     }
 
@@ -471,21 +471,21 @@ public sealed class NonVmxPhase01ScalarMinMaxExecutableTests
         }
     }
 
-    private static void AssertCloseToRtlObject(
+    private static void AssertCloseToHSLObject(
         InstructionsEnum opcode,
         string mnemonic)
     {
-        Assert.Equal(mnemonic, CloseToRtlMnemonic(opcode));
-        Assert.Equal("rd, rs1, rs2", CloseToRtlOperandShape(opcode));
-        Assert.Equal("ExecutableScalarAlu", CloseToRtlEvidenceBoundary(opcode));
-        Assert.Equal(64, CloseToRtlXLen(opcode));
-        Assert.Equal((ushort)opcode, CloseToRtlOpcode(opcode));
-        Assert.True(CloseToRtlHasOpcodeAllocation(opcode));
-        Assert.True(CloseToRtlIsExecutable(opcode));
-        Assert.True(CloseToRtlWritesScalarRegister(opcode));
-        Assert.False(CloseToRtlHasSideEffects(opcode));
-        Assert.False(CloseToRtlCompilerHelperAllowed(opcode));
-        Assert.False(CloseToRtlRequiresVmxProjection(opcode));
+        Assert.Equal(mnemonic, CloseToHSLMnemonic(opcode));
+        Assert.Equal("rd, rs1, rs2", CloseToHSLOperandShape(opcode));
+        Assert.Equal("ExecutableScalarAlu", CloseToHSLEvidenceBoundary(opcode));
+        Assert.Equal(64, CloseToHSLXLen(opcode));
+        Assert.Equal((ushort)opcode, CloseToHSLOpcode(opcode));
+        Assert.True(CloseToHSLHasOpcodeAllocation(opcode));
+        Assert.True(CloseToHSLIsExecutable(opcode));
+        Assert.True(CloseToHSLWritesScalarRegister(opcode));
+        Assert.False(CloseToHSLHasSideEffects(opcode));
+        Assert.False(CloseToHSLCompilerHelperAllowed(opcode));
+        Assert.False(CloseToHSLRequiresVmxProjection(opcode));
     }
 
     private static MicroOpScheduler PrimeReplayScheduler(
@@ -613,146 +613,146 @@ public sealed class NonVmxPhase01ScalarMinMaxExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static string CloseToRtlMnemonic(InstructionsEnum opcode) =>
+    private static string CloseToHSLMnemonic(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.Mnemonic,
-            InstructionsEnum.MAX => CloseToRtlMax.Mnemonic,
-            InstructionsEnum.MINU => CloseToRtlMinu.Mnemonic,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.Mnemonic,
+            InstructionsEnum.MIN => CloseToHSLMin.Mnemonic,
+            InstructionsEnum.MAX => CloseToHSLMax.Mnemonic,
+            InstructionsEnum.MINU => CloseToHSLMinu.Mnemonic,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.Mnemonic,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static string CloseToRtlOperandShape(InstructionsEnum opcode) =>
+    private static string CloseToHSLOperandShape(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.OperandShape,
-            InstructionsEnum.MAX => CloseToRtlMax.OperandShape,
-            InstructionsEnum.MINU => CloseToRtlMinu.OperandShape,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.OperandShape,
+            InstructionsEnum.MIN => CloseToHSLMin.OperandShape,
+            InstructionsEnum.MAX => CloseToHSLMax.OperandShape,
+            InstructionsEnum.MINU => CloseToHSLMinu.OperandShape,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.OperandShape,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static string CloseToRtlEvidenceBoundary(InstructionsEnum opcode) =>
+    private static string CloseToHSLEvidenceBoundary(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.EvidenceBoundary,
-            InstructionsEnum.MAX => CloseToRtlMax.EvidenceBoundary,
-            InstructionsEnum.MINU => CloseToRtlMinu.EvidenceBoundary,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.EvidenceBoundary,
+            InstructionsEnum.MIN => CloseToHSLMin.EvidenceBoundary,
+            InstructionsEnum.MAX => CloseToHSLMax.EvidenceBoundary,
+            InstructionsEnum.MINU => CloseToHSLMinu.EvidenceBoundary,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.EvidenceBoundary,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static int CloseToRtlXLen(InstructionsEnum opcode) =>
+    private static int CloseToHSLXLen(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.XLen,
-            InstructionsEnum.MAX => CloseToRtlMax.XLen,
-            InstructionsEnum.MINU => CloseToRtlMinu.XLen,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.XLen,
+            InstructionsEnum.MIN => CloseToHSLMin.XLen,
+            InstructionsEnum.MAX => CloseToHSLMax.XLen,
+            InstructionsEnum.MINU => CloseToHSLMinu.XLen,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.XLen,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static ushort CloseToRtlOpcode(InstructionsEnum opcode) =>
+    private static ushort CloseToHSLOpcode(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.Opcode,
-            InstructionsEnum.MAX => CloseToRtlMax.Opcode,
-            InstructionsEnum.MINU => CloseToRtlMinu.Opcode,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.Opcode,
+            InstructionsEnum.MIN => CloseToHSLMin.Opcode,
+            InstructionsEnum.MAX => CloseToHSLMax.Opcode,
+            InstructionsEnum.MINU => CloseToHSLMinu.Opcode,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.Opcode,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlHasOpcodeAllocation(InstructionsEnum opcode) =>
+    private static bool CloseToHSLHasOpcodeAllocation(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.HasOpcodeAllocation,
-            InstructionsEnum.MAX => CloseToRtlMax.HasOpcodeAllocation,
-            InstructionsEnum.MINU => CloseToRtlMinu.HasOpcodeAllocation,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.HasOpcodeAllocation,
+            InstructionsEnum.MIN => CloseToHSLMin.HasOpcodeAllocation,
+            InstructionsEnum.MAX => CloseToHSLMax.HasOpcodeAllocation,
+            InstructionsEnum.MINU => CloseToHSLMinu.HasOpcodeAllocation,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.HasOpcodeAllocation,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlIsExecutable(InstructionsEnum opcode) =>
+    private static bool CloseToHSLIsExecutable(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.IsExecutable,
-            InstructionsEnum.MAX => CloseToRtlMax.IsExecutable,
-            InstructionsEnum.MINU => CloseToRtlMinu.IsExecutable,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.IsExecutable,
+            InstructionsEnum.MIN => CloseToHSLMin.IsExecutable,
+            InstructionsEnum.MAX => CloseToHSLMax.IsExecutable,
+            InstructionsEnum.MINU => CloseToHSLMinu.IsExecutable,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.IsExecutable,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlWritesScalarRegister(InstructionsEnum opcode) =>
+    private static bool CloseToHSLWritesScalarRegister(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.WritesScalarRegister,
-            InstructionsEnum.MAX => CloseToRtlMax.WritesScalarRegister,
-            InstructionsEnum.MINU => CloseToRtlMinu.WritesScalarRegister,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.WritesScalarRegister,
+            InstructionsEnum.MIN => CloseToHSLMin.WritesScalarRegister,
+            InstructionsEnum.MAX => CloseToHSLMax.WritesScalarRegister,
+            InstructionsEnum.MINU => CloseToHSLMinu.WritesScalarRegister,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.WritesScalarRegister,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlHasSideEffects(InstructionsEnum opcode) =>
+    private static bool CloseToHSLHasSideEffects(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.HasSideEffects,
-            InstructionsEnum.MAX => CloseToRtlMax.HasSideEffects,
-            InstructionsEnum.MINU => CloseToRtlMinu.HasSideEffects,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.HasSideEffects,
+            InstructionsEnum.MIN => CloseToHSLMin.HasSideEffects,
+            InstructionsEnum.MAX => CloseToHSLMax.HasSideEffects,
+            InstructionsEnum.MINU => CloseToHSLMinu.HasSideEffects,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.HasSideEffects,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlCompilerHelperAllowed(InstructionsEnum opcode) =>
+    private static bool CloseToHSLCompilerHelperAllowed(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.CompilerHelperAllowed,
-            InstructionsEnum.MAX => CloseToRtlMax.CompilerHelperAllowed,
-            InstructionsEnum.MINU => CloseToRtlMinu.CompilerHelperAllowed,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.CompilerHelperAllowed,
+            InstructionsEnum.MIN => CloseToHSLMin.CompilerHelperAllowed,
+            InstructionsEnum.MAX => CloseToHSLMax.CompilerHelperAllowed,
+            InstructionsEnum.MINU => CloseToHSLMinu.CompilerHelperAllowed,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.CompilerHelperAllowed,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static bool CloseToRtlRequiresVmxProjection(InstructionsEnum opcode) =>
+    private static bool CloseToHSLRequiresVmxProjection(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.RequiresVmxProjection,
-            InstructionsEnum.MAX => CloseToRtlMax.RequiresVmxProjection,
-            InstructionsEnum.MINU => CloseToRtlMinu.RequiresVmxProjection,
-            InstructionsEnum.MAXU => CloseToRtlMaxu.RequiresVmxProjection,
+            InstructionsEnum.MIN => CloseToHSLMin.RequiresVmxProjection,
+            InstructionsEnum.MAX => CloseToHSLMax.RequiresVmxProjection,
+            InstructionsEnum.MINU => CloseToHSLMinu.RequiresVmxProjection,
+            InstructionsEnum.MAXU => CloseToHSLMaxu.RequiresVmxProjection,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static ulong CloseToRtlExecute(InstructionsEnum opcode, ulong left, ulong right) =>
+    private static ulong CloseToHSLExecute(InstructionsEnum opcode, ulong left, ulong right) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.Execute(left, right),
-            InstructionsEnum.MAX => CloseToRtlMax.Execute(left, right),
-            InstructionsEnum.MINU => CloseToRtlMinu.Execute(left, right),
-            InstructionsEnum.MAXU => CloseToRtlMaxu.Execute(left, right),
+            InstructionsEnum.MIN => CloseToHSLMin.Execute(left, right),
+            InstructionsEnum.MAX => CloseToHSLMax.Execute(left, right),
+            InstructionsEnum.MINU => CloseToHSLMinu.Execute(left, right),
+            InstructionsEnum.MAXU => CloseToHSLMaxu.Execute(left, right),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
-    private static ulong CloseToRtlEvaluate(InstructionsEnum opcode, ulong left, ulong right) =>
+    private static ulong CloseToHSLEvaluate(InstructionsEnum opcode, ulong left, ulong right) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.EvaluateXLen64(left, right),
-            InstructionsEnum.MAX => CloseToRtlMax.EvaluateXLen64(left, right),
-            InstructionsEnum.MINU => CloseToRtlMinu.EvaluateXLen64(left, right),
-            InstructionsEnum.MAXU => CloseToRtlMaxu.EvaluateXLen64(left, right),
+            InstructionsEnum.MIN => CloseToHSLMin.EvaluateXLen64(left, right),
+            InstructionsEnum.MAX => CloseToHSLMax.EvaluateXLen64(left, right),
+            InstructionsEnum.MINU => CloseToHSLMinu.EvaluateXLen64(left, right),
+            InstructionsEnum.MAXU => CloseToHSLMaxu.EvaluateXLen64(left, right),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };
 
     private static IEnumerable<(ulong Left, ulong Right, ulong Result)> GetLocalGoldenVectors(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.MIN => CloseToRtlMin.GetLocalGoldenVectors()
+            InstructionsEnum.MIN => CloseToHSLMin.GetLocalGoldenVectors()
                 .Select(vector => (vector.Left, vector.Right, vector.Result)),
-            InstructionsEnum.MAX => CloseToRtlMax.GetLocalGoldenVectors()
+            InstructionsEnum.MAX => CloseToHSLMax.GetLocalGoldenVectors()
                 .Select(vector => (vector.Left, vector.Right, vector.Result)),
-            InstructionsEnum.MINU => CloseToRtlMinu.GetLocalGoldenVectors()
+            InstructionsEnum.MINU => CloseToHSLMinu.GetLocalGoldenVectors()
                 .Select(vector => (vector.Left, vector.Right, vector.Result)),
-            InstructionsEnum.MAXU => CloseToRtlMaxu.GetLocalGoldenVectors()
+            InstructionsEnum.MAXU => CloseToHSLMaxu.GetLocalGoldenVectors()
                 .Select(vector => (vector.Left, vector.Right, vector.Result)),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null)
         };

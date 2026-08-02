@@ -200,7 +200,7 @@ public sealed class Lane6DscContractClosureTests
         string projectionAndCarrierSource = string.Join(
             Environment.NewLine,
             File.ReadAllText(Path.Combine(repoRoot, "HybridCPU_ISE", "Core", "Pipeline", "MicroOps", "DmaStreamComputeMicroOp.cs")),
-            File.ReadAllText(Path.Combine(repoRoot, "HybridCPU_ISE", "Core", "Decoder", "DecodedBundleTransportProjector.cs")),
+            File.ReadAllText(Path.Combine(repoRoot, "HybridCPU_ISE", "Legacy", "CloseToRTL", "Core", "Decoder", "DecodedBundleTransportProjector.cs")),
             File.ReadAllText(Path.Combine(repoRoot, "HybridCPU_ISE", "Core", "Decoder", "VliwDecoderV4.cs")));
 
         Assert.DoesNotContain("StreamEngine.Execute(", projectionAndCarrierSource, StringComparison.Ordinal);

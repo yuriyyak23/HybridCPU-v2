@@ -3,111 +3,111 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 using YAKSys_Hybrid_CPU;
-using CloseToRtlVdeinterleave = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VdeinterleaveInstruction;
-using CloseToRtlVall = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VallInstruction;
-using CloseToRtlVany = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VanyInstruction;
-using CloseToRtlVcvtF = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtFInstruction;
-using CloseToRtlVcvtI = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtIInstruction;
-using CloseToRtlVcvtU = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtUInstruction;
-using CloseToRtlVfirst = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VfirstInstruction;
-using CloseToRtlVgatherIndexed2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VgatherIndexed2DContour;
-using CloseToRtlVinterleave = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VinterleaveInstruction;
-using CloseToRtlVldseg2 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg2Instruction;
-using CloseToRtlVldseg4 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg4Instruction;
-using CloseToRtlVldseg8 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg8Instruction;
-using CloseToRtlVload2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vload2DContour;
-using CloseToRtlVmerge = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmergeInstruction;
-using CloseToRtlVmsif = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsifInstruction;
-using CloseToRtlVmsof = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsofInstruction;
-using CloseToRtlVnsra = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsraInstruction;
-using CloseToRtlVnsrl = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsrlInstruction;
-using CloseToRtlVavg = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgInstruction;
-using CloseToRtlVavgR = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgRInstruction;
-using CloseToRtlVclip = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VclipInstruction;
-using CloseToRtlMtileLoad = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileLoadInstruction;
-using CloseToRtlMtileMacc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileMaccInstruction;
-using CloseToRtlMtileStore = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileStoreInstruction;
-using CloseToRtlMtranspose = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtransposeInstruction;
-using CloseToRtlVscatterIndexed2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VscatterIndexed2DContour;
-using CloseToRtlVscanMax = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMaxInstruction;
-using CloseToRtlVscanMin = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMinInstruction;
-using CloseToRtlVselect = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VselectInstruction;
-using CloseToRtlVsext = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VsextInstruction;
-using CloseToRtlVmulSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VmulSatInstruction;
-using CloseToRtlVsllSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsllSatInstruction;
-using CloseToRtlVsraSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsraSatInstruction;
-using CloseToRtlVsrlSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsrlSatInstruction;
-using CloseToRtlVstseg2 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg2Instruction;
-using CloseToRtlVstseg4 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg4Instruction;
-using CloseToRtlVstseg8 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg8Instruction;
-using CloseToRtlVstore2D = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vstore2DContour;
-using CloseToRtlVsubSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsubSatInstruction;
-using CloseToRtlVunzip = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VunzipInstruction;
-using CloseToRtlVdotAccum = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotAccumInstruction;
-using CloseToRtlVdotBlockscale = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotBlockscaleInstruction;
-using CloseToRtlVdotWideI16 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI16Instruction;
-using CloseToRtlVdotWideI32 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI32Instruction;
-using CloseToRtlVwadd = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwaddInstruction;
-using CloseToRtlVwaddu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwadduInstruction;
-using CloseToRtlVwmacc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmaccInstruction;
-using CloseToRtlVwmul = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmulInstruction;
-using CloseToRtlVwmulu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmuluInstruction;
-using CloseToRtlVwsub = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubInstruction;
-using CloseToRtlVwsubu = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubuInstruction;
-using CloseToRtlVzip = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VzipInstruction;
-using CloseToRtlDsc2DShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.Dsc2DShapeContour;
-using CloseToRtlDscAbsDiff = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscAbsDiffDescriptorOp;
-using CloseToRtlDscClamp = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscClampDescriptorOp;
-using CloseToRtlDscCompare = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscCompareDescriptorOp;
-using CloseToRtlDscConvert = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.TypeConversion.DscConvertDescriptorOp;
-using CloseToRtlDscMax = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMaxDescriptorOp;
-using CloseToRtlDscMin = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMinDescriptorOp;
-using CloseToRtlDscMultiRangeShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscMultiRangeShapeContour;
-using CloseToRtlDscReduceAnd = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceAndDescriptorOp;
-using CloseToRtlDscReduceMax = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMaxDescriptorOp;
-using CloseToRtlDscReduceMin = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMinDescriptorOp;
-using CloseToRtlDscReduceOr = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceOrDescriptorOp;
-using CloseToRtlDscReduceSum = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceSumDescriptorOp;
-using CloseToRtlDscReduceXor = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceXorDescriptorOp;
-using CloseToRtlDscScatterGatherShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscScatterGatherShapeContour;
-using CloseToRtlDscSelect = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscSelectDescriptorOp;
-using CloseToRtlDscStridedShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscStridedShapeContour;
-using CloseToRtlDscSub = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscSubDescriptorOp;
-using CloseToRtlDscTiledShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscTiledShapeContour;
-using CloseToRtlDsc2 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.CarrierV2.Dsc2DescriptorCarrier;
-using CloseToRtlDscCancel = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCancelInstruction;
-using CloseToRtlDscCommit = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCommitInstruction;
-using CloseToRtlDscFence = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscFenceInstruction;
-using CloseToRtlDscPoll = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscPollInstruction;
-using CloseToRtlDscQueryBackend = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryBackendInstruction;
-using CloseToRtlDscQueryShape = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryShapeInstruction;
-using CloseToRtlDscWait = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscWaitInstruction;
-using CloseToRtlPause = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Hints.PauseInstruction;
-using CloseToRtlRdinstret = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Counters.RdinstretInstruction;
-using CloseToRtlRdtime = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Counters.RdtimeInstruction;
-using CloseToRtlAdc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AdcInstruction;
-using CloseToRtlAddc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AddcInstruction;
-using CloseToRtlAddUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.AddUwInstruction;
-using CloseToRtlCrc32 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc32Instruction;
-using CloseToRtlCrc64 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc64Instruction;
-using CloseToRtlCsel = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
-using CloseToRtlSbc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SbcInstruction;
-using CloseToRtlSeqz = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SeqzInstruction;
-using CloseToRtlSh1addUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh1addUwInstruction;
-using CloseToRtlSh2add = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addInstruction;
-using CloseToRtlSh2addUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addUwInstruction;
-using CloseToRtlSh3add = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addInstruction;
-using CloseToRtlSh3addUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addUwInstruction;
-using CloseToRtlSlliUw = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.SlliUwInstruction;
-using CloseToRtlSnez = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SnezInstruction;
-using CloseToRtlSubc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SubcInstruction;
+using CloseToHSLVdeinterleave = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VdeinterleaveInstruction;
+using CloseToHSLVall = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VallInstruction;
+using CloseToHSLVany = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VanyInstruction;
+using CloseToHSLVcvtF = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtFInstruction;
+using CloseToHSLVcvtI = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtIInstruction;
+using CloseToHSLVcvtU = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VcvtUInstruction;
+using CloseToHSLVfirst = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VfirstInstruction;
+using CloseToHSLVgatherIndexed2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VgatherIndexed2DContour;
+using CloseToHSLVinterleave = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VinterleaveInstruction;
+using CloseToHSLVldseg2 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg2Instruction;
+using CloseToHSLVldseg4 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg4Instruction;
+using CloseToHSLVldseg8 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vldseg8Instruction;
+using CloseToHSLVload2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vload2DContour;
+using CloseToHSLVmerge = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmergeInstruction;
+using CloseToHSLVmsif = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsifInstruction;
+using CloseToHSLVmsof = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsofInstruction;
+using CloseToHSLVnsra = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsraInstruction;
+using CloseToHSLVnsrl = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Narrowing.VnsrlInstruction;
+using CloseToHSLVavg = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgInstruction;
+using CloseToHSLVavgR = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgRInstruction;
+using CloseToHSLVclip = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VclipInstruction;
+using CloseToHSLMtileLoad = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileLoadInstruction;
+using CloseToHSLMtileMacc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileMaccInstruction;
+using CloseToHSLMtileStore = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtileStoreInstruction;
+using CloseToHSLMtranspose = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile.MtransposeInstruction;
+using CloseToHSLVscatterIndexed2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Indexed2D.VscatterIndexed2DContour;
+using CloseToHSLVscanMax = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMaxInstruction;
+using CloseToHSLVscanMin = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMinInstruction;
+using CloseToHSLVselect = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VselectInstruction;
+using CloseToHSLVsext = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Conversion.VsextInstruction;
+using CloseToHSLVmulSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VmulSatInstruction;
+using CloseToHSLVsllSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsllSatInstruction;
+using CloseToHSLVsraSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsraSatInstruction;
+using CloseToHSLVsrlSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsrlSatInstruction;
+using CloseToHSLVstseg2 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg2Instruction;
+using CloseToHSLVstseg4 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg4Instruction;
+using CloseToHSLVstseg8 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Segments.Vstseg8Instruction;
+using CloseToHSLVstore2D = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes04_05Memory.Shapes2D.Vstore2DContour;
+using CloseToHSLVsubSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsubSatInstruction;
+using CloseToHSLVunzip = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VunzipInstruction;
+using CloseToHSLVdotAccum = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotAccumInstruction;
+using CloseToHSLVdotBlockscale = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotBlockscaleInstruction;
+using CloseToHSLVdotWideI16 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI16Instruction;
+using CloseToHSLVdotWideI32 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.DotMixedPrecision.VdotWideI32Instruction;
+using CloseToHSLVwadd = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwaddInstruction;
+using CloseToHSLVwaddu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwadduInstruction;
+using CloseToHSLVwmacc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmaccInstruction;
+using CloseToHSLVwmul = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmulInstruction;
+using CloseToHSLVwmulu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwmuluInstruction;
+using CloseToHSLVwsub = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubInstruction;
+using CloseToHSLVwsubu = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.Widening.VwsubuInstruction;
+using CloseToHSLVzip = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.StructureMovement.VzipInstruction;
+using CloseToHSLDsc2DShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.Dsc2DShapeContour;
+using CloseToHSLDscAbsDiff = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscAbsDiffDescriptorOp;
+using CloseToHSLDscClamp = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscClampDescriptorOp;
+using CloseToHSLDscCompare = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscCompareDescriptorOp;
+using CloseToHSLDscConvert = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.TypeConversion.DscConvertDescriptorOp;
+using CloseToHSLDscMax = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMaxDescriptorOp;
+using CloseToHSLDscMin = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscMinDescriptorOp;
+using CloseToHSLDscMultiRangeShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscMultiRangeShapeContour;
+using CloseToHSLDscReduceAnd = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceAndDescriptorOp;
+using CloseToHSLDscReduceMax = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMaxDescriptorOp;
+using CloseToHSLDscReduceMin = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceMinDescriptorOp;
+using CloseToHSLDscReduceOr = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceOrDescriptorOp;
+using CloseToHSLDscReduceSum = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceSumDescriptorOp;
+using CloseToHSLDscReduceXor = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Reduction.DscReduceXorDescriptorOp;
+using CloseToHSLDscScatterGatherShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscScatterGatherShapeContour;
+using CloseToHSLDscSelect = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Predicate.DscSelectDescriptorOp;
+using CloseToHSLDscStridedShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscStridedShapeContour;
+using CloseToHSLDscSub = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.Arithmetic.DscSubDescriptorOp;
+using CloseToHSLDscTiledShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.DescriptorOps.ShapeRange.DscTiledShapeContour;
+using CloseToHSLDsc2 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.CarrierV2.Dsc2DescriptorCarrier;
+using CloseToHSLDscCancel = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCancelInstruction;
+using CloseToHSLDscCommit = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscCommitInstruction;
+using CloseToHSLDscFence = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscFenceInstruction;
+using CloseToHSLDscPoll = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscPollInstruction;
+using CloseToHSLDscQueryBackend = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryBackendInstruction;
+using CloseToHSLDscQueryShape = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.Queries.DscQueryShapeInstruction;
+using CloseToHSLDscWait = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane06DmaStream.QueueLifecycle.DscWaitInstruction;
+using CloseToHSLPause = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Hints.PauseInstruction;
+using CloseToHSLRdinstret = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Counters.RdinstretInstruction;
+using CloseToHSLRdtime = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lane07SystemControl.Counters.RdtimeInstruction;
+using CloseToHSLAdc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AdcInstruction;
+using CloseToHSLAddc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AddcInstruction;
+using CloseToHSLAddUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.AddUwInstruction;
+using CloseToHSLCrc32 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc32Instruction;
+using CloseToHSLCrc64 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc64Instruction;
+using CloseToHSLCsel = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
+using CloseToHSLSbc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SbcInstruction;
+using CloseToHSLSeqz = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SeqzInstruction;
+using CloseToHSLSh1addUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh1addUwInstruction;
+using CloseToHSLSh2add = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addInstruction;
+using CloseToHSLSh2addUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh2addUwInstruction;
+using CloseToHSLSh3add = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addInstruction;
+using CloseToHSLSh3addUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.Sh3addUwInstruction;
+using CloseToHSLSlliUw = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.AddressGeneration.SlliUwInstruction;
+using CloseToHSLSnez = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.FacadeCandidates.ZeroCompare.SnezInstruction;
+using CloseToHSLSubc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SubcInstruction;
 
 namespace HybridCPU_ISE.Tests.InstructionsRefactor;
 
 public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
 {
     private const string NonVmxNamespacePrefix =
-        "YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.";
+        "YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.";
 
     [Fact]
     public void Iteration04B_AllDeferredTemplates_DoNotExposeOpcodeOrExecuteAuthority()
@@ -158,11 +158,11 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscPoll), "DSC_POLL", "RequiresRetireOwnedPublication", "")]
-    [InlineData(typeof(CloseToRtlDscWait), "DSC_WAIT", "RequiresCommandScopeAbi", "RequiresRetireOwnedPublication")]
-    [InlineData(typeof(CloseToRtlDscCancel), "DSC_CANCEL", "RequiresCommandScopeAbi", "RequiresRetireOwnedSideEffect")]
-    [InlineData(typeof(CloseToRtlDscFence), "DSC_FENCE", "RequiresQueueOrderingAbi", "RequiresRetireOwnedSideEffect")]
-    [InlineData(typeof(CloseToRtlDscCommit), "DSC_COMMIT", "RequiresStagedCommitAuthority", "RequiresRetireOwnedSideEffect")]
+    [InlineData(typeof(CloseToHSLDscPoll), "DSC_POLL", "RequiresRetireOwnedPublication", "")]
+    [InlineData(typeof(CloseToHSLDscWait), "DSC_WAIT", "RequiresCommandScopeAbi", "RequiresRetireOwnedPublication")]
+    [InlineData(typeof(CloseToHSLDscCancel), "DSC_CANCEL", "RequiresCommandScopeAbi", "RequiresRetireOwnedSideEffect")]
+    [InlineData(typeof(CloseToHSLDscFence), "DSC_FENCE", "RequiresQueueOrderingAbi", "RequiresRetireOwnedSideEffect")]
+    [InlineData(typeof(CloseToHSLDscCommit), "DSC_COMMIT", "RequiresStagedCommitAuthority", "RequiresRetireOwnedSideEffect")]
     public void Iteration13A_Lane6QueueLifecycleLeafTemplates_RemainQueueAuthorityGatedNoExecution(
         Type templateType,
         string mnemonic,
@@ -203,8 +203,8 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscQueryBackend), "DSC_QUERY_BACKEND", "RequiresBackendCapabilityAbi")]
-    [InlineData(typeof(CloseToRtlDscQueryShape), "DSC_QUERY_SHAPE", "RequiresShapeQueryAbi")]
+    [InlineData(typeof(CloseToHSLDscQueryBackend), "DSC_QUERY_BACKEND", "RequiresBackendCapabilityAbi")]
+    [InlineData(typeof(CloseToHSLDscQueryShape), "DSC_QUERY_SHAPE", "RequiresShapeQueryAbi")]
     public void Iteration13A_Lane6QueryLeafTemplates_RemainReadOnlyCapabilityQueries(
         Type templateType,
         string mnemonic,
@@ -240,7 +240,7 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     [Fact]
     public void Iteration13A_Dsc2LeafTemplate_RemainsParserOnlyCarrierWithoutRuntimeAuthority()
     {
-        Type templateType = typeof(CloseToRtlDsc2);
+        Type templateType = typeof(CloseToHSLDsc2);
 
         Assert.Equal("DSC2", GetConstant<string>(templateType, "Mnemonic"));
         Assert.False(string.IsNullOrWhiteSpace(GetConstant<string>(templateType, "ParameterDescriptor")));
@@ -269,20 +269,20 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscSub), "DmaStreamCompute.SUB", "RequiresArithmeticPolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscMin), "DmaStreamCompute.MIN", "RequiresSignednessTypePolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscMax), "DmaStreamCompute.MAX", "RequiresSignednessTypePolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscAbsDiff), "DmaStreamCompute.ABSDIFF", "RequiresOverflowPolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscClamp), "DmaStreamCompute.CLAMP", "RequiresBoundsPolicyAbi", "")]
-    [InlineData(typeof(CloseToRtlDscConvert), "DmaStreamCompute.CONVERT", "RequiresConversionPolicyAbi", "RequiresRoundingSaturationTrapPolicy")]
-    [InlineData(typeof(CloseToRtlDscCompare), "DmaStreamCompute.COMPARE", "RequiresPredicateFootprintAbi", "")]
-    [InlineData(typeof(CloseToRtlDscSelect), "DmaStreamCompute.SELECT", "RequiresPredicateFootprintAbi", "RequiresSelectResultFootprintAbi")]
-    [InlineData(typeof(CloseToRtlDscReduceSum), "DmaStreamCompute.REDUCE_SUM", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceMin), "DmaStreamCompute.REDUCE_MIN", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceMax), "DmaStreamCompute.REDUCE_MAX", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceAnd), "DmaStreamCompute.REDUCE_AND", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceOr), "DmaStreamCompute.REDUCE_OR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
-    [InlineData(typeof(CloseToRtlDscReduceXor), "DmaStreamCompute.REDUCE_XOR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscSub), "DmaStreamCompute.SUB", "RequiresArithmeticPolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscMin), "DmaStreamCompute.MIN", "RequiresSignednessTypePolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscMax), "DmaStreamCompute.MAX", "RequiresSignednessTypePolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscAbsDiff), "DmaStreamCompute.ABSDIFF", "RequiresOverflowPolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscClamp), "DmaStreamCompute.CLAMP", "RequiresBoundsPolicyAbi", "")]
+    [InlineData(typeof(CloseToHSLDscConvert), "DmaStreamCompute.CONVERT", "RequiresConversionPolicyAbi", "RequiresRoundingSaturationTrapPolicy")]
+    [InlineData(typeof(CloseToHSLDscCompare), "DmaStreamCompute.COMPARE", "RequiresPredicateFootprintAbi", "")]
+    [InlineData(typeof(CloseToHSLDscSelect), "DmaStreamCompute.SELECT", "RequiresPredicateFootprintAbi", "RequiresSelectResultFootprintAbi")]
+    [InlineData(typeof(CloseToHSLDscReduceSum), "DmaStreamCompute.REDUCE_SUM", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceMin), "DmaStreamCompute.REDUCE_MIN", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceMax), "DmaStreamCompute.REDUCE_MAX", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceAnd), "DmaStreamCompute.REDUCE_AND", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceOr), "DmaStreamCompute.REDUCE_OR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
+    [InlineData(typeof(CloseToHSLDscReduceXor), "DmaStreamCompute.REDUCE_XOR", "RequiresReductionResultFootprintAbi", "RequiresScalarOrSurfaceResultPolicy")]
     public void Iteration12A_DescriptorOpLeafTemplates_RemainDescriptorOwnedNoScalarOpcode(
         Type templateType,
         string mnemonic,
@@ -314,11 +314,11 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlDscStridedShape), "DSC_SHAPE_STRIDED", "RequiresStrideAbi")]
-    [InlineData(typeof(CloseToRtlDscTiledShape), "DSC_SHAPE_TILED", "RequiresTileShapeAbi")]
-    [InlineData(typeof(CloseToRtlDscScatterGatherShape), "DSC_SHAPE_SCATTER_GATHER", "RequiresIndexSurfaceAbi")]
-    [InlineData(typeof(CloseToRtlDsc2DShape), "DSC_SHAPE_2D", "Requires2DShapeAbi")]
-    [InlineData(typeof(CloseToRtlDscMultiRangeShape), "DSC_SHAPE_MULTI_RANGE", "RequiresMultiRangeAbi")]
+    [InlineData(typeof(CloseToHSLDscStridedShape), "DSC_SHAPE_STRIDED", "RequiresStrideAbi")]
+    [InlineData(typeof(CloseToHSLDscTiledShape), "DSC_SHAPE_TILED", "RequiresTileShapeAbi")]
+    [InlineData(typeof(CloseToHSLDscScatterGatherShape), "DSC_SHAPE_SCATTER_GATHER", "RequiresIndexSurfaceAbi")]
+    [InlineData(typeof(CloseToHSLDsc2DShape), "DSC_SHAPE_2D", "Requires2DShapeAbi")]
+    [InlineData(typeof(CloseToHSLDscMultiRangeShape), "DSC_SHAPE_MULTI_RANGE", "RequiresMultiRangeAbi")]
     public void Iteration12A_ShapeRangeLeafTemplates_RemainDescriptorShapeOwnedNoScalarOpcode(
         Type templateType,
         string mnemonic,
@@ -361,9 +361,9 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlRdtime), "RDTIME", "Lane7CounterReplayDeferred", "RequiresReplayStableCounterModel", true, true)]
-    [InlineData(typeof(CloseToRtlRdinstret), "RDINSTRET", "Lane7CounterReplayDeferred", "RequiresRetireAccountingModel", true, true)]
-    [InlineData(typeof(CloseToRtlPause), "PAUSE", "Lane7HintNoExecutionGuarantee", "NoArchitecturalProgressGuarantee", false, false)]
+    [InlineData(typeof(CloseToHSLRdtime), "RDTIME", "Lane7CounterReplayDeferred", "RequiresReplayStableCounterModel", true, true)]
+    [InlineData(typeof(CloseToHSLRdinstret), "RDINSTRET", "Lane7CounterReplayDeferred", "RequiresRetireAccountingModel", true, true)]
+    [InlineData(typeof(CloseToHSLPause), "PAUSE", "Lane7HintNoExecutionGuarantee", "NoArchitecturalProgressGuarantee", false, false)]
     public void Iteration14A_Lane7CounterAndHintLeafTemplates_RemainReplayAndNoEmissionGated(
         Type templateType,
         string mnemonic,
@@ -428,15 +428,15 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlSeqz), "SEQZ", "FacadeOnlyNoEmissionClosed", "FacadeDecisionClosed", "")]
-    [InlineData(typeof(CloseToRtlSnez), "SNEZ", "FacadeOnlyNoEmissionClosed", "FacadeDecisionClosed", "")]
-    [InlineData(typeof(CloseToRtlCsel), "CSEL", "ScalarSelectAbiDeferredNoEmission", "ExternalCarrierGateClosed", "RequiresFourRegisterCarrierAbi")]
-    [InlineData(typeof(CloseToRtlCrc32), "CRC32", "CrcPolynomialAbiDeferredNoEmission", "RequiresPolynomialAbi", "RequiresEndianPolicyAbi")]
-    [InlineData(typeof(CloseToRtlCrc64), "CRC64", "CrcPolynomialAbiDeferredNoEmission", "RequiresPolynomialAbi", "RequiresEndianPolicyAbi")]
-    [InlineData(typeof(CloseToRtlAdc), "ADC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresCarryInAbi", "RequiresCarryOutAbi")]
-    [InlineData(typeof(CloseToRtlSbc), "SBC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresBorrowInAbi", "RequiresBorrowOutAbi")]
-    [InlineData(typeof(CloseToRtlAddc), "ADDC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresCarryOutAbi", "NoImplicitFlags")]
-    [InlineData(typeof(CloseToRtlSubc), "SUBC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresBorrowOutAbi", "NoImplicitFlags")]
+    [InlineData(typeof(CloseToHSLSeqz), "SEQZ", "FacadeOnlyNoEmissionClosed", "FacadeDecisionClosed", "")]
+    [InlineData(typeof(CloseToHSLSnez), "SNEZ", "FacadeOnlyNoEmissionClosed", "FacadeDecisionClosed", "")]
+    [InlineData(typeof(CloseToHSLCsel), "CSEL", "ScalarSelectAbiDeferredNoEmission", "ExternalCarrierGateClosed", "RequiresFourRegisterCarrierAbi")]
+    [InlineData(typeof(CloseToHSLCrc32), "CRC32", "CrcPolynomialAbiDeferredNoEmission", "RequiresPolynomialAbi", "RequiresEndianPolicyAbi")]
+    [InlineData(typeof(CloseToHSLCrc64), "CRC64", "CrcPolynomialAbiDeferredNoEmission", "RequiresPolynomialAbi", "RequiresEndianPolicyAbi")]
+    [InlineData(typeof(CloseToHSLAdc), "ADC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresCarryInAbi", "RequiresCarryOutAbi")]
+    [InlineData(typeof(CloseToHSLSbc), "SBC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresBorrowInAbi", "RequiresBorrowOutAbi")]
+    [InlineData(typeof(CloseToHSLAddc), "ADDC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresCarryOutAbi", "NoImplicitFlags")]
+    [InlineData(typeof(CloseToHSLSubc), "SUBC", "MultiPrecisionCarryAbiDeferredNoEmission", "RequiresBorrowOutAbi", "NoImplicitFlags")]
     public void MetadataPass01A_ScalarDeferredLeafTemplates_CarryLocalDescriptorMetadata(
         Type templateType,
         string mnemonic,
@@ -477,13 +477,13 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVmerge), "VMERGE", "VectorContourFailClosed", false, false)]
-    [InlineData(typeof(CloseToRtlVselect), "VSELECT", "VectorContourFailClosed", false, false)]
-    [InlineData(typeof(CloseToRtlVfirst), "VFIRST", "VectorScalarResultContourFailClosed", true, false)]
-    [InlineData(typeof(CloseToRtlVany), "VANY", "VectorScalarResultContourFailClosed", true, false)]
-    [InlineData(typeof(CloseToRtlVall), "VALL", "VectorScalarResultContourFailClosed", true, false)]
-    [InlineData(typeof(CloseToRtlVmsif), "VMSIF", "VectorPredicateOnlyContourFailClosed", false, true)]
-    [InlineData(typeof(CloseToRtlVmsof), "VMSOF", "VectorPredicateOnlyContourFailClosed", false, true)]
+    [InlineData(typeof(CloseToHSLVmerge), "VMERGE", "VectorContourFailClosed", false, false)]
+    [InlineData(typeof(CloseToHSLVselect), "VSELECT", "VectorContourFailClosed", false, false)]
+    [InlineData(typeof(CloseToHSLVfirst), "VFIRST", "VectorScalarResultContourFailClosed", true, false)]
+    [InlineData(typeof(CloseToHSLVany), "VANY", "VectorScalarResultContourFailClosed", true, false)]
+    [InlineData(typeof(CloseToHSLVall), "VALL", "VectorScalarResultContourFailClosed", true, false)]
+    [InlineData(typeof(CloseToHSLVmsif), "VMSIF", "VectorPredicateOnlyContourFailClosed", false, true)]
+    [InlineData(typeof(CloseToHSLVmsof), "VMSOF", "VectorPredicateOnlyContourFailClosed", false, true)]
     public void Iteration07A_PredicateMaskLeafTemplates_RemainVlmGatedNoEmission(
         Type templateType,
         string mnemonic,
@@ -513,19 +513,19 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVwadd), "VWADD", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVwaddu), "VWADDU", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVwsub), "VWSUB", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVwsubu), "VWSUBU", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVwmul), "VWMUL", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVwmulu), "VWMULU", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVwmacc), "VWMACC", true, true, true, false, false, false)]
-    [InlineData(typeof(CloseToRtlVnsrl), "VNSRL", true, false, false, true, false, true)]
-    [InlineData(typeof(CloseToRtlVnsra), "VNSRA", true, false, false, true, false, true)]
-    [InlineData(typeof(CloseToRtlVsext), "VSEXT", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVcvtI), "VCVT.I", false, false, false, false, true, true)]
-    [InlineData(typeof(CloseToRtlVcvtU), "VCVT.U", false, false, false, false, true, true)]
-    [InlineData(typeof(CloseToRtlVcvtF), "VCVT.F", false, false, false, false, true, true)]
+    [InlineData(typeof(CloseToHSLVwadd), "VWADD", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVwaddu), "VWADDU", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVwsub), "VWSUB", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVwsubu), "VWSUBU", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVwmul), "VWMUL", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVwmulu), "VWMULU", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVwmacc), "VWMACC", true, true, true, false, false, false)]
+    [InlineData(typeof(CloseToHSLVnsrl), "VNSRL", true, false, false, true, false, true)]
+    [InlineData(typeof(CloseToHSLVnsra), "VNSRA", true, false, false, true, false, true)]
+    [InlineData(typeof(CloseToHSLVsext), "VSEXT", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVcvtI), "VCVT.I", false, false, false, false, true, true)]
+    [InlineData(typeof(CloseToHSLVcvtU), "VCVT.U", false, false, false, false, true, true)]
+    [InlineData(typeof(CloseToHSLVcvtF), "VCVT.F", false, false, false, false, true, true)]
     public void Iteration08A_WidenNarrowConvertLeafTemplates_RemainVlmGatedNoEmission(
         Type templateType,
         string mnemonic,
@@ -577,10 +577,10 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVzip), "VZIP")]
-    [InlineData(typeof(CloseToRtlVunzip), "VUNZIP")]
-    [InlineData(typeof(CloseToRtlVinterleave), "VINTERLEAVE")]
-    [InlineData(typeof(CloseToRtlVdeinterleave), "VDEINTERLEAVE")]
+    [InlineData(typeof(CloseToHSLVzip), "VZIP")]
+    [InlineData(typeof(CloseToHSLVunzip), "VUNZIP")]
+    [InlineData(typeof(CloseToHSLVinterleave), "VINTERLEAVE")]
+    [InlineData(typeof(CloseToHSLVdeinterleave), "VDEINTERLEAVE")]
     public void Iteration09A_StructureMovementLeafTemplates_BlockHiddenStreamFallback(
         Type templateType,
         string mnemonic)
@@ -598,12 +598,12 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVldseg2), "VLDSEG2", 2, true)]
-    [InlineData(typeof(CloseToRtlVldseg4), "VLDSEG4", 4, true)]
-    [InlineData(typeof(CloseToRtlVldseg8), "VLDSEG8", 8, true)]
-    [InlineData(typeof(CloseToRtlVstseg2), "VSTSEG2", 2, false)]
-    [InlineData(typeof(CloseToRtlVstseg4), "VSTSEG4", 4, false)]
-    [InlineData(typeof(CloseToRtlVstseg8), "VSTSEG8", 8, false)]
+    [InlineData(typeof(CloseToHSLVldseg2), "VLDSEG2", 2, true)]
+    [InlineData(typeof(CloseToHSLVldseg4), "VLDSEG4", 4, true)]
+    [InlineData(typeof(CloseToHSLVldseg8), "VLDSEG8", 8, true)]
+    [InlineData(typeof(CloseToHSLVstseg2), "VSTSEG2", 2, false)]
+    [InlineData(typeof(CloseToHSLVstseg4), "VSTSEG4", 4, false)]
+    [InlineData(typeof(CloseToHSLVstseg8), "VSTSEG8", 8, false)]
     public void Iteration09A_SegmentMemoryLeafTemplates_RemainFaultReplayAndRetireGated(
         Type templateType,
         string mnemonic,
@@ -634,10 +634,10 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVload2D), "VLOAD", "2D", true, false)]
-    [InlineData(typeof(CloseToRtlVstore2D), "VSTORE", "2D", false, false)]
-    [InlineData(typeof(CloseToRtlVgatherIndexed2D), "VGATHER", "Indexed2D", true, true)]
-    [InlineData(typeof(CloseToRtlVscatterIndexed2D), "VSCATTER", "Indexed2D", false, true)]
+    [InlineData(typeof(CloseToHSLVload2D), "VLOAD", "2D", true, false)]
+    [InlineData(typeof(CloseToHSLVstore2D), "VSTORE", "2D", false, false)]
+    [InlineData(typeof(CloseToHSLVgatherIndexed2D), "VGATHER", "Indexed2D", true, true)]
+    [InlineData(typeof(CloseToHSLVscatterIndexed2D), "VSCATTER", "Indexed2D", false, true)]
     public void Iteration09A_VectorMemoryContourLeafTemplates_DoNotDuplicateBaseOpcodes(
         Type templateType,
         string mnemonic,
@@ -677,8 +677,8 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVscanMin), "VSCAN.MIN")]
-    [InlineData(typeof(CloseToRtlVscanMax), "VSCAN.MAX")]
+    [InlineData(typeof(CloseToHSLVscanMin), "VSCAN.MIN")]
+    [InlineData(typeof(CloseToHSLVscanMax), "VSCAN.MAX")]
     public void Iteration10A_PrefixScanLeafTemplates_RemainPolicyAndVlmGated(
         Type templateType,
         string mnemonic)
@@ -699,14 +699,14 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVsubSat), "VSUB.SAT", true, false, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVmulSat), "VMUL.SAT", true, false, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVsllSat), "VSLL.SAT", true, true, false, false, false, false)]
-    [InlineData(typeof(CloseToRtlVsrlSat), "VSRL.SAT", true, true, true, false, false, false)]
-    [InlineData(typeof(CloseToRtlVsraSat), "VSRA.SAT", true, true, true, false, false, false)]
-    [InlineData(typeof(CloseToRtlVavg), "VAVG", false, false, false, true, false, false)]
-    [InlineData(typeof(CloseToRtlVavgR), "VAVG.R", false, false, false, true, true, false)]
-    [InlineData(typeof(CloseToRtlVclip), "VCLIP", false, false, false, false, false, true)]
+    [InlineData(typeof(CloseToHSLVsubSat), "VSUB.SAT", true, false, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVmulSat), "VMUL.SAT", true, false, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVsllSat), "VSLL.SAT", true, true, false, false, false, false)]
+    [InlineData(typeof(CloseToHSLVsrlSat), "VSRL.SAT", true, true, true, false, false, false)]
+    [InlineData(typeof(CloseToHSLVsraSat), "VSRA.SAT", true, true, true, false, false, false)]
+    [InlineData(typeof(CloseToHSLVavg), "VAVG", false, false, false, true, false, false)]
+    [InlineData(typeof(CloseToHSLVavgR), "VAVG.R", false, false, false, true, true, false)]
+    [InlineData(typeof(CloseToHSLVclip), "VCLIP", false, false, false, false, false, true)]
     public void Iteration10A_SaturatingFixedPointLeafTemplates_RemainPolicyAndVlmGated(
         Type templateType,
         string mnemonic,
@@ -770,10 +770,10 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVdotBlockscale), "VDOT.BLOCKSCALE", true, false, false)]
-    [InlineData(typeof(CloseToRtlVdotAccum), "VDOT.ACCUM", false, true, false)]
-    [InlineData(typeof(CloseToRtlVdotWideI16), "VDOT.WIDE.I16", false, false, true)]
-    [InlineData(typeof(CloseToRtlVdotWideI32), "VDOT.WIDE.I32", false, false, true)]
+    [InlineData(typeof(CloseToHSLVdotBlockscale), "VDOT.BLOCKSCALE", true, false, false)]
+    [InlineData(typeof(CloseToHSLVdotAccum), "VDOT.ACCUM", false, true, false)]
+    [InlineData(typeof(CloseToHSLVdotWideI16), "VDOT.WIDE.I16", false, false, true)]
+    [InlineData(typeof(CloseToHSLVdotWideI32), "VDOT.WIDE.I32", false, false, true)]
     public void Iteration11A_DotMixedPrecisionLeafTemplates_DoNotExtendScopedVdotWideByName(
         Type templateType,
         string mnemonic,
@@ -816,10 +816,10 @@ public sealed class NonVmxIteration04BDeferredTemplateSurfaceTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlMtileLoad), "MTILE_LOAD", true, false, false)]
-    [InlineData(typeof(CloseToRtlMtileStore), "MTILE_STORE", true, false, false)]
-    [InlineData(typeof(CloseToRtlMtileMacc), "MTILE_MACC", false, true, false)]
-    [InlineData(typeof(CloseToRtlMtranspose), "MTRANSPOSE", false, false, true)]
+    [InlineData(typeof(CloseToHSLMtileLoad), "MTILE_LOAD", true, false, false)]
+    [InlineData(typeof(CloseToHSLMtileStore), "MTILE_STORE", true, false, false)]
+    [InlineData(typeof(CloseToHSLMtileMacc), "MTILE_MACC", false, true, false)]
+    [InlineData(typeof(CloseToHSLMtranspose), "MTRANSPOSE", false, false, true)]
     public void Iteration11A_MatrixTileLeafTemplates_RecordPhase13RuntimeExecution(
         Type templateType,
         string mnemonic,

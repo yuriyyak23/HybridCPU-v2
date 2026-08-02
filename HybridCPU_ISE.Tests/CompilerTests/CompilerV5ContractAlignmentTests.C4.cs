@@ -376,7 +376,7 @@ public partial class CompilerV5ContractAlignmentTests
         Assert.DoesNotContain(instruction.Annotation.Uses, operand => operand.Name == "destsrc1");
     }
 
-    [Theory(Skip = "ISE compiler issue: HybridCpuIrBuilder.MayTrap signature changed. Method now requires (InstructionsEnum, OpcodeInfo?, CompilerVectorTransferEmissionPlan?), but test uses reflection with old signature. Requires ISE/compiler update.")]
+    [Theory]
     [InlineData(InstructionsEnum.JAL, true)]
     [InlineData(InstructionsEnum.JALR, false)]
     [InlineData(InstructionsEnum.BEQ, false)]
@@ -392,7 +392,7 @@ public partial class CompilerV5ContractAlignmentTests
                 BindingFlags.NonPublic | BindingFlags.Static)
             ?? throw new InvalidOperationException("HybridCpuIrBuilder.MayTrap was not found.");
 
-        object? result = method.Invoke(null, new object?[] { opcode, null });
+        object? result = method.Invoke(null, new object?[] { opcode, null, null });
 
         Assert.Equal(expected, Assert.IsType<bool>(result));
     }

@@ -188,9 +188,9 @@ public sealed class SecureHypercallBackendOwnerPhase13Tests
             .Select(property => property.Name)
             .ToArray();
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallBackendOwnerAbiRegistry.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallBackendContract.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureHypercallBackendContractAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallBackendOwnerAbiRegistry.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallBackendContract.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureHypercallBackendContractAdmissionPolicy.cs");
 
         Assert.Contains(nameof(SecureHypercallBackendContractAdmissionResult.BackendExecutionAuthorized), properties);
         Assert.Contains(nameof(SecureHypercallBackendContractAdmissionResult.CompletionPublicationAuthorized), properties);

@@ -173,7 +173,7 @@ public sealed class ScalarSystemCounterRdcycleExecutableTests
         Assert.Empty(microOp.ReadRegisters);
         Assert.Equal(new[] { (int)rd }, microOp.WriteRegisters);
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(
                 CreateBundleAtSlot(
                     7,
@@ -181,7 +181,7 @@ public sealed class ScalarSystemCounterRdcycleExecutableTests
                 0x6D20,
                 74));
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(
                 CreateBundleAtSlot(
                     7,

@@ -393,10 +393,10 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeIoLaneSources_DoNotCreateRawPointerVmxOrBackendAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Io/SecureIoDomainDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Io/SecureIoDomainDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs");
 
         Assert.Contains("DmaPolicy != SecureIoDmaPolicy.ExplicitSharedBuffersOnly", source);
         Assert.Contains("DeniedRawPrivatePointer", source);
@@ -426,12 +426,12 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void HypercallTrapRecognitionSources_DoNotPublishBackendCompletionOrRetire()
     {
         string secureHypercallSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
         string neutralBackendSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs");
         string vmcallTrapSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs");
 
         Assert.Contains("AllowedAdmittedDenied", secureHypercallSource);
         Assert.Contains("DeniedBackendSuccessClosed", secureHypercallSource);
@@ -597,9 +597,9 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeBackendOwnerRfcGateSources_DoNotAuthorizeRuntimeExecutionOrPublication()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Backend/SecureBackendOwnerDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureBackendOwnerAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Backend/SecureBackendOwnerDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureBackendOwnerAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
 
         Assert.Contains("AllowedProofOnlyNoExecution", source);
         Assert.Contains("DeniedBackendExecutionClosed", source);
@@ -652,12 +652,12 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeEvidenceDebugAttestationSources_DoNotAuthorizeRuntimeVmreadMigrationOrCompletion()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Measurement/DomainMeasurementDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Measurement/SecureMeasurementAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePublicationPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Sideband/EvidenceTransport/SecureComputeEvidenceSidebandEnvelope.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Measurement/DomainMeasurementDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Measurement/SecureMeasurementAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePublicationPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Sideband/EvidenceTransport/SecureComputeEvidenceSidebandEnvelope.cs");
 
         Assert.Contains("IsAttestationEvidenceOnly => true", source);
         Assert.Contains("DeniedHostOwnedEvidence", source);
@@ -714,14 +714,14 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeMemoryPrivateDomainSources_DoNotCreateTaggedMemoryCapabilityAwareIsaOrVmxAuthority()
     {
         string memorySource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Memory/SecureMemoryDomainDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/HostInspection/SecureHostInspectionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Memory/SecureMemoryDomainDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/HostInspection/SecureHostInspectionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
         string migrationSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Migration/SecureMigrationDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Migration/SecureMigrationDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
 
         Assert.Contains("SecureMemoryDomainDescriptor", memorySource);
         Assert.Contains("SecureRuntimeMutableDirtyPolicy", memorySource);
@@ -792,14 +792,14 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeActivationPlan_RecordsPhase09OwnerAndPhase10ProjectionClosureProof()
     {
         string ownerSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/ExecutionState/PrivilegedExecutionStateDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/ExecutionState/PrivilegedExecutionStateOwnerPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/ExecutionState/PrivilegedExecutionStateDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/ExecutionState/PrivilegedExecutionStateOwnerPolicy.cs");
         string ownerTests = ReadProjectSource(
             "HybridCPU_ISE.Tests/SecureComputeRefactoring/PrivilegedExecutionStateOwnerPolicyTests.cs");
         string projectionSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/PrivilegedExecutionStateProjectionService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/PrivilegedExecutionStateProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs");
         string projectionTests = ReadProjectSource(
             "HybridCPU_ISE.Tests/VmxRefactoring/GuestCr0Cr4ReadOnlyProjectionTests.cs");
         string index = ReadSecureComputeActivationPlan("00_securecompute_activation_refactoring_index.md");
@@ -863,13 +863,13 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeActivationPlan_RecordsPhase11SecureMemoryPrivateDomainPolicyClosureProof()
     {
         string memorySource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Memory/SecureMemoryDomainDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Memory/SecureMemoryDomainDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
         string migrationSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Migration/SecureMigrationDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Migration/SecureMigrationDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
         string memoryTests = ReadProjectSource(
             "HybridCPU_ISE.Tests/SecureComputeRefactoring/SecureMemoryDomainPolicyTests.cs");
         string index = ReadSecureComputeActivationPlan("00_securecompute_activation_refactoring_index.md");
@@ -937,8 +937,8 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeActivationPlan_RecordsPhase12SecureIoSharedBufferPolicyClosureProof()
     {
         string ioSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Io/SecureIoDomainDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Io/SecureIoDomainDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
         string ioTests = ReadProjectSource(
             "HybridCPU_ISE.Tests/SecureComputeRefactoring/SecureIoHypercallPolicyTests.cs");
         string migrationTests = ReadProjectSource(
@@ -996,10 +996,10 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeActivationPlan_RecordsPhase15MigrationOutputManifestClassificationClosureProof()
     {
         string manifestSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureOutputManifestClassificationPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureOutputManifestClassificationPolicy.cs");
         string migrationSource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Migration/SecureMigrationAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureCheckpointPayloadPolicy.cs");
         string phase15Tests = ReadProjectSource(
             "HybridCPU_ISE.Tests/SecureComputeRefactoring/SecureMigrationCheckpointRestoreOutputManifestPhase15Tests.cs");
         string index = ReadSecureComputeActivationPlan("00_securecompute_activation_refactoring_index.md");
@@ -1066,7 +1066,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeActivationPlan_RecordsPhase16DebugAttestationVisibilityClosureProof()
     {
         string visibilitySource = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Debug/SecureDebugAttestationVisibilityPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Debug/SecureDebugAttestationVisibilityPolicy.cs");
         string visibilityTests = ReadProjectSource(
             "HybridCPU_ISE.Tests/SecureComputeRefactoring/SecureDebugAttestationVisibilityPhase16Tests.cs");
         string index = ReadSecureComputeActivationPlan("00_securecompute_activation_refactoring_index.md");
@@ -1241,12 +1241,12 @@ public sealed class SecureComputePhase10ReleaseGateTests
         string vmcallReadiness = ReadProjectSource(
             "HybridCPU_ISE.Tests/VmxRefactoring/VmxHypercallBackendOwnerDecisionReadinessTests.cs");
         string hypercallDescriptor = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Hypercalls/SecureHypercallDescriptor.cs");
         string secureBackend = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureBackendOwnerAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Backend/SecureBackendOwnerAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Io/SecureIoHypercallAdmissionPolicy.cs");
         string neutralPublication = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs");
         string index = ReadSecureComputeActivationPlan("00_securecompute_activation_refactoring_index.md");
         string matrix = ReadSecureComputeActivationPlan("01_current_state_and_gap_matrix.md");
         string guards = ReadSecureComputeActivationPlan("02_global_forbidden_regressions_and_release_guards.md");
@@ -1300,9 +1300,9 @@ public sealed class SecureComputePhase10ReleaseGateTests
     public void SecureComputeActivationPlan_RecordsStageBDescriptorRoutingClosureProof()
     {
         string runtimeAdmission = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
         string secureAdmissionPolicy = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Admission/SecureDomainAdmissionPolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Admission/SecureDomainAdmissionPolicy.cs");
         string hookTests = ReadProjectSource(
             "HybridCPU_ISE.Tests/SecureComputeRefactoring/SecureRuntimeBoundaryAdmissionHookTests.cs");
         string index = ReadSecureComputeActivationPlan("00_securecompute_activation_refactoring_index.md");
@@ -1509,8 +1509,8 @@ public sealed class SecureComputePhase10ReleaseGateTests
         string repositoryRoot = FindRepositoryRoot();
         string[] roots =
         {
-            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Runtime", "Domains", "SecureCompute"),
-            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToRTL", "Core", "Virtualization", "SecureCompute"),
+            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Runtime", "Domains", "SecureCompute"),
+            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Virtualization", "SecureCompute"),
         };
 
         return roots
@@ -1523,17 +1523,17 @@ public sealed class SecureComputePhase10ReleaseGateTests
     private static string[] NestedDesignFenceProductionSourcePaths() =>
         new[]
         {
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Nested/SecureChildDomainIntentDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/CapabilityFilter/NestedCapabilityFilter.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/Descriptors/NestedDomainDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/Policies/NestedEvidencePolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/Projection/INestedProjectionService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/Projection/NestedProjectionService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Nested/Validation/NestedValidationResult.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/NestedDomainControllerCompatibilityProjection.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Nested/SecureChildDomainIntentDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Nested/SecureNestedDomainAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/CapabilityFilter/NestedCapabilityFilter.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/Descriptors/NestedDomainDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/Policies/NestedEvidencePolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/Projection/INestedProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/Projection/NestedProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Nested/Validation/NestedValidationResult.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/NestedDomainControllerCompatibilityProjection.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs",
         };
 
     private static string ReadPlan(string fileName)
@@ -1568,7 +1568,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Path.Combine(
             FindRepositoryRoot(),
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Runtime",
             "Domains",
@@ -1593,6 +1593,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
     private static string SecureComputeWhiteBookRoot() =>
         Path.Combine(
             FindRepositoryRoot(),
+            "Documentation",
             "Documentation",
             "SecureCompute WhiteBook");
 

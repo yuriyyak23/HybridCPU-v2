@@ -12,7 +12,7 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlCtz = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.CtzInstruction;
+using CloseToHSLCtz = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.CtzInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -20,7 +20,7 @@ namespace HybridCPU_ISE.Tests;
 public sealed class NonVmxIteration03ACtzExecutableTests
 {
     [Fact]
-    public void Ctz_OpcodeStatusAndCloseToRtlObject_AreRuntimeClosed()
+    public void Ctz_OpcodeStatusAndCloseToHSLObject_AreRuntimeClosed()
     {
         Assert.Equal(59, (int)InstructionsEnum.CTZ);
         Assert.Equal((ushort)InstructionsEnum.CTZ, IsaOpcodeValues.CTZ);
@@ -43,11 +43,11 @@ public sealed class NonVmxIteration03ACtzExecutableTests
         Assert.DoesNotContain("CTZ", IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain("CTZ", IsaV4Surface.OptionalDisabledOpcodes);
 
-        Assert.Equal("CTZ", CloseToRtlCtz.Mnemonic);
-        Assert.Equal(64, CloseToRtlCtz.XLen);
-        Assert.Equal((ushort)InstructionsEnum.CTZ, CloseToRtlCtz.Opcode);
-        Assert.True(CloseToRtlCtz.WritesScalarRegister);
-        Assert.False(CloseToRtlCtz.HasSideEffects);
+        Assert.Equal("CTZ", CloseToHSLCtz.Mnemonic);
+        Assert.Equal(64, CloseToHSLCtz.XLen);
+        Assert.Equal((ushort)InstructionsEnum.CTZ, CloseToHSLCtz.Opcode);
+        Assert.True(CloseToHSLCtz.WritesScalarRegister);
+        Assert.False(CloseToHSLCtz.HasSideEffects);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public sealed class NonVmxIteration03ACtzExecutableTests
             rd: rd,
             rs1: rs1,
             rs2: 3);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0x6620, 67));
 
         VLIW_Instruction immediateAlias = CreateScalarInstruction(
@@ -148,7 +148,7 @@ public sealed class NonVmxIteration03ACtzExecutableTests
             rd: rd,
             rs1: rs1,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x6640, 68));
     }
 
@@ -159,7 +159,7 @@ public sealed class NonVmxIteration03ACtzExecutableTests
     [InlineData(0x8000_0000_0000_0000UL, 63UL)]
     [InlineData(0x0000_0001_0000_0000UL, 32UL)]
     [InlineData(0xFFFF_FFFF_FFFF_FFFFUL, 0UL)]
-    public void Ctz_ScalarAluAndCloseToRtlObject_DefineXlen64TrailingZeroEdges(
+    public void Ctz_ScalarAluAndCloseToHSLObject_DefineXlen64TrailingZeroEdges(
         ulong source,
         ulong expected)
     {
@@ -170,7 +170,7 @@ public sealed class NonVmxIteration03ACtzExecutableTests
             immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, CloseToRtlCtz.Execute(source));
+        Assert.Equal(expected, CloseToHSLCtz.Execute(source));
     }
 
     [Theory]

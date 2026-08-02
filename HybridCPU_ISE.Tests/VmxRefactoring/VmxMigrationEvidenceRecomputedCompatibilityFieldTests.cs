@@ -176,11 +176,11 @@ public sealed class VmxMigrationEvidenceRecomputedCompatibilityFieldTests
     public void MigrationAndCheckpointSources_DoNotDependOnCompletionOrVmcsProjectionState()
     {
         string migrationSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Migration/Checkpoint/DomainCheckpointImage.cs",
-            "CloseToRTL/Core/Runtime/Migration/Format/MigrationDescriptor.cs",
-            "CloseToRTL/Core/Runtime/Migration/Restore/RestoreValidationService.cs",
-            "CloseToRTL/Core/Runtime/Migration/Validation/MigrationValidationPolicy.cs",
-            "CloseToRTL/Core/Runtime/Evidence/HostOwned/HostOwnedEvidenceBoundary.cs");
+            "CloseToHSL/Core/Runtime/Migration/Checkpoint/DomainCheckpointImage.cs",
+            "CloseToHSL/Core/Runtime/Migration/Format/MigrationDescriptor.cs",
+            "CloseToHSL/Core/Runtime/Migration/Restore/RestoreValidationService.cs",
+            "CloseToHSL/Core/Runtime/Migration/Validation/MigrationValidationPolicy.cs",
+            "CloseToHSL/Core/Runtime/Evidence/HostOwned/HostOwnedEvidenceBoundary.cs");
 
         foreach (string required in new[]
                  {
@@ -229,9 +229,9 @@ public sealed class VmxMigrationEvidenceRecomputedCompatibilityFieldTests
     public void CompletionProjectionSources_DoNotExposeMigrationOrCheckpointAuthority()
     {
         string completionProjectionSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Completion/Records/CompletionRecord.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionRecordCompatibilityProjection.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionProjectionService.cs");
+            "CloseToHSL/Core/Runtime/Completion/Records/CompletionRecord.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionRecordCompatibilityProjection.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionProjectionService.cs");
 
         Assert.Contains("CompletionRecordClass.CompatibilityExit", completionProjectionSource);
         Assert.Contains("CanProjectToVmx", completionProjectionSource);

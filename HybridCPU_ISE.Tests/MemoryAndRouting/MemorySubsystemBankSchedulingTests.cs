@@ -2,8 +2,8 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Memory;
 using System;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
-using HybridCPU_ISE.CloseToRTL.Memory.Subsystem;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.Subsystem;
 
 namespace HybridCPU_ISE.Tests
 {
@@ -230,11 +230,9 @@ namespace HybridCPU_ISE.Tests
             // Arrange
             InitializeTestEnvironment();
             Processor proc = default;
-            var memory = new MemorySubsystem(ref proc)
-            {
-                NumBanks = 16,
-                BankWidthBytes = 128
-            };
+            var memory = new MemorySubsystem(ref proc);
+            MemoryBankGeometryUpdateResult geometryUpdate =
+                memory.TryReplacePhysicalMemoryBankGeometry(16, 128);
 
             ulong targetAddress = 128UL * 15UL;
 
@@ -243,6 +241,7 @@ namespace HybridCPU_ISE.Tests
             var token = memory.EnqueueRead(0, targetAddress, buffer.Length, buffer);
 
             // Assert
+            Assert.True(geometryUpdate.IsApplied);
             Assert.NotNull(token);
             Assert.Equal(1, memory.CurrentQueuedRequests);
             Assert.True(memory.CancelPendingRequest(token));

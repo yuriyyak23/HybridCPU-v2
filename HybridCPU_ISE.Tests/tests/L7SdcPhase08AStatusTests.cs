@@ -156,7 +156,7 @@ public sealed class L7SdcPhase08AStatusTests
                     L7SdcNativeCarrierValidationTests.CreateSystemSingletonSlotMetadata()),
                 bundleAddress: 0x8AA0));
         Assert.Contains("ACCEL_SUBMIT", sidebandEx.Message, StringComparison.Ordinal);
-        Assert.Contains(nameof(AcceleratorCommandDescriptor), sidebandEx.Message, StringComparison.Ordinal);
+        Assert.Contains("illegal", sidebandEx.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -304,7 +304,7 @@ public sealed class L7SdcPhase08AStatusTests
             raw.OpCode = rawOpcode;
             InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
                 () => new VliwDecoderV4().Decode(in raw, slotIndex: 7));
-            Assert.Contains("outside the canonical ISA v4 opcode space", ex.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("no generated ISA descriptor", ex.Message, StringComparison.OrdinalIgnoreCase);
         }
     }
 

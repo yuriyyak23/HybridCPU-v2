@@ -285,7 +285,7 @@ namespace YAKSys_Hybrid_CPU.Arch
                 memoryBandwidth: 0
             ),
 
-            // ========== Non-VMX CloseToRTL Iteration 03C: Optional scalar rotates ==========
+            // ========== Non-VMX CloseToHSL Iteration 03C: Optional scalar rotates ==========
             new OpcodeInfo(
                 opCode: (uint)Processor.CPU_Core.InstructionsEnum.ROL,
                 mnemonic: "ROL",

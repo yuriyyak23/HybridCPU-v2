@@ -6,7 +6,7 @@ using HybridCPU_ISE.Tests.TestHelpers;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
@@ -1180,7 +1180,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
             "ClosedMatrixTileMaterializerFactories",
             MatrixTileRuntimeIsaPackageContract.Phase07MaterializerFactoryDecision);
         Assert.Equal(
-            "ClosedMaterializedTypedCloseToRtlInstructionObjects",
+            "ClosedMaterializedTypedCloseToHSLInstructionObjects",
             MatrixTileRuntimeIsaPackageContract.Phase07TypedObjectDecision);
         Assert.Equal(
             "ClosedInvalidTileIrProjectionFaultAbi",
@@ -1306,7 +1306,7 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
             out MatrixTileIrProjectionFaultKind faultKind));
         Assert.Equal(MatrixTileIrProjectionFaultKind.None, faultKind);
         Assert.True(materialized.IsRuntimeLegal);
-        Assert.True(materialized.IsTypedCloseToRtlRuntimeObject);
+        Assert.True(materialized.IsTypedCloseToHSLRuntimeObject);
         Assert.False(materialized.PublishesTypedTileMicroOp);
         Assert.False(materialized.OpensExecution);
         Assert.False(materialized.UsesFallbackPath);
@@ -1583,7 +1583,9 @@ public sealed class MatrixTileRuntimeIsaPackageContractTests
         Assert.Equal(expectsAccumulatorDependency, tileMicroOp.DependencyMetadata.HasAccumulatorDependencyMetadata);
         Assert.Equal(expectsTransposeDependency, tileMicroOp.DependencyMetadata.HasTransposePolicyDependencyMetadata);
 
-        Processor.CPU_Core core = default;
+#pragma warning disable CS0618
+        Processor.CPU_Core core = new(0);
+#pragma warning restore CS0618
         Assert.True(tileMicroOp.Execute(ref core));
         MatrixTileExecutionCaptureRecord? capture = tileMicroOp.LastExecutionCapture;
         Assert.True(capture.HasValue);

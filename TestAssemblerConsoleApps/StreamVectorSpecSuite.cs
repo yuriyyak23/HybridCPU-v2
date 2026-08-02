@@ -682,12 +682,52 @@ internal sealed class StreamVectorSpecSuite
                     $"Instruction {index} ({OpcodeName(instruction.OpCode)}) decoded to trap: {trap.GetDescription()}");
             }
 
+            if (microOp is VectorTransferMicroOp)
+            {
+                ExecuteCanonicalVectorTransfer(ref core, instruction, microOp, index);
+                continue;
+            }
+
             if (!microOp.Execute(ref core))
             {
                 throw new InvalidOperationException(
                     $"Instruction {index} ({OpcodeName(instruction.OpCode)}) did not complete on the materialized carrier.");
             }
         }
+    }
+
+    private static void ExecuteCanonicalVectorTransfer(
+        ref Processor.CPU_Core core,
+        VLIW_Instruction instruction,
+        MicroOp microOp,
+        int instructionIndex)
+    {
+        const int CompletionWatchdogCycles = 8;
+        for (int cycle = 0; cycle < CompletionWatchdogCycles; cycle++)
+        {
+            core.TestRunExecuteStageWithDecodedInstruction(
+                instruction,
+                microOp,
+                isVectorOp: true,
+                isMemoryOp: false,
+                pc: 0x6_4000UL + (ulong)(instructionIndex * 16));
+            if (core.TestReadExecuteStageStatus().ResultReady)
+            {
+                core.TestRunMemoryAndWriteBackStagesFromCurrentExecuteState();
+                return;
+            }
+
+            if (Processor.Memory == null)
+            {
+                throw new InvalidOperationException(
+                    "Canonical vector transfer has no bound diagnostic MemorySubsystem.");
+            }
+
+            Processor.Memory.AdvanceCycles(1);
+        }
+
+        throw new InvalidOperationException(
+            $"Instruction {instructionIndex} ({OpcodeName(instruction.OpCode)}) exceeded the canonical vector-transfer completion watchdog.");
     }
 
     private static MicroOp MaterializeSingleSlotMicroOp(VLIW_Instruction instruction)

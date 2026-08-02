@@ -8,10 +8,10 @@ Execution domain descriptors own guest-visible execution state, scheduling polic
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Domains/Descriptors/ExecutionDomain/**`
-- `CloseToRTL/Core/Runtime/Domains/Admission/Execution/ExecutionDomainRuntime.cs`
-- `CloseToRTL/Core/Runtime/Domains/Legality/DomainLegalityService.cs`
-- `CloseToRTL/Core/Runtime/Domains/Scheduling/DomainSchedulingAdmission.cs`
+- `CloseToHSL/Core/Runtime/Domains/Descriptors/ExecutionDomain/**`
+- `CloseToHSL/Core/Runtime/Domains/Admission/Execution/ExecutionDomainRuntime.cs`
+- `CloseToHSL/Core/Runtime/Domains/Legality/DomainLegalityService.cs`
+- `CloseToHSL/Core/Runtime/Domains/Scheduling/DomainSchedulingAdmission.cs`
 
 VMX may project `GuestPc`, `GuestSp`, and `GuestFlags` only from a materialized `ExecutionDomainReadOnlyStateView`. Control-like fields such as `GuestCr0` and `GuestCr4` remain denied until a neutral privileged execution-state owner defines real semantics. Host execution aliases remain denied until a separate neutral host-execution owner exists.
 
@@ -21,11 +21,11 @@ Memory domain descriptors and services own address spaces, translation, nested p
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Memory/AddressSpaces/**`
-- `CloseToRTL/Core/Runtime/Memory/Translation/**`
-- `CloseToRTL/Core/Runtime/Memory/Invalidation/**`
-- `CloseToRTL/Core/Runtime/Memory/DirtyTracking/**`
-- `CloseToRTL/Core/Runtime/Domains/Admission/Memory/MemoryDomainRuntime.cs`
+- `CloseToHSL/Core/Runtime/Memory/AddressSpaces/**`
+- `CloseToHSL/Core/Runtime/Memory/Translation/**`
+- `CloseToHSL/Core/Runtime/Memory/Invalidation/**`
+- `CloseToHSL/Core/Runtime/Memory/DirtyTracking/**`
+- `CloseToHSL/Core/Runtime/Domains/Admission/Memory/MemoryDomainRuntime.cs`
 
 The VMCS projection schema maps fields such as `GuestCr3`, `EptPointer`, `Vpid`, `Cr3TargetCount`, and translation fault fields to descriptor or completion owners. The mapping is projection metadata, not a memory owner.
 
@@ -37,10 +37,10 @@ I/O and DMA authority is neutral. IOMMU and DMA descriptors control windows, bin
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/IO/Dma/**`
-- `CloseToRTL/Core/Runtime/IO/Iotlb/**`
-- `CloseToRTL/Core/Runtime/Memory/Iommu/**`
-- `CloseToRTL/Core/Runtime/Domains/Admission/IO/IoDomainRuntime.cs`
+- `CloseToHSL/Core/Runtime/IO/Dma/**`
+- `CloseToHSL/Core/Runtime/IO/Iotlb/**`
+- `CloseToHSL/Core/Runtime/Memory/Iommu/**`
+- `CloseToHSL/Core/Runtime/Domains/Admission/IO/IoDomainRuntime.cs`
 
 ## Event, Trap, And Completion Owners
 
@@ -56,8 +56,8 @@ Trap and completion ownership is split from VMX exit vocabulary:
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Events/Traps/**`
-- `CloseToRTL/Core/Runtime/Completion/**`
+- `CloseToHSL/Core/Runtime/Events/Traps/**`
+- `CloseToHSL/Core/Runtime/Completion/**`
 
 ## Runtime Context
 

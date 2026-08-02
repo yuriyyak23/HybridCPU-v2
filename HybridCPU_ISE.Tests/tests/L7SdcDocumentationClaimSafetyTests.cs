@@ -157,10 +157,10 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     public void L7SdcDocumentationClaimSafety_MatMulAndContextSwitchClaimsStayGuarded()
     {
         string text = ReadCombined(
-            "Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md",
-            "Documentation/Stream WhiteBook/ExternalAccelerators/04_Authority_Model.md",
-            "Documentation/Stream WhiteBook/ExternalAccelerators/08_MatMul_Capability_Provider.md",
-            "Documentation/Stream WhiteBook/ExternalAccelerators/10_Telemetry_And_Evidence.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/04_Authority_Model.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/08_MatMul_Capability_Provider.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/10_Telemetry_And_Evidence.md",
             "Documentation/InstructionsRefactor2/03_PRESERVED_NO_EMISSION_CONTOURS.md");
 
         Assert.Contains("metadata", text, StringComparison.OrdinalIgnoreCase);
@@ -173,8 +173,8 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     public void L7SdcDocumentationClaimSafety_DmaStreamAndAssistDocsRemainSeparateFromL7SdcAuthority()
     {
         string dmaText = ReadCombined(
-            "Documentation/Stream WhiteBook/DmaStreamCompute/00_README.md",
-            "Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md");
+            "Documentation/Documentation/Stream WhiteBook/DmaStreamCompute/00_README.md",
+            "Documentation/Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md");
         string assistText = ReadRepoFile("HybridCPU_ISE/docs/assist-semantics.md");
 
         Assert.Contains("lane6", dmaText, StringComparison.OrdinalIgnoreCase);
@@ -193,7 +193,7 @@ public sealed class L7SdcDocumentationClaimSafetyTests
     public void L7SdcDocumentationClaimSafety_StreamWhiteBookUsesCurrentAnchorsOnly()
     {
         string repoRoot = CompatFreezeScanner.FindRepoRoot();
-        string whiteBookRoot = Path.Combine(repoRoot, "Documentation", "Stream WhiteBook");
+        string whiteBookRoot = Path.Combine(repoRoot, "Documentation", "Documentation", "Stream WhiteBook");
         string[] documents = Directory.GetFiles(whiteBookRoot, "*.md", SearchOption.AllDirectories);
         var violations = new List<string>();
 
@@ -224,11 +224,11 @@ public sealed class L7SdcDocumentationClaimSafetyTests
         }
 
         string combined = ReadCombined(
-            "Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md",
-            "Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md",
-            "Documentation/Stream WhiteBook/ExternalAccelerators/05_Token_Lifecycle_And_Register_ABI.md",
-            "Documentation/Stream WhiteBook/ExternalAccelerators/07_Memory_Conflict_Model.md",
-            "Documentation/Stream WhiteBook/ExternalAccelerators/11_DmaStreamCompute_And_Assist_Separation.md");
+            "Documentation/Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/00_README.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/05_Token_Lifecycle_And_Register_ABI.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/07_Memory_Conflict_Model.md",
+            "Documentation/Documentation/Stream WhiteBook/ExternalAccelerators/11_DmaStreamCompute_And_Assist_Separation.md");
 
         Assert.Empty(violations);
         Assert.Contains("Documentation/Stream WhiteBook/DmaStreamCompute/01_Current_Contract.md", combined, StringComparison.Ordinal);
@@ -248,11 +248,11 @@ public sealed class L7SdcDocumentationClaimSafetyTests
         string[] roots =
         {
             Path.Combine(repoRoot, "Documentation", "CustomExternalAccelerator"),
-            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "DmaStreamCompute"),
-            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "02_VectorStream"),
-            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "03_MatrixTile"),
-            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "04_Assists"),
-            Path.Combine(repoRoot, "Documentation", "Stream WhiteBook", "ExternalAccelerators")
+            Path.Combine(repoRoot, "Documentation", "Documentation", "Stream WhiteBook", "DmaStreamCompute"),
+            Path.Combine(repoRoot, "Documentation", "Documentation", "Stream WhiteBook", "02_VectorStream"),
+            Path.Combine(repoRoot, "Documentation", "Documentation", "Stream WhiteBook", "03_MatrixTile"),
+            Path.Combine(repoRoot, "Documentation", "Documentation", "Stream WhiteBook", "04_Assists"),
+            Path.Combine(repoRoot, "Documentation", "Documentation", "Stream WhiteBook", "ExternalAccelerators")
         };
 
         foreach (string root in roots)

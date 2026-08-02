@@ -1,5 +1,5 @@
-using HybridCPU_ISE.CloseToRTL.Memory.DMA;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.DMA;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 
 using YAKSys_Hybrid_CPU.Core.Contracts;
 using YAKSys_Hybrid_CPU.Execution;
@@ -64,11 +64,12 @@ namespace YAKSys_Hybrid_CPU
             DMAController = new DMAController(ref proc);
             Memory = new MemorySubsystem(ref proc, DMAController);
 
-            CPU_Cores = new CPU_Core[1024];
+            BeginCoreTableConstruction(1024);
             for (int coreIndex = 0; coreIndex < CPU_Cores.Length; coreIndex++)
             {
-                CPU_Cores[coreIndex] = new CPU_Core((ushort)coreIndex, MainMemory);
+                ReplaceCore(coreIndex, new CPU_Core((ushort)coreIndex, MainMemory));
             }
+            ValidateCoreTableConstructionComplete();
 
             Pods = new PodController[TOTAL_PODS];
             NoCRouters = new NoC_XY_Router[POD_GRID_DIM, POD_GRID_DIM];

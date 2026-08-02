@@ -53,8 +53,8 @@ public sealed class L7SdcHardPinnedPlacementTests
         InvalidOpcodeException ex = Assert.Throws<InvalidOpcodeException>(
             () => decoder.DecodeInstructionBundle(rawSlots, bundleAddress: 0x7000, bundleSerial: 1));
 
-        Assert.Contains("L7-SDC", ex.Message, StringComparison.Ordinal);
-        Assert.Contains("lane7", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ACCEL_SUBMIT", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("illegal", ex.Message, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("slot 6", ex.Message, StringComparison.OrdinalIgnoreCase);
 
         MicroOp submit = InstructionRegistry.CreateMicroOp(

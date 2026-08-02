@@ -2,7 +2,7 @@
 
 HybridCPU ISE virtualization is a neutral runtime architecture with a VMX-compatible frontend. The runtime owns execution domains, memory domains, I/O domains, capabilities, evidence, nested composition, trap policy, completion records, and retire publication. VMX is preserved as frozen compatibility ABI and projection vocabulary.
 
-The current implementation deliberately avoids the older model where VMX/VMCS objects behaved like the virtualization substrate. The architectural substrate is now carried by runtime descriptors and services under `CloseToRTL/Core/Runtime`. VMX-facing code under `CloseToRTL/Core/Virtualization/Compatibility` decodes frozen opcodes, checks alias/projection legality, calls `RuntimeBoundaryAdmissionService`, and then either projects neutral runtime state or denies/fails closed.
+The current implementation deliberately avoids the older model where VMX/VMCS objects behaved like the virtualization substrate. The architectural substrate is now carried by runtime descriptors and services under `CloseToHSL/Core/Runtime`. VMX-facing code under `CloseToHSL/Core/Virtualization/Compatibility` decodes frozen opcodes, checks alias/projection legality, calls `RuntimeBoundaryAdmissionService`, and then either projects neutral runtime state or denies/fails closed.
 
 ## One-Sentence Model
 

@@ -162,7 +162,7 @@ public sealed class ScalarAddressGenerationSh1AddExecutableTests
             rs1,
             rs2,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x6620, 67));
     }
 

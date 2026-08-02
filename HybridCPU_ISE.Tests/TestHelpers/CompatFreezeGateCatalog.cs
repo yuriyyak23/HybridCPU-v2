@@ -70,7 +70,7 @@ internal static class CompatFreezeGateCatalog
             RelativePath("HybridCPU_ISE", "Arch", "OpcodeInfo.Types.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Contracts", "CompilerContract.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Decoder", "CPU_Core.Decoder.cs"),
-            RelativePath("HybridCPU_ISE", "Core", "Decoder", "DecodedBundleTransportProjector.cs"),
+            RelativePath("HybridCPU_ISE", "Legacy", "CloseToHSL", "Core", "Decoder", "DecodedBundleTransportProjector.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Decoder", "DecoderFrontendOccupiedInstructionProjection.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Decoder", "IDecoderFrontend.cs"),
             RelativePath("HybridCPU_ISE", "Core", "Decoder", "VliwDecoderV4.cs"),

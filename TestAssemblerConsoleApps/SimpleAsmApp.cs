@@ -447,6 +447,20 @@ internal sealed partial class SimpleAsmApp
             field.SetValue(boxedAccumulator, mergedValue);
         }
 
+        foreach (PropertyInfo property in typeof(Processor.CPU_Core.PipelineControl).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+        {
+            if (!property.CanRead || !property.CanWrite || property.GetIndexParameters().Length != 0)
+            {
+                continue;
+            }
+
+            object? mergedValue = MergeSnapshotValue(
+                property.PropertyType,
+                property.GetValue(boxedAccumulator),
+                property.GetValue(boxedSample));
+            property.SetValue(boxedAccumulator, mergedValue);
+        }
+
         return (Processor.CPU_Core.PipelineControl)boxedAccumulator;
     }
 

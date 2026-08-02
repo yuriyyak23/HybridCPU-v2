@@ -42,6 +42,7 @@ public sealed class TestAssemblerWhiteBookHarnessTests
     {
         ProcessResult result = RunDotnet(
             "run",
+            "--no-build",
             "--project",
             "TestAssemblerConsoleApps/TestAssemblerConsoleApps.csproj",
             "--",
@@ -58,6 +59,7 @@ public sealed class TestAssemblerWhiteBookHarnessTests
     {
         ProcessResult result = RunDotnet(
             "run",
+            "--no-build",
             "--project",
             "TestAssemblerConsoleApps/TestAssemblerConsoleApps.csproj",
             "--",

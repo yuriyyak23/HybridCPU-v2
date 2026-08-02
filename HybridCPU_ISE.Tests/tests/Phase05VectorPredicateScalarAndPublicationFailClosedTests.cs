@@ -6,11 +6,11 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlVall = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VallInstruction;
-using CloseToRtlVany = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VanyInstruction;
-using CloseToRtlVfirst = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VfirstInstruction;
-using CloseToRtlVmsif = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsifInstruction;
-using CloseToRtlVmsof = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsofInstruction;
+using CloseToHSLVall = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VallInstruction;
+using CloseToHSLVany = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VanyInstruction;
+using CloseToHSLVfirst = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VfirstInstruction;
+using CloseToHSLVmsif = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsifInstruction;
+using CloseToHSLVmsof = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PredicateMask.VmsofInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -43,9 +43,9 @@ public sealed class VectorPredicateScalarAndPublicationFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVfirst), "VFIRST", true, false)]
-    [InlineData(typeof(CloseToRtlVany), "VANY", false, true)]
-    [InlineData(typeof(CloseToRtlVall), "VALL", false, true)]
+    [InlineData(typeof(CloseToHSLVfirst), "VFIRST", true, false)]
+    [InlineData(typeof(CloseToHSLVany), "VANY", false, true)]
+    [InlineData(typeof(CloseToHSLVall), "VALL", false, true)]
     public void ScalarResultRows_RecordPhase05BNegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -102,8 +102,8 @@ public sealed class VectorPredicateScalarAndPublicationFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVmsif), "VMSIF", "including-first")]
-    [InlineData(typeof(CloseToRtlVmsof), "VMSOF", "only-first")]
+    [InlineData(typeof(CloseToHSLVmsif), "VMSIF", "including-first")]
+    [InlineData(typeof(CloseToHSLVmsof), "VMSOF", "only-first")]
     public void PredicateOnlyRows_RecordPhase05CNegativeDecisionGate(
         Type templateType,
         string mnemonic,

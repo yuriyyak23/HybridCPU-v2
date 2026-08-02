@@ -21,8 +21,8 @@ lowering.
 Global code anchors:
 
 - `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/*`
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_Compiler/Core/IR/Model/IrAcceleratorModels.cs`
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
 - `HybridCPU_ISE.Tests/tests/L7Sdc*.cs`

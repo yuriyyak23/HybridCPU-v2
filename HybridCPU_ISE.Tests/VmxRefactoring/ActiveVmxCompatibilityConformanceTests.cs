@@ -20,16 +20,16 @@ public sealed class VmxProjectionSchemaAndQuarantineTests
             string[] matches = Directory.GetFiles(projectRoot, fileName, SearchOption.AllDirectories)
                 .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
                 .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
-                .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}CloseToRTL{Path.DirectorySeparatorChar}Core{Path.DirectorySeparatorChar}Virtualization{Path.DirectorySeparatorChar}Conformance{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+                .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}CloseToHSL{Path.DirectorySeparatorChar}Core{Path.DirectorySeparatorChar}Virtualization{Path.DirectorySeparatorChar}Conformance{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
             Assert.False(matches.Any(), string.Join(Environment.NewLine, matches));
         }
 
         string runtimeTrapSource = ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Events/Traps/NeutralTrapResult.cs",
-            "CloseToRTL/Core/Runtime/Events/Traps/TrapPolicyBitmap.cs",
-            "CloseToRTL/Core/Runtime/Events/Traps/SchedulingBudgetTimer.cs");
+            "CloseToHSL/Core/Runtime/Events/Traps/NeutralTrapResult.cs",
+            "CloseToHSL/Core/Runtime/Events/Traps/TrapPolicyBitmap.cs",
+            "CloseToHSL/Core/Runtime/Events/Traps/SchedulingBudgetTimer.cs");
 
         Assert.Contains("NeutralTrapResult", runtimeTrapSource);
         Assert.DoesNotContain("VmExitReason", runtimeTrapSource);
@@ -63,7 +63,7 @@ public sealed class VmxCompatibilityProjectionInventoryTests
         {
             string source = File.ReadAllText(Path.Combine(
                 projectRoot,
-                "CloseToRTL/Core/Virtualization/Compatibility",
+                "CloseToHSL/Core/Virtualization/Compatibility",
                 sourcePath.Replace('/', Path.DirectorySeparatorChar)));
 
             Assert.DoesNotContain("VmxExecutionUnit", source);
@@ -84,7 +84,7 @@ public sealed class VmxCompatibilityProjectionInventoryTests
     {
         string compatibilityRoot = Path.Combine(
             projectRoot,
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Virtualization",
             "Compatibility");
@@ -108,7 +108,7 @@ public sealed class VmxFirstAdmittedCompatibilityPathTests
     public void ActiveVmreadPath_RemainsAdmittedDeniedAndDoesNotCreateBackendSuccess()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs");
 
         Assert.Contains("RuntimeBoundaryAdmissionService", source);
         Assert.Contains("DomainRuntimeOperationKind.ReadCompatibilityProjection", source);

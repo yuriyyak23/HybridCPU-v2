@@ -1,6 +1,6 @@
 using HybridCPU.Compiler.Core.IR;
 using HybridCPU_ISE.Arch;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -2856,7 +2856,7 @@ public sealed class EncoderDecoderDeclaredRoundtripInventoryTests
         InvalidOpcodeException exception = Assert.Throws<InvalidOpcodeException>(
             () => decoder.Decode(in instruction, slotIndex: 7));
 
-        Assert.Contains("legacy Src2Pointer control-flow target transport", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("Src2Pointer", exception.Message, StringComparison.Ordinal);
         Assert.Contains("Immediate", exception.Message, StringComparison.Ordinal);
     }
 

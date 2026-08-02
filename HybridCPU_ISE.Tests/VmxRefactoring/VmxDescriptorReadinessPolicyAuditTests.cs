@@ -211,17 +211,17 @@ public sealed class VmxDescriptorReadinessPolicyAuditTests
     public void DescriptorReadinessPolicySource_HasNoVmreadProjectionOrVmcsStoreFallback()
     {
         string descriptorSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
+            "CloseToHSL/Core/System/Vmcs/V2/VmcsV2Descriptor.cs");
         string descriptorReadinessSource = ExtractBetween(
             descriptorSource,
             "public VmcsV2ValidationResult ValidateMigrationReadiness()",
             "public void RecordVectorExceptionExit");
         string neutralReadinessSource = descriptorReadinessSource +
             ActiveVmxConformanceHelpers.ReadProjectSource(
-                "CloseToRTL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs",
-                "CloseToRTL/Core/Runtime/Migration/Restore/RestoreValidationService.cs",
-                "CloseToRTL/Core/Runtime/Migration/Validation/MigrationValidationPolicy.cs",
-                "CloseToRTL/Core/Runtime/Migration/Checkpoint/DomainCheckpointImage.cs");
+                "CloseToHSL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs",
+                "CloseToHSL/Core/Runtime/Migration/Restore/RestoreValidationService.cs",
+                "CloseToHSL/Core/Runtime/Migration/Validation/MigrationValidationPolicy.cs",
+                "CloseToHSL/Core/Runtime/Migration/Checkpoint/DomainCheckpointImage.cs");
 
         foreach (string marker in new[]
                  {

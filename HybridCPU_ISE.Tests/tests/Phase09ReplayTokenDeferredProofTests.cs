@@ -145,8 +145,7 @@ public sealed class ReplayTokenDeferredProofTests
     private static void ConfigureReplayVerificationRuntime(ulong bankSize)
     {
         Processor.ClearVerificationData();
-        Processor.CPU_Cores = new Processor.CPU_Core[1024];
-        Processor.CPU_Cores[0] = new Processor.CPU_Core(0);
+        Processor.InstallCoreTableForTesting(new Processor.CPU_Core(0));
         Processor.MainMemory = new Processor.MultiBankMemoryArea(4, bankSize);
         Processor.Ready_Flag = true;
     }

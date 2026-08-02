@@ -19,7 +19,7 @@ Current virtualization conformance families include:
 
 Relevant path:
 
-- `CloseToRTL/Core/Virtualization/Conformance/**`
+- `CloseToHSL/Core/Virtualization/Conformance/**`
 
 ## VMX Refactoring Tests
 

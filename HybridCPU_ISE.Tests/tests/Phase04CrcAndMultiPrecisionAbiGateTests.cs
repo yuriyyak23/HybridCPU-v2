@@ -10,13 +10,13 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
-using CloseToRtlCsel = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
-using CloseToRtlAdc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AdcInstruction;
-using CloseToRtlAddc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AddcInstruction;
-using CloseToRtlCrc32 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc32Instruction;
-using CloseToRtlCrc64 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc64Instruction;
-using CloseToRtlSbc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SbcInstruction;
-using CloseToRtlSubc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SubcInstruction;
+using CloseToHSLCsel = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.ConditionalSelect.CselInstruction;
+using CloseToHSLAdc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AdcInstruction;
+using CloseToHSLAddc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AddcInstruction;
+using CloseToHSLCrc32 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc32Instruction;
+using CloseToHSLCrc64 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc64Instruction;
+using CloseToHSLSbc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SbcInstruction;
+using CloseToHSLSubc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SubcInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -26,19 +26,19 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
     [Fact]
     public void CselRow_ClosesFourRegisterCarrierGateFailClosed()
     {
-        Assert.Equal("CSEL", CloseToRtlCsel.Mnemonic);
-        Assert.Equal("rd, rs_true, rs_false, rs_cond", CloseToRtlCsel.OperandShape);
-        Assert.Equal("ScalarSelectAbiDeferredNoEmission", CloseToRtlCsel.EvidenceBoundary);
-        Assert.Equal("Phase01ECarrierGateClosedNoApprovedCarrier", CloseToRtlCsel.CarrierGateDecision);
-        Assert.True(CloseToRtlCsel.RequiresFourRegisterCarrierAbi);
-        Assert.True(CloseToRtlCsel.FourSourceCarrierDecisionClosed);
-        Assert.True(CloseToRtlCsel.ExternalCarrierGateClosed);
-        Assert.True(CloseToRtlCsel.RequiresExternalCarrierAbi);
-        Assert.False(CloseToRtlCsel.ApprovedFourSourceCarrier);
-        Assert.False(CloseToRtlCsel.ExternalCarrierApprovedInPhase01);
-        Assert.False(CloseToRtlCsel.CurrentPackedScalarIrSupportsCarrier);
+        Assert.Equal("CSEL", CloseToHSLCsel.Mnemonic);
+        Assert.Equal("rd, rs_true, rs_false, rs_cond", CloseToHSLCsel.OperandShape);
+        Assert.Equal("ScalarSelectAbiDeferredNoEmission", CloseToHSLCsel.EvidenceBoundary);
+        Assert.Equal("Phase01ECarrierGateClosedNoApprovedCarrier", CloseToHSLCsel.CarrierGateDecision);
+        Assert.True(CloseToHSLCsel.RequiresFourRegisterCarrierAbi);
+        Assert.True(CloseToHSLCsel.FourSourceCarrierDecisionClosed);
+        Assert.True(CloseToHSLCsel.ExternalCarrierGateClosed);
+        Assert.True(CloseToHSLCsel.RequiresExternalCarrierAbi);
+        Assert.False(CloseToHSLCsel.ApprovedFourSourceCarrier);
+        Assert.False(CloseToHSLCsel.ExternalCarrierApprovedInPhase01);
+        Assert.False(CloseToHSLCsel.CurrentPackedScalarIrSupportsCarrier);
 
-        AssertDeferredNoEmissionSurface(typeof(CloseToRtlCsel));
+        AssertDeferredNoEmissionSurface(typeof(CloseToHSLCsel));
         AssertReservedNoAllocationStatus("CSEL", "ScalarSelectCzero");
         AssertCompilerCselAbiContract();
     }
@@ -68,8 +68,8 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlCrc32), "CRC32", "ScalarCrcChecksum")]
-    [InlineData(typeof(CloseToRtlCrc64), "CRC64", "ScalarCrcChecksum")]
+    [InlineData(typeof(CloseToHSLCrc32), "CRC32", "ScalarCrcChecksum")]
+    [InlineData(typeof(CloseToHSLCrc64), "CRC64", "ScalarCrcChecksum")]
     public void CrcRows_ClosePolynomialReflectionSeedFinalXorEndianGateFailClosed(
         Type instructionType,
         string mnemonic,
@@ -127,10 +127,10 @@ public sealed class CrcAndMultiPrecisionAbiGateTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlAdc), "ADC", "RequiresCarryInAbi", "RequiresCarryOutAbi", "RequiresExplicitCarryInputTransportAbi", "RequiresExplicitCarryOutputTransportAbi")]
-    [InlineData(typeof(CloseToRtlSbc), "SBC", "RequiresBorrowInAbi", "RequiresBorrowOutAbi", "RequiresExplicitBorrowInputTransportAbi", "RequiresExplicitBorrowOutputTransportAbi")]
-    [InlineData(typeof(CloseToRtlAddc), "ADDC", "RequiresCarryOutAbi", "RequiresCarryBorrowPublicationAbi", "", "RequiresExplicitCarryOutputTransportAbi")]
-    [InlineData(typeof(CloseToRtlSubc), "SUBC", "RequiresBorrowOutAbi", "RequiresCarryBorrowPublicationAbi", "", "RequiresExplicitBorrowOutputTransportAbi")]
+    [InlineData(typeof(CloseToHSLAdc), "ADC", "RequiresCarryInAbi", "RequiresCarryOutAbi", "RequiresExplicitCarryInputTransportAbi", "RequiresExplicitCarryOutputTransportAbi")]
+    [InlineData(typeof(CloseToHSLSbc), "SBC", "RequiresBorrowInAbi", "RequiresBorrowOutAbi", "RequiresExplicitBorrowInputTransportAbi", "RequiresExplicitBorrowOutputTransportAbi")]
+    [InlineData(typeof(CloseToHSLAddc), "ADDC", "RequiresCarryOutAbi", "RequiresCarryBorrowPublicationAbi", "", "RequiresExplicitCarryOutputTransportAbi")]
+    [InlineData(typeof(CloseToHSLSubc), "SUBC", "RequiresBorrowOutAbi", "RequiresCarryBorrowPublicationAbi", "", "RequiresExplicitBorrowOutputTransportAbi")]
     public void MultiPrecisionRows_CloseCarryBorrowPublicationGateFailClosed(
         Type instructionType,
         string mnemonic,

@@ -13,8 +13,8 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlRol = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RolInstruction;
-using CloseToRtlRor = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RorInstruction;
+using CloseToHSLRol = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RolInstruction;
+using CloseToHSLRor = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.Rotates.RorInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -42,7 +42,7 @@ public sealed class NonVmxIteration03CRotateExecutableTests
 
     [Theory]
     [MemberData(nameof(RotateOpcodeCases))]
-    public void Rotate_OpcodeStatusAndCloseToRtlObjects_AreRuntimeClosed(
+    public void Rotate_OpcodeStatusAndCloseToHSLObjects_AreRuntimeClosed(
         InstructionsEnum opcode,
         string mnemonic,
         int expectedOpcode,
@@ -70,7 +70,7 @@ public sealed class NonVmxIteration03CRotateExecutableTests
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalDisabledOpcodes);
 
-        AssertCloseToRtlObject(opcode, mnemonic);
+        AssertCloseToHSLObject(opcode, mnemonic);
     }
 
     [Theory]
@@ -208,13 +208,13 @@ public sealed class NonVmxIteration03CRotateExecutableTests
             rs1: rs1,
             rs2: rs2,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x7240, 82));
     }
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void Rotate_ScalarAluAndCloseToRtlObjects_DefineXlen64RotateEdges(
+    public void Rotate_ScalarAluAndCloseToHSLObjects_DefineXlen64RotateEdges(
         InstructionsEnum opcode,
         ulong source,
         ulong shiftSource,
@@ -227,7 +227,7 @@ public sealed class NonVmxIteration03CRotateExecutableTests
             immediate: 0);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, ExecuteCloseToRtlObject(opcode, source, shiftSource));
+        Assert.Equal(expected, ExecuteCloseToHSLObject(opcode, source, shiftSource));
     }
 
     [Theory]
@@ -471,39 +471,39 @@ public sealed class NonVmxIteration03CRotateExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar rotate opcode.")
         };
 
-    private static void AssertCloseToRtlObject(InstructionsEnum opcode, string mnemonic)
+    private static void AssertCloseToHSLObject(InstructionsEnum opcode, string mnemonic)
     {
         switch (opcode)
         {
             case InstructionsEnum.ROL:
-                Assert.Equal(CloseToRtlRol.Mnemonic, mnemonic);
-                Assert.Equal(64, CloseToRtlRol.XLen);
-                Assert.Equal(0x3F, CloseToRtlRol.ShiftMask);
-                Assert.Equal((ushort)opcode, CloseToRtlRol.Opcode);
-                Assert.True(CloseToRtlRol.WritesScalarRegister);
-                Assert.False(CloseToRtlRol.HasSideEffects);
+                Assert.Equal(CloseToHSLRol.Mnemonic, mnemonic);
+                Assert.Equal(64, CloseToHSLRol.XLen);
+                Assert.Equal(0x3F, CloseToHSLRol.ShiftMask);
+                Assert.Equal((ushort)opcode, CloseToHSLRol.Opcode);
+                Assert.True(CloseToHSLRol.WritesScalarRegister);
+                Assert.False(CloseToHSLRol.HasSideEffects);
                 break;
             case InstructionsEnum.ROR:
-                Assert.Equal(CloseToRtlRor.Mnemonic, mnemonic);
-                Assert.Equal(64, CloseToRtlRor.XLen);
-                Assert.Equal(0x3F, CloseToRtlRor.ShiftMask);
-                Assert.Equal((ushort)opcode, CloseToRtlRor.Opcode);
-                Assert.True(CloseToRtlRor.WritesScalarRegister);
-                Assert.False(CloseToRtlRor.HasSideEffects);
+                Assert.Equal(CloseToHSLRor.Mnemonic, mnemonic);
+                Assert.Equal(64, CloseToHSLRor.XLen);
+                Assert.Equal(0x3F, CloseToHSLRor.ShiftMask);
+                Assert.Equal((ushort)opcode, CloseToHSLRor.Opcode);
+                Assert.True(CloseToHSLRor.WritesScalarRegister);
+                Assert.False(CloseToHSLRor.HasSideEffects);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar rotate opcode.");
         }
     }
 
-    private static ulong ExecuteCloseToRtlObject(
+    private static ulong ExecuteCloseToHSLObject(
         InstructionsEnum opcode,
         ulong source,
         ulong shiftSource) =>
         opcode switch
         {
-            InstructionsEnum.ROL => CloseToRtlRol.Execute(source, shiftSource),
-            InstructionsEnum.ROR => CloseToRtlRor.Execute(source, shiftSource),
+            InstructionsEnum.ROL => CloseToHSLRol.Execute(source, shiftSource),
+            InstructionsEnum.ROR => CloseToHSLRor.Execute(source, shiftSource),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar rotate opcode.")
         };
 

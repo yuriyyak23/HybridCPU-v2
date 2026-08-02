@@ -130,7 +130,7 @@ namespace YAKSys_Hybrid_CPU
                     GetCurrentReplayMemorySize());
             }
 
-            ref CPU_Core core = ref CPU_Cores[0];
+            CPU_Core core = GetCoreRef(0);
             return ReplayToken.CreateFromConfig(
                 RandomSeed,
                 checked((uint)core.VectorConfig.VL),
@@ -173,7 +173,7 @@ namespace YAKSys_Hybrid_CPU
                     "Replay restore must fail closed instead of silently crossing an incompatible memory boundary.");
             }
 
-            ref CPU_Core core = ref CPU_Cores[0];
+            CPU_Core core = GetCoreRef(0);
             core.VectorConfig.VL = token.VL;
             core.VectorConfig.VTYPE = ComposeReplayTokenVType(token);
             core.VectorConfig.TailAgnostic = token.TailAgnostic ? (byte)1 : (byte)0;

@@ -8,7 +8,7 @@ It is a repository-facing evidence guide, not a paper-result claim sheet.
 The authoritative smoke baseline is documented in `Documentation/validation-baseline.md` and
 runs through the repository-declared `VSTest` policy with `dotnet test`.
 Live source and test-count evidence is tracked by `Documentation/evidence-matrix.md` and
-`build/recount-validation-evidence.ps1`.
+`eng/validate.ps1 -Stage Documentation`.
 
 ## Truthfulness Boundaries
 
@@ -50,7 +50,7 @@ dotnet test ".\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" --filter "FullyQu
 Run the smoke baseline:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\build\run-validation-baseline.ps1" -NoRestore
+pwsh ./eng/validate.ps1 -Stage Baseline
 ```
 
 Run the current runtime sanity baseline:

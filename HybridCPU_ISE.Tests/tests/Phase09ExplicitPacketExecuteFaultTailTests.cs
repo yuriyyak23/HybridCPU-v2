@@ -56,7 +56,9 @@ public sealed class ExplicitPacketExecuteFaultTailTests
     public void ExplicitPacketGenericMicroOp_WhenExecuteThrowsPageFault_ThenPropagatesStageAwareFault()
     {
         var core = new Processor.CPU_Core(0);
+        core.InitializePipeline();
         var microOp = new ThrowingPageFaultMicroOp();
+        ulong retiredBefore = core.GetPipelineControl().InstructionsRetired;
 
         PageFaultException ex = Assert.Throws<PageFaultException>(
             () => core.TestExecuteExplicitPacketLaneMicroOp(
@@ -66,13 +68,19 @@ public sealed class ExplicitPacketExecuteFaultTailTests
 
         Assert.Equal(0xCAFEUL, ex.FaultAddress);
         Assert.False(ex.IsWrite);
+        Assert.False(core.GetExecuteStage().Valid);
+        Assert.False(core.TestGetExecuteForwardingPath().Valid);
+        Assert.Equal(retiredBefore, core.GetPipelineControl().InstructionsRetired);
+        Assert.Equal(0UL, core.TestGetReferenceRawFallbackCount());
     }
 
     [Fact]
     public void ExplicitPacketGenericMicroOp_WhenExecuteThrowsAlignmentFault_ThenRethrowsTranslatedPageFault()
     {
         var core = new Processor.CPU_Core(0);
+        core.InitializePipeline();
         var microOp = new ThrowingAlignmentFaultMicroOp();
+        ulong retiredBefore = core.GetPipelineControl().InstructionsRetired;
 
         PageFaultException ex = Assert.Throws<PageFaultException>(
             () => core.TestExecuteExplicitPacketLaneMicroOp(
@@ -83,29 +91,39 @@ public sealed class ExplicitPacketExecuteFaultTailTests
         Assert.Equal(0x1003UL, ex.FaultAddress);
         Assert.True(ex.IsWrite);
         Assert.IsType<MemoryAlignmentException>(ex.InnerException);
+        Assert.False(core.GetExecuteStage().Valid);
+        Assert.False(core.TestGetExecuteForwardingPath().Valid);
+        Assert.Equal(retiredBefore, core.GetPipelineControl().InstructionsRetired);
+        Assert.Equal(0UL, core.TestGetReferenceRawFallbackCount());
     }
 
     [Fact]
-    public void ExplicitPacketGenericMicroOp_WhenExecuteThrowsNonFaultException_ThenFailClosesLaneWithoutTrap()
+    public void ExplicitPacketGenericMicroOp_WhenExecuteThrowsUnknownException_ThenFailsClosedInsteadOfStallingLane()
     {
         var core = new Processor.CPU_Core(0);
         var microOp = new ThrowingNonFaultMicroOp();
 
-        core.TestExecuteExplicitPacketLaneMicroOp(
-            laneIndex: 0,
-            microOp,
-            pc: 0x2400);
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => core.TestExecuteExplicitPacketLaneMicroOp(
+                laneIndex: 0,
+                microOp,
+                pc: 0x2400));
 
         Processor.CPU_Core.ExecuteStage executeStage = core.GetExecuteStage();
         Processor.CPU_Core.ScalarExecuteLaneState lane = executeStage.Lane0;
 
+        Assert.Equal(
+            ExecutionFaultCategory.InvalidInternalOp,
+            ExecutionFaultContract.GetCategory(exception));
+        Assert.IsType<InvalidOperationException>(exception.InnerException);
         Assert.True(executeStage.Valid);
-        Assert.True(lane.IsOccupied);
+        Assert.False(lane.IsOccupied);
         Assert.Null(lane.MicroOp);
         Assert.False(lane.ResultReady);
 
         Processor.CPU_Core.PipelineControl control = core.GetPipelineControl();
         Assert.Equal(0UL, control.InstructionsRetired);
         Assert.Equal(0UL, control.MemoryStalls);
+        Assert.Equal(0UL, core.TestGetReferenceRawFallbackCount());
     }
 }

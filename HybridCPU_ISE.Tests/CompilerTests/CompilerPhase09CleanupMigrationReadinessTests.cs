@@ -18,7 +18,7 @@ using YAKSys_Hybrid_CPU.Core.Execution.DmaStreamCompute;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Auth;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Tokens;
 using YAKSys_Hybrid_CPU.Core;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using Xunit;
 
 namespace HybridCPU_ISE.Tests.CompilerTests;
@@ -747,7 +747,7 @@ public sealed class CompilerPhase09CleanupMigrationReadinessTests
         string dscCoreRoot = Path.Combine(
             repoRoot,
             "HybridCPU_ISE",
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Execution",
             "DmaStreamCompute");
@@ -841,23 +841,23 @@ public sealed class CompilerPhase09CleanupMigrationReadinessTests
     public void RuntimeLocalValidationOnlyIsValidSurfaces_DoNotBecomeCompilerFacingAuthority()
     {
         string dmaWindowDescriptor = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Runtime", "IO", "Dma", "DmaWindowDescriptor.cs"));
+            Path.Combine("CloseToHSL", "Core", "Runtime", "IO", "Dma", "DmaWindowDescriptor.cs"));
         string dmaDomainBinding = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Runtime", "IO", "Dma", "DmaDomainBinding.cs"));
+            Path.Combine("CloseToHSL", "Core", "Runtime", "IO", "Dma", "DmaDomainBinding.cs"));
         string domainValidation = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Runtime", "Domains", "Validation", "DomainValidationResult.cs"));
+            Path.Combine("CloseToHSL", "Core", "Runtime", "Domains", "Validation", "DomainValidationResult.cs"));
         string laneCompletionRouting = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Runtime", "Completion", "Routing", "LaneCompletionRouting.cs"));
+            Path.Combine("CloseToHSL", "Core", "Runtime", "Completion", "Routing", "LaneCompletionRouting.cs"));
         string eventInjectionDescriptor = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Runtime", "Events", "Injection", "EventInjectionDescriptor.cs"));
+            Path.Combine("CloseToHSL", "Core", "Runtime", "Events", "Injection", "EventInjectionDescriptor.cs"));
         string trapRequest = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Runtime", "Events", "Traps", "TrapRequest.cs"));
+            Path.Combine("CloseToHSL", "Core", "Runtime", "Events", "Traps", "TrapRequest.cs"));
         string assistMicroOp = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Pipeline", "MicroOps", "Assist", "AssistMicroOp.cs"));
+            Path.Combine("CloseToHSL", "Core", "Pipeline", "MicroOps", "Assist", "AssistMicroOp.cs"));
         string decodedBundleDescriptor = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Decoder", "DecodedBundleDescriptor.cs"));
+            Path.Combine("CloseToHSL", "Core", "Decoder", "DecodedBundleDescriptor.cs"));
         string fspRuntime = ReadRuntimeFile(
-            Path.Combine("CloseToRTL", "Core", "Pipeline", "Scheduling", "Fsp", "CPU_Core.PipelineExecution.Fsp.cs"));
+            Path.Combine("CloseToHSL", "Core", "Pipeline", "Scheduling", "Fsp", "CPU_Core.PipelineExecution.Fsp.cs"));
 
         Assert.Contains("public bool IsValid", dmaWindowDescriptor, StringComparison.Ordinal);
         Assert.Contains("public bool IsValid", dmaDomainBinding, StringComparison.Ordinal);

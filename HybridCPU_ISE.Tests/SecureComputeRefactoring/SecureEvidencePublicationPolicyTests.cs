@@ -298,10 +298,10 @@ public sealed class SecureEvidencePublicationPolicyTests
     public void SecureEvidencePublicationSources_DoNotCreateVmcsVmxCapsOrVmreadAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePublicationPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Publication/SecureCompletionPublicationFence.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Sideband/EvidenceTransport/SecureComputeEvidenceSidebandEnvelope.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Evidence/SecureEvidencePublicationPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Publication/SecureCompletionPublicationFence.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Sideband/EvidenceTransport/SecureComputeEvidenceSidebandEnvelope.cs");
 
         Assert.DoesNotContain("VmcsField", source);
         Assert.DoesNotContain("VmxCaps", source);

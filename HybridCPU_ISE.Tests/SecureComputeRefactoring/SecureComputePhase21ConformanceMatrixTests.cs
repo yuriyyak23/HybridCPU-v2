@@ -106,7 +106,7 @@ public sealed class SecureComputePhase21ConformanceMatrixTests
     public void Source_DoesNotCreateExecutionPublicationVmxCompilerNestedOrReleaseAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Conformance/ReleaseGate/SecureComputePhase21ConformanceEvidencePolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Conformance/ReleaseGate/SecureComputePhase21ConformanceEvidencePolicy.cs");
 
         Assert.Contains("DeniedMissingPhase13RegistryBackedAdmissionEvidence", source);
         Assert.Contains("DeniedMissingPhase14CompletionRetireEvidence", source);

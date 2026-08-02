@@ -148,8 +148,9 @@ public sealed class CompilerPhase09DscLane6NegativeMatrixTests
                 bundleAddress: 0xD600,
                 bundleSerial: 6));
 
-        Assert.Contains("AcceleratorCommandDescriptor", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("ACCEL_SUBMIT", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("DmaStreamCompute", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("slot 6", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("illegal", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

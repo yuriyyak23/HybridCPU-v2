@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.DMA;
+using HybridCPU_ISE.CloseToHSL.Memory.DMA;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -118,8 +118,7 @@ public sealed class DmaControllerInterruptDispatchBindingSeamTests
             Processor.MainMemory = seededMemory;
 
             // Ensure at least one core exists so CallInterrupt can index CPU_Cores[0]
-            Processor.CPU_Cores = new Processor.CPU_Core[1];
-            Processor.CPU_Cores[0] = new Processor.CPU_Core(0);
+            Processor.InstallCoreTableForTesting(new Processor.CPU_Core(0));
 
             // Do NOT register a handler at 0x90 — CallInterrupt will hit the
             // "no handler registered" early return (handlerAddress == 0 → 0xFE),
@@ -157,7 +156,7 @@ public sealed class DmaControllerInterruptDispatchBindingSeamTests
         finally
         {
             Processor.MainMemory = originalMainMemory;
-            Processor.CPU_Cores = originalCores;
+            Processor.RestoreCoreTableForTesting(originalCores);
         }
     }
 }

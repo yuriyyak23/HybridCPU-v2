@@ -13,14 +13,14 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlAdc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AdcInstruction;
-using CloseToRtlAddc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AddcInstruction;
-using CloseToRtlClmulh = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CarrylessMultiply.ClmulhInstruction;
-using CloseToRtlClmulr = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CarrylessMultiply.ClmulrInstruction;
-using CloseToRtlCrc32 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc32Instruction;
-using CloseToRtlCrc64 = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc64Instruction;
-using CloseToRtlSbc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SbcInstruction;
-using CloseToRtlSubc = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SubcInstruction;
+using CloseToHSLAdc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AdcInstruction;
+using CloseToHSLAddc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.AddcInstruction;
+using CloseToHSLClmulh = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CarrylessMultiply.ClmulhInstruction;
+using CloseToHSLClmulr = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CarrylessMultiply.ClmulrInstruction;
+using CloseToHSLCrc32 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc32Instruction;
+using CloseToHSLCrc64 = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.CRC.Crc64Instruction;
+using CloseToHSLSbc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SbcInstruction;
+using CloseToHSLSubc = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.MultiPrecision.SubcInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -77,12 +77,12 @@ public sealed class ScalarCarryLessVariantsExecutableTests
         Assert.DoesNotContain(mnemonic, IsaV4Surface.MandatoryCoreOpcodes);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalDisabledOpcodes);
         Assert.Equal("ALU", IsaV4Surface.PipelineClassMap[mnemonic]);
-        Assert.Equal("ExecutableScalarAlu", GetCloseToRtlEvidenceBoundary(opcode));
-        Assert.True(GetCloseToRtlHasOpcodeAllocation(opcode));
-        Assert.True(GetCloseToRtlIsExecutable(opcode));
-        Assert.False(GetCloseToRtlCompilerHelperAllowed(opcode));
-        Assert.False(GetCloseToRtlRequiresVmxProjection(opcode));
-        Assert.True(GetCloseToRtlNoHiddenMultiOpEmission(opcode));
+        Assert.Equal("ExecutableScalarAlu", GetCloseToHSLEvidenceBoundary(opcode));
+        Assert.True(GetCloseToHSLHasOpcodeAllocation(opcode));
+        Assert.True(GetCloseToHSLIsExecutable(opcode));
+        Assert.False(GetCloseToHSLCompilerHelperAllowed(opcode));
+        Assert.False(GetCloseToHSLRequiresVmxProjection(opcode));
+        Assert.True(GetCloseToHSLNoHiddenMultiOpEmission(opcode));
     }
 
     [Theory]
@@ -222,13 +222,13 @@ public sealed class ScalarCarryLessVariantsExecutableTests
             rs2,
             predicateMask: 0xFF,
             immediate: 1);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(immediateAlias), 0x8220, 183));
     }
 
     [Theory]
     [MemberData(nameof(SemanticsRows))]
-    public void CarryLessVariants_ScalarAluDispatcherAndCloseToRtl_DefineXlen64WindowSemantics(
+    public void CarryLessVariants_ScalarAluDispatcherAndCloseToHSL_DefineXlen64WindowSemantics(
         InstructionsEnum opcode,
         ulong multiplicand,
         ulong multiplier,
@@ -240,7 +240,7 @@ public sealed class ScalarCarryLessVariantsExecutableTests
             multiplier,
             immediate: 0);
         Assert.Equal(expected, scalarAlu);
-        Assert.Equal(expected, ExecuteCloseToRtl(opcode, multiplicand, multiplier));
+        Assert.Equal(expected, ExecuteCloseToHSL(opcode, multiplicand, multiplier));
 
         var core = new Processor.CPU_Core(0);
         const byte vtId = 2;
@@ -272,17 +272,17 @@ public sealed class ScalarCarryLessVariantsExecutableTests
     }
 
     [Fact]
-    public void CarryLessVariants_CloseToRtlGoldenVectors_ArePublishedAndMatchRuntime()
+    public void CarryLessVariants_CloseToHSLGoldenVectors_ArePublishedAndMatchRuntime()
     {
-        foreach (var vector in CloseToRtlClmulh.GetLocalGoldenVectors())
+        foreach (var vector in CloseToHSLClmulh.GetLocalGoldenVectors())
         {
-            Assert.Equal(vector.Expected, CloseToRtlClmulh.Execute(vector.Multiplicand, vector.Multiplier));
+            Assert.Equal(vector.Expected, CloseToHSLClmulh.Execute(vector.Multiplicand, vector.Multiplier));
             Assert.Equal(vector.Expected, ScalarAluOps.Compute((uint)InstructionsEnum.CLMULH, vector.Multiplicand, vector.Multiplier, 0));
         }
 
-        foreach (var vector in CloseToRtlClmulr.GetLocalGoldenVectors())
+        foreach (var vector in CloseToHSLClmulr.GetLocalGoldenVectors())
         {
-            Assert.Equal(vector.Expected, CloseToRtlClmulr.Execute(vector.Multiplicand, vector.Multiplier));
+            Assert.Equal(vector.Expected, CloseToHSLClmulr.Execute(vector.Multiplicand, vector.Multiplier));
             Assert.Equal(vector.Expected, ScalarAluOps.Compute((uint)InstructionsEnum.CLMULR, vector.Multiplicand, vector.Multiplier, 0));
         }
     }
@@ -431,7 +431,7 @@ public sealed class ScalarCarryLessVariantsExecutableTests
         core.TestLatchMemoryToWriteBackTransferState();
         core.TestRunWriteBackStage();
 
-        Assert.Equal(ExecuteCloseToRtl(opcode, 0x8000_0000_0000_0000UL, 2UL), core.ReadArch(vtId, destinationRegister));
+        Assert.Equal(ExecuteCloseToHSL(opcode, 0x8000_0000_0000_0000UL, 2UL), core.ReadArch(vtId, destinationRegister));
 
         rollbackToken.Rollback(ref core);
         Assert.Equal(originalDestinationValue, core.ReadArch(vtId, destinationRegister));
@@ -440,16 +440,16 @@ public sealed class ScalarCarryLessVariantsExecutableTests
     [Fact]
     public void CarryLessVariants_AdjacentCrcAndMultiPrecisionRows_RemainFailClosed()
     {
-        Assert.True(CloseToRtlCrc32.RequiresPolynomialAbi);
-        Assert.True(CloseToRtlCrc32.RequiresReflectionAbi);
-        Assert.True(CloseToRtlCrc64.RequiresPolynomialAbi);
-        Assert.True(CloseToRtlCrc64.RequiresReflectionAbi);
-        Assert.True(CloseToRtlAdc.RequiresCarryInAbi);
-        Assert.True(CloseToRtlAdc.RequiresCarryOutAbi);
-        Assert.True(CloseToRtlSbc.RequiresBorrowInAbi);
-        Assert.True(CloseToRtlSbc.RequiresBorrowOutAbi);
-        Assert.True(CloseToRtlAddc.RequiresCarryOutAbi);
-        Assert.True(CloseToRtlSubc.RequiresBorrowOutAbi);
+        Assert.True(CloseToHSLCrc32.RequiresPolynomialAbi);
+        Assert.True(CloseToHSLCrc32.RequiresReflectionAbi);
+        Assert.True(CloseToHSLCrc64.RequiresPolynomialAbi);
+        Assert.True(CloseToHSLCrc64.RequiresReflectionAbi);
+        Assert.True(CloseToHSLAdc.RequiresCarryInAbi);
+        Assert.True(CloseToHSLAdc.RequiresCarryOutAbi);
+        Assert.True(CloseToHSLSbc.RequiresBorrowInAbi);
+        Assert.True(CloseToHSLSbc.RequiresBorrowOutAbi);
+        Assert.True(CloseToHSLAddc.RequiresCarryOutAbi);
+        Assert.True(CloseToHSLSubc.RequiresBorrowOutAbi);
 
         foreach (string mnemonic in new[] { "CRC32", "CRC64", "ADC", "SBC", "ADDC", "SUBC" })
         {
@@ -469,12 +469,12 @@ public sealed class ScalarCarryLessVariantsExecutableTests
     [Fact]
     public void CarryLessVariants_CompilerEmission_OpensDirectRowsWithoutHiddenLoweringAliases()
     {
-        Assert.False(CloseToRtlClmulh.CompilerHelperAllowed);
-        Assert.False(CloseToRtlClmulr.CompilerHelperAllowed);
-        Assert.True(CloseToRtlClmulh.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlClmulr.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlClmulh.NoVmxFrontendIntegrationRequired);
-        Assert.True(CloseToRtlClmulr.NoVmxFrontendIntegrationRequired);
+        Assert.False(CloseToHSLClmulh.CompilerHelperAllowed);
+        Assert.False(CloseToHSLClmulr.CompilerHelperAllowed);
+        Assert.True(CloseToHSLClmulh.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLClmulr.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLClmulh.NoVmxFrontendIntegrationRequired);
+        Assert.True(CloseToHSLClmulr.NoVmxFrontendIntegrationRequired);
 
         string compilerSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         Assert.Contains("InstructionsEnum.CLMULH", compilerSource, StringComparison.Ordinal);
@@ -496,62 +496,62 @@ public sealed class ScalarCarryLessVariantsExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 
-    private static string GetCloseToRtlEvidenceBoundary(InstructionsEnum opcode) =>
+    private static string GetCloseToHSLEvidenceBoundary(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.CLMULH => CloseToRtlClmulh.EvidenceBoundary,
-            InstructionsEnum.CLMULR => CloseToRtlClmulr.EvidenceBoundary,
+            InstructionsEnum.CLMULH => CloseToHSLClmulh.EvidenceBoundary,
+            InstructionsEnum.CLMULR => CloseToHSLClmulr.EvidenceBoundary,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 
-    private static bool GetCloseToRtlHasOpcodeAllocation(InstructionsEnum opcode) =>
+    private static bool GetCloseToHSLHasOpcodeAllocation(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.CLMULH => CloseToRtlClmulh.HasOpcodeAllocation,
-            InstructionsEnum.CLMULR => CloseToRtlClmulr.HasOpcodeAllocation,
+            InstructionsEnum.CLMULH => CloseToHSLClmulh.HasOpcodeAllocation,
+            InstructionsEnum.CLMULR => CloseToHSLClmulr.HasOpcodeAllocation,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 
-    private static bool GetCloseToRtlIsExecutable(InstructionsEnum opcode) =>
+    private static bool GetCloseToHSLIsExecutable(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.CLMULH => CloseToRtlClmulh.IsExecutable,
-            InstructionsEnum.CLMULR => CloseToRtlClmulr.IsExecutable,
+            InstructionsEnum.CLMULH => CloseToHSLClmulh.IsExecutable,
+            InstructionsEnum.CLMULR => CloseToHSLClmulr.IsExecutable,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 
-    private static bool GetCloseToRtlCompilerHelperAllowed(InstructionsEnum opcode) =>
+    private static bool GetCloseToHSLCompilerHelperAllowed(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.CLMULH => CloseToRtlClmulh.CompilerHelperAllowed,
-            InstructionsEnum.CLMULR => CloseToRtlClmulr.CompilerHelperAllowed,
+            InstructionsEnum.CLMULH => CloseToHSLClmulh.CompilerHelperAllowed,
+            InstructionsEnum.CLMULR => CloseToHSLClmulr.CompilerHelperAllowed,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 
-    private static bool GetCloseToRtlRequiresVmxProjection(InstructionsEnum opcode) =>
+    private static bool GetCloseToHSLRequiresVmxProjection(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.CLMULH => CloseToRtlClmulh.RequiresVmxProjection,
-            InstructionsEnum.CLMULR => CloseToRtlClmulr.RequiresVmxProjection,
+            InstructionsEnum.CLMULH => CloseToHSLClmulh.RequiresVmxProjection,
+            InstructionsEnum.CLMULR => CloseToHSLClmulr.RequiresVmxProjection,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 
-    private static bool GetCloseToRtlNoHiddenMultiOpEmission(InstructionsEnum opcode) =>
+    private static bool GetCloseToHSLNoHiddenMultiOpEmission(InstructionsEnum opcode) =>
         opcode switch
         {
-            InstructionsEnum.CLMULH => CloseToRtlClmulh.NoHiddenMultiOpEmission,
-            InstructionsEnum.CLMULR => CloseToRtlClmulr.NoHiddenMultiOpEmission,
+            InstructionsEnum.CLMULH => CloseToHSLClmulh.NoHiddenMultiOpEmission,
+            InstructionsEnum.CLMULR => CloseToHSLClmulr.NoHiddenMultiOpEmission,
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 
-    private static ulong ExecuteCloseToRtl(
+    private static ulong ExecuteCloseToHSL(
         InstructionsEnum opcode,
         ulong multiplicand,
         ulong multiplier) =>
         opcode switch
         {
-            InstructionsEnum.CLMULH => CloseToRtlClmulh.Execute(multiplicand, multiplier),
-            InstructionsEnum.CLMULR => CloseToRtlClmulr.Execute(multiplicand, multiplier),
+            InstructionsEnum.CLMULH => CloseToHSLClmulh.Execute(multiplicand, multiplier),
+            InstructionsEnum.CLMULR => CloseToHSLClmulr.Execute(multiplicand, multiplier),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null),
         };
 

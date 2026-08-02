@@ -18,7 +18,7 @@
 
 Paths are relative to the repository areas:
 
-- production: `HybridCPU_ISE/CloseToRTL/Core/`;
+- production: `HybridCPU_ISE/CloseToHSL/Core/`;
 - tests: `HybridCPU_ISE.Tests/`;
 - plan: `HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/`.
 

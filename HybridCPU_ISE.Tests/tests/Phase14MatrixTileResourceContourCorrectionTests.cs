@@ -3,7 +3,7 @@ using HybridCPU_ISE.Arch;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Decoder;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
@@ -201,6 +201,33 @@ public sealed class MatrixTileResourceContourCorrectionTests
             capture.StreamTransfer.TransferFingerprint,
             journal.ReplayIdentity.StreamTransferFingerprint);
         Assert.NotEqual(0UL, journal.ReplayIdentity.ResourceContourFingerprint);
+    }
+
+    [Theory]
+    [InlineData((byte)1)]
+    [InlineData((byte)3)]
+    [InlineData((byte)4)]
+    [InlineData(byte.MaxValue)]
+    public void NonzeroFixedStreamTransportBytesRejectBeforeRetirePublication(byte streamEngineChannel)
+    {
+        Processor.CPU_Core core = CreateCore(out Processor.MainMemoryArea memory);
+        Assert.True(memory.TryWritePhysicalRange(0x100, new byte[] { 1, 2, 3, 4 }));
+        MatrixTileMicroOp load = CreateMicroOp(InstructionsEnum.MTILE_LOAD);
+        Assert.True(load.Execute(ref core));
+        MatrixTileExecutionCaptureRecord capture = AssertCapture(load);
+        MatrixTileExecutionCaptureRecord tampered = capture with
+        {
+            StreamTransfer = capture.StreamTransfer with
+            {
+                StreamEngineChannel = streamEngineChannel
+            }
+        };
+
+        Assert.Throws<MatrixTileRetireValidationException>(
+            () => load.RetireCapturedResult(ref core, tampered));
+        Assert.False(core.TryCaptureAnyMatrixTileSnapshot(0, 2, out _));
+
+        Assert.True(load.RetireCapturedResult(ref core, capture).IsSuccess);
     }
 
     [Fact]

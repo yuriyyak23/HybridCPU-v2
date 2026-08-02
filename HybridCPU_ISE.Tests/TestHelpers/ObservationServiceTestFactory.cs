@@ -63,7 +63,7 @@ internal sealed class ObservationTestMachineStateSource : IIseMachineStateSource
 
     public int GetCoreCount() => _cores.Length;
 
-    public Processor.CPU_Core GetCore(int coreId) => _cores[coreId];
+    public CpuCoreDiagnosticSnapshot GetCoreSnapshot(int coreId) => CpuCoreDiagnosticSnapshot.Capture(_cores[coreId]);
 
     public int GetPodCount() => _pods.Length;
 
@@ -99,9 +99,9 @@ internal sealed class ObservationTestMachineStateSource : IIseMachineStateSource
 
     public PerformanceReport GetPerformanceReport() => new();
 
-    public ReplayPhaseMetrics GetReplayPhaseMetrics(int coreId) => GetCore(coreId).GetReplayPhaseMetrics();
+    public ReplayPhaseMetrics GetReplayPhaseMetrics(int coreId) => GetCoreSnapshot(coreId).GetReplayPhaseMetrics();
 
-    public SchedulerPhaseMetrics GetSchedulerPhaseMetrics(int coreId) => GetCore(coreId).GetSchedulerPhaseMetrics();
+    public SchedulerPhaseMetrics GetSchedulerPhaseMetrics(int coreId) => GetCoreSnapshot(coreId).GetSchedulerPhaseMetrics();
 
     public TypedSlotTelemetryProfile? GetTypedSlotTelemetryProfile(int coreId, string programHash)
     {

@@ -101,10 +101,10 @@ public sealed class VmxControlLikeVmReadDenialTests
     public void ControlLikeDenialSource_HasNoVmcsStoreOrControlBitMapperFallback()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
-            "CloseToRTL/Core/Runtime/Domains/Descriptors/ExecutionDomain/ExecutionDomainReadOnlyStateView.cs",
-            "CloseToRTL/Core/Runtime/Memory/Translation/MemoryDomainReadOnlyTranslationView.cs",
-            "CloseToRTL/Core/Runtime/Capabilities/CompatibilityControls/CompatibilityControlDescriptor.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
+            "CloseToHSL/Core/Runtime/Domains/Descriptors/ExecutionDomain/ExecutionDomainReadOnlyStateView.cs",
+            "CloseToHSL/Core/Runtime/Memory/Translation/MemoryDomainReadOnlyTranslationView.cs",
+            "CloseToHSL/Core/Runtime/Capabilities/CompatibilityControls/CompatibilityControlDescriptor.cs");
 
         Assert.Contains("PrivilegedExecutionStateProjectionDenied", source);
         Assert.Contains("HostExecutionStateOwnerMissing", source);

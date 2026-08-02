@@ -406,6 +406,9 @@ internal static class Program
                         progressSink);
                     writer.WriteJson("metrics.json", metrics);
                     generatedFiles["metrics"] = "metrics.json";
+                    TimingMemoryReport timingMemoryReport = TimingMemoryReport.Create(metrics);
+                    writer.WriteJson(TimingMemoryReport.ArtifactFileName, timingMemoryReport);
+                    generatedFiles["post_ref1_timing_memory"] = TimingMemoryReport.ArtifactFileName;
                     status = string.IsNullOrWhiteSpace(metrics.FailureMessage)
                         ? DiagnosticRunStatus.Succeeded
                         : DiagnosticRunStatus.Failed;
@@ -598,6 +601,7 @@ internal static class Program
         Console.WriteLine($"Scalar issue width [4]: {metrics.ScalarIssueWidth4Cycles}");
         Console.WriteLine($"Total bursts: {metrics.TotalBursts}");
         Console.WriteLine($"Bytes transferred: {metrics.BytesTransferred}");
+        PrintTimingAndMemoryInterpretation(metrics);
         Console.WriteLine($"NOPs avoided: {metrics.NopAvoided}");
         Console.WriteLine($"NOPs due to no class capacity: {metrics.NopDueToNoClassCapacity}");
         Console.WriteLine($"NOPs due to pinned constraint: {metrics.NopDueToPinnedConstraint}");
@@ -720,6 +724,30 @@ internal static class Program
 
         return metrics;
     }
+
+    private static void PrintTimingAndMemoryInterpretation(SimpleAsmAppMetrics metrics)
+    {
+        TimingMemoryReport report = TimingMemoryReport.Create(metrics);
+        Console.WriteLine($"Timing/memory comparison schema: {report.SchemaVersion} / producer {report.ProducerSchemaVersion}");
+        Console.WriteLine($"Timing comparison policy: {report.TimingComparisonPolicy}");
+        Console.WriteLine($"Cycle decomposition: total={report.TotalCycles}, pipeline-stall={report.PipelineStallCycles}, memory-stall={report.MemoryStallCycles}, non-memory-stall={report.NonMemoryStallCycles}");
+        Console.WriteLine($"Fine-grained cycle breakdown: {report.FineGrainedCycleBreakdownAvailability}");
+        Console.WriteLine($"Memory telemetry disposition: {report.MemoryTelemetryDisposition}");
+        Console.WriteLine($"Memory telemetry note: {report.MemoryTelemetryMessage}");
+        Console.WriteLine($"Memory requests: accepted={RenderTelemetryMetric(report.AcceptedMemoryRequests)}, completed={RenderTelemetryMetric(report.CompletedMemoryRequests)}");
+        Console.WriteLine($"Data reads: accepted={RenderTelemetryMetric(report.DataReadAcceptedRequests)}, completed={RenderTelemetryMetric(report.DataReadCompletedRequests)}, bytes={RenderTelemetryMetric(report.DataReadBytes)}");
+        Console.WriteLine($"Data writes: accepted={RenderTelemetryMetric(report.DataWriteAcceptedRequests)}, completed={RenderTelemetryMetric(report.DataWriteCompletedRequests)}, committed-bytes={RenderTelemetryMetric(report.CommittedDataWriteBytes)}");
+        Console.WriteLine($"Instruction fetch: accepted={RenderTelemetryMetric(report.InstructionFetchAcceptedRequests)}, completed={RenderTelemetryMetric(report.InstructionFetchCompletedRequests)}, physical-read-bytes={RenderTelemetryMetric(report.InstructionFetchReadBytes)}");
+        Console.WriteLine($"Admission rejects: queue-full={RenderTelemetryMetric(report.QueueFullRejects)}, bank-conflict={RenderTelemetryMetric(report.BankConflictRejects)}");
+        Console.WriteLine($"Controller cycle bounds: edges={RenderTelemetryMetric(report.MemoryControllerCycles)}, read-service={RenderTelemetryMetric(report.MemoryReadServiceCycles)}, store-readiness={RenderTelemetryMetric(report.MemoryStoreReadinessServiceCycles)}, completion-publication={RenderTelemetryMetric(report.MemoryCompletionPublicationCycles)}");
+        Console.WriteLine($"Scheduler diagnostic policy: {report.SchedulerDiagnosticComparisonPolicy}");
+        Console.WriteLine($"Eligibility-mask policy: {report.EligibilityMaskComparisonPolicy}");
+    }
+
+    private static string RenderTelemetryMetric(TelemetryMetric metric) =>
+        metric.Availability == "Available"
+            ? metric.Value?.ToString() ?? "Unavailable"
+            : "Unavailable";
 
     private static ReplayPhaseBenchmarkPairReport ExecuteReplayPhasePairWorkload(ulong iterations)
     {

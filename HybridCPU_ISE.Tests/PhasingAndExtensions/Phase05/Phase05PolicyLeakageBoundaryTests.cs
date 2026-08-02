@@ -211,10 +211,10 @@ namespace HybridCPU_ISE.Tests
         public void WhenPhase05CounterInspected_ThenFieldNameDoesNotContainPolicyTerms(string counterName)
         {
             // Assert
-            FieldInfo field = typeof(YAKSys_Hybrid_CPU.Processor.CPU_Core.PipelineControl)
-                .GetField(counterName, BindingFlags.Public | BindingFlags.Instance)!;
-            Assert.NotNull(field);
-            AssertNoPolicyTermInName(field.Name, $"PipelineControl.{counterName}");
+            PropertyInfo property = typeof(YAKSys_Hybrid_CPU.Processor.CPU_Core.PipelineControl)
+                .GetProperty(counterName, BindingFlags.Public | BindingFlags.Instance)!;
+            Assert.NotNull(property);
+            AssertNoPolicyTermInName(property.Name, $"PipelineControl.{counterName}");
         }
 
         // =====================================================================

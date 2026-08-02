@@ -39,7 +39,7 @@ public sealed class VmxDocumentationMigrationClaimHygieneTests
 
         foreach (string requiredAnchor in new[]
                  {
-                     "HybridCPU_ISE/CloseToRTL/",
+                     "HybridCPU_ISE/CloseToHSL/",
                      "HybridCPU_ISE.Tests",
                      "VirtualiztionRefactoringNew",
                  })

@@ -228,10 +228,10 @@ public sealed class VmxMemoryOwnedVmReadValueProjectionTests
     public void VmReadProjectionPath_MemoryOwnedSourceUsesNeutralDescriptorAndNoVmcsStoreFallback()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Domains/Descriptors/MemoryDomain/MemoryDomainDescriptor.cs",
-            "CloseToRTL/Core/Runtime/Memory/Translation/MemoryDomainReadOnlyTranslationView.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
+            "CloseToHSL/Core/Runtime/Domains/Descriptors/MemoryDomain/MemoryDomainDescriptor.cs",
+            "CloseToHSL/Core/Runtime/Memory/Translation/MemoryDomainReadOnlyTranslationView.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs");
 
         Assert.Contains("RuntimeBoundaryAdmissionService", source);
         Assert.Contains("VmcsFieldProjectionSchema.TryGet", source);

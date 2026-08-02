@@ -8,16 +8,16 @@ using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlVavg = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgInstruction;
-using CloseToRtlVavgR = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgRInstruction;
-using CloseToRtlVclip = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VclipInstruction;
-using CloseToRtlVmulSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VmulSatInstruction;
-using CloseToRtlVscanMax = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMaxInstruction;
-using CloseToRtlVscanMin = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMinInstruction;
-using CloseToRtlVsllSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsllSatInstruction;
-using CloseToRtlVsraSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsraSatInstruction;
-using CloseToRtlVsrlSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsrlSatInstruction;
-using CloseToRtlVsubSat = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsubSatInstruction;
+using CloseToHSLVavg = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgInstruction;
+using CloseToHSLVavgR = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VavgRInstruction;
+using CloseToHSLVclip = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VclipInstruction;
+using CloseToHSLVmulSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VmulSatInstruction;
+using CloseToHSLVscanMax = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMaxInstruction;
+using CloseToHSLVscanMin = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.PrefixScan.VscanMinInstruction;
+using CloseToHSLVsllSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsllSatInstruction;
+using CloseToHSLVsraSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsraSatInstruction;
+using CloseToHSLVsrlSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsrlSatInstruction;
+using CloseToHSLVsubSat = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.SaturatingFixedPoint.VsubSatInstruction;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -218,11 +218,11 @@ public sealed class VectorFixedPointSaturatingFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVsubSat), "VSUB.SAT", false, false, "saturating subtract")]
-    [InlineData(typeof(CloseToRtlVmulSat), "VMUL.SAT", false, false, "saturating multiply")]
-    [InlineData(typeof(CloseToRtlVsllSat), "VSLL.SAT", true, false, "saturating left shift")]
-    [InlineData(typeof(CloseToRtlVsrlSat), "VSRL.SAT", true, true, "saturating logical right shift")]
-    [InlineData(typeof(CloseToRtlVsraSat), "VSRA.SAT", true, true, "saturating arithmetic right shift")]
+    [InlineData(typeof(CloseToHSLVsubSat), "VSUB.SAT", false, false, "saturating subtract")]
+    [InlineData(typeof(CloseToHSLVmulSat), "VMUL.SAT", false, false, "saturating multiply")]
+    [InlineData(typeof(CloseToHSLVsllSat), "VSLL.SAT", true, false, "saturating left shift")]
+    [InlineData(typeof(CloseToHSLVsrlSat), "VSRL.SAT", true, true, "saturating logical right shift")]
+    [InlineData(typeof(CloseToHSLVsraSat), "VSRA.SAT", true, true, "saturating arithmetic right shift")]
     public void SaturatingArithmeticAndShiftRows_RecordPhase08ANegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -256,8 +256,8 @@ public sealed class VectorFixedPointSaturatingFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVavg), "VAVG", false, "fixed-point average")]
-    [InlineData(typeof(CloseToRtlVavgR), "VAVG.R", true, "rounded fixed-point average")]
+    [InlineData(typeof(CloseToHSLVavg), "VAVG", false, "fixed-point average")]
+    [InlineData(typeof(CloseToHSLVavgR), "VAVG.R", true, "rounded fixed-point average")]
     public void AverageRows_RecordPhase08BNegativeDecisionGate(
         Type templateType,
         string mnemonic,
@@ -284,7 +284,7 @@ public sealed class VectorFixedPointSaturatingFailClosedTests
     [Fact]
     public void Vclip_RecordsPhase08BClipAndNarrowingDecisionGate()
     {
-        Type templateType = typeof(CloseToRtlVclip);
+        Type templateType = typeof(CloseToHSLVclip);
 
         Assert.Equal("VCLIP", GetConstant<string>(templateType, "Mnemonic"));
         Assert.Equal("VectorFixedPointSaturatingFailClosed", GetConstant<string>(templateType, "EvidenceBoundary"));
@@ -299,8 +299,8 @@ public sealed class VectorFixedPointSaturatingFailClosedTests
     }
 
     [Theory]
-    [InlineData(typeof(CloseToRtlVscanMin), "VSCAN.MIN", "prefix min")]
-    [InlineData(typeof(CloseToRtlVscanMax), "VSCAN.MAX", "prefix max")]
+    [InlineData(typeof(CloseToHSLVscanMin), "VSCAN.MIN", "prefix min")]
+    [InlineData(typeof(CloseToHSLVscanMax), "VSCAN.MAX", "prefix max")]
     public void PrefixScanRows_RecordPhase08CNegativeDecisionGate(
         Type templateType,
         string mnemonic,

@@ -144,20 +144,20 @@ public sealed class VmxTrapProjectionPublicationFenceTests
     public void PublicationFence_SourceKeepsNeutralAuthorityAndNoProductionSuccessPath()
     {
         string neutralFenceSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs");
+            "CloseToHSL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs");
         string neutralRouteSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs");
+            "CloseToHSL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs");
         string neutralHypercallSource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs");
+            "CloseToHSL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs");
         string compatibilitySource = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionRecordCompatibilityProjection.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionProjectionService.cs",
-            "CloseToRTL/Core/Virtualization/Compatibility/Frontend/Retire/VmxRetireModel.cs");
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionRecordCompatibilityProjection.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionProjectionService.cs",
+            "CloseToHSL/Core/Virtualization/Compatibility/Frontend/Retire/VmxRetireModel.cs");
         string productionCallers = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
-            "CloseToRTL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
-            "CloseToRTL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+            "CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+            "CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+            "CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
 
         Assert.Contains("TrapCompletionPublicationFence", neutralFenceSource);
         Assert.Contains("CompletionRecordClass.Trap", neutralFenceSource);

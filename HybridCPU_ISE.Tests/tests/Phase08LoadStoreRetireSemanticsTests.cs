@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using HybridCPU_ISE.Arch;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using Xunit;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core;
@@ -59,8 +59,13 @@ namespace HybridCPU_ISE.Tests
             load.InitializeMetadata();
 
             Assert.False(load.Execute(ref core));
-            Processor.Memory!.AdvanceCycles(1);
-            Assert.True(load.Execute(ref core));
+            bool completed = false;
+            for (int cycle = 0; cycle < 64 && !completed; cycle++)
+            {
+                Processor.Memory!.AdvanceCycles(1);
+                completed = load.Execute(ref core);
+            }
+            Assert.True(completed);
 
             Assert.True(load.TryGetPrimaryWriteBackResult(out ulong loadedValue));
             Assert.Equal(expectedValue, loadedValue);

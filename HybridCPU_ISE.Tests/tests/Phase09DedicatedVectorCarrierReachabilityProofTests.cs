@@ -15,7 +15,7 @@ public sealed class DedicatedVectorCarrierReachabilityProofTests
         string productionRoot = Path.Combine(repoRoot, "HybridCPU_ISE");
         string helperPath = Path.Combine(
             productionRoot,
-            "CloseToRTL",
+            "CloseToHSL",
             "Core",
             "Diagnostics",
             "InstructionRegistry.Helpers.Vector.cs");

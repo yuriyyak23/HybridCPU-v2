@@ -536,9 +536,9 @@ public sealed class SecureMemoryDomainPolicyTests
     public void OrdinaryLoadStoreFetchSources_DoNotRequireSecureMemoryPolicy()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/CPU_Core.System.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx",
-            "HybridCPU_ISE/CloseToRTL/Core/Decoder/DecodedBundleTransportProjector.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Services/CPU_Core.System.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions/NonVmx",
+            "HybridCPU_ISE/Legacy/CloseToHSL/Core/Decoder/DecodedBundleTransportProjector.cs");
 
         Assert.DoesNotContain("SecureMemory", source);
         Assert.DoesNotContain("SecureMemoryAdmission", source);
@@ -549,9 +549,9 @@ public sealed class SecureMemoryDomainPolicyTests
     public void SecureMemorySources_DoNotCreateVmcsBackedTranslationAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Descriptors/Memory/SecureMemoryDomainDescriptor.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Memory/SecureMemoryDomainDescriptor.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Memory/SecureMemoryAdmissionPolicy.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
 
         Assert.Contains("SecureRuntimeMutableDirtyPolicy", source);
         Assert.Contains("SecureRuntimeMutableMigrationClass", source);

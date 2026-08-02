@@ -171,7 +171,7 @@ public sealed class VmxCompilerIsaRuntimeNoEmissionContractTests
     {
         string compilerEmissionSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
         string nonVmxIsaSource = ReadRepositorySources(
-            "HybridCPU_ISE/CloseToRTL/Core/ISA/Instructions/NonVmx");
+            "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions/NonVmx");
         string combined = compilerEmissionSource + Environment.NewLine + nonVmxIsaSource;
 
         foreach (string forbidden in new[]

@@ -4,7 +4,7 @@ namespace YAKSys_Hybrid_CPU
 {
     public partial struct Processor
     {
-        public partial struct CPU_Core
+        public sealed partial class CPU_Core
         {
             /// <param name="CoreID">Zero-based hardware core index.</param>
             /// <param name="mainMemory">Optional main-memory instance. When null,

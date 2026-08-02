@@ -4,7 +4,7 @@ using HybridCPU.Compiler.Core.IR.Intent;
 using HybridCPU.Compiler.Core.IR.Lowering;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 

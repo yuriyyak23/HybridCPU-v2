@@ -13,7 +13,7 @@ The live topology is fixed:
 
 Code anchors:
 
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/Scheduling/SlotLegality/SlotClassDefinitions.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/SlotLegality/SlotClassDefinitions.cs`
 - `HybridCPU_Compiler/Core/IR/Model/IrHazardEnums.cs`
 - `HybridCPU_Compiler/Core/IR/Hazards/HybridCpuSlotModel.Analysis.cs`
 
@@ -32,8 +32,8 @@ rejects mismatched sideband placement.
 
 Code anchors:
 
-- `HybridCPU_ISE/CloseToRTL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Lane7Accelerator/SystemDeviceCommandMicroOp.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcHardPinnedPlacementTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNoBranchControlAuthorityTests.cs`
@@ -96,5 +96,5 @@ Code anchors:
 
 - `HybridCPU_Compiler/Core/IR/Bundling/HybridCpuBundleLowerer.cs`
 - `HybridCPU_Compiler/API/Threading/HybridCpuThreadCompilerContext.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`

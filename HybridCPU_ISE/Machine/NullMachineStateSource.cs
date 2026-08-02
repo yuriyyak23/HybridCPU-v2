@@ -33,7 +33,8 @@ namespace HybridCPU_ISE.Machine
 
         public int GetCoreCount() => ThrowUnavailable<int>(nameof(GetCoreCount));
 
-        public Processor.CPU_Core GetCore(int coreId) => ThrowUnavailable<Processor.CPU_Core>(nameof(GetCore));
+        public CpuCoreDiagnosticSnapshot GetCoreSnapshot(int coreId) =>
+            ThrowUnavailable<CpuCoreDiagnosticSnapshot>(nameof(GetCoreSnapshot));
 
         public int GetPodCount() => ThrowUnavailable<int>(nameof(GetPodCount));
 

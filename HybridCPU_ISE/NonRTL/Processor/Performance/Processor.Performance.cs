@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using HybridCPU_ISE.CloseToHSL.Memory.Timing;
 
 namespace YAKSys_Hybrid_CPU
 {
@@ -103,6 +104,31 @@ namespace YAKSys_Hybrid_CPU
                 report.MaxQueueDepth = Memory.MaxQueueDepth;
                 report.CurrentQueuedRequests = Memory.CurrentQueuedRequests;
 
+                MemoryCycleTelemetrySnapshot memoryCycleTelemetry =
+                    Memory.CycleController.GetTelemetrySnapshot();
+                report.MemoryCycleTelemetrySchemaVersion =
+                    MemoryCycleTelemetrySnapshot.SchemaVersion;
+                report.MemoryCycleTelemetryAvailable = true;
+                report.MemoryControllerCycles = checked((long)memoryCycleTelemetry.ControllerCycles);
+                report.MemoryReadServiceCycles = checked((long)memoryCycleTelemetry.ReadServiceCycles);
+                report.MemoryStoreReadinessServiceCycles = checked((long)memoryCycleTelemetry.StoreReadinessServiceCycles);
+                report.MemoryCompletionPublicationCycles = checked((long)memoryCycleTelemetry.CompletionPublicationCycles);
+                report.MemoryAcceptedRequests = checked((long)memoryCycleTelemetry.AcceptedRequests);
+                report.MemoryCompletedRequests = checked((long)memoryCycleTelemetry.CompletedRequests);
+                report.DataReadAcceptedRequests = checked((long)memoryCycleTelemetry.DataReadAcceptedRequests);
+                report.DataReadCompletedRequests = checked((long)memoryCycleTelemetry.DataReadCompletedRequests);
+                report.DataWriteAcceptedRequests = checked((long)memoryCycleTelemetry.DataWriteAcceptedRequests);
+                report.DataWriteCompletedRequests = checked((long)memoryCycleTelemetry.DataWriteCompletedRequests);
+                report.DataReadBytes = checked((long)memoryCycleTelemetry.DataReadBytes);
+                report.CommittedDataWriteBytes = checked((long)memoryCycleTelemetry.CommittedDataWriteBytes);
+                report.InstructionFetchReadBytesTelemetryAvailable = true;
+                report.InstructionFetchReadBytes = checked((long)memoryCycleTelemetry.InstructionFetchReadBytes);
+                report.InstructionFetchRequestTelemetryAvailable =
+                    MemoryCycleTelemetrySnapshot.InstructionFetchRequestTelemetryAvailable;
+                report.MemoryQueueFullRejects = checked((long)memoryCycleTelemetry.QueueFullRejects);
+                report.MemoryBankConflictRejectTelemetryAvailable =
+                    MemoryCycleTelemetrySnapshot.BankConflictRejectTelemetryAvailable;
+
                 // Phase 3: Memory wall counters
                 report.TotalMemoryStalls = MemWallStats.TotalMemoryStalls;
                 report.MemoryQueueFullEvents = MemWallStats.MemoryQueueFullEvents;
@@ -140,14 +166,15 @@ namespace YAKSys_Hybrid_CPU
             {
                 if (CPU_Cores != null && CPU_Cores.Length > 0)
                 {
-                    var pc = CPU_Cores[0].GetPipelineControl();
+                    HybridCPU_ISE.Machine.CpuCoreDiagnosticSnapshot coreSnapshot = GetCoreSnapshot(0);
+                    var pc = coreSnapshot.GetPipelineControl();
                     report.TotalInstructions = (long)pc.InstructionsRetired;
                     report.TotalCycles = (long)pc.CycleCount;
                     report.PipelineStalls = (long)pc.StallCycles;
                     report.BranchMispredictions = (long)pc.BranchMispredicts;
 
-                    var replayMetrics = CPU_Cores[0].GetReplayPhaseMetrics();
-                    var schedulerPhaseMetrics = CPU_Cores[0].GetSchedulerPhaseMetrics();
+                    var replayMetrics = coreSnapshot.GetReplayPhaseMetrics();
+                    var schedulerPhaseMetrics = coreSnapshot.GetSchedulerPhaseMetrics();
                     report.ReplayEpochCount = (long)replayMetrics.ReplayEpochCount;
                     report.AverageReplayEpochLength = replayMetrics.AverageEpochLength;
                     report.StableDonorSlotRatio = replayMetrics.StableDonorSlotRatio;

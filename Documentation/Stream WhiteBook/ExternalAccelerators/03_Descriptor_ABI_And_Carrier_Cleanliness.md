@@ -78,7 +78,7 @@ submit, and unsupported expansion paths fail closed.
 Code anchors:
 
 - `HybridCPU_ISE/NonRTL/Core/Execution/ExternalAccelerators/Descriptors/AcceleratorDescriptorParser.cs`
-- `HybridCPU_ISE/CloseToRTL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
+- `HybridCPU_ISE/CloseToHSL/Core/Frontend/Decode/VliwDecoderV4Bridge/VliwDecoderV4.cs`
 - `HybridCPU_ISE/NonRTL/Core/Decoder/DecodedBundleTransportProjector.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcNativeCarrierValidationTests.cs`
 - `HybridCPU_ISE.Tests/tests/L7SdcInstructionTransportSidebandTests.cs`

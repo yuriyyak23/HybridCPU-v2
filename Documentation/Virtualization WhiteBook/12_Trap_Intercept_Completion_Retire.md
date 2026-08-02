@@ -6,14 +6,14 @@ Trap/intercept authority has been split from VMX-compatible exit vocabulary. Thi
 
 Neutral trap types live under:
 
-- `CloseToRTL/Core/Runtime/Events/Traps/TrapRequest.cs`
-- `CloseToRTL/Core/Runtime/Events/Traps/TrapPolicyBitmap.cs`
-- `CloseToRTL/Core/Runtime/Domains/Descriptors/TrapPolicy/TrapPolicyDescriptor.cs`
-- `CloseToRTL/Core/Runtime/Events/Traps/NeutralTrapResult.cs`
-- `CloseToRTL/Core/Runtime/Events/Traps/DomainTrapRecord.cs`
-- `CloseToRTL/Core/Runtime/Events/Traps/SchedulingBudgetTimer.cs`
-- `CloseToRTL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs`
-- `CloseToRTL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs`
+- `CloseToHSL/Core/Runtime/Events/Traps/TrapRequest.cs`
+- `CloseToHSL/Core/Runtime/Events/Traps/TrapPolicyBitmap.cs`
+- `CloseToHSL/Core/Runtime/Domains/Descriptors/TrapPolicy/TrapPolicyDescriptor.cs`
+- `CloseToHSL/Core/Runtime/Events/Traps/NeutralTrapResult.cs`
+- `CloseToHSL/Core/Runtime/Events/Traps/DomainTrapRecord.cs`
+- `CloseToHSL/Core/Runtime/Events/Traps/SchedulingBudgetTimer.cs`
+- `CloseToHSL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs`
+- `CloseToHSL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs`
 
 The neutral vocabulary is:
 
@@ -31,10 +31,10 @@ No neutral trap result needs `VmExitReason`.
 
 VMX-facing projection types live under:
 
-- `CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Events/TrapDecision.cs`
-- `CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Events/VmxTrapProjectionMapper.cs`
-- `CloseToRTL/Core/Virtualization/Compatibility/FrozenAbi/VmcsFieldAliases/VmExitReason.cs`
-- `CloseToRTL/Core/Virtualization/Compatibility/FrozenAbi/VmcsFieldAliases/VmxExitQualification.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Events/TrapDecision.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Events/VmxTrapProjectionMapper.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/FrozenAbi/VmcsFieldAliases/VmExitReason.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/FrozenAbi/VmcsFieldAliases/VmxExitQualification.cs`
 
 `TrapDecision` contains `VmExitReason` and `VmxExitQualification`, so it is compatibility projection vocabulary. It must not feed runtime trap policy.
 
@@ -79,7 +79,7 @@ Neither runtime-owned positive descriptor is used by the current VMX frontend. A
 
 ## Completion Publication Fence
 
-`TrapCompletionPublicationFence` lives under `CloseToRTL/Core/Runtime/Completion/Records`. It evaluates:
+`TrapCompletionPublicationFence` lives under `CloseToHSL/Core/Runtime/Completion/Records`. It evaluates:
 
 - runtime admission allowed;
 - neutral trap exists;

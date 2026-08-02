@@ -6,13 +6,13 @@ Nested virtualization is represented by neutral nested domain descriptors and pr
 
 Relevant paths:
 
-- `CloseToRTL/Core/Runtime/Nested/Descriptors/NestedDomainDescriptor.cs`
-- `CloseToRTL/Core/Runtime/Nested/Projection/NestedProjectionService.cs`
-- `CloseToRTL/Core/Runtime/Nested/Projection/INestedProjectionService.cs`
-- `CloseToRTL/Core/Runtime/Nested/MemoryComposition/**`
-- `CloseToRTL/Core/Runtime/Nested/CapabilityFilter/**`
-- `CloseToRTL/Core/Runtime/Nested/Policies/NestedEvidencePolicy.cs`
-- `CloseToRTL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs`
+- `CloseToHSL/Core/Runtime/Nested/Descriptors/NestedDomainDescriptor.cs`
+- `CloseToHSL/Core/Runtime/Nested/Projection/NestedProjectionService.cs`
+- `CloseToHSL/Core/Runtime/Nested/Projection/INestedProjectionService.cs`
+- `CloseToHSL/Core/Runtime/Nested/MemoryComposition/**`
+- `CloseToHSL/Core/Runtime/Nested/CapabilityFilter/**`
+- `CloseToHSL/Core/Runtime/Nested/Policies/NestedEvidencePolicy.cs`
+- `CloseToHSL/Core/Runtime/Nested/NestedDomainProjectionCheckpointService.cs`
 
 These files own nested descriptors, nested memory composition, capability filtering, nested evidence policy, and checkpoint projection.
 
@@ -20,9 +20,9 @@ These files own nested descriptors, nested memory composition, capability filter
 
 Relevant VMX-compatible projection paths:
 
-- `CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs`
-- `CloseToRTL/Core/Virtualization/Compatibility/Generated/VmcsProjection/NestedDomainControllerCompatibilityProjection.cs`
-- `CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/Nested/**`
+- `CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/ShadowVmcsNestedProjectionService.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/Generated/VmcsProjection/NestedDomainControllerCompatibilityProjection.cs`
+- `CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Nested/**`
 
 These files can map neutral nested facts into VMX-shaped exit mappings and shadow-VMCS bridge vocabulary. They must remain projection layers.
 

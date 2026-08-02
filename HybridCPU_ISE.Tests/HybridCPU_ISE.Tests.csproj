@@ -38,6 +38,8 @@
     <ProjectReference Include="..\CpuInterfaceBridge\HybridCpu_InterfaceBridge.csproj">
       <AdditionalProperties>DefineTestSupport=$(DefineTestSupport)</AdditionalProperties>
     </ProjectReference>
+    <ProjectReference Include="..\TestAssemblerConsoleApps\TestAssemblerConsoleApps.csproj"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -93,7 +95,6 @@
 
   <ItemGroup>
     <Folder Include="SafetyAndVerification\Phase1Backlog\" />
-    <Folder Include="TestResults\" />
   </ItemGroup>
 
 </Project>

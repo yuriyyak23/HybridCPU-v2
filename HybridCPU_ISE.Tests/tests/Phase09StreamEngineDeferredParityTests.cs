@@ -14,7 +14,7 @@ using YAKSys_Hybrid_CPU.Execution;
 using YAKSys_Hybrid_CPU.Memory;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 using HybridCPU_ISE.Arch;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 
 namespace HybridCPU_ISE.Tests;
 
@@ -1239,15 +1239,17 @@ public sealed class StreamEngineDeferredParityTests
         return result;
     }
 
+    // RF-11 TEST-ONLY REFLECTION MUTATION ADAPTER: targets the live nested owner,
+    // not a CPU_Core typed-reference or a production ownership contract.
     private static void SetPrivateField<TValue>(
         ref Processor.CPU_Core core,
         string fieldName,
         TValue value)
     {
-        FieldInfo field = typeof(Processor.CPU_Core).GetField(
+        FieldInfo field = typeof(ScratchState).GetField(
             fieldName,
             BindingFlags.Instance | BindingFlags.NonPublic)!;
-        field.SetValueDirect(__makeref(core), value);
+        field.SetValue(core.Runtime.Scratch, value);
     }
 
     private static void WriteIndexedDescriptor(

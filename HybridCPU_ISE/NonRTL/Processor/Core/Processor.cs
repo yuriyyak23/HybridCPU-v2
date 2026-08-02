@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.DMA;
+using HybridCPU_ISE.CloseToHSL.Memory.DMA;
 using System;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Contracts;
@@ -69,8 +69,9 @@ namespace YAKSys_Hybrid_CPU
                         int globalId = baseCoreId + c;
                         if (globalId < CPU_Cores.Length)
                         {
-                            CPU_Cores[globalId].CsrPodId = podId;
-                            CPU_Cores[globalId].CsrPodAffinityMask = 0xFFFF; // all 16 cores active
+                            CPU_Core core = GetCoreRef(globalId);
+                            core.CsrPodId = podId;
+                            core.CsrPodAffinityMask = 0xFFFF; // all 16 cores active
                         }
                     }
                 }
@@ -128,7 +129,7 @@ namespace YAKSys_Hybrid_CPU
         }
 
 
-        public static CPU_Core[] CPU_Cores = new CPU_Core[1024];
+        public static CPU_Core[] CPU_Cores { get; private set; } = Array.Empty<CPU_Core>();
 
         public static bool Ready_Flag;
 

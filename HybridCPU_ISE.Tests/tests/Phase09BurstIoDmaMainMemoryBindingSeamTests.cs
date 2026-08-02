@@ -1,5 +1,5 @@
-using HybridCPU_ISE.CloseToRTL.Memory.DMA;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.DMA;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using System;
 using Xunit;
 using YAKSys_Hybrid_CPU;
@@ -11,7 +11,7 @@ namespace HybridCPU_ISE.Tests;
 public sealed class BurstIoDmaMainMemoryBindingSeamTests
 {
     [Fact]
-    public void BurstRead_WhenDmaCompletionSwapsGlobalMainMemory_UsesSeededMemorySurface()
+    public void BurstRead_LargeFunctionalAdapter_DoesNotDriveDmaCompletionOrSwapMemory()
     {
         const ulong address = 0x2000UL;
         const int elementCount = 2048;
@@ -70,7 +70,7 @@ public sealed class BurstIoDmaMainMemoryBindingSeamTests
                 elementSize,
                 stride);
 
-            Assert.True(swapped);
+            Assert.False(swapped);
             Assert.Equal((ulong)elementCount, completed);
             Assert.Equal(expected, destination);
         }

@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Memory;
 

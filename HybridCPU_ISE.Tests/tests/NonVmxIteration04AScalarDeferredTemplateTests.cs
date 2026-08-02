@@ -4,7 +4,7 @@ using System.Reflection;
 using Xunit;
 using YAKSys_Hybrid_CPU.Arch;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
-using CloseToRtlPopcnt = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.PopcntInstruction;
+using CloseToHSLPopcnt = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitCount.PopcntInstruction;
 
 namespace HybridCPU_ISE.Tests.InstructionsRefactor;
 
@@ -12,7 +12,7 @@ public sealed class NonVmxIteration04AScalarDeferredTemplateTests
 {
     public static IEnumerable<object[]> DeferredTemplateCases()
     {
-        yield return Template(typeof(CloseToRtlPopcnt), "POPCNT", "rd, rs1", "FacadeAliasNoEmissionClosed");
+        yield return Template(typeof(CloseToHSLPopcnt), "POPCNT", "rd, rs1", "FacadeAliasNoEmissionClosed");
     }
 
     public static IEnumerable<object[]> DeferredStatusCases()
@@ -25,7 +25,7 @@ public sealed class NonVmxIteration04AScalarDeferredTemplateTests
 
     public static IEnumerable<object[]> MetadataPass01BMarkerCases()
     {
-        yield return MarkerTemplate(typeof(CloseToRtlPopcnt), "AliasNoEmissionPolicyClosed", "CanonicalMnemonicDecisionClosed", "SelectedAsNoEmissionAlias");
+        yield return MarkerTemplate(typeof(CloseToHSLPopcnt), "AliasNoEmissionPolicyClosed", "CanonicalMnemonicDecisionClosed", "SelectedAsNoEmissionAlias");
     }
 
     [Theory]

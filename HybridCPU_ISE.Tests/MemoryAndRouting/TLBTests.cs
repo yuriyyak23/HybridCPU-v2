@@ -1,4 +1,4 @@
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using Xunit;
 
 namespace HybridCPU_ISE.Tests

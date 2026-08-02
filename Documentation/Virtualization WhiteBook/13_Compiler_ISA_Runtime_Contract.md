@@ -18,12 +18,12 @@ However, a VMX opcode is not a runtime operation by itself. The opcode must cros
 
 Relevant compiler-boundary paths:
 
-- `CloseToRTL/Core/Virtualization/CompilerBoundary/IR/VirtualizationCompilerIntent.cs`
-- `CloseToRTL/Core/Virtualization/CompilerBoundary/Lowering/VirtualizationLoweringBoundary.cs`
-- `CloseToRTL/Core/Virtualization/CompilerBoundary/LaneBinding/VirtualizationLaneBindingPolicy.cs`
-- `CloseToRTL/Core/Virtualization/CompilerBoundary/Scheduling/VirtualizationSystemSingletonSchedulingRule.cs`
-- `CloseToRTL/Core/Virtualization/CompilerBoundary/Bundling/VirtualizationBundleLegalityRule.cs`
-- `CloseToRTL/Core/Virtualization/CompilerBoundary/NoEmission/VirtualizationNoEmissionRegressionGate.cs`
+- `CloseToHSL/Core/Virtualization/CompilerBoundary/IR/VirtualizationCompilerIntent.cs`
+- `CloseToHSL/Core/Virtualization/CompilerBoundary/Lowering/VirtualizationLoweringBoundary.cs`
+- `CloseToHSL/Core/Virtualization/CompilerBoundary/LaneBinding/VirtualizationLaneBindingPolicy.cs`
+- `CloseToHSL/Core/Virtualization/CompilerBoundary/Scheduling/VirtualizationSystemSingletonSchedulingRule.cs`
+- `CloseToHSL/Core/Virtualization/CompilerBoundary/Bundling/VirtualizationBundleLegalityRule.cs`
+- `CloseToHSL/Core/Virtualization/CompilerBoundary/NoEmission/VirtualizationNoEmissionRegressionGate.cs`
 
 These boundaries prevent the compiler from turning compatibility names into direct runtime mutations.
 

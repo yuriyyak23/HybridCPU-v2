@@ -221,8 +221,8 @@ public sealed class VmxHypercallBackendAdmissionPolicyTests
     public void HypercallBackendAdmission_SourceHasNoVmxExitOrVmcsAuthority()
     {
         string source = ActiveVmxConformanceHelpers.ReadProjectSource(
-            "CloseToRTL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs",
-            "CloseToRTL/Core/Runtime/Events/Hypercalls/NeutralHypercallBackendOwnerDescriptor.cs");
+            "CloseToHSL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs",
+            "CloseToHSL/Core/Runtime/Events/Hypercalls/NeutralHypercallBackendOwnerDescriptor.cs");
 
         Assert.Contains("HypercallBackendAdmissionService", source);
         Assert.Contains("NeutralHypercallBackendOwnerDescriptor", source);

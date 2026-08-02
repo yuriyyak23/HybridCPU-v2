@@ -200,9 +200,9 @@ public sealed class GuestCr0Cr4ReadOnlyProjectionTests
     public void GuestCr0Cr4Projection_SourceGuardIsFieldSpecificAndProjectionOnly()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Compatibility/Projection/PrivilegedExecutionStateProjectionService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/PrivilegedExecutionStateProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs");
 
         Assert.Contains("PrivilegedControlRegisterKind.GuestCr0", source);
         Assert.Contains("PrivilegedControlRegisterKind.GuestCr4", source);

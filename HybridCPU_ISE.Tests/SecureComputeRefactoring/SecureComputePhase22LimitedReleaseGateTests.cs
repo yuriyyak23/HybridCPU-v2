@@ -116,7 +116,7 @@ public sealed class SecureComputePhase22LimitedReleaseGateTests
     public void Source_DoesNotCreateReleaseExecutionPublicationVmxCompilerOrNestedAuthority()
     {
         string source = ReadProjectSource(
-            "HybridCPU_ISE/CloseToRTL/Core/Virtualization/SecureCompute/Conformance/ReleaseGate/SecureComputePhase22LimitedReleaseGatePolicy.cs");
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Conformance/ReleaseGate/SecureComputePhase22LimitedReleaseGatePolicy.cs");
 
         Assert.Contains("DeniedNoNamedPositiveRuntimePath", source);
         Assert.Contains("DeniedPhase21MatrixMissing", source);

@@ -1,5 +1,6 @@
 using System;
 using HybridCPU_ISE.Arch;
+using HybridCPU_ISE.Machine;
 using YAKSys_Hybrid_CPU.Core;
 
 namespace YAKSys_Hybrid_CPU.DiagnosticsConsole;
@@ -53,19 +54,22 @@ internal sealed class DiagnosticRuntimeSession
 
     public void WriteCommittedRegister(byte virtualThreadId, int registerId, ulong value)
     {
-        Processor.CPU_Cores[CoreId].WriteCommittedArch(virtualThreadId, registerId, value);
+        Processor.CPU_Core core = GetCoreRef();
+        core.WriteCommittedArch(virtualThreadId, registerId, value);
     }
 
     public void PrepareExecutionStart(ulong pc)
     {
         Processor.CurrentProcessorMode = ProcessorMode.Emulation;
-        Processor.CPU_Cores[CoreId].PrepareExecutionStart(pc);
+        Processor.CPU_Core core = GetCoreRef();
+        core.PrepareExecutionStart(pc);
     }
 
     public void ConfigureFspForDiagnostics()
     {
-        Processor.CPU_Cores[CoreId].VectorConfig.FSP_Enabled = 1;
-        Processor.CPU_Cores[CoreId].VectorConfig.FSP_StealMask = 0xFF;
+        Processor.CPU_Core core = GetCoreRef();
+        core.VectorConfig.FSP_Enabled = 1;
+        core.VectorConfig.FSP_StealMask = 0xFF;
 
         var pod = Processor.GetPodForCore(CoreId);
         if (pod?.Scheduler is { } scheduler)
@@ -76,34 +80,36 @@ internal sealed class DiagnosticRuntimeSession
 
     public void SetPipelineMode(bool enabled)
     {
-        Processor.CPU_Cores[CoreId].SetPipelineMode(enabled);
+        Processor.CPU_Core core = GetCoreRef();
+        core.SetPipelineMode(enabled);
     }
 
     public void ExecutePipelineCycle()
     {
-        Processor.CPU_Cores[CoreId].ExecutePipelineCycle();
+        Processor.CPU_Core core = GetCoreRef();
+        core.ExecutePipelineCycle();
     }
 
     public ulong ReadActiveLivePc()
     {
-        return Processor.CPU_Cores[CoreId].ReadActiveLivePc();
+        return GetCoreSnapshot().ReadActiveLivePc();
     }
 
     public int ReadActiveVirtualThreadId()
     {
-        return Processor.CPU_Cores[CoreId].ReadActiveVirtualThreadId();
+        return GetCoreSnapshot().ReadActiveVirtualThreadId();
     }
 
     public Processor.CPU_Core.PipelineControl GetPipelineControl()
     {
-        return Processor.CPU_Cores[CoreId].GetPipelineControl();
+        return GetCoreSnapshot().GetPipelineControl();
     }
 
     public Processor.CPU_Core.PipelineControl CapturePipelineControl()
     {
         return Processor.CPU_Cores != null &&
                CoreId < Processor.CPU_Cores.Length
-            ? Processor.CPU_Cores[CoreId].GetPipelineControl()
+            ? GetCoreSnapshot().GetPipelineControl()
             : default;
     }
 
@@ -124,27 +130,21 @@ internal sealed class DiagnosticRuntimeSession
         }
     }
 
-    public Processor.CPU_Core GetCore()
-    {
-        return Processor.CPU_Cores[CoreId];
-    }
+    public Processor.CPU_Core GetCoreRef() => Processor.GetCoreRef(CoreId);
 
-    public void SetCore(Processor.CPU_Core core)
-    {
-        Processor.CPU_Cores[CoreId] = core;
-    }
+    public CpuCoreDiagnosticSnapshot GetCoreSnapshot() => Processor.GetCoreSnapshot(CoreId);
 
     public Processor.CPU_Core.LiveCpuStateAdapter CreateLiveCpuStateAdapter(byte virtualThreadId)
     {
-        return Processor.CPU_Cores[CoreId].CreateLiveCpuStateAdapter(virtualThreadId);
+        Processor.CPU_Core core = GetCoreRef();
+        return core.CreateLiveCpuStateAdapter(virtualThreadId);
     }
 
     public void ApplyLiveStateAdapter(Processor.CPU_Core.LiveCpuStateAdapter state)
     {
         ArgumentNullException.ThrowIfNull(state);
 
-        var core = GetCore();
+        Processor.CPU_Core core = GetCoreRef();
         state.ApplyTo(ref core);
-        SetCore(core);
     }
 }

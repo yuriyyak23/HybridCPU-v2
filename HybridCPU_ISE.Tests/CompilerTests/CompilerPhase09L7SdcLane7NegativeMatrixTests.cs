@@ -42,7 +42,7 @@ public sealed class CompilerPhase09L7SdcLane7NegativeMatrixTests
 
         Assert.Contains("ACCEL_SUBMIT", ex.Message, StringComparison.Ordinal);
         Assert.Contains("typed", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains(nameof(AcceleratorCommandDescriptor), ex.Message, StringComparison.Ordinal);
+        Assert.Contains("illegal", ex.Message, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("DmaStreamComputeMicroOp", ex.Message, StringComparison.Ordinal);
         Assert.DoesNotContain("StreamEngine", ex.Message, StringComparison.Ordinal);
         Assert.DoesNotContain("Scalar", ex.Message, StringComparison.Ordinal);

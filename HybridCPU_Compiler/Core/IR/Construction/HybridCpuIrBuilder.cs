@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using HybridCPU.Compiler.Core.IR.Lowering;
 using YAKSys_Hybrid_CPU.Arch;
-using YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
+using YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Vector.MatrixTile;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU.Compiler.Core.IR
@@ -1019,8 +1019,7 @@ namespace HybridCPU.Compiler.Core.IR
             if (resolvedOpcodeInfo.HasValue &&
                 resolvedOpcodeInfo.Value.InstructionClass == InstructionClass.ScalarAlu)
             {
-                return YAKSys_Hybrid_CPU.Core.Pipeline.InternalOpBuilder.MapToKind(unchecked((ushort)opcode)) ==
-                       YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps.InternalOpKind.Div;
+                return HybridCpuOpcodeSemantics.IsSignedDivideTrapContour(opcode, resolvedOpcodeInfo);
             }
 
             return opcode switch

@@ -2,7 +2,7 @@ using HybridCPU.Compiler.Core.API.Facade;
 using HybridCPU.Compiler.Core.IR;
 using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
-using HybridCPU_ISE.CloseToRTL.Memory.MMU;
+using HybridCPU_ISE.CloseToHSL.Memory.MMU;
 using HybridCPU_ISE.Tests.TestHelpers;
 using System;
 using System.Collections.Generic;

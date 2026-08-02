@@ -11,8 +11,7 @@ The current validation baseline is:
 
 - `Documentation/validation-baseline.md`
 - `Documentation/evidence-matrix.md`
-- `build/run-validation-baseline.ps1`
-- `build/recount-validation-evidence.ps1`
+- `eng/validate.ps1`
 - `Documentation/AsmAppTestResults.md`
 
 ## Current Commands
@@ -26,13 +25,13 @@ dotnet build ".\HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj"
 Run the smoke baseline:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\build\run-validation-baseline.ps1" -NoRestore
+pwsh ./eng/validate.ps1 -Stage Baseline
 ```
 
 Refresh live validation counts and optionally run smoke:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\build\recount-validation-evidence.ps1" -RunSmoke -NoRestore
+pwsh ./eng/validate.ps1 -Stage Documentation
 ```
 
 Run the runtime sanity harness:

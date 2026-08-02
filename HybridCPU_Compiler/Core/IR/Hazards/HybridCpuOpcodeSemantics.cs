@@ -4,7 +4,6 @@ using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
-using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
@@ -183,8 +182,29 @@ namespace HybridCPU.Compiler.Core.IR
                 return false;
             }
 
-            return TryResolveRetainedCompatibilityInternalKind(opcode, out InternalOpKind internalOpKind) &&
-                   internalOpKind is InternalOpKind.Interrupt or InternalOpKind.InterruptReturn;
+            return false;
+        }
+
+        public static bool IsSignedDivideTrapContour(
+            InstructionsEnum opcode,
+            OpcodeInfo? opcodeInfo = null)
+        {
+            OpcodeInfo? resolvedOpcodeInfo = ResolveOpcodeInfo(opcode, opcodeInfo);
+            if (!resolvedOpcodeInfo.HasValue ||
+                resolvedOpcodeInfo.Value.InstructionClass != InstructionClass.ScalarAlu)
+            {
+                return false;
+            }
+
+            if (resolvedOpcodeInfo.Value.IsVector)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(opcode),
+                    opcode,
+                    "Vector opcodes do not use the compiler scalar trap contour.");
+            }
+
+            return opcode == InstructionsEnum.DIV;
         }
 
 
@@ -202,19 +222,7 @@ namespace HybridCPU.Compiler.Core.IR
             out IrControlFlowKind controlFlowKind)
         {
             controlFlowKind = IrControlFlowKind.None;
-
-            if (!TryResolveRetainedCompatibilityInternalKind(opcode, out InternalOpKind internalOpKind))
-            {
-                return false;
-            }
-
-            controlFlowKind = internalOpKind switch
-            {
-                InternalOpKind.InterruptReturn => IrControlFlowKind.Return,
-                _ => IrControlFlowKind.None,
-            };
-
-            return controlFlowKind != IrControlFlowKind.None;
+            return false;
         }
 
         internal static bool TryResolveRetainedCompatibilityScalarMemoryDirection(
@@ -222,22 +230,7 @@ namespace HybridCPU.Compiler.Core.IR
             out bool isWriteContour)
         {
             isWriteContour = false;
-
-            if (!TryResolveRetainedCompatibilityInternalKind(opcode, out InternalOpKind internalOpKind))
-            {
-                return false;
-            }
-
-            switch (internalOpKind)
-            {
-                case InternalOpKind.Load:
-                    return true;
-                case InternalOpKind.Store:
-                    isWriteContour = true;
-                    return true;
-                default:
-                    return false;
-            }
+            return false;
         }
 
         internal static bool TryResolveRetainedCompatibilityVectorTransferDirection(
@@ -252,28 +245,6 @@ namespace HybridCPU.Compiler.Core.IR
         private static OpcodeInfo? ResolveOpcodeInfo(InstructionsEnum opcode, OpcodeInfo? opcodeInfo)
         {
             return opcodeInfo ?? GetOpcodeInfo(opcode);
-        }
-
-        private static bool TryResolveRetainedCompatibilityInternalKind(
-            InstructionsEnum opcode,
-            out InternalOpKind internalOpKind)
-        {
-            internalOpKind = default;
-
-            if (GetOpcodeInfo(opcode).HasValue)
-            {
-                return false;
-            }
-
-            try
-            {
-                internalOpKind = InternalOpBuilder.MapToKind(unchecked((ushort)opcode));
-                return true;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return false;
-            }
         }
 
         private static ulong SwapPackedCompareRegisters(ulong packedRegisters)

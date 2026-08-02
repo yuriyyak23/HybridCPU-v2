@@ -13,10 +13,10 @@ using YAKSys_Hybrid_CPU.Core.Execution;
 using YAKSys_Hybrid_CPU.Core.Pipeline;
 using YAKSys_Hybrid_CPU.Core.Pipeline.MicroOps;
 using YAKSys_Hybrid_CPU.Core.Registers.Retire;
-using CloseToRtlBclri = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitSetClearInvert.BclriInstruction;
-using CloseToRtlBexti = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitExtract.BextiInstruction;
-using CloseToRtlBinvi = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitSetClearInvert.BinviInstruction;
-using CloseToRtlBseti = YAKSys_Hybrid_CPU.CloseToRTL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitSetClearInvert.BsetiInstruction;
+using CloseToHSLBclri = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitSetClearInvert.BclriInstruction;
+using CloseToHSLBexti = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitExtract.BextiInstruction;
+using CloseToHSLBinvi = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitSetClearInvert.BinviInstruction;
+using CloseToHSLBseti = YAKSys_Hybrid_CPU.CloseToHSL.Core.ISA.Instructions.NonVmx.Lanes00_03Scalar.BitManipulation.BitSetClearInvert.BsetiInstruction;
 using static YAKSys_Hybrid_CPU.Processor.CPU_Core;
 
 namespace HybridCPU_ISE.Tests;
@@ -50,7 +50,7 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
 
     [Theory]
     [MemberData(nameof(BitfieldImmediateOpcodeCases))]
-    public void BitfieldImmediate_OpcodeStatusAndCloseToRtlObjects_AreRuntimeClosed(
+    public void BitfieldImmediate_OpcodeStatusAndCloseToHSLObjects_AreRuntimeClosed(
         InstructionsEnum opcode,
         string mnemonic,
         int expectedOpcode,
@@ -78,7 +78,7 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalExtensions);
         Assert.DoesNotContain(mnemonic, IsaV4Surface.OptionalDisabledOpcodes);
 
-        AssertCloseToRtlObject(opcode, mnemonic);
+        AssertCloseToHSLObject(opcode, mnemonic);
     }
 
     [Theory]
@@ -229,7 +229,7 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
             rs1,
             3,
             immediate: imm6);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(registerAlias), 0x8220, 131));
 
         VLIW_Instruction outOfRange = InstructionEncoder.EncodeScalar(
@@ -239,7 +239,7 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
             rs1,
             0,
             immediate: 64);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOpcodeException>(() =>
             decoder.DecodeInstructionBundle(CreateBundle(outOfRange), 0x8240, 132));
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -253,7 +253,7 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
 
     [Theory]
     [MemberData(nameof(ExecutionCases))]
-    public void BitfieldImmediate_ScalarAluCloseToRtlAndGoldenVectors_DefineImm6Edges(
+    public void BitfieldImmediate_ScalarAluCloseToHSLAndGoldenVectors_DefineImm6Edges(
         InstructionsEnum opcode,
         ulong source,
         ushort immediate6,
@@ -266,14 +266,14 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
             immediate: immediate6);
 
         Assert.Equal(expected, actual);
-        Assert.Equal(expected, ExecuteCloseToRtlObject(opcode, source, immediate6));
+        Assert.Equal(expected, ExecuteCloseToHSLObject(opcode, source, immediate6));
 
         foreach ((ulong goldenSource, ushort goldenImmediate, ulong goldenExpected) in GetGoldenVectors(opcode))
         {
             Assert.Equal(
                 goldenExpected,
                 ScalarAluOps.Compute((uint)opcode, goldenSource, op2: 0, immediate: goldenImmediate));
-            Assert.Equal(goldenExpected, ExecuteCloseToRtlObject(opcode, goldenSource, goldenImmediate));
+            Assert.Equal(goldenExpected, ExecuteCloseToHSLObject(opcode, goldenSource, goldenImmediate));
         }
     }
 
@@ -514,18 +514,18 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
             Assert.DoesNotContain(forbidden, compilerSource, StringComparison.Ordinal);
         }
 
-        Assert.False(CloseToRtlBseti.RequiresVmxProjection);
-        Assert.False(CloseToRtlBclri.RequiresVmxProjection);
-        Assert.False(CloseToRtlBinvi.RequiresVmxProjection);
-        Assert.False(CloseToRtlBexti.RequiresVmxProjection);
-        Assert.True(CloseToRtlBseti.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlBclri.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlBinvi.NoHiddenMultiOpEmission);
-        Assert.True(CloseToRtlBexti.NoHiddenMultiOpEmission);
-        Assert.False(CloseToRtlBseti.CompilerHelperAllowed);
-        Assert.False(CloseToRtlBclri.CompilerHelperAllowed);
-        Assert.False(CloseToRtlBinvi.CompilerHelperAllowed);
-        Assert.False(CloseToRtlBexti.CompilerHelperAllowed);
+        Assert.False(CloseToHSLBseti.RequiresVmxProjection);
+        Assert.False(CloseToHSLBclri.RequiresVmxProjection);
+        Assert.False(CloseToHSLBinvi.RequiresVmxProjection);
+        Assert.False(CloseToHSLBexti.RequiresVmxProjection);
+        Assert.True(CloseToHSLBseti.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLBclri.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLBinvi.NoHiddenMultiOpEmission);
+        Assert.True(CloseToHSLBexti.NoHiddenMultiOpEmission);
+        Assert.False(CloseToHSLBseti.CompilerHelperAllowed);
+        Assert.False(CloseToHSLBclri.CompilerHelperAllowed);
+        Assert.False(CloseToHSLBinvi.CompilerHelperAllowed);
+        Assert.False(CloseToHSLBexti.CompilerHelperAllowed);
     }
 
     private static ushort ResolveOpcodeValue(InstructionsEnum opcode) =>
@@ -538,78 +538,78 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar bitfield-immediate opcode.")
         };
 
-    private static void AssertCloseToRtlObject(InstructionsEnum opcode, string mnemonic)
+    private static void AssertCloseToHSLObject(InstructionsEnum opcode, string mnemonic)
     {
         switch (opcode)
         {
             case InstructionsEnum.BSETI:
-                Assert.Equal(CloseToRtlBseti.Mnemonic, mnemonic);
-                Assert.Equal("ExecutableScalarAlu", CloseToRtlBseti.EvidenceBoundary);
-                Assert.Equal(64, CloseToRtlBseti.XLen);
-                Assert.Equal(6, CloseToRtlBseti.ImmediateBits);
-                Assert.Equal(0x3F, CloseToRtlBseti.ImmediateMask);
-                Assert.Equal((ushort)opcode, CloseToRtlBseti.Opcode);
-                Assert.True(CloseToRtlBseti.HasOpcodeAllocation);
-                Assert.True(CloseToRtlBseti.IsExecutable);
-                Assert.True(CloseToRtlBseti.WritesScalarRegister);
-                Assert.False(CloseToRtlBseti.HasSideEffects);
-                Assert.False(CloseToRtlBseti.CompilerHelperAllowed);
+                Assert.Equal(CloseToHSLBseti.Mnemonic, mnemonic);
+                Assert.Equal("ExecutableScalarAlu", CloseToHSLBseti.EvidenceBoundary);
+                Assert.Equal(64, CloseToHSLBseti.XLen);
+                Assert.Equal(6, CloseToHSLBseti.ImmediateBits);
+                Assert.Equal(0x3F, CloseToHSLBseti.ImmediateMask);
+                Assert.Equal((ushort)opcode, CloseToHSLBseti.Opcode);
+                Assert.True(CloseToHSLBseti.HasOpcodeAllocation);
+                Assert.True(CloseToHSLBseti.IsExecutable);
+                Assert.True(CloseToHSLBseti.WritesScalarRegister);
+                Assert.False(CloseToHSLBseti.HasSideEffects);
+                Assert.False(CloseToHSLBseti.CompilerHelperAllowed);
                 break;
             case InstructionsEnum.BCLRI:
-                Assert.Equal(CloseToRtlBclri.Mnemonic, mnemonic);
-                Assert.Equal("ExecutableScalarAlu", CloseToRtlBclri.EvidenceBoundary);
-                Assert.Equal(64, CloseToRtlBclri.XLen);
-                Assert.Equal(6, CloseToRtlBclri.ImmediateBits);
-                Assert.Equal(0x3F, CloseToRtlBclri.ImmediateMask);
-                Assert.Equal((ushort)opcode, CloseToRtlBclri.Opcode);
-                Assert.True(CloseToRtlBclri.HasOpcodeAllocation);
-                Assert.True(CloseToRtlBclri.IsExecutable);
-                Assert.True(CloseToRtlBclri.WritesScalarRegister);
-                Assert.False(CloseToRtlBclri.HasSideEffects);
-                Assert.False(CloseToRtlBclri.CompilerHelperAllowed);
+                Assert.Equal(CloseToHSLBclri.Mnemonic, mnemonic);
+                Assert.Equal("ExecutableScalarAlu", CloseToHSLBclri.EvidenceBoundary);
+                Assert.Equal(64, CloseToHSLBclri.XLen);
+                Assert.Equal(6, CloseToHSLBclri.ImmediateBits);
+                Assert.Equal(0x3F, CloseToHSLBclri.ImmediateMask);
+                Assert.Equal((ushort)opcode, CloseToHSLBclri.Opcode);
+                Assert.True(CloseToHSLBclri.HasOpcodeAllocation);
+                Assert.True(CloseToHSLBclri.IsExecutable);
+                Assert.True(CloseToHSLBclri.WritesScalarRegister);
+                Assert.False(CloseToHSLBclri.HasSideEffects);
+                Assert.False(CloseToHSLBclri.CompilerHelperAllowed);
                 break;
             case InstructionsEnum.BINVI:
-                Assert.Equal(CloseToRtlBinvi.Mnemonic, mnemonic);
-                Assert.Equal("ExecutableScalarAlu", CloseToRtlBinvi.EvidenceBoundary);
-                Assert.Equal(64, CloseToRtlBinvi.XLen);
-                Assert.Equal(6, CloseToRtlBinvi.ImmediateBits);
-                Assert.Equal(0x3F, CloseToRtlBinvi.ImmediateMask);
-                Assert.Equal((ushort)opcode, CloseToRtlBinvi.Opcode);
-                Assert.True(CloseToRtlBinvi.HasOpcodeAllocation);
-                Assert.True(CloseToRtlBinvi.IsExecutable);
-                Assert.True(CloseToRtlBinvi.WritesScalarRegister);
-                Assert.False(CloseToRtlBinvi.HasSideEffects);
-                Assert.False(CloseToRtlBinvi.CompilerHelperAllowed);
+                Assert.Equal(CloseToHSLBinvi.Mnemonic, mnemonic);
+                Assert.Equal("ExecutableScalarAlu", CloseToHSLBinvi.EvidenceBoundary);
+                Assert.Equal(64, CloseToHSLBinvi.XLen);
+                Assert.Equal(6, CloseToHSLBinvi.ImmediateBits);
+                Assert.Equal(0x3F, CloseToHSLBinvi.ImmediateMask);
+                Assert.Equal((ushort)opcode, CloseToHSLBinvi.Opcode);
+                Assert.True(CloseToHSLBinvi.HasOpcodeAllocation);
+                Assert.True(CloseToHSLBinvi.IsExecutable);
+                Assert.True(CloseToHSLBinvi.WritesScalarRegister);
+                Assert.False(CloseToHSLBinvi.HasSideEffects);
+                Assert.False(CloseToHSLBinvi.CompilerHelperAllowed);
                 break;
             case InstructionsEnum.BEXTI:
-                Assert.Equal(CloseToRtlBexti.Mnemonic, mnemonic);
-                Assert.Equal("ExecutableScalarAlu", CloseToRtlBexti.EvidenceBoundary);
-                Assert.Equal(64, CloseToRtlBexti.XLen);
-                Assert.Equal(6, CloseToRtlBexti.ImmediateBits);
-                Assert.Equal(0x3F, CloseToRtlBexti.ImmediateMask);
-                Assert.Equal((ushort)opcode, CloseToRtlBexti.Opcode);
-                Assert.True(CloseToRtlBexti.HasOpcodeAllocation);
-                Assert.True(CloseToRtlBexti.IsExecutable);
-                Assert.True(CloseToRtlBexti.WritesScalarRegister);
-                Assert.False(CloseToRtlBexti.HasSideEffects);
-                Assert.False(CloseToRtlBexti.CompilerHelperAllowed);
-                Assert.False(CloseToRtlBexti.RequiresCanonicalBooleanResultAbi);
+                Assert.Equal(CloseToHSLBexti.Mnemonic, mnemonic);
+                Assert.Equal("ExecutableScalarAlu", CloseToHSLBexti.EvidenceBoundary);
+                Assert.Equal(64, CloseToHSLBexti.XLen);
+                Assert.Equal(6, CloseToHSLBexti.ImmediateBits);
+                Assert.Equal(0x3F, CloseToHSLBexti.ImmediateMask);
+                Assert.Equal((ushort)opcode, CloseToHSLBexti.Opcode);
+                Assert.True(CloseToHSLBexti.HasOpcodeAllocation);
+                Assert.True(CloseToHSLBexti.IsExecutable);
+                Assert.True(CloseToHSLBexti.WritesScalarRegister);
+                Assert.False(CloseToHSLBexti.HasSideEffects);
+                Assert.False(CloseToHSLBexti.CompilerHelperAllowed);
+                Assert.False(CloseToHSLBexti.RequiresCanonicalBooleanResultAbi);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar bitfield-immediate opcode.");
         }
     }
 
-    private static ulong ExecuteCloseToRtlObject(
+    private static ulong ExecuteCloseToHSLObject(
         InstructionsEnum opcode,
         ulong source,
         ushort immediate6) =>
         opcode switch
         {
-            InstructionsEnum.BSETI => CloseToRtlBseti.Execute(source, immediate6),
-            InstructionsEnum.BCLRI => CloseToRtlBclri.Execute(source, immediate6),
-            InstructionsEnum.BINVI => CloseToRtlBinvi.Execute(source, immediate6),
-            InstructionsEnum.BEXTI => CloseToRtlBexti.Execute(source, immediate6),
+            InstructionsEnum.BSETI => CloseToHSLBseti.Execute(source, immediate6),
+            InstructionsEnum.BCLRI => CloseToHSLBclri.Execute(source, immediate6),
+            InstructionsEnum.BINVI => CloseToHSLBinvi.Execute(source, immediate6),
+            InstructionsEnum.BEXTI => CloseToHSLBexti.Execute(source, immediate6),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar bitfield-immediate opcode.")
         };
 
@@ -618,13 +618,13 @@ public sealed class NonVmxPhase02BitfieldImmediateExecutableTests
     {
         return opcode switch
         {
-            InstructionsEnum.BSETI => CloseToRtlBseti.GetLocalGoldenVectors()
+            InstructionsEnum.BSETI => CloseToHSLBseti.GetLocalGoldenVectors()
                 .Select(static vector => (vector.Source, vector.Immediate6, vector.Expected)),
-            InstructionsEnum.BCLRI => CloseToRtlBclri.GetLocalGoldenVectors()
+            InstructionsEnum.BCLRI => CloseToHSLBclri.GetLocalGoldenVectors()
                 .Select(static vector => (vector.Source, vector.Immediate6, vector.Expected)),
-            InstructionsEnum.BINVI => CloseToRtlBinvi.GetLocalGoldenVectors()
+            InstructionsEnum.BINVI => CloseToHSLBinvi.GetLocalGoldenVectors()
                 .Select(static vector => (vector.Source, vector.Immediate6, vector.Expected)),
-            InstructionsEnum.BEXTI => CloseToRtlBexti.GetLocalGoldenVectors()
+            InstructionsEnum.BEXTI => CloseToHSLBexti.GetLocalGoldenVectors()
                 .Select(static vector => (vector.Source, vector.Immediate6, vector.Expected)),
             _ => throw new ArgumentOutOfRangeException(nameof(opcode), opcode, "Unexpected scalar bitfield-immediate opcode.")
         };
