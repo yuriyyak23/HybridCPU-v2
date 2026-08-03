@@ -245,9 +245,9 @@ namespace YAKSys_Hybrid_CPU.Core
 
         /// <summary>
         /// Pipeline register entry between SCHED1 and SCHED2.
-        /// Stores only stable source identity so SCHED2 can reload the live
-        /// candidate from <c>_smtPorts</c> without maintaining shadow mask or placement metadata.
-        /// HLS: 4 entries × (128-bit mask + 1-bit valid + metadata) ≈ 600 flip-flops.
+        /// The exact nominated candidate reference is part of the stage-boundary
+        /// state. SCHED2 must never reinterpret a replacement in the same VT port
+        /// as the candidate admitted by SCHED1.
         /// </summary>
         private struct FspPipelineRegister
         {
@@ -256,6 +256,12 @@ namespace YAKSys_Hybrid_CPU.Core
 
             /// <summary>Virtual thread ID of the candidate (0–3).</summary>
             public int VirtualThreadId;
+
+            /// <summary>Exact candidate nominated at SCHED1.</summary>
+            public MicroOp? Candidate;
+
+            /// <summary>Identity template paired with that exact nomination.</summary>
+            public PostStageBIdentityTemplate? IdentityTemplate;
 
             /// <summary>Memory bank ID if candidate is Load/Store, -1 otherwise.</summary>
 

@@ -351,7 +351,18 @@ namespace YAKSys_Hybrid_CPU.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MaterializePostStageBIssuedAttempt(MicroOp candidate, int lane)
         {
-            PostStageBIdentityTemplate? template = candidate.PostStageBIdentityTemplate;
+            MaterializePostStageBIssuedAttempt(
+                candidate,
+                candidate.PostStageBIdentityTemplate,
+                lane);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void MaterializePostStageBIssuedAttempt(
+            MicroOp candidate,
+            PostStageBIdentityTemplate? template,
+            int lane)
+        {
             if (template is null)
                 return;
 

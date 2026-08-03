@@ -337,11 +337,6 @@ namespace YAKSys_Hybrid_CPU.Memory
                 BurstEfficiency = 0.0;
                 TotalBurstTimingCycles = 0;
 
-                // Clear all bank queues
-                for (int i = 0; i < NumBanks; i++)
-                {
-                    bankQueues[i].Clear();
-                }
             }
         }
 

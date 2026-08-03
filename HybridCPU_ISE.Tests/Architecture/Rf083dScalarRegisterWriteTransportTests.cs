@@ -52,8 +52,8 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
             virtualThreadId: 2,
             binding,
             physicalLane: 3,
-            sourceSlotIndex: 2,
-            workingSlotIndex: 2);
+            sourceSlotIndex: 1,
+            workingSlotIndex: 5);
 
         attempt.CompleteScalarRegisterWrite(RetireRecord.RegisterWrite(2, 9, 0xCAFEUL));
 
@@ -61,17 +61,17 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
             attempt.ScalarRegisterWriteEffect);
         RetireRecordIdentityProjection projection = effect.Projection;
 
-        Assert.Equal(2, attempt.ScheduledOperation.Admission.SourceProvenance.SourceSlotIndex);
-        Assert.Equal(2, attempt.ScheduledOperation.OperationId.WorkingSlotIndex);
+        Assert.Equal(1, attempt.ScheduledOperation.Admission.SourceProvenance.SourceSlotIndex);
+        Assert.Equal(5, attempt.ScheduledOperation.OperationId.WorkingSlotIndex);
         Assert.Equal(3, attempt.ScheduledOperation.PhysicalLane);
-        Assert.Equal(2, attempt.ExecutionRecord.OperationId.WorkingSlotIndex);
+        Assert.Equal(5, attempt.ExecutionRecord.OperationId.WorkingSlotIndex);
         Assert.Same(attempt.ScheduledOperation, attempt.ExecutionRecord.ScheduledOperation);
-        Assert.Equal(2, effect.Identity.SourceSlotIndex);
-        Assert.Equal(2, effect.Identity.WorkingSlotIndex);
+        Assert.Equal(1, effect.Identity.SourceSlotIndex);
+        Assert.Equal(5, effect.Identity.WorkingSlotIndex);
         Assert.Equal(3, effect.Identity.PhysicalLaneIndex);
         Assert.Same(effect.Identity, projection.Identity);
-        Assert.Equal(2, projection.Identity.SourceSlotIndex);
-        Assert.Equal(2, projection.Identity.WorkingSlotIndex);
+        Assert.Equal(1, projection.Identity.SourceSlotIndex);
+        Assert.Equal(5, projection.Identity.WorkingSlotIndex);
         Assert.Equal(3, projection.Identity.PhysicalLaneIndex);
     }
 
@@ -128,6 +128,7 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
     {
         string root = FindRepositoryRoot();
         string scheduler = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "Smt", "MicroOpScheduler.SMT.cs");
+        string pipelinedScheduler = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "Fsp", "MicroOpScheduler.FSPPipeline.cs");
         string carrier = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "PostStageBIssuedAttempt.cs");
         string materialization = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "ExecutionFlow", "Materialization", "CPU_Core.PipelineExecution.Materialization.cs");
         string retire = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Retire", "Evidence", "CPU_Core.PipelineExecution.Retire.cs");
@@ -136,6 +137,8 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
         Assert.Equal(1, Count(scheduler, "MaterializePostStageBIssuedAttempt(candidate, lane)"));
         Assert.DoesNotContain("MaterializePostStageBIssuedAttempt(candidate, slot)", scheduler, StringComparison.Ordinal);
         Assert.Contains("result[lane] = candidate;\n                    MaterializePostStageBIssuedAttempt(candidate, lane);", scheduler, StringComparison.Ordinal);
+        Assert.Contains("bundle[lane] = candidate;\n                    MaterializePostStageBIssuedAttempt(", pipelinedScheduler, StringComparison.Ordinal);
+        Assert.Contains("pipelineEntry.IdentityTemplate", pipelinedScheduler, StringComparison.Ordinal);
         Assert.Contains("lane.PostStageBIssuedAttempt = issueLane.MicroOp?.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);
         Assert.Contains("lane.PostStageBIssuedAttempt = executeLane.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);
         Assert.Contains("lane.PostStageBIssuedAttempt = memoryLane.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);

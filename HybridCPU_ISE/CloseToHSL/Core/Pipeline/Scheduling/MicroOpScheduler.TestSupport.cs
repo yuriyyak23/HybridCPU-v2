@@ -552,9 +552,7 @@ namespace YAKSys_Hybrid_CPU.Core
         }
 
         /// <summary>
-        /// TEST-ONLY: Get a readonly snapshot of the FSP pipeline register placement per VT.
-        /// Placement is rebuilt from an explicit SMT nomination snapshot rather than from
-        /// shadow placement metadata in <c>_fspPipelineReg</c>.
+        /// TEST-ONLY: Get the placement carried by the exact FSP SCHED1 candidate.
         /// </summary>
         internal (bool Valid, SlotPlacementMetadata Placement) TestGetFspPipelinePlacement(int vt)
         {
@@ -567,8 +565,8 @@ namespace YAKSys_Hybrid_CPU.Core
                 return default;
             }
 
-            SmtNominationSnapshot nominationSnapshot = CaptureSmtNominationSnapshot(AllEligibleVirtualThreadMask);
-            if (!nominationSnapshot.TryGetCandidate(reg.VirtualThreadId, out MicroOp candidate))
+            MicroOp? candidate = reg.Candidate;
+            if (candidate is null)
             {
                 return (true, SlotPlacementMetadata.Default with
                 {

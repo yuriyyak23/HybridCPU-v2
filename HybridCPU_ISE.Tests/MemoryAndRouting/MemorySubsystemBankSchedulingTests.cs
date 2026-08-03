@@ -289,6 +289,36 @@ namespace HybridCPU_ISE.Tests
         }
 
         [Fact]
+        public void Test_ResetStatistics_PreservesAcceptedRequestAndItsCompletion()
+        {
+            // Arrange
+            InitializeTestEnvironment();
+            Processor proc = default;
+            var memory = new MemorySubsystem(ref proc)
+            {
+                ArbitrationPolicy = BankArbitrationPolicy.RoundRobin,
+                NumMemoryPorts = 1
+            };
+            var token = memory.EnqueueRead(0, 0x0000, 64, new byte[64]);
+
+            Assert.False(token.IsComplete);
+            Assert.Equal(1, memory.CurrentQueuedRequests);
+
+            // Act - resetting observation must not cancel accepted work.
+            memory.ResetStatistics();
+
+            // Assert
+            Assert.False(token.IsComplete);
+            Assert.Equal(1, memory.CurrentQueuedRequests);
+
+            memory.AdvanceCycles(10);
+
+            Assert.True(token.IsComplete);
+            Assert.True(token.Succeeded, token.FailureReason);
+            Assert.Equal(0, memory.CurrentQueuedRequests);
+        }
+
+        [Fact]
         public void Test_PerformanceReport_IncludesNewMetrics()
         {
             // Arrange

@@ -16,9 +16,9 @@ namespace YAKSys_Hybrid_CPU.Core
         /// <summary>
         /// SCHED1: Nomination and source capture.
         ///
-        /// Captures only which non-owner SMT donor slots currently hold ready candidates.
-        /// No legality or placement work is performed here; SCHED2 reloads live candidates
-        /// from <c>_smtPorts</c> using this stable ready-source snapshot.
+        /// Captures the exact ready non-owner candidate reference. No legality or
+        /// placement work is performed here; SCHED2 rejects a replaced VT port
+        /// instead of issuing a different operation under this nomination.
         ///
         /// HLS: 4-way ready-mask fanout → 4 × D-flip-flop writes.
         /// Single-cycle, minimal LUT depth.
@@ -35,7 +35,18 @@ namespace YAKSys_Hybrid_CPU.Core
                 // Clear pipeline register entry
                 _fspPipelineReg[vt].Valid = false;
                 _fspPipelineReg[vt].VirtualThreadId = vt;
-                _fspPipelineReg[vt].Valid = nominationState.IsReadyNonOwnerCandidate(vt, ownerVirtualThreadId);
+                _fspPipelineReg[vt].Candidate = null;
+                _fspPipelineReg[vt].IdentityTemplate = null;
+                if (nominationState.IsReadyNonOwnerCandidate(vt, ownerVirtualThreadId))
+                {
+                    MicroOp? candidate = _smtPorts[vt];
+                    if (candidate is not null)
+                    {
+                        _fspPipelineReg[vt].Candidate = candidate;
+                        _fspPipelineReg[vt].IdentityTemplate = candidate.PostStageBIdentityTemplate;
+                        _fspPipelineReg[vt].Valid = true;
+                    }
+                }
             }
 
             _fspCurrentStage = FspPipelineStage.SCHED2;
@@ -47,8 +58,8 @@ namespace YAKSys_Hybrid_CPU.Core
         ///
         /// Reads the pipeline register bank from SCHED1, performs two-stage
         /// admission (Phase 03): TryClassAdmission → TryMaterializeLane → Commit.
-        /// SCHED1 already latched the donor-source VT identity, so SCHED2 reloads the
-        /// live candidate and evaluates admission against the current placement/certificate state.
+        /// SCHED1 latched the exact candidate. SCHED2 requires the live port to
+        /// retain that same reference before evaluating admission.
         ///
         /// HLS: 4-iteration loop, each with Stage A (~3 LUT) + Stage B (~2 LUT).
         /// Single-cycle with parallel reduction tree.
@@ -90,11 +101,14 @@ namespace YAKSys_Hybrid_CPU.Core
             {
                 if (!_fspPipelineReg[vt].Valid) continue;
 
-                int candidateVt = _fspPipelineReg[vt].VirtualThreadId;
-
-                // Load candidate from original port
-                var candidate = _smtPorts[candidateVt];
-                if (candidate == null) continue;
+                ref FspPipelineRegister pipelineEntry = ref _fspPipelineReg[vt];
+                int candidateVt = pipelineEntry.VirtualThreadId;
+                MicroOp? candidate = pipelineEntry.Candidate;
+                if (candidate is null ||
+                    !ReferenceEquals(_smtPorts[candidateVt], candidate))
+                {
+                    continue;
+                }
 
                 // RF-06.4b diagnostic seam: FSP SCHED2 accepts only a carrier
                 // whose bank/direction/footprint can be represented by the
@@ -120,6 +134,10 @@ namespace YAKSys_Hybrid_CPU.Core
 
                     // Commit
                     bundle[lane] = candidate;
+                    MaterializePostStageBIssuedAttempt(
+                        candidate,
+                        pipelineEntry.IdentityTemplate,
+                        lane);
                     candidate.IsFspInjected = true;
                     bundleMask.AddOperation(candidate);
                     opportunityState = opportunityState.WithOccupiedSlot(lane);
