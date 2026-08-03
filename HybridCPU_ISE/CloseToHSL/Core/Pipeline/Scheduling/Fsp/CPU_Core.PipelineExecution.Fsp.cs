@@ -281,11 +281,13 @@ namespace YAKSys_Hybrid_CPU
                         entry.VirtualThreadId,
                         candidate.OwnerContextId,
                         candidate.Placement.DomainTag);
-                    candidate.PostStageBIdentityTemplate = new Core.PostStageBIdentityTemplate(
+                    Core.WorkingBundleEntry workingEntry = Core.WorkingBundleEntry.CreateSourcePreserving(
                         admission,
+                        candidate,
                         runtimeState.BundleSerial,
-                        Core.SlotId.Create(entry.SlotIndex),
-                        rf08OperationAttemptIssuer);
+                        provenance.SourceSlotId);
+                    workingEntry.Carrier.PostStageBIdentityTemplate =
+                        workingEntry.CreatePostStageBIdentityTemplate(rf08OperationAttemptIssuer);
                 }
                 catch (InvalidOperationException)
                 {

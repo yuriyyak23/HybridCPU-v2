@@ -5,6 +5,70 @@ using YAKSys_Hybrid_CPU.Core.Registers.Retire;
 namespace YAKSys_Hybrid_CPU.Core;
 
 /// <summary>
+/// Frozen identity facts assigned by the working-bundle formation owner before
+/// Stage A / Stage B. The currently connected RF-08.3d contour is explicitly
+/// source-preserving; later layouts require a separate authorised producer.
+/// </summary>
+internal sealed class WorkingBundleEntry
+{
+    private WorkingBundleEntry(
+        AdmissionRecord admission,
+        MicroOp carrier,
+        ulong workingBundleSequence,
+        SlotId workingSlotId)
+    {
+        Admission = admission;
+        Carrier = carrier;
+        WorkingBundleSequence = workingBundleSequence;
+        WorkingSlotId = workingSlotId;
+    }
+
+    internal AdmissionRecord Admission { get; }
+    internal MicroOp Carrier { get; }
+    internal ulong WorkingBundleSequence { get; }
+    internal SlotId WorkingSlotId { get; }
+
+    internal static WorkingBundleEntry CreateSourcePreserving(
+        AdmissionRecord admission,
+        MicroOp carrier,
+        ulong workingBundleSequence,
+        SlotId workingSlotId)
+    {
+        ArgumentNullException.ThrowIfNull(admission);
+        ArgumentNullException.ThrowIfNull(carrier);
+
+        SourceOperationProvenance source = admission.SourceProvenance;
+        if (workingBundleSequence != source.SourceBundleSerial)
+        {
+            throw new ArgumentException(
+                "Source-preserving working bundle sequence must equal the source bundle serial.",
+                nameof(workingBundleSequence));
+        }
+
+        if (workingSlotId != source.SourceSlotId)
+        {
+            throw new ArgumentException(
+                "Source-preserving working slot must equal the source slot.",
+                nameof(workingSlotId));
+        }
+
+        return new WorkingBundleEntry(
+            admission,
+            carrier,
+            workingBundleSequence,
+            workingSlotId);
+    }
+
+    internal PostStageBIdentityTemplate CreatePostStageBIdentityTemplate(
+        OperationAttemptIssuer attemptIssuer) =>
+        new(
+            Admission,
+            WorkingBundleSequence,
+            WorkingSlotId,
+            attemptIssuer);
+}
+
+/// <summary>
 /// Immutable RF-08.3d companion prepared before nomination and consumed only by
 /// the existing successful Stage-B commit arm. It has no scheduler authority.
 /// </summary>

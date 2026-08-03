@@ -76,6 +76,57 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
     }
 
     [Fact]
+    public void SourcePreservingWorkingBundleProducer_AssignsWorkingFactsOnceBeforeStageB()
+    {
+        GeneratedStaticBinding binding = CreateBinding();
+        AdmissionRecord admission = CreateAdmission(
+            virtualThreadId: 2,
+            binding,
+            sourceBundleSerial: 101,
+            sourceSlotIndex: 2);
+        var carrier = new ScalarALUMicroOp();
+
+        WorkingBundleEntry workingEntry = WorkingBundleEntry.CreateSourcePreserving(
+            admission,
+            carrier,
+            workingBundleSequence: 101,
+            workingSlotId: SlotId.Create(2));
+        PostStageBIdentityTemplate template =
+            workingEntry.CreatePostStageBIdentityTemplate(new OperationAttemptIssuer());
+
+        Assert.Same(admission, workingEntry.Admission);
+        Assert.Same(carrier, workingEntry.Carrier);
+        Assert.Equal((ulong)101, workingEntry.WorkingBundleSequence);
+        Assert.Equal(SlotId.Create(2), workingEntry.WorkingSlotId);
+        Assert.Same(admission, template.Admission);
+        Assert.Equal((ulong)101, template.WorkingBundleSequence);
+        Assert.Equal(SlotId.Create(2), template.WorkingSlotId);
+
+        PostStageBIssuedAttempt attempt =
+            PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, LaneId.Create(6));
+        attempt.CompleteScalarRegisterWrite(RetireRecord.RegisterWrite(2, 9, 0xCAFEUL));
+        ScalarRegisterWriteRetireEffect effect = Assert.IsType<ScalarRegisterWriteRetireEffect>(
+            attempt.ScalarRegisterWriteEffect);
+        Assert.Equal(2, effect.Identity.SourceSlotIndex);
+        Assert.Equal(2, effect.Identity.WorkingSlotIndex);
+        Assert.Equal(6, effect.Identity.PhysicalLaneIndex);
+        Assert.Equal(2, effect.Projection.Identity.SourceSlotIndex);
+        Assert.Equal(2, effect.Projection.Identity.WorkingSlotIndex);
+        Assert.Equal(6, effect.Projection.Identity.PhysicalLaneIndex);
+
+        Assert.Throws<ArgumentException>(() => WorkingBundleEntry.CreateSourcePreserving(
+            admission,
+            carrier,
+            workingBundleSequence: 102,
+            workingSlotId: SlotId.Create(2)));
+        Assert.Throws<ArgumentException>(() => WorkingBundleEntry.CreateSourcePreserving(
+            admission,
+            carrier,
+            workingBundleSequence: 101,
+            workingSlotId: SlotId.Create(5)));
+    }
+
+    [Fact]
     public void FaultDenialAndX0_ProduceNoScalarRegisterWriteEffect()
     {
         GeneratedStaticBinding binding = CreateBinding();
@@ -129,6 +180,7 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
         string root = FindRepositoryRoot();
         string scheduler = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "Smt", "MicroOpScheduler.SMT.cs");
         string pipelinedScheduler = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "Fsp", "MicroOpScheduler.FSPPipeline.cs");
+        string fspProducer = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "Fsp", "CPU_Core.PipelineExecution.Fsp.cs");
         string carrier = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "PostStageBIssuedAttempt.cs");
         string materialization = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "ExecutionFlow", "Materialization", "CPU_Core.PipelineExecution.Materialization.cs");
         string retire = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Retire", "Evidence", "CPU_Core.PipelineExecution.Retire.cs");
@@ -139,6 +191,10 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
         Assert.Contains("result[lane] = candidate;\n                    MaterializePostStageBIssuedAttempt(candidate, lane);", scheduler, StringComparison.Ordinal);
         Assert.Contains("bundle[lane] = candidate;\n                    MaterializePostStageBIssuedAttempt(", pipelinedScheduler, StringComparison.Ordinal);
         Assert.Contains("pipelineEntry.IdentityTemplate", pipelinedScheduler, StringComparison.Ordinal);
+        Assert.Contains("WorkingBundleEntry.CreateSourcePreserving(", fspProducer, StringComparison.Ordinal);
+        Assert.Contains("workingEntry.CreatePostStageBIdentityTemplate(rf08OperationAttemptIssuer)", fspProducer, StringComparison.Ordinal);
+        Assert.DoesNotContain("new Core.PostStageBIdentityTemplate", fspProducer, StringComparison.Ordinal);
+        Assert.Equal(1, Count(fspProducer, "SlotId.Create(entry.SlotIndex)"));
         Assert.Contains("lane.PostStageBIssuedAttempt = issueLane.MicroOp?.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);
         Assert.Contains("lane.PostStageBIssuedAttempt = executeLane.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);
         Assert.Contains("lane.PostStageBIssuedAttempt = memoryLane.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);
@@ -160,6 +216,28 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
         }
     }
 
+    [Fact]
+    public void AdrDefinesWorkingSlotAuthorityAndTheCurrentSourcePreservingProjection()
+    {
+        string root = FindRepositoryRoot();
+        string adr = Read(
+            root,
+            "Documentation",
+            "Documentation",
+            "ArchitectureAuthorityRefactor",
+            "02_Authority",
+            "ADR-009_VLIW_Retirement.md");
+
+        Assert.Contains("stable logical position of an operation within one", adr, StringComparison.Ordinal);
+        Assert.Contains("working-bundle formation owner assigns", adr, StringComparison.Ordinal);
+        Assert.Contains("currently connected typed-FSP scalar RF-08.3d contour uses an explicit", adr, StringComparison.Ordinal);
+        Assert.Contains("`WorkingSlotId` is numerically equal to `SourceSlotId`", adr, StringComparison.Ordinal);
+        Assert.Contains("`WorkingBundleSequence` is numerically equal to `SourceBundleSerial`", adr, StringComparison.Ordinal);
+        Assert.Contains("`ScalarClusterIssueEntry.SlotIndex` remains decode-derived source position", adr, StringComparison.Ordinal);
+        Assert.Contains("packed-result index written as `result[lane]` is physical placement only", adr, StringComparison.Ordinal);
+        Assert.Contains("may not assign, change, or reconstruct", adr, StringComparison.Ordinal);
+    }
+
     private static PostStageBIssuedAttempt CreateAttempt(
         int virtualThreadId,
         GeneratedStaticBinding binding,
@@ -169,6 +247,26 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
     {
         int sourceSlot = sourceSlotIndex ?? virtualThreadId;
         int workingSlot = workingSlotIndex ?? sourceSlot;
+        AdmissionRecord admission = CreateAdmission(
+            virtualThreadId,
+            binding,
+            sourceBundleSerial: (ulong)(100 + virtualThreadId),
+            sourceSlotIndex: sourceSlot);
+        return PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(
+            new PostStageBIdentityTemplate(
+                admission,
+                (ulong)(200 + virtualThreadId),
+                SlotId.Create(workingSlot),
+                new OperationAttemptIssuer()),
+            LaneId.Create(physicalLane));
+    }
+
+    private static AdmissionRecord CreateAdmission(
+        int virtualThreadId,
+        GeneratedStaticBinding binding,
+        ulong sourceBundleSerial,
+        int sourceSlotIndex)
+    {
         ExecutionContract contract = ExecutionContract.Create(
             binding,
             new RuntimeExecutionProviderBinding(binding.RuntimeExecutionProviderId, "rf08.3d-scalar"),
@@ -181,24 +279,17 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
             writeRegisters: [9],
             isRetireVisible: true,
             isAssist: false);
-        AdmissionRecord admission = AdmissionRecord.Create(
+        return AdmissionRecord.Create(
             new SourceOperationProvenance(
                 SemanticInstructionKey.Create([1, 2, 3], "rf08.3d", CanonicalDecodeContext.Unbound),
                 virtualThreadId,
-                sourceBundleSerial: (ulong)(100 + virtualThreadId),
-                sourceSlotId: SlotId.Create(sourceSlot),
+                sourceBundleSerial,
+                sourceSlotId: SlotId.Create(sourceSlotIndex),
                 fetchEpoch: 7),
             contract,
             virtualThreadId,
             ownerContextId: 20 + virtualThreadId,
             domainTag: 31);
-        return PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(
-            new PostStageBIdentityTemplate(
-                admission,
-                (ulong)(200 + virtualThreadId),
-                SlotId.Create(workingSlot),
-                new OperationAttemptIssuer()),
-            LaneId.Create(physicalLane));
     }
 
     private static GeneratedStaticBinding CreateBinding()
