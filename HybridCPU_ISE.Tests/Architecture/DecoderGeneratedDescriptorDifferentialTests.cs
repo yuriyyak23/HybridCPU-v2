@@ -183,6 +183,7 @@ public sealed class DecoderGeneratedDescriptorDifferentialTests
             File.ReadAllText(Path.Combine(
                 FindRepositoryRoot(),
                 "Documentation",
+                "Documentation",
                 "ArchitectureAuthorityRefactor",
                 "Evidence",
                 "RF05",

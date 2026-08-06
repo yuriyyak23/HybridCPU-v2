@@ -14,11 +14,13 @@ internal sealed record TelemetryMetric(
 
 /// <summary>
 /// Versioned consumer projection of producer-owned timing and memory telemetry.
-/// Existing v1 fields remain additive compatibility fields; metrics without a
+/// Existing v2 fields remain additive compatibility fields; metrics without a
 /// truthful runtime producer carry Availability=Unavailable and Value=null.
 /// </summary>
 internal sealed record TimingMemoryReport(
     string SchemaVersion,
+    string ArtifactName,
+    string[] CompatibleSchemaVersions,
     string ProducerSchemaVersion,
     string FunctionalBaseline,
     string TimingBaseline,
@@ -30,6 +32,7 @@ internal sealed record TimingMemoryReport(
     ulong PipelineStallCycles,
     ulong MemoryStallCycles,
     ulong NonMemoryStallCycles,
+    TelemetryMetric NonMemoryStallCyclesMetric,
     ulong InstructionsRetired,
     double RawCycleIpc,
     double RetireNormalizedIpc,
@@ -55,12 +58,27 @@ internal sealed record TimingMemoryReport(
     TelemetryMetric InstructionFetchCompletedRequests,
     TelemetryMetric InstructionFetchReadBytes,
     TelemetryMetric QueueFullRejects,
-    TelemetryMetric BankConflictRejects)
+    TelemetryMetric BankConflictRejects,
+    string[] CompatibleProducerSchemaVersions,
+    TelemetryMetric TelemetryBaselineOutstandingRequests,
+    TelemetryMetric CanceledMemoryRequests,
+    TelemetryMetric ConsumedMemoryCompletions,
+    TelemetryMetric OutstandingMemoryRequests,
+    string RequestIdentityBalanceDisposition)
 {
-    internal const string ArtifactFileName = "post_ref1_timing_memory_report.json";
+    internal const string SchemaVersionValue = "timing-memory-report/v3";
+    internal const string LegacySchemaVersionValue = "post-ref1-timing-memory-v2";
+    internal const string ArtifactFileName = "timing_memory_report.json";
+    internal const string LegacyArtifactFileName = "post_ref1_timing_memory_report.json";
+    internal const string ManifestKey = "timing_memory";
+    internal const string LegacyManifestKey = "post_ref1_timing_memory";
 
     internal static TimingMemoryReport Create(SimpleAsmAppMetrics metrics)
     {
+        bool stallPartitionConsistent = metrics.MemoryStalls <= metrics.StallCycles;
+        ulong nonMemoryStallCycles = stallPartitionConsistent
+            ? metrics.StallCycles - metrics.MemoryStalls
+            : 0;
         bool memoryWaitObserved = metrics.MemoryStalls > 0;
         bool legacyTransferCountersEmpty = metrics.TotalBursts == 0 && metrics.BytesTransferred == 0;
         string memoryDisposition = metrics.MemoryCycleTelemetryAvailable
@@ -87,12 +105,14 @@ internal sealed record TimingMemoryReport(
                 : TelemetryMetric.Unavailable(boundary);
 
         return new TimingMemoryReport(
-            SchemaVersion: "post-ref1-timing-memory-v2",
+            SchemaVersion: SchemaVersionValue,
+            ArtifactName: nameof(TimingMemoryReport),
+            CompatibleSchemaVersions: [LegacySchemaVersionValue],
             ProducerSchemaVersion: metrics.MemoryCycleTelemetryAvailable
                 ? metrics.MemoryCycleTelemetrySchemaVersion
                 : "Unavailable",
-            FunctionalBaseline: "Post-Ref1 functional parity; preserve pre-Ref1 results as historical evidence.",
-            TimingBaseline: "Post-RF10 timing baseline; establish independently from historical pre-RF10 total cycles.",
+            FunctionalBaseline: "Current ISE functional observation; prior results remain historical evidence and no parity claim is inferred from this artifact.",
+            TimingBaseline: "Current post-RF10 timing observation; any baseline must be established independently from historical pre-RF10 total cycles.",
             TelemetryAvailabilityPolicy: "Available zero means measured zero. Unavailable means the runtime has no truthful producer for that metric.",
             TimingComparisonPolicy: "Pre-RF10 and post-RF10 total-cycle values are not comparable until MemoryCycleController equivalence is demonstrated.",
             SchedulerDiagnosticComparisonPolicy: "LastSmtLegalityRejectKind is a current-observation field, not a stable last-rejection history across Ref1.",
@@ -100,14 +120,18 @@ internal sealed record TimingMemoryReport(
             TotalCycles: metrics.CycleCount,
             PipelineStallCycles: metrics.StallCycles,
             MemoryStallCycles: metrics.MemoryStalls,
-            NonMemoryStallCycles: metrics.StallCycles > metrics.MemoryStalls
-                ? metrics.StallCycles - metrics.MemoryStalls
-                : 0,
+            NonMemoryStallCycles: nonMemoryStallCycles,
+            NonMemoryStallCyclesMetric: stallPartitionConsistent
+                ? TelemetryMetric.Available(
+                    nonMemoryStallCycles,
+                    "PipelineControl.StallCycles inclusive stalled-cycle owner minus its nested CountMemoryStall cycles")
+                : TelemetryMetric.Unavailable(
+                    "Pipeline stall partition invariant failed because MemoryStalls exceeded StallCycles"),
             InstructionsRetired: metrics.InstructionsRetired,
             RawCycleIpc: metrics.Ipc,
             RetireNormalizedIpc: metrics.RetireIpc,
             FineGrainedCycleBreakdownAvailability:
-                "Unavailable: fetch-wait, decode/admission-wait, memory-admission-wait, memory-completion-wait, execute-wait, writeback-wait, retire and hazard early-return do not have exact producer owners. Controller edge/service/publication-cycle boundaries are exposed separately and may overlap.",
+                "Unavailable below the exact memory/non-memory top-level partition: fetch-wait, decode/admission-wait, memory-admission-wait, memory-completion-wait, execute-wait, writeback-wait, retire and hazard early-return do not have exact producer owners. WAW is an event counter, not a general cycle bucket. Controller edge/service/publication-cycle boundaries are exposed separately and may overlap.",
             MemoryTelemetryDisposition: memoryDisposition,
             LegacyTotalBursts: metrics.TotalBursts,
             LegacyBytesTransferred: metrics.BytesTransferred,
@@ -126,15 +150,36 @@ internal sealed record TimingMemoryReport(
             DataReadBytes: ProducerMetric(metrics.DataReadBytes, "Successful MemoryCycleController data-read completions"),
             CommittedDataWriteBytes: ProducerMetric(metrics.CommittedDataWriteBytes, "Selected-retire physical publication owner"),
             InstructionFetchAcceptedRequests: TelemetryMetric.Unavailable(
-                "Producer schema v1: fetch is synchronous cache/main-memory access and has no controller request admission"),
+                "Fetch is synchronous cache/main-memory access and has no controller request admission"),
             InstructionFetchCompletedRequests: TelemetryMetric.Unavailable(
-                "Producer schema v1: fetch is synchronous cache/main-memory access and has no controller request completion"),
+                "Fetch is synchronous cache/main-memory access and has no controller request completion"),
             InstructionFetchReadBytes: metrics.InstructionFetchReadBytesTelemetryAvailable
                 ? TelemetryMetric.Available(metrics.InstructionFetchReadBytes, "Instruction cache physical 256-byte materialization owner")
                 : TelemetryMetric.Unavailable("Instruction-fetch physical-read producer"),
             QueueFullRejects: ProducerMetric(metrics.MemoryQueueFullRejects, "MemoryCycleController capacity backpressure attempts"),
             BankConflictRejects: metrics.MemoryBankConflictRejectTelemetryAvailable
                 ? TelemetryMetric.Available(metrics.MemoryBankConflictRejects, "MemoryCycleController bank-conflict admission")
-                : TelemetryMetric.Unavailable("Controller-native admission has no bank-conflict reject result; scheduler and legacy conflict counters are distinct"));
+                : TelemetryMetric.Unavailable("Controller-native admission has no bank-conflict reject result; scheduler and legacy conflict counters are distinct"),
+            CompatibleProducerSchemaVersions: ["memory-cycle-telemetry-v1"],
+            TelemetryBaselineOutstandingRequests: ProducerMetric(
+                metrics.MemoryTelemetryBaselineOutstandingRequests,
+                "MemoryCycleController live request identities captured at telemetry reset"),
+            CanceledMemoryRequests: ProducerMetric(
+                metrics.MemoryCanceledRequests,
+                "MemoryCycleController successful terminal TryCancel operations"),
+            ConsumedMemoryCompletions: ProducerMetric(
+                metrics.MemoryConsumedCompletions,
+                "MemoryCycleController completions successfully consumed by request identity"),
+            OutstandingMemoryRequests: ProducerMetric(
+                metrics.MemoryOutstandingRequests,
+                "MemoryCycleController current live identities, including pending, latched, or published completion state"),
+            RequestIdentityBalanceDisposition: metrics.MemoryCycleTelemetryAvailable
+                ? metrics.MemoryRequestIdentityBalanced ? "Balanced" : "Unbalanced"
+                : "Unavailable");
     }
+
+    internal TimingMemoryReport AsLegacyCompatibilityProjection() => this with
+    {
+        SchemaVersion = LegacySchemaVersionValue
+    };
 }

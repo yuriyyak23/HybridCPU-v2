@@ -34,7 +34,7 @@ Neutral publication-fence result containing a published `CompletionRecord` while
 
 ## ExecutionDomainReadOnlyStateView
 
-Neutral execution-domain snapshot that can expose `GuestPc`, `GuestSp`, and `GuestFlags` for read-only projection when materialized. It is not a source for `GuestCr0`, `GuestCr4`, or host execution state.
+Neutral execution-domain snapshot that can expose `GuestPc`, `GuestSp`, and `GuestFlags` for read-only projection when materialized. It is not the source for `GuestCr0`/`GuestCr4` (the separate privileged-state descriptor is) or host execution state.
 
 ## Evidence Policy
 
@@ -62,7 +62,7 @@ Runtime-owned trap result with no VMX vocabulary dependency. It records whether 
 
 ## PrivilegedExecutionStateProjectionDenied
 
-VMREAD denial for `GuestCr0` and `GuestCr4` while there is no neutral privileged execution-state owner/value source.
+VMREAD denial for `GuestCr0` and `GuestCr4` whenever the privileged-state descriptor, domain/address-space/epoch match, visibility, `RevalidatedAfterRestore`, or conformance proof is absent. The allowed case is direct read-only projection only.
 
 ## Projection
 

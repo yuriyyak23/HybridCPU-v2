@@ -84,9 +84,9 @@ public sealed class Rf113EmptyCoreRuntimeStateTests
     public void LedgerAndEvidenceCloseOnlyTheEmptyRootSlice()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
             "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.3-empty-core-runtime-state.md");
 
         Assert.Contains("RF-11.3 | closed empty containment root", ledger, StringComparison.Ordinal);

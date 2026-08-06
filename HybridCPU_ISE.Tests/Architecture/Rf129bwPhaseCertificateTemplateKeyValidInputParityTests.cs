@@ -6,7 +6,7 @@ public sealed class Rf129bwPhaseCertificateTemplateKeyValidInputParityTests
     public void BuildersAndCachesPreserveEachLayoutSpecificValidTuple()
     {
         string source = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Certificates", "ReplayPhaseSubstrate.Implementations.cs");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
 
         Assert.Contains("new PhaseCertificateTemplateKey(", source, StringComparison.Ordinal);
         Assert.Contains("certificate.StructuralIdentity", source, StringComparison.Ordinal);

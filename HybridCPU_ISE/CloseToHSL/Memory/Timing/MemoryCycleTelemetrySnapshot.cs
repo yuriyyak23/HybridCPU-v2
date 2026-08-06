@@ -20,9 +20,14 @@ public readonly record struct MemoryCycleTelemetrySnapshot(
     ulong DataReadBytes,
     ulong CommittedDataWriteBytes,
     ulong InstructionFetchReadBytes,
-    ulong QueueFullRejects)
+    ulong QueueFullRejects,
+    ulong TelemetryBaselineOutstandingRequests = 0,
+    ulong CanceledRequests = 0,
+    ulong ConsumedCompletions = 0,
+    ulong OutstandingRequests = 0)
 {
-    public const string SchemaVersion = "memory-cycle-telemetry-v1";
+    public const string SchemaVersion = "memory-cycle-telemetry-v2";
+    public const string PreviousSchemaVersion = "memory-cycle-telemetry-v1";
 
     // Fetch remains a synchronous cache/main-memory contour and has no
     // controller request-identity protocol to count truthfully.

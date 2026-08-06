@@ -35,7 +35,7 @@ public sealed class Rf109CanonicalVectorTransferAuthorityDecisionTests
     {
         string root = FindRepositoryRoot();
         string evidence = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.9-canonical-vector-transfer-authority-decision.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.9-canonical-vector-transfer-authority-decision.md"));
 
         Assert.Contains("No production or timing source changed", evidence, StringComparison.Ordinal);
         Assert.Contains("RF-10.10 is authorized", evidence, StringComparison.Ordinal);
@@ -46,9 +46,9 @@ public sealed class Rf109CanonicalVectorTransferAuthorityDecisionTests
     {
         string root = FindRepositoryRoot();
         string status = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
         string evidence = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.9-canonical-vector-transfer-authority-decision.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.9-canonical-vector-transfer-authority-decision.md"));
 
         Assert.Contains("RF-10.9 | closed architecture decision", status, StringComparison.Ordinal);
         Assert.Contains("RF-10.10 | closed", status, StringComparison.Ordinal);

@@ -327,7 +327,7 @@ public sealed class Rf126xPhysicalMemoryBankBindingCoreValidInputContractTests
         FindRepositoryRoot(), ContractRelativePath.Split('/'));
 
     private static string Evidence(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6x-physical-memory-bank-binding-core-valid-input-contract.md");
 
     private static string JoinSources(

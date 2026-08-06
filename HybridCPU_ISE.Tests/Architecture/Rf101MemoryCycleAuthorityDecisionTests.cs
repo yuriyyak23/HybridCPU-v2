@@ -91,7 +91,7 @@ public sealed class Rf101MemoryCycleAuthorityDecisionTests
         string paper = NormalizeWhitespace(ReadPaper());
         string evidence = NormalizeWhitespace(Read(
             "Documentation",
-            "ArchitectureAuthorityRefactor",
+            "Documentation", "ArchitectureAuthorityRefactor",
             "Evidence",
             "RF10",
             "rf10.1-memory-cycle-authority-decision.md"));
@@ -119,7 +119,7 @@ public sealed class Rf101MemoryCycleAuthorityDecisionTests
         string production = ReadProductionSources(root);
         string status = Read(
             "Documentation",
-            "ArchitectureAuthorityRefactor",
+            "Documentation", "ArchitectureAuthorityRefactor",
             "09_RF10",
             "00_CURRENT_STATUS_AND_LEDGER.md");
 

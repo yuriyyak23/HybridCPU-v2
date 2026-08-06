@@ -7,7 +7,7 @@ public sealed class Rf1011SynchronousDmaLoopInventoryTests
     {
         string root = FindRepositoryRoot();
         string evidence = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
 
         Assert.Contains("exactly four caller-local synchronous DMA completion loops", evidence, StringComparison.Ordinal);
         Assert.Contains("All four use fixed channels 0/1 and a 10,000-iteration safety cap", evidence, StringComparison.Ordinal);
@@ -18,7 +18,7 @@ public sealed class Rf1011SynchronousDmaLoopInventoryTests
     {
         string root = FindRepositoryRoot();
         string evidence = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
 
         Assert.Contains("called by public `Read` for large direct bursts and by `ProcessBankRequest`", evidence, StringComparison.Ordinal);
         Assert.Contains("called by public `Write` for large direct bursts and by `ProcessBankRequest`", evidence, StringComparison.Ordinal);
@@ -29,7 +29,7 @@ public sealed class Rf1011SynchronousDmaLoopInventoryTests
     {
         string root = FindRepositoryRoot();
         string evidence = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
 
         Assert.Contains("publishes the full input before DMA configuration", evidence, StringComparison.Ordinal);
         Assert.Contains("Busy/start failure and timeout still return the full element count", evidence, StringComparison.Ordinal);
@@ -43,9 +43,9 @@ public sealed class Rf1011SynchronousDmaLoopInventoryTests
         string paper = NormalizeWhitespace(Read(root,
             "ResearchPaper/section/md base/7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md"));
         string evidence = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.11-synchronous-dma-loop-inventory-freeze.md"));
         string status = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
 
         Assert.Contains("RF-10.11 freezes exactly four", paper, StringComparison.Ordinal);
         Assert.Contains("RF-10.12", paper, StringComparison.Ordinal);

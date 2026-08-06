@@ -159,7 +159,7 @@ public sealed class Rf105SingleLaneScalarStoreMemoryCycleTests
         string paper = Read(root,
             "ResearchPaper/section/md base/7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
         string status = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
 
         int storeStart = loadStore.IndexOf("public class StoreMicroOp", StringComparison.Ordinal);
         Assert.True(storeStart > 0);

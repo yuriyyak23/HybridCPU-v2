@@ -91,7 +91,7 @@ public sealed class Rf084bbConsolidatedExitEvidenceTests
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base",
             "5_Two_Stage_Admission_and_Bundle_Compositional_SMT_Packing.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
             "rf08.4bb-consolidated-exit-evidence.md");
 
         foreach (string decisionId in ApprovedResidualDecisionIds)
@@ -120,7 +120,7 @@ public sealed class Rf084bbConsolidatedExitEvidenceTests
 
         Assert.Equal(ExpectedRegisterWriteConstructorFiles, actual);
 
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
             "rf08.4bb-consolidated-exit-evidence.md");
         foreach (string retainedSource in new[]
         {
@@ -149,7 +149,7 @@ public sealed class Rf084bbConsolidatedExitEvidenceTests
         string root = FindRepositoryRoot();
         string stageFlow = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline",
             "ExecutionFlow", "StageFlow", "CPU_Core.PipelineExecution.cs");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
             "rf08.4bb-consolidated-exit-evidence.md");
 
         int capture = stageFlow.IndexOf(
@@ -190,11 +190,11 @@ public sealed class Rf084bbConsolidatedExitEvidenceTests
     public void ExitClosesRf08WithoutStartingRf09OrExpandingClaims()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string entryGate = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string entryGate = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "02_RF09_ENTRY_GATE.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
             "rf08.4bb-consolidated-exit-evidence.md");
 
         Assert.Contains("| RF-08 | closed |", status, StringComparison.Ordinal);

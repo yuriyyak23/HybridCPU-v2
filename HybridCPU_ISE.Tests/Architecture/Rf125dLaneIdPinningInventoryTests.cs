@@ -8,7 +8,7 @@ public sealed class Rf125dLaneIdPinningInventoryTests
     {
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base", "3_Architectural_Overview_and_Frontend_Contract.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5d-laneid-pinning-closed-world-inventory.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5d-laneid-pinning-closed-world-inventory.md");
 
         Assert.Contains("`LaneId` denotes only a post-Stage-B physical lane `0..7`", paper, StringComparison.Ordinal);
         Assert.Contains("Flexible` carries no lane, while `HardPinned` carries one `LaneId`", paper, StringComparison.Ordinal);

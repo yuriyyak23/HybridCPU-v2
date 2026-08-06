@@ -71,17 +71,17 @@ public sealed class Rf11PostClosureCodeAndDocumentationReconciliationTests
     public void CurrentRf11DocumentsContainNoTransitionalFacadeClaims()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
             "00_CURRENT_STATUS_AND_LEDGER.md");
         string currentIndexes = string.Join('\n',
-            Read(root, "Documentation", "ArchitectureAuthorityRefactor", "00_Overview", "00_README.md"),
-            Read(root, "Documentation", "ArchitectureAuthorityRefactor", "05_Governance",
+            Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "00_Overview", "00_README.md"),
+            Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "05_Governance",
                 "05_Invariants_Dependency_Risks_DoD.md"),
-            Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+            Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
                 "00_CURRENT_STATUS_AND_READING_ORDER.md"),
-            Read(root, "Documentation", "ArchitectureAuthorityRefactor", "09_RF10",
+            Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "09_RF10",
                 "00_CURRENT_STATUS_AND_LEDGER.md"),
-            Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "README.md"));
+            Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "README.md"));
 
         Assert.Contains("RF-11 overall | closed", ledger, StringComparison.Ordinal);
         Assert.Contains("rf11-post-closure-code-and-documentation-reconciliation.md", ledger,
@@ -102,9 +102,9 @@ public sealed class Rf11PostClosureCodeAndDocumentationReconciliationTests
     public void HistoricalPromptAndNewEvidenceCannotMasqueradeAsCurrentAuthority()
     {
         string root = FindRepositoryRoot();
-        string prompt = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "09_RF10",
+        string prompt = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "09_RF10",
             "01_RF11_CONTINUATION_PROMPT.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11-post-closure-code-and-documentation-reconciliation.md");
 
         Assert.StartsWith("# Superseded RF-11 entry prompt", prompt, StringComparison.Ordinal);

@@ -159,8 +159,8 @@ public sealed class Rf1125ResourceStateExtractionTests
     public void LedgerAndEvidenceCloseOnlyResourceStorage()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.25-resource-state-extraction.md");
         Assert.Contains("RF-11.25 | closed ResourceState", ledger, StringComparison.Ordinal);
         Assert.Contains("exactly ten", evidence, StringComparison.OrdinalIgnoreCase);

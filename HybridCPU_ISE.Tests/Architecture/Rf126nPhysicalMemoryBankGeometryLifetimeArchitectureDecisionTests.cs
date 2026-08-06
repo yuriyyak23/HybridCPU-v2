@@ -132,7 +132,7 @@ public sealed class
     public void DecisionEvidencePrecedesLaterZeroCallerContracts()
     {
         string root = FindRepositoryRoot();
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
             "RF12",
             "rf12.6n-physical-memory-bank-geometry-lifetime-architecture-decision.md");
         Assert.Contains("Neither type is declared in production",

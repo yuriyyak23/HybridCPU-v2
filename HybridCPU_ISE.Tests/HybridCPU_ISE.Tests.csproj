@@ -56,7 +56,6 @@
     <Compile Remove="tests\DmaStreamComputeRetirePublicationPhase04Tests.cs" />
     <Compile Remove="tests\DmaStreamComputeTokenStorePhase03Tests.cs" />
     <Compile Remove="tests\L7SdcBackendTests.cs" />
-    <Compile Remove="tests\L7SdcMatMulNoLegacyExecuteTests.cs" />
     <Compile Remove="tests\L7SdcNoBranchControlAuthorityTests.cs" />
     <Compile Remove="tests\L7SdcPhase10GateTests.cs" />
     <Compile Remove="tests\Phase09AssistTupleSemanticsDocumentationTests.cs" />
@@ -70,9 +69,7 @@
     <Compile Remove="tests\Phase09Lane6DscContractClosureTests.cs" />
     <Compile Remove="tests\Phase09LegacyFsmRuntimeGateTests.cs" />
     <Compile Remove="tests\Phase09LegacyHostBridgeBoundaryTests.cs" />
-    <Compile Remove="tests\Phase09LegacyTerminologyQuarantineDocumentationTests.cs" />
     <Compile Remove="tests\Phase09LegalityPredicateDocumentationTests.cs" />
-    <Compile Remove="tests\Phase09MaterializerCallerBoundaryTests.cs" />
     <Compile Remove="tests\Phase09NonVtCallGateTests.cs" />
     <Compile Remove="tests\Phase09OperationalSemanticsDocumentationTests.cs" />
     <Compile Remove="tests\Phase09RegisterLegacySurfaceClosureTests.cs" />
@@ -83,7 +80,6 @@
     <Compile Remove="tests\Phase09ReviewerRebuttalClaimBoundaryTests.cs" />
     <Compile Remove="tests\Phase09TypedSlotFactStagingDocumentationTests.cs" />
     <Compile Remove="tests\Phase09ValidationEvidenceCountDocumentationTests.cs" />
-    <Compile Remove="tests\Phase09WriteRegisterPublicationContractTests.cs" />
     <Compile Remove="tests\Phase10TraceAndMemoryAllocationBoundaryTests.cs" />
     <Compile Remove="tests\Phase12RetiredCompatPolicyBitBoundaryTests.cs" />
     <Compile Remove="tests\Phase12VliwCompatFreezeTests.cs" />

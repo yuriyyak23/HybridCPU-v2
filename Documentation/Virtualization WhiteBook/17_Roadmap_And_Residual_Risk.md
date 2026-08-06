@@ -19,7 +19,7 @@ The following items are no longer open as generic roadmap bullets:
 Recommended next heavy steps:
 
 1. Continue VMREAD field-by-field only when a new explicit neutral owner/value source exists.
-2. Design neutral privileged execution-state semantics before opening `GuestCr0` or `GuestCr4`; otherwise keep them denied.
+2. Keep the existing guarded `GuestCr0`/`GuestCr4` direct read-only projection field-local; any widening or architectural VMREAD integration requires a new owner-specific decision and complete canonical execution/retire proof.
 3. Keep neutral runtime-owner expansion blocked until an owner-specific RFC/ADR exists with exact leaf, owner service, executor result, capability/evidence/migration policy, denial reasons, and adjacent denials.
 4. Use `TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication` only after neutral backend execution authorization and an explicit completion-publication fence contract.
 5. Use `TrapCompletionRouteDescriptor.RuntimeOwnedPublication` only when an explicit retire-publication gate authorizes retire.
@@ -59,11 +59,11 @@ A future VMREAD field can be opened only when the full chain exists:
 
 Current allowed slices are completion-owned fields, memory-owned `GuestCr3`/`EptPointer`/`Vpid`/`Cr3TargetCount`, and execution-owned `GuestPc`/`GuestSp`/`GuestFlags`.
 
-Current denied slices include `GuestCr0`, `GuestCr4`, host execution aliases, `HostCr3`, compatibility-control fields, unknown fields, and all writes.
+Current denied slices include every missing-gate case and every widening for `GuestCr0`/`GuestCr4`, plus host execution aliases, `HostCr3`, compatibility-control fields, unknown fields, and all writes. The only exception is the guarded direct read-only projection; it is not architectural VMREAD.
 
 ## Privileged Execution Future Shape
 
-Opening `GuestCr0` or `GuestCr4` requires a neutral privileged execution-state owner. That owner must define actual CR0/CR4 semantics, including at least:
+The guarded direct read-only `GuestCr0`/`GuestCr4` projection now has a neutral privileged execution-state owner. Any architectural VMREAD path or wider effect still requires an owner-specific decision and must additionally define:
 
 - bit legality and reserved-bit handling;
 - paging/protection/extension interaction rules;
@@ -72,7 +72,7 @@ Opening `GuestCr0` or `GuestCr4` requires a neutral privileged execution-state o
 - migration/checkpoint classification;
 - conformance proving no VMCS scalar fallback.
 
-Until those semantics exist, `PrivilegedExecutionStateProjectionDenied` is the correct current behavior.
+`PrivilegedExecutionStateProjectionDenied` remains the correct behavior whenever any gate is missing. Even after all gates, the current result is direct read-only projection only, with backend, mutation, completion and retire false.
 
 ## Nested Future Shape
 
@@ -123,7 +123,7 @@ Stop a change immediately if it:
 - treats a `TrapDecision` as runtime policy;
 - turns VMX no-emission tests into production backend emission;
 - stores host evidence in guest-visible VMCS projection;
-- opens `GuestCr0`, `GuestCr4`, host execution aliases, or control fields without neutral semantics and conformance.
+- widens `GuestCr0`, `GuestCr4`, host execution aliases, or control fields beyond the exact guarded projection without neutral semantics and conformance.
 
 ## Done Criteria For Future VMX Work
 

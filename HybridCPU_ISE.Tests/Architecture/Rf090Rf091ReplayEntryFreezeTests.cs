@@ -140,11 +140,11 @@ public sealed class Rf090Rf091ReplayEntryFreezeTests
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base",
             "7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string inventory = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF09",
+        string inventory = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF09",
             "rf09.0-entry-inventory-and-freeze.md");
-        string entry = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF09",
+        string entry = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF09",
             "rf09.1-immutable-semantic-replay-entry.md");
 
         Assert.Contains("RF-09 semantic-entry freeze and cutover order", paper, StringComparison.Ordinal);

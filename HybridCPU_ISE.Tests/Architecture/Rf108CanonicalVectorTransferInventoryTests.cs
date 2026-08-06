@@ -23,7 +23,7 @@ public sealed class Rf108CanonicalVectorTransferInventoryTests
     {
         string root = FindRepositoryRoot();
         string evidence = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.8-canonical-vector-transfer-inventory.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.8-canonical-vector-transfer-inventory.md");
 
         Assert.Contains("No controller admission or finite capacity", evidence, StringComparison.Ordinal);
         Assert.Contains("synchronous `BurstRead` then `BurstWrite`", evidence, StringComparison.Ordinal);
@@ -39,7 +39,7 @@ public sealed class Rf108CanonicalVectorTransferInventoryTests
         string burst = Read(root,
             "HybridCPU_ISE/CloseToHSL/Core/Execution/StreamEngine/BurstIO/StreamEngine.BurstIO.cs");
         string evidence = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.8-canonical-vector-transfer-inventory.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.8-canonical-vector-transfer-inventory.md");
 
         Assert.Contains("private static IBurstBackend _backend", burst, StringComparison.Ordinal);
         Assert.Contains("ResolveActiveMemorySubsystem", burst, StringComparison.Ordinal);
@@ -56,9 +56,9 @@ public sealed class Rf108CanonicalVectorTransferInventoryTests
         string paper = Read(root,
             "ResearchPaper/section/md base/7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
         string status = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
         string evidence = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.8-canonical-vector-transfer-inventory.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.8-canonical-vector-transfer-inventory.md");
 
         Assert.Contains("RF-10.8 freezes the canonical production `VectorTransferMicroOp`", paper, StringComparison.Ordinal);
         Assert.Contains("does not authorize request/completion cutover", paper, StringComparison.Ordinal);

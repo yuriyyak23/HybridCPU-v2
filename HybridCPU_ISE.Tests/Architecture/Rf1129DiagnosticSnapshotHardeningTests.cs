@@ -128,8 +128,8 @@ public sealed class Rf1129DiagnosticSnapshotHardeningTests
     public void LedgerAndEvidenceCloseSnapshotOnlyAndDeferFacadeConversion()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.29-diagnostic-snapshot-hardening.md");
         Assert.Contains("RF-11.29 | closed diagnostic snapshot hardening", ledger, StringComparison.Ordinal);
         Assert.Contains("detached", evidence, StringComparison.OrdinalIgnoreCase);

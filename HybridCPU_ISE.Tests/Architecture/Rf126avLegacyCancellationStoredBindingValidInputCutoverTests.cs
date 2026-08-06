@@ -49,7 +49,7 @@ public sealed class Rf126avLegacyCancellationStoredBindingValidInputCutoverTests
     [Fact]
     public void AvEvidenceRecordsThePreAxRawFallbackBehavior()
     {
-        string evidence = Read(Root(), "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read(Root(), "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.6av-legacy-cancellation-stored-binding-valid-input-cutover.md");
         Assert.Contains("ComputeBankId` path remains the exact fallback",
             evidence, StringComparison.Ordinal);

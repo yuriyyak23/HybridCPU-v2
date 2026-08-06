@@ -34,9 +34,9 @@ public sealed class Rf084baStreamEngineScalarRegisterApprovedResidualExclusionTe
     public void CurrentLedgersTreatCompatibilityAsApprovedNotTypedFsp()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "03_RF08_EXIT_READINESS_LEDGER.md");
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
 
         Assert.Contains("RF-08.4ba", ledger, StringComparison.Ordinal);

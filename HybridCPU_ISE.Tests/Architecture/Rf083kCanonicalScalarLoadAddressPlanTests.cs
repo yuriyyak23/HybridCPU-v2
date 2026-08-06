@@ -92,7 +92,7 @@ public sealed class Rf083kCanonicalScalarLoadAddressPlanTests
     {
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base", "5_Two_Stage_Admission_and_Bundle_Compositional_SMT_Packing.md");
-        string adr = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "02_Authority", "ADR-009_VLIW_Retirement.md");
+        string adr = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "02_Authority", "ADR-009_VLIW_Retirement.md");
 
         Assert.Contains("RF-08.3k authorised canonical scalar-load unresolved address plan", paper, StringComparison.Ordinal);
         Assert.Contains("is not a `MemoryCapability`, cannot satisfy the existing concrete", paper, StringComparison.Ordinal);

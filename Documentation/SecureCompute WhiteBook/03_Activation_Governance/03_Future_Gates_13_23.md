@@ -2,23 +2,9 @@
 
 ## Exact Next Gate
 
-`secure_hypercall_backend_owner_rfc.md` is closed as a bounded
-owner-contract/identifier gate. `secure_completion_retire_publication_plan.md`
-is closed as a fail-closed completion/retire publication authority gate.
-`secure_migration_checkpoint_restore_plan.md` is closed as a fail-closed
-migration/output-manifest classification gate.
-`secure_debug_attestation_api_plan.md` is closed as a fail-closed
-debug/attestation visibility gate. `secure_vmx_boundary_zero_authority_plan.md`
-is closed as a fail-closed named-path VMX zero-authority gate. Nested child
-intent remains future/design-fenced and does not authorize nested execution,
-mutable nested state, Shadow VMCS authority or nested publication.
-`compiler_no_emission_to_controlled_emission_gate.md` is closed as an explicit
-no-compiler-change decision gate. Positive runtime execution activation is the
-current production-oriented planning gate and remains future-gated because no
-named runtime owner/path/reachability chain is locally proven. The conformance
-matrix is closed only for current negative/future-gated evidence. The
-limited-release classifier is fail-closed, and production release remains
-denied.
+Positive backend work is not the next implementation step. The required order starts with reproducible audit baseline, canonical operation taxonomy, descriptor registry/opaque binding, SafetyVerifier-issued certificate, grant ledger, canonical memory/shared-buffer maps, disabled equivalence and a production admission carrier. Only then may one side-effect-free named neutral backend probe be proposed. See ActivationPlan phase `24` for the complete dependency graph.
+
+Phase 13 is proof-only vocabulary; Phase 14 is a negative publication classifier; Phase 15 is a partial migration classifier with an unknown-class default-allow defect; Phase 16 is a visibility classifier without a production publisher; Phase 17 verifies VMX zero authority. Phase 18 is unconditionally future/design-fenced. Phase 19 preserves compiler no-emission. Phase 20 is pre-activation evidence classification, Phase 21 is negative/future-gated conformance, and Phase 22 is hard-denied.
 
 `ADR-SC-HYP-BACKEND-OWNER` defines typed transport, decoded-leaf, service, owner, request/result, argument, replay, cancellation and migration vocabulary. The implemented admission result is proof-only and cannot open execution or publication.
 
@@ -68,23 +54,26 @@ classification. `SecureComputePhase22LimitedReleaseGatePolicy` rejects current r
 
 | Gate | Future responsibility |
 | --- | --- |
-| 13 | typed proof-only owner/service ADR implemented; exact production identifier allocation closed |
-| 14 | fail-closed completion and retire publication separation gate closed |
-| 15 | fail-closed migration/output-manifest classification gate closed |
-| 16 | fail-closed debug and attestation visibility gate closed |
-| 17 | fail-closed named-path VMX zero-authority gate closed |
+| 13 | proof-only contract/identifier vocabulary; executable owner open |
+| 14 | negative publication classifier; owner chain open |
+| 15 | partial classifier; exhaustive payload denial and checkpoint protocol open |
+| 16 | visibility classifier; production publisher open |
+| 17 | verified narrow VMX zero-authority boundary |
 | 18 | nested child-intent owner RFC remains future/design-fenced; nested execution, mutable nested state, Shadow VMCS authority and nested publication remain denied |
-| 19 | fail-closed no-compiler-change decision gate closed |
-| 20 | positive secure runtime execution activation remains future-gated until one owner/path/reachability chain is proven |
-| 21 | conformance matrix closed only for current negative/future-gated evidence |
-| 22 | limited release gate remains fail-closed until named positive path evidence exists |
+| 19 | compiler no-emission enforced; clean generated-artifact proof open; emission needs a later RFC |
+| 20 | pre-activation evidence classifier only |
+| 21 | negative/future-gated conformance matrix only |
+| 22 | hard-denied until independent named-path release proof |
 | 23 | open-decision quarantine |
 
 ## Conditions Before Positive Backend Work
 
-A future backend path requires:
+A future backend path requires, in dependency order:
 
-- named neutral owner;
+- immutable reproducible baseline and canonical operation taxonomy;
+- descriptor registry/opaque binding and SafetyVerifier certificate;
+- grant ledger, canonical maps and disabled equivalence;
+- production admission carrier and named neutral owner;
 - accepted owner-specific RFC/ADR;
 - typed request/result contract;
 - capability and evidence gates;

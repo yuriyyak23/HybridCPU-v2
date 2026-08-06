@@ -59,7 +59,7 @@ public sealed class Rf1131ExecuteRefThisSeamHardeningTests
         string root = FindRoot();
         string production = ReadSources(Path.Combine(root, "HybridCPU_ISE"));
         Assert.Equal(0, Regex.Matches(production, @"partial\s+struct\s+CPU_Core").Count);
-        Assert.Equal(66, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
+        Assert.Equal(67, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
 
         string runtime = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "State",
             "CPU_Core.RuntimeState.cs");
@@ -77,8 +77,8 @@ public sealed class Rf1131ExecuteRefThisSeamHardeningTests
     public void EvidenceClosesOnlyTheExecuteSelfPassingFamily()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.31-execute-ref-this-seam-hardening.md");
 
         Assert.Contains("RF-11.31 execute ref-this seam hardening", ledger, StringComparison.Ordinal);

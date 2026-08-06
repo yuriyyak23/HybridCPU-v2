@@ -42,7 +42,7 @@ public sealed class Rf1014MemoryPhaseExitAuditTests
     public void EveryRf10SliceHasImmutableEvidenceAndExitValidationProvenance()
     {
         string root = FindRepositoryRoot();
-        string evidenceDirectory = Path.Combine(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF10");
+        string evidenceDirectory = Path.Combine(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF10");
 
         for (int slice = 0; slice <= 14; slice++)
         {
@@ -52,7 +52,7 @@ public sealed class Rf1014MemoryPhaseExitAuditTests
         }
 
         string operational = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.13-single-edge-dma-and-loop-removal.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.13-single-edge-dma-and-loop-removal.md");
         Assert.Contains("20260727_015231_607_matrix", operational, StringComparison.Ordinal);
         Assert.Contains("20260727_015423_504_matrix", operational, StringComparison.Ordinal);
         Assert.Contains("20260727-051520-IsaParity", operational, StringComparison.Ordinal);
@@ -77,7 +77,7 @@ public sealed class Rf1014MemoryPhaseExitAuditTests
     {
         string root = FindRepositoryRoot();
         string status = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
 
         Assert.Contains("RF-10.14 | closed exit audit", status, StringComparison.Ordinal);
         Assert.Contains("RF-10 overall | closed", status, StringComparison.Ordinal);

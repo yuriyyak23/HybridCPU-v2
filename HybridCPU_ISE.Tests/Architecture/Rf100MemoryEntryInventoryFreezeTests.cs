@@ -45,7 +45,7 @@ public sealed class Rf100MemoryEntryInventoryFreezeTests
         string evidence = Read(
             root,
             "Documentation",
-            "ArchitectureAuthorityRefactor",
+            "Documentation", "ArchitectureAuthorityRefactor",
             "Evidence",
             "RF10",
             "rf10.0-entry-inventory-freeze.md");
@@ -146,13 +146,13 @@ public sealed class Rf100MemoryEntryInventoryFreezeTests
         string status = Read(
             root,
             "Documentation",
-            "ArchitectureAuthorityRefactor",
+            "Documentation", "ArchitectureAuthorityRefactor",
             "09_RF10",
             "00_CURRENT_STATUS_AND_LEDGER.md");
         string evidence = Read(
             root,
             "Documentation",
-            "ArchitectureAuthorityRefactor",
+            "Documentation", "ArchitectureAuthorityRefactor",
             "Evidence",
             "RF10",
             "rf10.0-entry-inventory-freeze.md");

@@ -228,7 +228,7 @@ public sealed class Rf1010CanonicalVectorTransferMemoryCycleTests
         string paper = ReadText(root,
             "ResearchPaper/section/md base/7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
         string status = ReadText(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
 
         Assert.Contains("TryAcceptCanonicalVectorTransfer", controller, StringComparison.Ordinal);
         Assert.Contains("CanonicalVectorTransferCapacity = 8", controller, StringComparison.Ordinal);

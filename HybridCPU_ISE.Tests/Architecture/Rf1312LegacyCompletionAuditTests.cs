@@ -28,7 +28,7 @@ public sealed class Rf1312LegacyCompletionAuditTests
 
         foreach (string name in RetentionEvidence)
         {
-            Assert.True(File.Exists(Path.Combine(Root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13", name)), name);
+            Assert.True(File.Exists(Path.Combine(Root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13", name)), name);
         }
     }
 
@@ -70,11 +70,10 @@ public sealed class Rf1312LegacyCompletionAuditTests
         string[] excluded = Regex.Matches(project, "<Compile Remove=\"([^\"]+)\"")
             .Select(match => match.Groups[1].Value)
             .Where(path => !path.StartsWith("obj_r6fresh", StringComparison.OrdinalIgnoreCase)).ToArray();
-        Assert.Equal(41, excluded.Length);
-        Assert.Equal(37, excluded.Count(path => File.Exists(Path.Combine(Root, "HybridCPU_ISE.Tests", path))));
-        Assert.Equal(4, excluded.Count(path => !File.Exists(Path.Combine(Root, "HybridCPU_ISE.Tests", path))));
+        Assert.Equal(37, excluded.Length);
+        Assert.All(excluded, path => Assert.True(File.Exists(Path.Combine(Root, "HybridCPU_ISE.Tests", path)), path));
 
-        string ledger = File.ReadAllText(Path.Combine(Root, "Documentation", "ArchitectureAuthorityRefactor", "12_RF13", "00_CURRENT_STATUS_AND_LEDGER.md"));
+        string ledger = File.ReadAllText(Path.Combine(Root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "12_RF13", "00_CURRENT_STATUS_AND_LEDGER.md"));
         Assert.Contains("RF-13.12", ledger, StringComparison.Ordinal);
         Assert.Contains("excluded-test", ledger, StringComparison.OrdinalIgnoreCase);
     }

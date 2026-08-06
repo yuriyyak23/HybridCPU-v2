@@ -126,6 +126,11 @@ namespace YAKSys_Hybrid_CPU
                 report.InstructionFetchRequestTelemetryAvailable =
                     MemoryCycleTelemetrySnapshot.InstructionFetchRequestTelemetryAvailable;
                 report.MemoryQueueFullRejects = checked((long)memoryCycleTelemetry.QueueFullRejects);
+                report.MemoryTelemetryBaselineOutstandingRequests = checked(
+                    (long)memoryCycleTelemetry.TelemetryBaselineOutstandingRequests);
+                report.MemoryCanceledRequests = checked((long)memoryCycleTelemetry.CanceledRequests);
+                report.MemoryConsumedCompletions = checked((long)memoryCycleTelemetry.ConsumedCompletions);
+                report.MemoryOutstandingRequests = checked((long)memoryCycleTelemetry.OutstandingRequests);
                 report.MemoryBankConflictRejectTelemetryAvailable =
                     MemoryCycleTelemetrySnapshot.BankConflictRejectTelemetryAvailable;
 

@@ -156,7 +156,11 @@ internal readonly record struct SimpleAsmAppMetrics(
     bool InstructionFetchRequestTelemetryAvailable,
     ulong MemoryQueueFullRejects,
     bool MemoryBankConflictRejectTelemetryAvailable,
-    ulong MemoryBankConflictRejects)
+    ulong MemoryBankConflictRejects,
+    ulong MemoryTelemetryBaselineOutstandingRequests,
+    ulong MemoryCanceledRequests,
+    ulong MemoryConsumedCompletions,
+    ulong MemoryOutstandingRequests)
 {
     public ulong ActiveCycles => CycleCount > StallCycles ? CycleCount - StallCycles : 0;
 
@@ -289,6 +293,11 @@ internal readonly record struct SimpleAsmAppMetrics(
             : (double)(ScalarLanesRetired + NonScalarLanesRetired) / RetireCycleCount;
 
     public bool UsesMultipleSlices => SliceExecutionCount > 1;
+
+    public bool MemoryRequestIdentityBalanced =>
+        !MemoryCycleTelemetryAvailable ||
+        (UInt128)MemoryTelemetryBaselineOutstandingRequests + MemoryAcceptedRequests ==
+        (UInt128)MemoryCanceledRequests + MemoryConsumedCompletions + MemoryOutstandingRequests;
 
     public bool HasEligibilityTelemetry =>
         EligibilityMaskedCycles > 0 ||

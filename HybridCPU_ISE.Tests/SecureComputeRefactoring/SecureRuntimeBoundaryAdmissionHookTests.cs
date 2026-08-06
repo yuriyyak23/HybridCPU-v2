@@ -147,9 +147,9 @@ public sealed class SecureRuntimeBoundaryAdmissionHookTests
             "HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/21_conformance_negative_positive_test_matrix.md",
             "HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/22_limited_securecompute_release_gate.md");
 
-        Assert.Contains("fixed by runtime routing and tests", activationGate);
-        Assert.Contains("runtime tests and source scans", activationGate);
-        Assert.Contains("Stage B missing/disabled/unmaterialized descriptor bypass is closed in code and tests", activationGate);
+        Assert.Contains("Direct generic-service routing tests remain useful negative regression evidence", activationGate);
+        Assert.Contains("CPU Stage-B enforcement remains open", activationGate);
+        Assert.Contains("No CPU decode/SafetyVerifier/certificate/issue call graph is proven", activationGate);
     }
 
     [Fact]

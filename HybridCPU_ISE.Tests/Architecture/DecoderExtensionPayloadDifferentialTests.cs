@@ -146,6 +146,7 @@ public sealed class DecoderExtensionPayloadDifferentialTests
             File.ReadAllText(Path.Combine(
                 FindRepositoryRoot(),
                 "Documentation",
+                "Documentation",
                 "ArchitectureAuthorityRefactor",
                 "Evidence",
                 "RF05",

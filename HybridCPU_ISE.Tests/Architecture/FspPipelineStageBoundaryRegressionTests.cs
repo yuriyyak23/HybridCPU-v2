@@ -77,6 +77,118 @@ public sealed class FspPipelineStageBoundaryRegressionTests
         Assert.Null(candidate.PostStageBIdentityTemplate);
     }
 
+    [Fact]
+    public void Nomination_DoesNotReuseOrEraseAnAlreadyIssuedAttempt()
+    {
+        var scheduler = new MicroOpScheduler
+        {
+            TypedSlotEnabled = true
+        };
+        MicroOp candidate = CreateAlu(1, 40);
+        PostStageBIdentityTemplate template = CreateIdentityTemplate(
+            virtualThreadId: 1,
+            sourceSlotIndex: 4,
+            workingSlotIndex: 4);
+        PostStageBIssuedAttempt issuedAttempt =
+            PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, LaneId.Create(2));
+        candidate.PostStageBIdentityTemplate = template;
+        candidate.PostStageBIssuedAttempt = issuedAttempt;
+
+        scheduler.NominateSmtCandidate(1, candidate);
+        MicroOp[] result = scheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 0, localCoreId: 0);
+
+        Assert.DoesNotContain(result, op => ReferenceEquals(op, candidate));
+        Assert.Same(issuedAttempt, candidate.PostStageBIssuedAttempt);
+        Assert.Same(template, candidate.PostStageBIdentityTemplate);
+        Assert.Equal(0, scheduler.SmtInjectionsCount);
+    }
+
+    [Fact]
+    public void Sched2_RejectsMutationOfTheSameCandidateReference()
+    {
+        var scheduler = new MicroOpScheduler
+        {
+            PipelinedFspEnabled = true,
+            TypedSlotEnabled = true
+        };
+        MicroOp candidate = CreateAlu(1, 50);
+
+        scheduler.NominateSmtCandidate(1, candidate);
+        scheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 0, localCoreId: 0);
+
+        candidate.Placement = candidate.Placement with
+        {
+            PinningKind = SlotPinningKind.HardPinned,
+            PinnedLaneId = 6
+        };
+        MicroOp[] result = scheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 0, localCoreId: 0);
+
+        Assert.DoesNotContain(result, op => ReferenceEquals(op, candidate));
+        Assert.Equal(0, scheduler.SmtInjectionsCount);
+        Assert.Null(candidate.PostStageBIssuedAttempt);
+    }
+
+    [Fact]
+    public void Sched2_RejectsOwnerOrBundleGenerationChange()
+    {
+        var ownerChangedScheduler = new MicroOpScheduler
+        {
+            PipelinedFspEnabled = true,
+            TypedSlotEnabled = true
+        };
+        MicroOp ownerCandidate = CreateAlu(1, 60);
+        ownerChangedScheduler.NominateSmtCandidate(1, ownerCandidate);
+        ownerChangedScheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 0, localCoreId: 0);
+
+        MicroOp[] ownerChanged = ownerChangedScheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 2, localCoreId: 0);
+        Assert.DoesNotContain(ownerChanged, op => ReferenceEquals(op, ownerCandidate));
+        Assert.Equal(0, ownerChangedScheduler.SmtInjectionsCount);
+
+        var bundleChangedScheduler = new MicroOpScheduler
+        {
+            PipelinedFspEnabled = true,
+            TypedSlotEnabled = true
+        };
+        MicroOp bundleCandidate = CreateAlu(1, 70);
+        bundleChangedScheduler.NominateSmtCandidate(1, bundleCandidate);
+        bundleChangedScheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 0, localCoreId: 0);
+
+        var changedBundle = new MicroOp[8];
+        changedBundle[0] = CreateAlu(0, 80);
+        MicroOp[] bundleChanged = bundleChangedScheduler.PackBundleIntraCoreSmt(
+            changedBundle, ownerVirtualThreadId: 0, localCoreId: 0);
+        Assert.DoesNotContain(bundleChanged, op => ReferenceEquals(op, bundleCandidate));
+        Assert.Equal(0, bundleChangedScheduler.SmtInjectionsCount);
+    }
+
+    [Fact]
+    public void Sched2_RejectsReplayEpochChange()
+    {
+        var scheduler = new MicroOpScheduler
+        {
+            PipelinedFspEnabled = true,
+            TypedSlotEnabled = true
+        };
+        MicroOp candidate = CreateAlu(1, 90);
+        scheduler.SetReplayPhaseContext(CreateReplayPhase(epochId: 10));
+        scheduler.NominateSmtCandidate(1, candidate);
+        scheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 0, localCoreId: 0);
+
+        scheduler.SetReplayPhaseContext(CreateReplayPhase(epochId: 11));
+        MicroOp[] result = scheduler.PackBundleIntraCoreSmt(
+            new MicroOp[8], ownerVirtualThreadId: 0, localCoreId: 0);
+
+        Assert.DoesNotContain(result, op => ReferenceEquals(op, candidate));
+        Assert.Equal(0, scheduler.SmtInjectionsCount);
+    }
+
     private static MicroOp CreateAlu(int virtualThreadId, ushort registerBase)
     {
         MicroOp candidate = MicroOpTestHelper.CreateScalarALU(
@@ -130,4 +242,14 @@ public sealed class FspPipelineStageBoundaryRegressionTests
             SlotId.Create(workingSlotIndex),
             new OperationAttemptIssuer());
     }
+
+    private static ReplayPhaseContext CreateReplayPhase(ulong epochId) => new(
+        isActive: false,
+        epochId,
+        cachedPc: 0x1000,
+        epochLength: 8,
+        completedReplays: 0,
+        validSlotCount: 8,
+        stableDonorMask: 0,
+        ReplayPhaseInvalidationReason.None);
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace YAKSys_Hybrid_CPU.Arch
 {
@@ -79,6 +80,29 @@ namespace YAKSys_Hybrid_CPU.Arch
     }
 
     /// <summary>
+    /// Versioned, read-only projection of declared instruction-support evidence.
+    /// It intentionally reports observations only: decoder, scheduler and runtime
+    /// execution continue to own legality and execution authority.
+    /// </summary>
+    public sealed class InstructionSupportEvidenceReport
+    {
+        internal InstructionSupportEvidenceReport(IReadOnlyList<InstructionSupportStatus> rows)
+        {
+            Rows = rows ?? throw new ArgumentNullException(nameof(rows));
+        }
+
+        public const int SchemaVersion = 1;
+
+        public int Version => SchemaVersion;
+
+        public string Kind => "instruction-support-declaration-evidence";
+
+        public bool IsRuntimeAuthority => false;
+
+        public IReadOnlyList<InstructionSupportStatus> Rows { get; }
+    }
+
+    /// <summary>
     /// Runtime-owned support terminology for the instruction refactor inventory.
     /// This catalog is a declaration/evidence surface only; it is not a legality
     /// service and does not participate in decoder, scheduler, or execution authority.
@@ -112,11 +136,21 @@ namespace YAKSys_Hybrid_CPU.Arch
         private static readonly IReadOnlyDictionary<string, InstructionSupportStatus> s_byMnemonic =
             BuildMnemonicIndex(s_explicitStatuses);
 
+        private static readonly InstructionSupportEvidenceReport s_generatedEvidenceReport =
+            new InstructionSupportEvidenceReport(Array.AsReadOnly(s_explicitStatuses.ToArray()));
+
         public static IReadOnlyList<string> MandatoryInteger64RepairMnemonics =>
             s_mandatoryInteger64RepairMnemonics;
 
         public static IReadOnlyList<InstructionSupportStatus> ExplicitStatuses =>
             s_explicitStatuses;
+
+        /// <summary>
+        /// Returns the versioned, generated-from-catalog evidence projection.
+        /// The report is not a runtime support, legality or execution authority.
+        /// </summary>
+        public static InstructionSupportEvidenceReport GeneratedEvidenceReport =>
+            s_generatedEvidenceReport;
 
         public static bool TryGetExplicitStatus(
             string mnemonic,

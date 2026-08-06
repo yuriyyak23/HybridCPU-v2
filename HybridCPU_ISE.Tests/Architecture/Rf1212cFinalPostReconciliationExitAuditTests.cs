@@ -6,8 +6,8 @@ public sealed class Rf1212cFinalPostReconciliationExitAuditTests
     public void CurrentLedgerClosesOnlyAfterThePostReconciliationEvidenceChain()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string final = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string final = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12c-final-post-reconciliation-closed-world-exit-audit.md");
 
         Assert.Contains("RF-12 is closed at RF-12.12h", ledger, StringComparison.Ordinal);
@@ -28,7 +28,7 @@ public sealed class Rf1212cFinalPostReconciliationExitAuditTests
             "rf12.12c-final-post-reconciliation-closed-world-exit-audit.md"
         ];
         foreach (string artifact in required)
-            Assert.True(File.Exists(Path.Combine(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", artifact)));
+            Assert.True(File.Exists(Path.Combine(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", artifact)));
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public sealed class Rf1212cFinalPostReconciliationExitAuditTests
         string root = FindRepositoryRoot();
         string production = ReadTree(root, "HybridCPU_ISE") + ReadTree(root, "HybridCPU_Compiler");
         string memoryController = Read(root, "HybridCPU_ISE", "CloseToHSL", "Memory", "Timing", "MemoryCycleController.cs");
-        string final = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string final = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12c-final-post-reconciliation-closed-world-exit-audit.md");
 
         Assert.DoesNotMatch(@"\b(?:record\s+struct|struct|class)\s+(?:VirtualThreadId|ChannelId|DomainId|TokenId)\b", production);
@@ -68,7 +68,7 @@ public sealed class Rf1212cFinalPostReconciliationExitAuditTests
     public void FinalAuditCoversOwnersRawSeamsBridgesInvalidPathsAndInvariants()
     {
         string root = FindRepositoryRoot();
-        string final = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string final = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12c-final-post-reconciliation-closed-world-exit-audit.md");
         string[] sections =
         [

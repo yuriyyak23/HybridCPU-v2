@@ -5,7 +5,7 @@ public sealed class Rf1210aCompleteBridgeMatrixInventoryTests
     [Fact]
     public void MatrixCoversEveryPaperFamilyAndRequiredBridgeDimension()
     {
-        string matrix = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string matrix = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.10a-complete-parser-serializer-compiler-runtime-bridge-matrix.md");
 
         string[] dimensions =
@@ -63,8 +63,8 @@ public sealed class Rf1210aCompleteBridgeMatrixInventoryTests
     [Fact]
     public void LedgerAdvancesOnlyToExpandedDeletionEligibilityReconciliation()
     {
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string matrix = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string matrix = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.10a-complete-parser-serializer-compiler-runtime-bridge-matrix.md");
 
         Assert.Contains("RF-12.10a | closed complete bridge matrix inventory", ledger, StringComparison.Ordinal);

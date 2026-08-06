@@ -50,9 +50,9 @@ public sealed class Rf132LegacyParameterlessAtomicMemoryDeletionTests
     [Fact]
     public void CurrentLedgerAndEvidenceDeclareTheIntentionalInvalidBehaviorChange()
     {
-        string ledger = File.ReadAllText(Path.Combine(Root, "Documentation", "ArchitectureAuthorityRefactor", "12_RF13",
+        string ledger = File.ReadAllText(Path.Combine(Root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "12_RF13",
             "00_CURRENT_STATUS_AND_LEDGER.md"));
-        string evidence = File.ReadAllText(Path.Combine(Root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13",
+        string evidence = File.ReadAllText(Path.Combine(Root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13",
             "rf13.2-parameterless-atomic-memory-legacy-deletion.md"));
 
         Assert.Contains("RF-13.2", ledger, StringComparison.Ordinal);

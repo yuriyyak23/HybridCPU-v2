@@ -102,11 +102,13 @@ Denied decisions include:
 
 ## Completion Projection
 
-`CompletionRecord` is neutral runtime data. `CompletionProjectionService` maps compatible completion records into `VmxCompletionProjection`. `CompletionRecord.FromCompatibilityExit` and `TryFromCompatibilityExit` require a publication fence result. This prevents arbitrary VMX exit records from bypassing the neutral fence.
+`CompletionRecord` is neutral runtime data. `CompletionProjectionService` maps compatible completion records into `VmxCompletionProjection`. The current compatibility file exposes `CompletionRecord.FromCompatibilityExit` and `TryFromCompatibilityExit`, which accept a publication-fence result and are called only by tests in the inspected worktree. Because the fence DTO and route booleans are not owner-bound tokens, these factories are isolated scaffolding, not a production publication path. No admission handler, dispatcher, pipeline or retire caller may use them; a future positive path must move record creation behind the neutral completion owner and an attempt-bound backend-result token.
 
 ## Retire Fence
 
 `VmxRetireEffect.InterceptExit` accepts a `TrapDecision` plus a `TrapCompletionPublicationFenceResult`. It returns a successful VMX exit effect only if `publicationFence.RetirePublicationAllowed` is true. Otherwise it returns a fail-closed security fault.
+
+Even a positive-shaped `VmxRetireEffect` is not evidence that the canonical instruction executed successfully: the current CPU retire path applies `ApplyRemovedFrontendFailClosedEffect` and maps every valid VMX compatibility effect to a fault. A future success path requires a separate owner-bound retire grant tied to the live attempt identity.
 
 This is the critical retire rule:
 

@@ -34,4 +34,8 @@ Layer 2 grant authority uses:
 
 Validation requires provenance, current epoch, bounded scope and monotonic derivation. Guest scalar values and compatibility projection cannot materialize secure grants.
 
+Current `SecureGrantAuthorityPolicy` validates caller-supplied handles and receives materialization as a boolean. The I/O policy can pass a hard-coded neutral source and `runtimeOwnerMaterialized: true`. No runtime-owned ledger mints, records, consumes or revokes grants, so successful validation is not grant authority.
+
 These grants are runtime descriptors. They are not CPU capability registers, pointer provenance tags or CHERI capabilities.
+
+Likewise, evidence policies currently classify inputs but have no single production evidence publisher connected to a named effect path.

@@ -33,6 +33,7 @@ public sealed class DecoderRf05AggregateCoverageTests
             File.ReadAllText(Path.Combine(
                 FindRepositoryRoot(),
                 "Documentation",
+                "Documentation",
                 "ArchitectureAuthorityRefactor",
                 "Evidence",
                 "RF05",

@@ -8,7 +8,7 @@ public sealed class Rf128bOwnerContextIdRawCarrierInventoryTests
     {
         string root = Root();
         string production = ReadAll(root, "HybridCPU_ISE");
-        Assert.Equal(196, Count(production, "OwnerContextId"));
+        Assert.Equal(198, Count(production, "OwnerContextId"));
         Assert.Equal(12, Count(production, "public int OwnerContextId"));
         Assert.Equal(5, Count(production, "public required uint OwnerContextId"));
         Assert.Equal(4, Count(production, "OwnerContextId = 0"));

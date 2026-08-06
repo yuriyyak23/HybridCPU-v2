@@ -79,8 +79,8 @@ public sealed class Rf1113MemoryPipelineStateExtractionTests
     public void LedgerAndEvidenceCloseOnlyMemoryPipelineState()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.13-memory-pipeline-state-extraction.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.13-memory-pipeline-state-extraction.md");
         Assert.Contains("RF-11.13 | closed MemoryPipelineState", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-11.14 BackendState", ledger, StringComparison.Ordinal);
         Assert.Contains("MemoryCycleController", evidence, StringComparison.Ordinal);

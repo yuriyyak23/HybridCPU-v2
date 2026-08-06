@@ -194,6 +194,8 @@ public sealed class Rf083dScalarRegisterWriteTransportTests
         Assert.Contains("WorkingBundleEntry.CreateSourcePreserving(", fspProducer, StringComparison.Ordinal);
         Assert.Contains("workingEntry.CreatePostStageBIdentityTemplate(rf08OperationAttemptIssuer)", fspProducer, StringComparison.Ordinal);
         Assert.DoesNotContain("new Core.PostStageBIdentityTemplate", fspProducer, StringComparison.Ordinal);
+        Assert.DoesNotContain("candidate.PostStageBIssuedAttempt = null;", fspProducer, StringComparison.Ordinal);
+        Assert.Contains("if (candidate.PostStageBIssuedAttempt is not null)", fspProducer, StringComparison.Ordinal);
         Assert.Equal(1, Count(fspProducer, "SlotId.Create(entry.SlotIndex)"));
         Assert.Contains("lane.PostStageBIssuedAttempt = issueLane.MicroOp?.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);
         Assert.Contains("lane.PostStageBIssuedAttempt = executeLane.PostStageBIssuedAttempt;", materialization, StringComparison.Ordinal);

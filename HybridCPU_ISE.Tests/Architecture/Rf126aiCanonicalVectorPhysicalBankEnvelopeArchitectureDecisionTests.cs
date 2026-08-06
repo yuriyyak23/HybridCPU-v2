@@ -170,7 +170,7 @@ public sealed class
     [Fact]
     public void EvidenceInventoriesAuthorityConsumersAndCompatibilitySeams()
     {
-        string evidence = Read(FindRepositoryRoot(), "Documentation", "ArchitectureAuthorityRefactor",
+        string evidence = Read(FindRepositoryRoot(), "Documentation", "Documentation", "ArchitectureAuthorityRefactor",
             "Evidence", "RF12",
             "rf12.6ai-canonical-vector-physical-bank-envelope-architecture-decision.md");
 

@@ -2,48 +2,46 @@
 
 ## Audit Result
 
-The activation tasks are complete for the bounded closure classes stated below.
-No row claims production activation.
+Revalidated on 2026-08-06 against current production sources and tests. The table classifies bounded evidence only; it does not infer production reachability from a policy type or a test that calls the policy directly.
 
 | Gate | Verified status | Primary proof | Remains closed |
 | --- | --- | --- | --- |
 | 00 | index and ordering established | activation index and release corpus | runtime authority |
 | 01 | current-state/gap matrix verified | code/test anchor matrix | activation claim |
-| 02 | forbidden-regression guards implemented | release regex/source guards | exceptions without RFC |
-| 03 | owner-specific RFC/ADR process implemented | accepted privileged-state owner RFC plus process rules | RFC as runtime authority |
-| 04 | ordinary no-effect gate revalidated | descriptor no-effect and Stage B tests | non-ordinary bypass |
-| 05 | descriptor materialization/completeness gate implemented | root/subdescriptor fail-closed tests | materialization as execution |
-| 06 | Stage B routing gate implemented; P0 bypass closed | runtime routing, taxonomy tests and source scan | admission as publication |
-| 07 | descriptor grant/epoch discipline implemented | provenance, bounds, epoch, revocation and derivation tests | CHERI or ISA capabilities |
-| 08 | measurement/evidence visibility gate implemented | measurement, publication, restore and source tests | evidence as authority |
+| 02 | documented guard set; executable scope partial | source/doc guards | guards as runtime proof |
+| 03 | process document only | RFC/ADR template | RFC as runtime authority |
+| 04 | admission-level ordinary no-effect verified; end-to-end equivalence open | descriptor/admission tests | pipeline/SMT/FSP/memory/I/O/exception/retire equivalence |
+| 05 | descriptor validation exists; lifecycle owner open | root/subdescriptor tests | public construction, two carriers, missing revoke owner |
+| 06 | generic admission service exists; CPU Stage-B integration open | direct service tests | decode/SafetyVerifier/certificate/issue reachability |
+| 07 | caller-supplied grant validation exists; ledger open | policy tests | mint/revoke/consume owner |
+| 08 | measurement/evidence classifiers exist; publisher open | direct policy tests | production evidence publication path |
 | 09 | privileged execution-state owner proof implemented | descriptor/policy tests and source guard | projection from owner alone |
 | 10 | `GuestCr0`/`GuestCr4` read-only projection implemented | all-gate positive/negative tests | VMWRITE, broad fields, side effects |
-| 11 | memory/private-domain policy admission implemented | memory and migration tests/source guards | hardware tags, backend execution |
-| 12 | secure I/O/shared-buffer policy admission implemented | current binding tests and publication-zero guards | secure I/O backend execution |
-| 13 | secure hypercall backend-owner contract and identifier allocation implemented | `SecureHypercallBackendOwnerAbiRegistry`, proof-only admission tests and VMX zero-authority tests | backend execution, completion publication, retire publication |
-| 14 | completion/retire publication authority implemented fail-closed | `SecureCompletionRetirePublicationAuthorityPolicy`, focused tests and scoped source scans | backend execution, production activation, compiler secure emission |
-| 15 | migration/checkpoint/restore output-manifest classification implemented fail-closed | `SecureOutputManifestClassificationPolicy`, focused tests and scoped source scans | live migration, backend execution, completion publication, retire publication, compiler secure emission |
-| 16 | debug/attestation visibility classification implemented fail-closed | `SecureDebugAttestationVisibilityPolicy`, focused tests and scoped source scans | backend execution, VMX authority, migration authority, completion publication, retire publication, compiler secure emission |
-| 17 | VMX boundary zero-authority classification implemented fail-closed | `SecureComputeNamedPathVmxZeroAuthorityPolicy`, focused tests and scoped source scans | VMX activation, VMCS authority, backend execution, completion publication, retire publication, compiler secure emission |
-| 19 | compiler no-emission to controlled-emission decision implemented fail-closed | `SecureComputeControlledEmissionGatePolicy`, focused tests and scoped source scans | secure compiler emission, backend execution, new secure opcodes, capability-aware memory instructions |
+| 11 | memory policy class exists; enforcement path and canonical map open | direct policy tests | production memory/DMA path, overlap rejection |
+| 12 | I/O policy class exists; device/IOMMU path and canonical map open | direct policy tests | device effect owner, IOMMU revoke, overlap/duplicate rejection |
+| 13 | proof-only identifiers and contract vocabulary | registry and direct policy tests | executable hypercall owner/result |
+| 14 | negative publication classifier | direct policy tests/source guards | production backend-result/completion/retire owners |
+| 15 | partial migration/output classifier; unknown classes default allow | direct policy tests | serializer/key/anti-replay/atomic restore protocol |
+| 16 | visibility classifier only | direct policy tests/source guards | single production evidence publisher |
+| 17 | narrow VMX zero-authority boundary verified | projection and denial tests | any VMX authority |
+| 18 | unconditionally future/design-fenced | negative design-fence tests | all nested execution |
+| 19 | current compiler no-emission enforced; reproducible generated-artifact proof open | contour/lowering rejection tests | controlled emission before limited runtime release |
+| 20 | pre-activation evidence classifier only | negative classifier tests | runtime execution |
+| 21 | negative/future-gated matrix only | mixed executable/source/doc checks | positive conformance or release proof |
+| 22 | hard-denied classifier | denial tests | limited/production release |
 
 ## Audit Corrections Applied
 
-- the WhiteBook no longer describes the former enabled-descriptor Stage B bypass;
+- generic admission is no longer described as closed CPU Stage-B enforcement;
 - ordinary no-effect and non-ordinary fail-closed behavior are separated;
 - `GuestCr0` / `GuestCr4` status is updated from blanket denial to gated read-only projection;
-- No-effect through measurement/evidence gates are marked as implemented/revalidated gates in the ActivationPlan.
-- Current-next wording now points through the closed publication, output-manifest
-  classification, debug/attestation visibility, VMX zero-authority, and compiler
-  decision gates to positive runtime execution activation planning.
-- Memory/private-domain policy admission has explicit exit-status wording.
-- Secure I/O/shared-buffer policy admission is kept separate from backend and publication authority.
-- Secure hypercall identifier allocation is kept separate from backend execution and publication authority.
-- Publication authority is closed fail-closed for current proof-only/admitted-denied/registry-backed paths and remains separate from backend execution.
-- Migration/output-manifest classification is closed fail-closed for future request/result/completion/guest-output/retire/recomputed entries and remains separate from backend execution, completion publication and retire publication.
-- Debug/attestation visibility is closed fail-closed and remains separate from runtime authority, VMX authority, migration authority, completion publication and retire publication.
-- VMX boundary zero-authority is closed fail-closed for named positive-looking paths and remains separate from backend execution, publication and compiler emission.
-- Compiler no-emission is closed as an explicit no-compiler-change decision and remains separate from backend execution, production activation and controlled compiler emission.
+- descriptor validation is separated from lifecycle ownership;
+- grant validation is separated from mint/revoke authority;
+- memory, I/O, migration, evidence and publication policy classes are separated from effect-path enforcement;
+- executable behavior tests, source guards and documentation-string tests are reported separately;
+- phases 18, 20, 21 and 22 retain their required future/negative/hard-denied classifications.
+
+The detailed confirmed/partial/overestimated/open table and ranked C0/C1/C2 register are maintained in ActivationPlan phase `24`.
 
 ## Residual Risk
 

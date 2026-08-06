@@ -339,7 +339,7 @@ public sealed class
             "3_Architectural_Overview_and_Frontend_Contract.md");
 
     private static string Evidence(string root) =>
-        Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.6ak-canonical-envelope-admission-storage-service-revalidation-decision.md");
 
     private static string Controller(string root) =>

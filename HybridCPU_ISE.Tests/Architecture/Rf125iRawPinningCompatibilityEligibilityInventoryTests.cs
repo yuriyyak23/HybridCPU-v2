@@ -25,8 +25,8 @@ public sealed class Rf125iRawPinningCompatibilityEligibilityInventoryTests
     public void LedgerAndEvidenceForbidRemovalBeforeClosedWorldZeroCallerProof()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5i-raw-pinning-compatibility-removal-eligibility-inventory.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5i-raw-pinning-compatibility-removal-eligibility-inventory.md");
 
         Assert.Contains("RF-12.5i | closed raw-pinning compatibility/removal eligibility inventory", ledger, StringComparison.Ordinal);
         Assert.Contains("zero-caller proof", evidence, StringComparison.Ordinal);

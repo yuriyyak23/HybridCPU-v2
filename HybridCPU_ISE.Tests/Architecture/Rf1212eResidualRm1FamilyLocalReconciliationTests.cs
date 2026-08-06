@@ -48,7 +48,7 @@ public sealed class Rf1212eResidualRm1FamilyLocalReconciliationTests
     [Fact]
     public void EvidenceRecordsEveryFamilyAndCurrentDisposition()
     {
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12e-residual-rm1-family-local-reconciliation.md");
         foreach (string builder in new[]
         {

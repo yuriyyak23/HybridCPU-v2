@@ -72,8 +72,8 @@ public sealed class Rf131LegacyRelocationInventoryTests
             Assert.False(File.Exists(Path.Combine(Root, oldPath.Replace('/', Path.DirectorySeparatorChar))));
         }
 
-        string ledger = File.ReadAllText(Path.Combine(Root, "Documentation", "ArchitectureAuthorityRefactor", "12_RF13", "00_CURRENT_STATUS_AND_LEDGER.md"));
-        string evidence = File.ReadAllText(Path.Combine(Root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13", "rf13.1-legacy-consolidation-relocation.md"));
+        string ledger = File.ReadAllText(Path.Combine(Root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "12_RF13", "00_CURRENT_STATUS_AND_LEDGER.md"));
+        string evidence = File.ReadAllText(Path.Combine(Root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13", "rf13.1-legacy-consolidation-relocation.md"));
         Assert.Contains("RF-13.2", ledger, StringComparison.Ordinal);
         Assert.Contains("path-only move", evidence, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("valid-input parity", evidence, StringComparison.Ordinal);

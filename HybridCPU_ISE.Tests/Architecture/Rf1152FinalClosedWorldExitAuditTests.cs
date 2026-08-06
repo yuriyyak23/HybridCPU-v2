@@ -17,7 +17,7 @@ public sealed class Rf1152FinalClosedWorldExitAuditTests
         Assert.True(runtime.IsInitOnly);
 
         string production = Sources(Path.Combine(Root(), "HybridCPU_ISE"));
-        Assert.Equal(66, Regex.Matches(production, @"sealed\s+partial\s+class\s+CPU_Core").Count);
+        Assert.Equal(67, Regex.Matches(production, @"sealed\s+partial\s+class\s+CPU_Core").Count);
         Assert.Empty(Regex.Matches(production, @"partial\s+struct\s+CPU_Core"));
     }
 
@@ -118,8 +118,8 @@ public sealed class Rf1152FinalClosedWorldExitAuditTests
     [Fact]
     public void ExitEvidenceAndLedgerCloseRf11WithoutOpeningAnotherRf11Slice()
     {
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.52-final-closed-world-exit-audit.md");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.52-final-closed-world-exit-audit.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
         Assert.Contains("RF-11 overall | closed", ledger, StringComparison.Ordinal);
         Assert.Contains("no remaining RF-11 task", ledger, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("closed-world", evidence, StringComparison.OrdinalIgnoreCase);

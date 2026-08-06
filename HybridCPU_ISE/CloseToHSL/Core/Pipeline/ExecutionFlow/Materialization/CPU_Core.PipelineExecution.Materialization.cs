@@ -45,9 +45,13 @@ namespace YAKSys_Hybrid_CPU
 
                 Core.IssuePacketLane issueLane = issuePacket.GetPhysicalLane(laneIndex);
                 issueLane = ApplyIssueLaneExecutionSurfaceContract(issueLane, issuePacket.PC);
-                return CanVirtualThreadIssueInForeground(issueLane.OwnerThreadId)
-                    ? issueLane
-                    : Core.IssuePacketLane.CreateEmpty(laneIndex);
+                if (!CanVirtualThreadIssueInForeground(issueLane.OwnerThreadId))
+                    return Core.IssuePacketLane.CreateEmpty(laneIndex);
+
+                _fspScheduler.TryAttachVirtualizationAdmissionAfterCanonicalLaneMaterialization(
+                    issuePacket,
+                    issueLane);
+                return issueLane;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

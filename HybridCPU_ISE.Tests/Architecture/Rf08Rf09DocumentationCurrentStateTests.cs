@@ -8,7 +8,7 @@ public sealed class Rf08Rf09DocumentationCurrentStateTests
     {
         string root = FindRepositoryRoot();
         string status = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/00_CURRENT_STATUS_AND_READING_ORDER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/00_CURRENT_STATUS_AND_READING_ORDER.md");
 
         Assert.Contains("| RF-08 | closed |", status, StringComparison.Ordinal);
         Assert.Contains("| RF-08.3d | complete production contour |", status, StringComparison.Ordinal);
@@ -27,7 +27,7 @@ public sealed class Rf08Rf09DocumentationCurrentStateTests
     {
         string root = FindRepositoryRoot();
         string blocker = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/01_SCHEDULER_CHOICE_BLOCKER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/01_SCHEDULER_CHOICE_BLOCKER.md");
 
         Assert.Contains("## Owner, callers and affected surfaces", blocker, StringComparison.Ordinal);
         Assert.Contains("### A. Preserve the current RF-08 scheduler boundary", blocker, StringComparison.Ordinal);
@@ -52,14 +52,14 @@ public sealed class Rf08Rf09DocumentationCurrentStateTests
         string stageFlow = Read(root,
             "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.PipelineExecution.cs");
         string migration = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/04_CoreMigration/04_RF07_RF13_Core_Migration.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/04_CoreMigration/04_RF07_RF13_Core_Migration.md");
 
         Assert.Contains("ScalarClusterIssueEntry[] entries", fsp, StringComparison.Ordinal);
         Assert.Contains("if (candidate is not Core.ScalarALUMicroOp)", fsp, StringComparison.Ordinal);
         Assert.DoesNotContain("Core.LoadMicroOp", fsp, StringComparison.Ordinal);
 
         Assert.Contains("## Local-code verification basis", Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/01_SCHEDULER_CHOICE_BLOCKER.md"), StringComparison.Ordinal);
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/01_SCHEDULER_CHOICE_BLOCKER.md"), StringComparison.Ordinal);
 
         int capture = stageFlow.IndexOf(
             "CaptureRetiredWriteBackLaneEffects(ref retireBatch, laneIndex, lane)",
@@ -83,10 +83,10 @@ public sealed class Rf08Rf09DocumentationCurrentStateTests
     public void OverviewAndGovernancePointToTheCanonicalGateWithoutStaleCurrentClaims()
     {
         string root = FindRepositoryRoot();
-        string overview = Read(root, "Documentation/ArchitectureAuthorityRefactor/00_Overview/00_README.md");
+        string overview = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/00_Overview/00_README.md");
         string governance = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/05_Governance/05_Invariants_Dependency_Risks_DoD.md");
-        string evidenceReadme = Read(root, "Documentation/ArchitectureAuthorityRefactor/Evidence/README.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/05_Governance/05_Invariants_Dependency_Risks_DoD.md");
+        string evidenceReadme = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/README.md");
 
         foreach (string document in new[] { overview, governance, evidenceReadme })
         {
@@ -114,7 +114,7 @@ public sealed class Rf08Rf09DocumentationCurrentStateTests
         string paper = Read(root,
             "ResearchPaper/section/md base/5_Two_Stage_Admission_and_Bundle_Compositional_SMT_Packing.md");
         string blocker = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/01_SCHEDULER_CHOICE_BLOCKER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/01_SCHEDULER_CHOICE_BLOCKER.md");
 
         Assert.Contains("#### RF-08.3o architecture-owner decision: preserve scalar-load scheduler topology", paper, StringComparison.Ordinal);
         Assert.Contains("RF-08 mandatory exact-issued-attempt identity coverage", paper, StringComparison.Ordinal);

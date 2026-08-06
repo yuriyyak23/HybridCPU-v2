@@ -13,7 +13,7 @@ public sealed class Rf083mIdentityOnlyScalarLoadEnvelopeAuthorizationTests
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base",
             "5_Two_Stage_Admission_and_Bundle_Compositional_SMT_Packing.md");
-        string adr = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
+        string adr = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
             "ADR-009_VLIW_Retirement.md");
 
         Assert.Contains("RF-08.3m authorised identity-only scalar-load envelope", paper, StringComparison.Ordinal);

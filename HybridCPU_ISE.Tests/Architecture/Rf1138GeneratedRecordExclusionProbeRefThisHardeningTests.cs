@@ -42,9 +42,9 @@ public sealed class Rf1138GeneratedRecordExclusionProbeRefThisHardeningTests
     public void EvidenceClosesOnlyGeneratedRecordExclusionProbe()
     {
         string root = Root();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
             "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.38-generated-record-exclusion-probe-ref-this-hardening.md");
         Assert.Contains("RF-11.38 generated-record exclusion-probe ref-this hardening", ledger);
         Assert.Contains("changes no production state declaration", evidence,

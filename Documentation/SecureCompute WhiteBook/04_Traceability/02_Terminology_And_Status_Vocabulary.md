@@ -11,6 +11,12 @@
 `policy admission`
 : Policy prerequisites passed. Backend execution and publication remain independently closed.
 
+`policy class`
+: A descriptor/policy/classifier type with direct tests. It is not production enforcement until a named effect path calls it and consumes its typed result.
+
+`production enforcement`
+: A reachable production path binds canonical operation identity to a runtime-owned certificate and effect owner, with executable positive and negative tests.
+
 `projection-only`
 : A named read-only compatibility value may be returned after its dedicated gates. No mutation or backend authority follows.
 
@@ -42,6 +48,11 @@ limited-release gate. It does not mean feature completeness.
 - completion published != retire published;
 - RFC accepted != runtime activated;
 - tests green != product activation.
+- caller `...Validated` / `...Authorized` / `...Proven` boolean != certificate or authority;
+- caller-supplied descriptor != lifecycle-owned descriptor identity;
+- source-string or documentation-string assertion != executable conformance;
+- policy class present != production effect-path enforcement;
+- admission certificate != execution certificate.
 
 ## Source Of Truth Rule
 

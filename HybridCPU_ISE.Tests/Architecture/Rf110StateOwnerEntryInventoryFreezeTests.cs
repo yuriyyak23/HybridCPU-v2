@@ -82,7 +82,7 @@ public sealed class Rf110StateOwnerEntryInventoryFreezeTests
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(66, partialFiles.Length);
+        Assert.Equal(67, partialFiles.Length);
 
         string materialization = Read(root,
             "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "ExecutionFlow", "Materialization",
@@ -186,9 +186,9 @@ public sealed class Rf110StateOwnerEntryInventoryFreezeTests
     {
         string root = FindRepositoryRoot();
         string status = Read(root,
-            "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+            "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
         string evidence = Read(root,
-            "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.0-entry-inventory-freeze.md");
+            "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.0-entry-inventory-freeze.md");
 
         Assert.Contains("RF-11.0 | closed inventory/freeze", status, StringComparison.Ordinal);
         Assert.Matches(@"RF-11 overall \| (?:open|closed)", status);

@@ -26,7 +26,7 @@ public sealed class Rf1136RetiredCsrWriteRefThisHardeningTests
     }
     [Fact] public void EvidenceClosesOnlyRetiredCsrWrite()
     {
-        string root=Root(); string l=Read(root,"Documentation", "ArchitectureAuthorityRefactor","10_RF11","00_CURRENT_STATUS_AND_LEDGER.md"); string e=Read(root,"Documentation", "ArchitectureAuthorityRefactor","Evidence","RF11","rf11.36-retired-csr-write-ref-this-hardening.md");
+        string root=Root(); string l=Read(root,"Documentation", "Documentation", "ArchitectureAuthorityRefactor","10_RF11","00_CURRENT_STATUS_AND_LEDGER.md"); string e=Read(root,"Documentation", "Documentation", "ArchitectureAuthorityRefactor","Evidence","RF11","rf11.36-retired-csr-write-ref-this-hardening.md");
         Assert.Contains("RF-11.36 retired CSR-write ref-this seam hardening",l); Assert.Contains("no production state declaration",e,StringComparison.OrdinalIgnoreCase); Assert.Contains("--minimal-logs",e); Assert.Contains("RF-11.37",l);
     }
     static string Retire()=>Read(Root(),"HybridCPU_ISE","CloseToHSL","Core","Pipeline","Retire","Evidence","CPU_Core.PipelineExecution.Retire.cs");

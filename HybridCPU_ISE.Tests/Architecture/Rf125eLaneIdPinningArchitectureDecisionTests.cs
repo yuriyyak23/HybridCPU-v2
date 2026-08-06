@@ -19,8 +19,8 @@ public sealed class Rf125eLaneIdPinningArchitectureDecisionTests
     public void DecisionPreservesRawCompatibilityUntilTheNextValidInputSlice()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5e-laneid-pinning-architecture-decision.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5e-laneid-pinning-architecture-decision.md");
 
         Assert.Contains("RF-12.5e | closed architecture decision", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-12.5h | closed invalid-input behavior", ledger, StringComparison.Ordinal);

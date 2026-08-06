@@ -166,6 +166,28 @@ namespace YAKSys_Hybrid_CPU.Core
     }
 
     /// <summary>
+    /// Internal E1-only issuance seam. It is deliberately absent from the public
+    /// runtime-legality interface so compatibility callers cannot request authority.
+    /// </summary>
+    internal interface IVirtualizationAdmissionService
+    {
+        VirtualizationAdmissionIssueResult IssueVirtualizationAdmissionAfterStageB(
+            ReplayPhaseContext phase,
+            SmtBundleMetadata4Way bundleMetadata,
+            MicroOp candidate,
+            int sourceSlotId,
+            int selectedLane);
+
+        VirtualizationAdmissionValidationResult ValidateVirtualizationAdmission(
+            ReplayPhaseContext phase,
+            SmtBundleMetadata4Way bundleMetadata,
+            MicroOp candidate,
+            int sourceSlotId,
+            int selectedLane,
+            SafetyVerifier.VirtualizationAdmissionCertificate? certificate);
+    }
+
+    /// <summary>
     /// Runtime-local coordinator that owns cache lifecycle seams adjacent to legality checking.
     /// Keeps scheduler callers off raw cache invalidation/telemetry mechanics while preserving
     /// the existing prepare/evaluate/refresh/invalidate behavior.

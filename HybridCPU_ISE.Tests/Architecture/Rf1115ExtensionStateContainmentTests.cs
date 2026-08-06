@@ -86,8 +86,8 @@ public sealed class Rf1115ExtensionStateContainmentTests
     public void LedgerAndEvidenceCloseOnlyExtensionReferenceContainment()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.15-extension-state-containment-references.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.15-extension-state-containment-references.md");
         Assert.Contains("RF-11.15 | closed ExtensionState references", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-11.16 residual", ledger, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("no common accelerator", evidence, StringComparison.OrdinalIgnoreCase);

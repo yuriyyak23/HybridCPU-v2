@@ -106,6 +106,7 @@ public sealed class Rf125bSourceOperationProvenanceSlotInventoryTests
                 "HybridCPU_ISE/CloseToHSL/Core/Architecture/Registers/Retire/Rf08RetireEffectIdentityContracts.cs",
                 "HybridCPU_ISE/CloseToHSL/Core/Decoder/Rf06ExecutionContracts.cs",
                 "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/Fsp/CPU_Core.PipelineExecution.Fsp.cs",
+                "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/PostStageBIssuedAttempt.cs",
                 "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/Rf06ScalarSchedulerRouting.cs",
             ],
             directFiles);
@@ -115,6 +116,8 @@ public sealed class Rf125bSourceOperationProvenanceSlotInventoryTests
             "CPU_Core.PipelineExecution.Fsp.cs");
         string routing = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core",
             "Pipeline", "Scheduling", "Rf06ScalarSchedulerRouting.cs");
+        string postStageB = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core",
+            "Pipeline", "Scheduling", "PostStageBIssuedAttempt.cs");
         string retire = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core",
             "Architecture", "Registers", "Retire",
             "Rf08RetireEffectIdentityContracts.cs");
@@ -136,6 +139,11 @@ public sealed class Rf125bSourceOperationProvenanceSlotInventoryTests
             StringComparison.Ordinal);
         Assert.Contains("(uint)workingSlotIndex >= BundleMetadata.BundleSlotCount",
             routing, StringComparison.Ordinal);
+
+        Assert.Contains("SourceOperationProvenance source = admission.SourceProvenance;",
+            postStageB, StringComparison.Ordinal);
+        Assert.Contains("workingSlotId != source.SourceSlotId",
+            postStageB, StringComparison.Ordinal);
 
         Assert.Contains(
             "public int SourceSlotIndex => SourceProvenance.SourceSlotIndex",

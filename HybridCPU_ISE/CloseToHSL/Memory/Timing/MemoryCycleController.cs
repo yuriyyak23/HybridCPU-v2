@@ -115,6 +115,9 @@ public sealed class MemoryCycleController
     private ulong _telemetryCommittedDataWriteBytes;
     private ulong _telemetryInstructionFetchReadBytes;
     private ulong _telemetryQueueFullRejects;
+    private ulong _telemetryBaselineOutstandingRequests;
+    private ulong _telemetryCanceledRequests;
+    private ulong _telemetryConsumedCompletions;
 
     internal MemoryCycleController(MemorySubsystem memorySubsystem)
     {
@@ -216,7 +219,11 @@ public sealed class MemoryCycleController
                 _telemetryDataReadBytes,
                 _telemetryCommittedDataWriteBytes,
                 _telemetryInstructionFetchReadBytes,
-                _telemetryQueueFullRejects);
+                _telemetryQueueFullRejects,
+                _telemetryBaselineOutstandingRequests,
+                _telemetryCanceledRequests,
+                _telemetryConsumedCompletions,
+                checked((ulong)_outstanding.Count));
         }
     }
 
@@ -238,6 +245,9 @@ public sealed class MemoryCycleController
             _telemetryCommittedDataWriteBytes = 0;
             _telemetryInstructionFetchReadBytes = 0;
             _telemetryQueueFullRejects = 0;
+            _telemetryBaselineOutstandingRequests = checked((ulong)_outstanding.Count);
+            _telemetryCanceledRequests = 0;
+            _telemetryConsumedCompletions = 0;
         }
     }
 
@@ -536,6 +546,7 @@ public sealed class MemoryCycleController
             {
                 DecrementOutstandingClass(request);
             }
+            _telemetryConsumedCompletions = checked(_telemetryConsumedCompletions + 1);
             return true;
         }
     }
@@ -556,6 +567,7 @@ public sealed class MemoryCycleController
             DecrementOutstandingClass(request);
             _nextCompletions.Remove(requestId);
             _publishedCompletions.Remove(requestId);
+            _telemetryCanceledRequests = checked(_telemetryCanceledRequests + 1);
             return true;
         }
     }

@@ -154,7 +154,7 @@ public sealed class Rf104ExplicitPacketScalarStoreMemoryCycleTests
         string paper = Read(root,
             "ResearchPaper/section/md base/7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
         string status = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
 
         Assert.Contains("RF-10.4 authorizes exactly the explicit-packet scalar-store contour", paper, StringComparison.Ordinal);
         Assert.Contains("RF-10.4 | closed", status, StringComparison.Ordinal);

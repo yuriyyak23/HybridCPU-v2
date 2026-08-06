@@ -5,11 +5,11 @@ public sealed class Rf1212FinalClosedWorldExitAuditTests
     [Fact]
     public void CurrentClosureFollowsTheSupersededHistoricalEvidenceAndReconciliation()
     {
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12-final-closed-world-identifier-owner-raw-seam-invalid-path-exit-audit.md");
-        string amendment = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12a-final-exit-audit-evidence-completeness-amendment.md");
-        string reconciliation = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12b-external-audit-reconciliation-and-reopened-handoff.md");
-        string currentFinal = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12c-final-post-reconciliation-closed-world-exit-audit.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12-final-closed-world-identifier-owner-raw-seam-invalid-path-exit-audit.md");
+        string amendment = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12a-final-exit-audit-evidence-completeness-amendment.md");
+        string reconciliation = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12b-external-audit-reconciliation-and-reopened-handoff.md");
+        string currentFinal = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.12c-final-post-reconciliation-closed-world-exit-audit.md");
         string guard = Read("HybridCPU_ISE.Tests", "Architecture", "Rf120ResourceIdIngressGuardTests.cs");
 
         Assert.Contains("RF-12.9cb | closed exit audit", ledger, StringComparison.Ordinal);

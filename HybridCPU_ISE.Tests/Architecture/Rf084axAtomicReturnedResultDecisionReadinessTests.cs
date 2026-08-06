@@ -73,9 +73,9 @@ public sealed class Rf084axAtomicReturnedResultDecisionReadinessTests
     {
         string root = FindRepositoryRoot();
         string paper = ReadPaper();
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
             "rf08.4ax-atomic-returned-result-decision-readiness-audit.md");
 
         Assert.Contains("RF-08.4al explicitly excludes this publication", paper, StringComparison.Ordinal);

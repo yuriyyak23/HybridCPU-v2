@@ -12,7 +12,7 @@ public sealed class Rf083cAuthorizedExactPostStageBHandoffTests
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base",
             "5_Two_Stage_Admission_and_Bundle_Compositional_SMT_Packing.md");
-        string adr = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
+        string adr = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
             "ADR-009_VLIW_Retirement.md");
 
         foreach (string source in new[] { paper, adr })
@@ -42,7 +42,7 @@ public sealed class Rf083cAuthorizedExactPostStageBHandoffTests
         Assert.Contains(productionReferences, path =>
             path.EndsWith("PostStageBIssuedAttempt.cs", StringComparison.OrdinalIgnoreCase));
 
-        string migration = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "04_CoreMigration",
+        string migration = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "04_CoreMigration",
             "04_RF07_RF13_Core_Migration.md");
         Assert.Contains("RF-08.3d scalar RegisterWrite approved-carrier transport", migration, StringComparison.Ordinal);
         Assert.Contains("RegisterWrite transport", migration, StringComparison.OrdinalIgnoreCase);

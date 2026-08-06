@@ -6,8 +6,8 @@ public sealed class Rf1212fRetainedAliasDodScopeReconciliationTests
     public void GovernanceAndLedgerUseThePaperDefinedBoundary()
     {
         string root = Root();
-        string dod = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "05_Governance", "05_Invariants_Dependency_Risks_DoD.md");
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string dod = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "05_Governance", "05_Invariants_Dependency_Risks_DoD.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
 
         Assert.Contains("checked or owner-validated RF-12 resource boundary", dod, StringComparison.Ordinal);
         Assert.Contains("paper-listed legacy raw compatibility", dod, StringComparison.Ordinal);
@@ -20,7 +20,7 @@ public sealed class Rf1212fRetainedAliasDodScopeReconciliationTests
     [Fact]
     public void EvidenceSeparatesRetainedRawCompatibilityFromCheckedAuthority()
     {
-        string evidence = Read(Root(), "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read(Root(), "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12f-retained-alias-dod-scope-reconciliation.md");
 
         Assert.Contains("Paper section 3.7", evidence, StringComparison.Ordinal);

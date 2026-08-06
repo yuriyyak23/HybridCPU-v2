@@ -6,7 +6,7 @@ public sealed class Rf10PostClosureDocumentationAuditTests
     public void CurrentLedgerIsClosedCurrentStateWithoutStaleOpenNarrative()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+        string status = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
 
         Assert.Contains("This file is the current-state index", status, StringComparison.Ordinal);
         Assert.Contains("RF-10 overall | closed", status, StringComparison.Ordinal);
@@ -20,8 +20,8 @@ public sealed class Rf10PostClosureDocumentationAuditTests
     public void AllSliceEvidenceAndPostClosureAuditAreIndexed()
     {
         string root = FindRepositoryRoot();
-        string evidenceDirectory = Path.Combine(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF10");
-        string status = Read(root, "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidenceDirectory = Path.Combine(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF10");
+        string status = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
 
         for (int slice = 0; slice <= 14; slice++)
         {
@@ -41,7 +41,7 @@ public sealed class Rf10PostClosureDocumentationAuditTests
     {
         string root = FindRepositoryRoot();
         string audit = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10-post-closure-completeness-and-diagnostic-audit.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10-post-closure-completeness-and-diagnostic-audit.md");
 
         Assert.Contains("20260727_084502_345_matrix", audit, StringComparison.Ordinal);
         Assert.Contains("passes 12/12", audit, StringComparison.Ordinal);
@@ -54,7 +54,7 @@ public sealed class Rf10PostClosureDocumentationAuditTests
     public void SupersededRf11PromptPreservesHistoricalEntryConstraints()
     {
         string root = FindRepositoryRoot();
-        string prompt = Read(root, "Documentation/ArchitectureAuthorityRefactor/09_RF10/01_RF11_CONTINUATION_PROMPT.md");
+        string prompt = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/01_RF11_CONTINUATION_PROMPT.md");
 
         Assert.StartsWith("# Superseded RF-11 entry prompt", prompt, StringComparison.Ordinal);
         Assert.Contains("RF-11.0 entry", prompt, StringComparison.Ordinal);
@@ -73,7 +73,7 @@ public sealed class Rf10PostClosureDocumentationAuditTests
         while (current is not null)
         {
             if (File.Exists(Path.Combine(current.FullName, "HybridCPU_ISE.sln")) ||
-                Directory.Exists(Path.Combine(current.FullName, "Documentation", "ArchitectureAuthorityRefactor")))
+                Directory.Exists(Path.Combine(current.FullName, "Documentation", "Documentation", "ArchitectureAuthorityRefactor")))
             {
                 return current.FullName;
             }

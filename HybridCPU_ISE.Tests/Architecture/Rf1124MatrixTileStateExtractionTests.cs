@@ -107,8 +107,8 @@ public sealed class Rf1124MatrixTileStateExtractionTests
     public void LedgerAndEvidenceCloseOnlyMatrixTileScalarStorage()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.24-matrix-tile-state-extraction.md");
         Assert.Contains("RF-11.24 | closed MatrixTileState", ledger, StringComparison.Ordinal);
         Assert.Contains("exactly four", evidence, StringComparison.OrdinalIgnoreCase);

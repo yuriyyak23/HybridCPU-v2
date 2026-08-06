@@ -6,9 +6,9 @@ public sealed class Rf120EntryReadinessDocumentationTests
     public void CurrentLedgerOwnsTheSingleRf12Handoff()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
             "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string roadmap = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "04_CoreMigration",
+        string roadmap = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "04_CoreMigration",
             "04_RF07_RF13_Core_Migration.md");
 
         Assert.Contains("RF-12 is closed at RF-12.12h", ledger, StringComparison.Ordinal);
@@ -161,9 +161,9 @@ public sealed class Rf120EntryReadinessDocumentationTests
     public void EntryContractForbidsGenericTaxonomyAndAuthorityInflation()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
             "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string proposal = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
+        string proposal = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
             "02_Target_Architecture_and_Authority.md");
 
         Assert.Contains("RF-12.0 changes no production declaration", ledger,
@@ -184,16 +184,16 @@ public sealed class Rf120EntryReadinessDocumentationTests
     public void HistoricalContinuationPromptIsNotTheCurrentRf12Queue()
     {
         string root = FindRepositoryRoot();
-        string prompt = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
+        string prompt = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
             "01_RF12_CONTINUATION_PROMPT.md");
         Assert.Contains("RF-12.0 inventory, RF-12.1 architecture", prompt, StringComparison.Ordinal);
         Assert.Contains("Open only RF-12.6at", prompt,
             StringComparison.Ordinal);
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
             "00_ENTRY_STATUS_AND_ROADMAP.md");
         Assert.Contains("RF-12.12b", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-12 is closed at RF-12.12h", ledger, StringComparison.Ordinal);
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12-entry-readiness-and-testassembler-comparison.md");
 
         Assert.Contains("Начать только с RF-12.0", prompt, StringComparison.Ordinal);

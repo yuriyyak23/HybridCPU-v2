@@ -50,9 +50,9 @@ public sealed class Rf1137BoundedBatchMicroOpEmissionRefThisHardeningTests
     public void EvidenceClosesOnlyBoundedBatchEmission()
     {
         string root = Root();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
             "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.37-bounded-batch-microop-emission-ref-this-hardening.md");
         Assert.Contains("RF-11.37 bounded-batch MicroOp emission ref-this hardening", ledger);
         Assert.Contains("no production state declaration", evidence,

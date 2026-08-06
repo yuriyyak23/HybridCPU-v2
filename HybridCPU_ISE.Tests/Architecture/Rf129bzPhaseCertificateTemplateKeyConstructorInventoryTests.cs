@@ -9,7 +9,7 @@ public sealed class Rf129bzPhaseCertificateTemplateKeyConstructorInventoryTests
         string source = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Certificates", "ReplayPhaseSubstrate.Implementations.cs");
         string guardTest = Read("HybridCPU_ISE.Tests", "tests", "Phase09SafetyVerifierGuardMatrixProofTests.cs");
         string testSupport = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Core", "CPU_Core.TestSupport.cs");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
 
         Assert.Contains("internal readonly struct PhaseCertificateTemplateKey", interCore, StringComparison.Ordinal);
         Assert.Contains("public PhaseCertificateTemplateKey(", interCore, StringComparison.Ordinal);

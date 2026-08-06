@@ -8,7 +8,7 @@ public sealed class Rf129bxPhaseCertificateTemplateKeyInvalidInputInventoryTests
         string source = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Certificates", "ReplayPhaseSubstrate.Implementations.cs");
         string interCore = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Safety", "SafetyVerifier.RuntimeLegality.cs");
         string smt = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Safety", "SafetyVerifier.SmtLegality.cs");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
 
         Assert.Contains("if (!templateKey.IsValid)", source, StringComparison.Ordinal);
         Assert.Contains("if (templateKey.IsValid)", source, StringComparison.Ordinal);

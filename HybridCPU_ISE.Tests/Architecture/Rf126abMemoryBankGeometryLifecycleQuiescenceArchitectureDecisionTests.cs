@@ -139,7 +139,7 @@ public sealed class Rf126abMemoryBankGeometryLifecycleQuiescenceArchitectureDeci
     }
 
     [Fact]
-    public void ResetAndCompatibilityMutationPathsAreExplicitParticipants()
+    public void CompatibilityMutationAndObservationOnlyResetPathsAreExplicit()
     {
         string root = FindRepositoryRoot();
         string subsystem = Subsystem(root);
@@ -154,11 +154,13 @@ public sealed class Rf126abMemoryBankGeometryLifecycleQuiescenceArchitectureDeci
             StringComparison.Ordinal);
         Assert.Contains("public void ResetStatistics()", helpers,
             StringComparison.Ordinal);
-        Assert.Contains("bankQueues[i].Clear();", helpers,
+        Assert.Contains("CycleController.ResetTelemetry();", helpers,
+            StringComparison.Ordinal);
+        Assert.Contains("Telemetry reset is observation-only", helpers,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("bankQueues[i].Clear();", helpers,
             StringComparison.Ordinal);
         Assert.Contains("compatibility setters", evidence,
-            StringComparison.Ordinal);
-        Assert.Contains("ResetStatistics", evidence,
             StringComparison.Ordinal);
     }
 
@@ -247,7 +249,7 @@ public sealed class Rf126abMemoryBankGeometryLifecycleQuiescenceArchitectureDeci
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
     private static string Evidence(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6ab-memory-bank-geometry-lifecycle-quiescence-architecture-decision.md");
 
     private static void Order(string text, params string[] markers)

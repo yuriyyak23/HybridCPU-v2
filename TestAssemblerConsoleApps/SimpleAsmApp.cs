@@ -410,6 +410,7 @@ internal sealed partial class SimpleAsmApp
             PipelineExecutionOutcome.RetirementTargetReached,
             default,
             new PerformanceReport());
+        PerformanceReport previousPerformanceSnapshot = CapturePerformanceReport();
 
         for (ulong repetition = 0; repetition < repetitionCount; repetition++)
         {
@@ -422,12 +423,18 @@ internal sealed partial class SimpleAsmApp
                 mode,
                 slice.Compilation.BundleCount,
                 (ulong)slice.InstructionCount);
+            PerformanceReport currentPerformanceSnapshot = sampleExecution.Performance;
+            PerformanceReport intervalPerformance =
+                currentPerformanceSnapshot.CreateAdditiveDiagnosticIntervalSince(previousPerformanceSnapshot);
+            previousPerformanceSnapshot = currentPerformanceSnapshot;
 
             lastExecution = lastExecution with
             {
                 Outcome = sampleExecution.Outcome,
                 Pipeline = AddPipelineControls(lastExecution.Pipeline, sampleExecution.Pipeline),
-                Performance = AddPerformanceReports(lastExecution.Performance, sampleExecution.Performance)
+                Performance = repetition == 0
+                    ? intervalPerformance
+                    : AddPerformanceReports(lastExecution.Performance, intervalPerformance)
             };
         }
 
@@ -476,11 +483,36 @@ internal sealed partial class SimpleAsmApp
                 continue;
             }
 
-            object? mergedValue = MergeSnapshotValue(property.PropertyType, property.GetValue(accumulator), property.GetValue(sample));
+            object? mergedValue = IsMemoryTelemetryAvailability(property.Name)
+                ? (bool)property.GetValue(accumulator)! && (bool)property.GetValue(sample)!
+                : IsLastValueDiagnostic(property.Name)
+                    ? property.GetValue(sample)
+                : MergeSnapshotValue(property.PropertyType, property.GetValue(accumulator), property.GetValue(sample));
             property.SetValue(accumulator, mergedValue);
         }
 
         return accumulator;
+    }
+
+    private static bool IsMemoryTelemetryAvailability(string propertyName)
+    {
+        return propertyName is nameof(PerformanceReport.MemoryCycleTelemetryAvailable)
+            or nameof(PerformanceReport.InstructionFetchReadBytesTelemetryAvailable)
+            or nameof(PerformanceReport.InstructionFetchRequestTelemetryAvailable)
+            or nameof(PerformanceReport.MemoryBankConflictRejectTelemetryAvailable);
+    }
+
+    private static bool IsLastValueDiagnostic(string propertyName)
+    {
+        return propertyName is nameof(PerformanceReport.LastEligibilityRequestedMask)
+            or nameof(PerformanceReport.LastEligibilityNormalizedMask)
+            or nameof(PerformanceReport.LastEligibilityReadyPortMask)
+            or nameof(PerformanceReport.LastEligibilityVisibleReadyMask)
+            or nameof(PerformanceReport.LastEligibilityMaskedReadyMask)
+            or nameof(PerformanceReport.LastSmtLegalityRejectKind)
+            or nameof(PerformanceReport.LastSmtLegalityAuthoritySource)
+            or nameof(PerformanceReport.MemoryTelemetryBaselineOutstandingRequests)
+            or nameof(PerformanceReport.MemoryOutstandingRequests);
     }
 
     private static object? MergeSnapshotValue(Type valueType, object? currentValue, object? sampleValue)
@@ -582,13 +614,13 @@ internal sealed partial class SimpleAsmApp
     {
         ArgumentNullException.ThrowIfNull(exception);
 
-        const string OpcodeRegistrySplitHint =
-            "OpcodeRegistry initialization failed inside the split registry data surface. " +
-            "A split opcode collection is null or was not emitted into the aggregate Opcodes array. " +
-            "Rebuild the registry data partials before running TestAssemblerConsoleApps diagnostics.";
+        const string OpcodeRegistryGeneratedCatalogHint =
+            "OpcodeRegistry initialization failed while materializing its generated catalog facade. " +
+            "The generated ISA catalog is unavailable or invalid. " +
+            "Regenerate and validate the manifest-derived catalog before running TestAssemblerConsoleApps diagnostics.";
 
         string baseMessage = exception.InnerException?.Message ?? exception.Message;
-        return $"{OpcodeRegistrySplitHint} Inner failure: {baseMessage}";
+        return $"{OpcodeRegistryGeneratedCatalogHint} Inner failure: {baseMessage}";
     }
 
     private static VLIW_Instruction ReadInstruction(byte[] programImage, int slotIndex)

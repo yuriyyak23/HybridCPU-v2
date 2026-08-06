@@ -175,10 +175,10 @@ public sealed class SecureComputePhase22LimitedReleaseGateTests
 
         Assert.Contains("SecureComputePhase22LimitedReleaseGatePolicy", phase22);
         Assert.Contains("Implemented Phase 22 Fail-Closed Limited Release Gate Tests", phase21);
-        Assert.Contains("Phase 22 remains future-gated because no named positive runtime path is locally proven", phase22);
-        Assert.Contains("Phase 18 nested execution remains excluded from limited release", phase22);
+        Assert.Contains("Status: hard-denied final release gate", phase22);
+        Assert.Contains("Phase 18 nested execution remains excluded", phase22);
         Assert.Contains("compiler secure emission remains closed", phase22);
-        Assert.Contains("Phase 22 limited release gate is implemented as a fail-closed release classifier", backlog);
+        Assert.Contains("Phase 22 remains hard-denied until independent named-path release proof exists", backlog);
     }
 
     private static SecureComputePhase21ConformanceEvidencePolicy Phase21Policy =>

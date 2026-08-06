@@ -117,8 +117,8 @@ public sealed class Rf1123CacheStateExtractionTests
     public void LedgerAndEvidenceCloseOnlyCacheStorage()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.23-cache-state-extraction.md");
         Assert.Contains("RF-11.23 | closed CacheState", ledger, StringComparison.Ordinal);
         Assert.Contains("exactly eight", evidence, StringComparison.OrdinalIgnoreCase);

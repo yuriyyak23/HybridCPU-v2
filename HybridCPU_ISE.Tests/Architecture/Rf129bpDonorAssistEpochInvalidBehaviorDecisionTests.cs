@@ -8,7 +8,7 @@ public sealed class Rf129bpDonorAssistEpochInvalidBehaviorDecisionTests
         string paper = Read("ResearchPaper", "section", "md base", "6_Assist_Coupled_Data_Movement_and_Donor_Semantics.md");
         string scheduler = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Assist", "InterCore", "MicroOpScheduler.Assist.InterCore.cs");
         string execution = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Assist", "Runtime", "CPU_Core.Assist.cs");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
         Assert.Contains("transport is still only a candidate", paper, StringComparison.Ordinal);
         Assert.Contains("identity, donor ownership, donor epoch, or domain continuity has drifted", paper, StringComparison.Ordinal);
         Assert.Contains("existing owner/domain/donor-epoch checks before injection", paper, StringComparison.Ordinal);

@@ -160,9 +160,9 @@ public sealed class Rf120ResourceIdIngressGuardTests
     public void CurrentLedgerRetainsClosedSlicesAndReopensOnlyLaneIdPinningInventory()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12",
             "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.4p-csr-execution-source-owner-vt-valid-input-cutover.md");
 
         Assert.Contains("RF-12.0 | closed inventory/freeze", ledger, StringComparison.Ordinal);

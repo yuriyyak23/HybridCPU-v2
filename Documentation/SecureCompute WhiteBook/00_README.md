@@ -1,6 +1,6 @@
 # SecureCompute WhiteBook
 
-Status date: 2026-06-18.
+Status date: 2026-08-06.
 
 ## Purpose
 
@@ -14,25 +14,21 @@ This WhiteBook is a maintained architectural projection of that corpus. It expla
 
 ## Current Status
 
-- Baseline, process, no-effect, materialization, Stage B, grant and evidence gates are established and verified.
-- The neutral privileged execution-state owner proof is implemented for `GuestCr0` and `GuestCr4`.
-- Field-specific read-only compatibility projection is implemented after all owner, source, visibility, migration and conformance gates.
-- Secure memory/private-domain policy admission is implemented.
-- Secure I/O/shared-buffer policy admission is implemented.
-- The secure hypercall backend-owner contract and identifier-allocation gate are closed as proof-only/no-execution.
-- Secure completion/retire publication authority is closed fail-closed for current proof-only, admitted-denied and registry-backed paths.
-- Secure migration/checkpoint/restore output-manifest classification is closed fail-closed for future request/result/completion/guest-output/retire/recomputed entries.
-- Secure debug/attestation visibility is closed fail-closed for debug trace, attestation report, telemetry snapshot, host-inspection metadata and compatibility-alias evidence.
-- VMX boundary zero-authority is closed fail-closed for named positive-looking paths.
-- The nested child-intent RFC remains future/design-fenced. Nested execution, mutable nested state, Shadow VMCS authority and nested publication remain denied.
-- Compiler no-emission to controlled-emission is closed as an explicit no-compiler-change decision; controlled-emission work stays future-gated.
-- Positive runtime execution activation has only a fail-closed classifier and remains future-gated because no named runtime owner/path/reachability chain is locally proven.
-- The current negative/future-gated conformance evidence matrix is closed only as release-input evidence, not authority.
-- The limited-release classifier is fail-closed; production release remains denied because no named positive runtime path is locally proven.
-- Secure backend execution, completion publication from a secure backend, retire publication, nested secure execution and compiler secure emission remain closed.
-- The next production-oriented gate is positive runtime execution activation planning.
+- The current audit baseline is recorded in ActivationPlan phase `24`. The audited SHA is unavailable in the local object database; the current checkout is dirty and must not be represented as immutable release evidence.
+- Ordinary disabled/absent descriptor behavior and generic non-ordinary policy routing have unit coverage, but end-to-end disabled observational equivalence is not proven.
+- The root descriptor has public construction and two carrier sources (`DomainRuntimeContext.SecureCompute` and request-supplied `SecureDescriptor`). No canonical registry, opaque binding or single materialization/revocation owner exists.
+- `RuntimeBoundaryAdmissionService` is a generic policy boundary. Its observed production callers are VMX compatibility projections using the default ordinary operation class; it is not proven as CPU Stage-B enforcement.
+- SafetyVerifier issues no immutable SecureCompute admission certificate binding operation, domain, VT, slot, epoch and effects identity.
+- Grant policy validates caller-supplied handles and booleans; no mint/revoke ledger owner is implemented.
+- Memory, I/O, migration, publication and evidence components are policy/classification surfaces, not production effect-path enforcement. Region and shared-buffer maps are not yet canonicalized against overlaps and duplicate identities.
+- `GuestCr0`/`GuestCr4` remain the only verified narrow read-only VMX projection; VMX has zero SecureCompute authority.
+- Compiler no-emission is enforced by contour/lowering rejection. Clean generated-artifact inventory and hash reproducibility remain open.
+- Phase 18 is unconditionally future/design-fenced. Phase 20 is a pre-activation evidence classifier. Phase 21 is a negative/future-gated conformance matrix. Phase 22 is a hard-denied release gate.
+- Positive backend execution, secure completion/retire publication, nested execution, compiler secure emission and limited/production release remain forbidden.
 
 This is activation readiness hardening and bounded policy implementation, not production SecureCompute activation.
+
+The dependency-ordered remediation plan, phase classification and C0/C1/C2 blocker register are in `HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/24_audit_revalidation_and_dependency_order.md`.
 
 ## Reading Order
 

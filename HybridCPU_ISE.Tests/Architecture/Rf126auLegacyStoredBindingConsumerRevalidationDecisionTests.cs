@@ -110,7 +110,7 @@ public sealed class Rf126auLegacyStoredBindingConsumerRevalidationDecisionTests
         Assert.True(memory.CancelPendingRequest(token));
         Assert.Equal(0, memory.CurrentQueuedRequests);
 
-        string evidence = Read(Root(), "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
+        string evidence = Read(Root(), "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
             "RF12",
             "rf12.6au-legacy-stored-binding-consumer-revalidation-decision.md");
         Assert.Contains("RF-12.6av legacy raw-ID cancellation", evidence,

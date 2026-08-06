@@ -847,20 +847,18 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("RFC/ADR accepted; neutral owner-proof contract implemented", rfc);
         Assert.Contains("AllowedOwnerMaterializedProjectionClosed", rfc);
         Assert.Contains("Exit status: satisfied by code and tests", rfc);
-        Assert.Contains("Phase 13 secure hypercall backend owner RFC is closed", index);
+        Assert.Contains("Phase 13 confirms proof-only contract and identifier vocabulary", index);
         Assert.Contains("implemented narrow projection-only path", matrix);
         Assert.Contains("implemented, projection-only gate closed", projectionPlan);
         Assert.Contains("Implemented Phase 10 Positive Tests", conformance);
-        Assert.Contains("Phases 09 and 10 now supply", releaseGate);
-        Assert.Contains("Phases 09 and 10 closed by owner/projection code", backlog);
-        Assert.Contains("Phase 11 secure memory/private-domain policy gate is closed", backlog);
-        Assert.Contains("Phase 12 secure I/O/shared-buffer policy gate is closed", backlog);
-        Assert.Contains("Phase 13 now has typed proof-only production vocabulary, exact decoded-leaf/service/owner registry allocation", backlog);
-        Assert.Contains("Pool 1 closed", backlog);
+        Assert.Contains("Phases 09/10 prove only a narrow read-only projection", releaseGate);
+        Assert.Contains("VMX/VMCS/`VmxCaps` remain zero-authority", backlog);
+        Assert.Contains("canonical operation taxonomy", backlog);
+        Assert.DoesNotContain("Pool 1 closed", backlog);
     }
 
     [Fact]
-    public void SecureComputeActivationPlan_RecordsPhase11SecureMemoryPrivateDomainPolicyClosureProof()
+    public void SecureComputeActivationPlan_RecordsPhase11PolicyClassAndOpenMemoryReachability()
     {
         string memorySource = ReadProjectSource(
             "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Memory/SecureMemoryDomainDescriptor.cs",
@@ -907,19 +905,17 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("SecureMemoryPolicy_SealedPrivatePayloadContractIsValidationNotRawKeyOrTagAuthority", memoryTests);
         Assert.Contains("SecureMemorySources_DoNotCreateVmcsBackedTranslationAuthority", memoryTests);
 
-        Assert.Contains("SecureMemoryDomainDescriptor` and `SecureMemoryAdmissionPolicy` implement the Phase 11", index);
-        Assert.Contains("Closed memory/private-domain policy item", index);
-        Assert.Contains("implemented Phase 11 policy gate", matrix);
-        Assert.Contains("Status: implemented memory/private-domain policy-admission gate", phase11);
-        Assert.Contains("Phase 11 closes only descriptor-owned policy admission", phase11);
+        Assert.Contains("Phase 11 implements direct policy semantics", index);
+        Assert.Contains("Partial memory/private-domain policy item", index);
+        Assert.Contains("secure memory/private/shared/measured policy | partial policy class", matrix);
+        Assert.Contains("Status: partial policy class", phase11);
+        Assert.Contains("Phase 11 currently specifies and directly tests policy semantics only", phase11);
         Assert.Contains("Implemented Phase 11 Positive Policy-Admission Tests", conformance);
         Assert.Contains("Phase 11 tests proving missing/unmaterialized/stale secure-memory descriptors deny admission", releaseGate);
         Assert.Contains("Phase 11 memory/private-domain policy admission is restricted to descriptor-owned policy checks and remains non-executing", releaseGate);
-        Assert.Contains("Phase 11 secure memory/private-domain policy gate is closed", backlog);
-        Assert.Contains("Phase 12 secure I/O/shared-buffer policy gate is closed", backlog);
-        Assert.Contains("Phase 14 now has typed publication ladder/request/result vocabulary", backlog);
-        Assert.Contains("Phase 15 now has typed output-manifest request/result/completion/guest-output/retire/recomputed vocabulary", backlog);
-        Assert.Contains("Phase 20 runtime activation planning is the next production-oriented gate", backlog);
+        Assert.Contains("region/shared-buffer maps", backlog);
+        Assert.Contains("private memory | direct policy tests only", backlog);
+        Assert.Contains("The next work is not backend execution", index);
 
         foreach (string forbidden in ForbiddenMemoryIsaAndTagTokens())
         {
@@ -934,7 +930,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
     }
 
     [Fact]
-    public void SecureComputeActivationPlan_RecordsPhase12SecureIoSharedBufferPolicyClosureProof()
+    public void SecureComputeActivationPlan_RecordsPhase12PolicyClassAndOpenDeviceReachability()
     {
         string ioSource = ReadProjectSource(
             "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Descriptors/Io/SecureIoDomainDescriptor.cs",
@@ -981,19 +977,18 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("SecureCheckpointPayloadClass.BackendBindingEvidence", migrationTests);
         Assert.Contains("SecureCheckpointPayloadClass.NativeTokenEvidence", migrationTests);
 
-        Assert.Contains("Phase 12 secure I/O/shared-buffer policy gate is implemented", index);
-        Assert.Contains("implemented Phase 12 policy-admission gate", matrix);
-        Assert.Contains("Status: implemented secure I/O/shared-buffer policy-admission gate", phase12);
+        Assert.Contains("Phase 12 implements direct I/O/shared-buffer policy semantics", index);
+        Assert.Contains("secure I/O/shared buffer | partial policy class", matrix);
+        Assert.Contains("Status: partial policy class", phase12);
         Assert.Contains("Implemented Phase 12 Positive Policy-Admission Tests", conformance);
         Assert.Contains("Phase 12 tests proving shared-buffer owner, lifetime, evidence and buffer-grant epoch binding", releaseGate);
-        Assert.Contains("Phase 12 secure I/O/shared-buffer policy gate is closed", backlog);
-        Assert.Contains("Phase 14 now has typed publication ladder/request/result vocabulary", backlog);
-        Assert.Contains("Phase 15 now has typed output-manifest request/result/completion/guest-output/retire/recomputed vocabulary", backlog);
-        Assert.Contains("Phase 20 runtime activation planning is the next production-oriented gate", backlog);
+        Assert.Contains("DMA/IOMMU | no device effect or revoke path", backlog);
+        Assert.Contains("shared-buffer maps | first-match lookup", backlog);
+        Assert.Contains("one side-effect-free named neutral backend probe", backlog);
     }
 
     [Fact]
-    public void SecureComputeActivationPlan_RecordsPhase15MigrationOutputManifestClassificationClosureProof()
+    public void SecureComputeActivationPlan_RecordsPhase15PartialClassifierAndOpenCheckpointProtocol()
     {
         string manifestSource = ReadProjectSource(
             "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Checkpoint/SecureOutputManifestClassificationPolicy.cs");
@@ -1035,15 +1030,15 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("OwnerPathReachabilityClassification_IsRequiredBeforeManifestEntryIsAccepted", phase15Tests);
         Assert.Contains("SecureOutputManifestSources_DoNotCreateVmxVmreadPublicationBackendOrCompilerAuthority", phase15Tests);
 
-        Assert.Contains("Phase 15 secure migration/checkpoint/restore output-manifest classification is closed", index);
-        Assert.Contains("implemented Phase 15 fail-closed output-manifest classification gate", matrix);
+        Assert.Contains("Phase 15 is implemented only as migration/output classification", index);
+        Assert.Contains("secure migration/checkpoint/restore | partial classifier", matrix);
         Assert.Contains("ADR-SC-MIGRATION-OUTPUT-MANIFEST", phase15);
-        Assert.Contains("Status: gate closed for fail-closed classification", phase15);
+        Assert.Contains("Status: partial classifier", phase15);
         Assert.Contains("Implemented Phase 15 Negative Classification Tests", conformance);
         Assert.Contains("Phase 15 tests proving output manifests reject host-owned evidence", releaseGate);
-        Assert.Contains("Phase 15 secure migration/checkpoint/restore output-manifest classification gate is closed", releaseGate);
-        Assert.Contains("Phase 15 now has typed output-manifest request/result/completion/guest-output/retire/recomputed vocabulary", backlog);
-        Assert.Contains("Phase 20 runtime activation planning is the next production-oriented gate", backlog);
+        Assert.Contains("Phase 15 exhaustive checkpoint/restore protocol", releaseGate);
+        Assert.Contains("unknown payload default allow", backlog);
+        Assert.Contains("serializer, key, anti-replay and atomic restore owners", backlog);
 
         Assert.DoesNotContain("VmcsField", manifestSource);
         Assert.DoesNotContain("VmcsManager", manifestSource);
@@ -1063,7 +1058,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
     }
 
     [Fact]
-    public void SecureComputeActivationPlan_RecordsPhase16DebugAttestationVisibilityClosureProof()
+    public void SecureComputeActivationPlan_RecordsPhase16ClassifierAndOpenPublisherReachability()
     {
         string visibilitySource = ReadProjectSource(
             "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/SecureCompute/Policies/Debug/SecureDebugAttestationVisibilityPolicy.cs");
@@ -1106,16 +1101,16 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("CompatibilityAliasVisibility_RequiresProjectionPolicyButIsNotVmreadAuthority", visibilityTests);
         Assert.Contains("DebugAttestationVisibilitySources_DoNotCreateVmxVmreadMigrationPublicationBackendOrCompilerAuthority", visibilityTests);
 
-        Assert.Contains("Phase 16 secure debug/attestation API visibility is closed as a fail-closed visibility classification gate", index);
-        Assert.Contains("implemented Phase 16 fail-closed visibility classification gate", matrix);
+        Assert.Contains("Phase 16 is implemented only as a visibility classifier", index);
+        Assert.Contains("debug/attestation visibility | partial classifier", matrix);
         Assert.Contains("ADR-SC-DEBUG-ATTESTATION-VISIBILITY", phase16);
-        Assert.Contains("Status: gate closed for fail-closed visibility classification", phase16);
-        Assert.Contains("closed Phase 16 debug/attestation visibility classification", phase20);
+        Assert.Contains("Status: partial visibility classifier", phase16);
+        Assert.Contains("Phase 16 visibility remains visibility only", phase20);
         Assert.Contains("Implemented Phase 16 Negative Visibility Tests", conformance);
         Assert.Contains("Phase 16 tests proving debug trace is debug-only visibility", releaseGate);
-        Assert.Contains("Phase 16 secure debug/attestation visibility gate is closed", releaseGate);
-        Assert.Contains("Phase 16 now has typed debug trace/attestation report/telemetry/host-inspection/compatibility-alias visibility vocabulary", backlog);
-        Assert.Contains("Phase 20 runtime activation planning is the next production-oriented gate", backlog);
+        Assert.Contains("Phase 16 single production evidence publisher is proven", releaseGate);
+        Assert.Contains("one exclusive production evidence publisher", backlog);
+        Assert.Contains("Phase 20 remains a pre-activation evidence classifier", backlog);
 
         Assert.DoesNotContain("VmcsField", visibilitySource);
         Assert.DoesNotContain("VmcsManager", visibilitySource);
@@ -1155,32 +1150,19 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains(
             "HybridCPU_ISE/docs/ref2/SecureComputeActivationPlan/",
             corpus);
-        Assert.Contains(
-            "The next production-oriented gate is positive runtime execution activation planning",
-            corpus);
-        Assert.Contains(
-            "Secure completion/retire publication authority is closed fail-closed",
-            corpus);
-        Assert.Contains(
-            "Secure migration/checkpoint/restore output-manifest classification is closed fail-closed",
-            corpus);
-        Assert.Contains(
-            "Secure debug/attestation visibility is closed fail-closed",
-            corpus);
-        Assert.Contains(
-            "VMX boundary zero-authority is closed fail-closed",
-            corpus);
-        Assert.Contains(
-            "Compiler no-emission to controlled-emission is closed",
-            corpus);
-        Assert.Contains(
-            "For every non-ordinary secure operation class",
-            corpus);
+        Assert.Contains("Positive backend work is not the next implementation step", corpus);
+        Assert.Contains("Phase 20 is a pre-activation evidence classifier", corpus);
+        Assert.Contains("Phase 21 is a negative/future-gated conformance matrix", corpus);
+        Assert.Contains("Phase 22 is a hard-denied release gate", corpus);
+        Assert.Contains("No canonical registry, opaque binding or single materialization/revocation owner exists", corpus);
+        Assert.Contains("No production load/store/fetch, cache, translation or DMA effect path", corpus);
+        Assert.Contains("Compiler no-emission is enforced by contour/lowering rejection", corpus);
+        Assert.Contains("For direct calls with a non-ordinary caller-selected operation class", corpus);
         Assert.Contains(
             "An allowed I/O result is explicitly `IsPolicyAdmissionOnly`",
             corpus);
         Assert.Contains(
-            "The current negative/future-gated conformance evidence matrix is closed only as release-input evidence, not authority",
+            "Documentation/source-string checks are excluded from the execution-proof numerator",
             corpus);
         Assert.DoesNotContain(
             "only for non-ordinary `SecureDomainOperationClass` with an enabled descriptor",
@@ -1283,7 +1265,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("The repository proves the frozen `VMCALL` transport opcode `259`", phase13);
         Assert.Contains("fixture `0x10` are not SecureCompute service or owner assignments", phase13);
         Assert.Contains("Owner/Path/Reachability Scoped Source-Scan Policy", phase14);
-        Assert.Contains("Status: gate closed for fail-closed completion/retire publication authority", phase14);
+        Assert.Contains("Status: partial fail-closed policy model", phase14);
         Assert.Contains("SecureCompletionRetirePublicationAuthorityPolicy", phase14);
         Assert.Contains("ADR-SC-MIGRATION-OUTPUT-MANIFEST", phase15);
         Assert.Contains("SecureOutputManifestClassificationPolicy", phase15);
@@ -1293,11 +1275,11 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("Applicable prerequisite chain", phase20);
         Assert.Contains("dirty-worktree disclosure", conformance);
         Assert.Contains("bounded rollback drill", release);
-        Assert.Contains("exact secure hypercall decoded leaf / service ID / owner ID", backlog);
+        Assert.Contains("hypercall | proof-only IDs and admission", backlog);
     }
 
     [Fact]
-    public void SecureComputeActivationPlan_RecordsStageBDescriptorRoutingClosureProof()
+    public void SecureComputeActivationPlan_RecordsGenericRoutingAndOpenCpuStageBReachability()
     {
         string runtimeAdmission = ReadProjectSource(
             "HybridCPU_ISE/CloseToHSL/Core/Runtime/Services/RuntimeBoundaryAdmissionService.cs");
@@ -1332,23 +1314,22 @@ public sealed class SecureComputePhase10ReleaseGateTests
         Assert.Contains("NonOrdinarySecureOperationClasses", hookTests);
         Assert.DoesNotContain("CurrentReadinessBypass", hookTests);
         Assert.DoesNotContain("Current Stage B bypass evidence only", hookTests);
-        Assert.Contains("Stage B P0 routing blocker is closed by runtime routing, taxonomy-wide tests and source scans", index);
-        Assert.Contains("implemented, P0 routing blocker closed", matrix);
+        Assert.Contains("generic policy route exists, but SafetyVerifier/CPU Stage-B reachability is unproven", index);
+        Assert.Contains("RuntimeBoundaryAdmissionService secure checks | generic policy route only; CPU Stage-B open", matrix);
         Assert.Contains("Stage B bypass for non-ordinary secure operations remains a forbidden regression", guards);
         Assert.Contains("no-effect applies to ordinary operations only", noEffect);
-        Assert.Contains("fixed by runtime routing and tests", stageB);
-        Assert.Contains("runtime tests and source scans", stageB);
+        Assert.Contains("Direct service tests now cover denial", stageB);
+        Assert.Contains("CPU Stage-B enforcement remains open", stageB);
         Assert.Contains("old Stage B bypass tests are removed or inverted", stageB);
         Assert.Contains("ordinary no-effect: absent descriptor -> allowed", conformance);
-        Assert.Contains("non-ordinary fail-closed: absent descriptor -> denied by Stage B", conformance);
-        Assert.Contains("non-ordinary Stage B denial coverage is taxonomy-wide", conformance);
+        Assert.Contains("non-ordinary fail-closed: absent descriptor -> denied by direct generic admission", conformance);
+        Assert.Contains("direct generic-service denial coverage is enum-wide", conformance);
         Assert.Contains("runtime tests and source-scan proof", conformance);
-        Assert.Contains("Stage B missing/disabled/unmaterialized descriptor bypass is closed in code and tests", releaseGate);
+        Assert.Contains("No CPU decode/SafetyVerifier/certificate/issue call graph is proven", releaseGate);
         Assert.Contains("runtime tests, source scans and conformance docs proving ordinary no-effect is separate from non-ordinary fail-closed routing across the full non-ordinary taxonomy", releaseGate);
-        Assert.Contains("closed for P0 routing; retain post-fix verification", backlog);
-        Assert.Contains("Pools 1 through 3 closed", backlog);
-        Assert.Contains("Stage B regression hardening is closed taxonomy-wide", backlog);
-        Assert.Contains("Keep runtime tests, source scans and release-gate conformance checks green", backlog);
+        Assert.Contains("production composition root | no decode", backlog);
+        Assert.Contains("SafetyVerifier sole issuer", backlog);
+        Assert.DoesNotContain("Pools 1 through 3 closed", backlog);
     }
 
     private static string[] ForbiddenMemoryIsaAndTagTokens() =>

@@ -20,7 +20,7 @@ public sealed class Rf126mPhysicalMemoryBankQueueIndexInventoryDecisionTests
     public void InventoryRecordsThePreDecisionPhysicalAuthorityGap()
     {
         string root = FindRepositoryRoot();
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
             "RF12",
             "rf12.6m-physical-memory-bank-queue-index-inventory-decision.md");
 

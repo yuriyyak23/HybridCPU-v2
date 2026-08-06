@@ -25,10 +25,24 @@ namespace YAKSys_Hybrid_CPU.Core
         /// </summary>
         /// <param name="ownerVirtualThreadId">VT that owns the current bundle.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void PipelineFspStage1_Nominate(int ownerVirtualThreadId, SmtNominationState nominationState)
+        private void PipelineFspStage1_Nominate(
+            int ownerVirtualThreadId,
+            SmtNominationState nominationState,
+            IReadOnlyList<MicroOp?> bundle,
+            BundleResourceCertificate4Way bundleMask,
+            SmtBundleMetadata4Way bundleMetadata,
+            BoundaryGuardState boundaryGuard)
         {
-            // Latch owner VT for SCHED2 (Phase 03: TryClassAdmission)
+            // Latch the exact scheduling generation consumed by SCHED2. SCHED1
+            // performs no admission, but its nomination must not be combined with
+            // a different owner, bundle, replay epoch, or mutable carrier state.
             _fspOwnerVirtualThreadId = ownerVirtualThreadId;
+            CaptureFspBundleReferences(bundle);
+            _fspBundleFingerprint = ComputeFspBundleFingerprint(bundle);
+            _fspBundleCertificateIdentity = bundleMask.StructuralIdentity;
+            _fspBundleMetadata = bundleMetadata;
+            _fspBoundaryGuard = boundaryGuard;
+            _fspReplayPhase = _currentReplayPhase;
 
             for (int vt = 0; vt < SMT_WAYS; vt++)
             {
@@ -37,6 +51,7 @@ namespace YAKSys_Hybrid_CPU.Core
                 _fspPipelineReg[vt].VirtualThreadId = vt;
                 _fspPipelineReg[vt].Candidate = null;
                 _fspPipelineReg[vt].IdentityTemplate = null;
+                _fspPipelineReg[vt].CandidateFingerprint = default;
                 if (nominationState.IsReadyNonOwnerCandidate(vt, ownerVirtualThreadId))
                 {
                     MicroOp? candidate = _smtPorts[vt];
@@ -44,6 +59,8 @@ namespace YAKSys_Hybrid_CPU.Core
                     {
                         _fspPipelineReg[vt].Candidate = candidate;
                         _fspPipelineReg[vt].IdentityTemplate = candidate.PostStageBIdentityTemplate;
+                        _fspPipelineReg[vt].CandidateFingerprint =
+                            ComputeFspCandidateFingerprint(candidate);
                         _fspPipelineReg[vt].Valid = true;
                     }
                 }
@@ -76,6 +93,18 @@ namespace YAKSys_Hybrid_CPU.Core
             BoundaryGuardState boundaryGuard,
             int nextEmptySlot)
         {
+            if (_fspOwnerVirtualThreadId != bundleMetadata.OwnerVirtualThreadId ||
+                !FspBundleReferencesMatch(bundle) ||
+                !_fspBundleFingerprint.Equals(ComputeFspBundleFingerprint(bundle)) ||
+                !_fspBundleCertificateIdentity.Equals(bundleMask.StructuralIdentity) ||
+                !_fspBundleMetadata.Equals(bundleMetadata) ||
+                !_fspBoundaryGuard.Equals(boundaryGuard) ||
+                !ReplayPhaseMatches(_fspReplayPhase, _currentReplayPhase))
+            {
+                _fspCurrentStage = FspPipelineStage.SCHED1;
+                return (bundleMask, nextEmptySlot);
+            }
+
             if (IsSmtBundleBlockedByBoundaryGuard(bundleMask, bundleMetadata, boundaryGuard))
             {
                 _fspCurrentStage = FspPipelineStage.SCHED1;
@@ -105,7 +134,13 @@ namespace YAKSys_Hybrid_CPU.Core
                 int candidateVt = pipelineEntry.VirtualThreadId;
                 MicroOp? candidate = pipelineEntry.Candidate;
                 if (candidate is null ||
-                    !ReferenceEquals(_smtPorts[candidateVt], candidate))
+                    !ReferenceEquals(_smtPorts[candidateVt], candidate) ||
+                    !ReferenceEquals(
+                        candidate.PostStageBIdentityTemplate,
+                        pipelineEntry.IdentityTemplate) ||
+                    candidate.PostStageBIssuedAttempt is not null ||
+                    !pipelineEntry.CandidateFingerprint.Equals(
+                        ComputeFspCandidateFingerprint(candidate)))
                 {
                     continue;
                 }
@@ -137,7 +172,8 @@ namespace YAKSys_Hybrid_CPU.Core
                     MaterializePostStageBIssuedAttempt(
                         candidate,
                         pipelineEntry.IdentityTemplate,
-                        lane);
+                        lane,
+                        bundleMetadata);
                     candidate.IsFspInjected = true;
                     bundleMask.AddOperation(candidate);
                     opportunityState = opportunityState.WithOccupiedSlot(lane);
@@ -224,6 +260,211 @@ namespace YAKSys_Hybrid_CPU.Core
 
             _fspCurrentStage = FspPipelineStage.SCHED1;
             return (bundleMask, nextEmptySlot);
+        }
+
+        private void RebuildFspStageContext(
+            IReadOnlyList<MicroOp?> bundle,
+            int ownerVirtualThreadId,
+            out BundleResourceCertificate4Way bundleMask,
+            out SmtBundleMetadata4Way bundleMetadata,
+            out BoundaryGuardState boundaryGuard)
+        {
+            bundleMask = BundleResourceCertificate4Way.Empty;
+            bundleMetadata = SmtBundleMetadata4Way.Empty(ownerVirtualThreadId);
+            boundaryGuard = BoundaryGuardState.Open(_serializingEpochCounter);
+            for (int slot = 0; slot < bundle.Count; slot++)
+            {
+                MicroOp? operation = bundle[slot];
+                if (operation is null)
+                {
+                    continue;
+                }
+
+                bundleMask.AddOperation(operation);
+                bundleMetadata = bundleMetadata.WithOperation(operation);
+                boundaryGuard = boundaryGuard.WithOperation(operation);
+            }
+        }
+
+        private static bool ReplayPhaseMatches(
+            ReplayPhaseContext expected,
+            ReplayPhaseContext actual) =>
+            expected.IsActive == actual.IsActive &&
+            expected.EpochId == actual.EpochId &&
+            expected.CachedPc == actual.CachedPc &&
+            expected.EpochLength == actual.EpochLength &&
+            expected.CompletedReplays == actual.CompletedReplays &&
+            expected.ValidSlotCount == actual.ValidSlotCount &&
+            expected.StableDonorMask == actual.StableDonorMask &&
+            expected.LastInvalidationReason == actual.LastInvalidationReason;
+
+        private void CaptureFspBundleReferences(IReadOnlyList<MicroOp?> bundle)
+        {
+            for (int slot = 0; slot < _fspBundleReferences.Length; slot++)
+            {
+                _fspBundleReferences[slot] = slot < bundle.Count
+                    ? bundle[slot]
+                    : null;
+            }
+        }
+
+        private bool FspBundleReferencesMatch(IReadOnlyList<MicroOp?> bundle)
+        {
+            if (bundle.Count != _fspBundleReferences.Length)
+            {
+                return false;
+            }
+
+            for (int slot = 0; slot < _fspBundleReferences.Length; slot++)
+            {
+                if (!ReferenceEquals(_fspBundleReferences[slot], bundle[slot]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static FspSnapshotFingerprint ComputeFspBundleFingerprint(
+            IReadOnlyList<MicroOp?> bundle)
+        {
+            (ulong low, ulong high) = CreateFspFingerprintSeed();
+            AddFspFingerprintValue(ref low, ref high, (ulong)bundle.Count);
+            for (int slot = 0; slot < bundle.Count; slot++)
+            {
+                AddFspFingerprintValue(ref low, ref high, (ulong)(uint)slot);
+                MicroOp? operation = bundle[slot];
+                if (operation is null)
+                {
+                    AddFspFingerprintValue(ref low, ref high, 0);
+                    continue;
+                }
+
+                AddFspFingerprintValue(ref low, ref high, 1);
+                AddFspFingerprintValue(
+                    ref low,
+                    ref high,
+                    unchecked((ulong)(uint)RuntimeHelpers.GetHashCode(operation)));
+                FspSnapshotFingerprint operationFingerprint =
+                    ComputeFspCandidateFingerprint(operation);
+                AddFspFingerprintValue(ref low, ref high, operationFingerprint.Low);
+                AddFspFingerprintValue(ref low, ref high, operationFingerprint.High);
+            }
+
+            return new FspSnapshotFingerprint(low, high);
+        }
+
+        private static FspSnapshotFingerprint ComputeFspCandidateFingerprint(
+            MicroOp candidate)
+        {
+            (ulong low, ulong high) = CreateFspFingerprintSeed();
+            MicroOpAdmissionMetadata admission = candidate.AdmissionMetadata;
+
+            AddFspFingerprintValue(ref low, ref high, candidate.OpCode);
+            AddFspFingerprintValue(ref low, ref high, candidate.PredicateMask);
+            AddFspFingerprintValue(ref low, ref high, candidate.DestRegID);
+            AddFspFingerprintValue(ref low, ref high, candidate.WritesRegister ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, candidate.Latency);
+            AddFspFingerprintValue(ref low, ref high, candidate.IsMemoryOp ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, candidate.IsControlFlow ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, candidate.IsStealable ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, (ulong)candidate.MemoryLocalityHint);
+            AddFspFingerprintValue(ref low, ref high, unchecked((ulong)(uint)candidate.OwnerThreadId));
+            AddFspFingerprintValue(ref low, ref high, unchecked((ulong)(uint)candidate.OwnerContextId));
+            AddFspFingerprintValue(ref low, ref high, unchecked((ulong)(uint)candidate.VirtualThreadId));
+            AddFspFingerprintValue(ref low, ref high, (ulong)candidate.Class);
+            AddFspFingerprintValue(ref low, ref high, (ulong)candidate.InstructionClass);
+            AddFspFingerprintValue(ref low, ref high, (ulong)candidate.SerializationClass);
+            AddFspFingerprintValue(ref low, ref high, candidate.HasSideEffects ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, candidate.SafetyMask.Low);
+            AddFspFingerprintValue(ref low, ref high, candidate.SafetyMask.High);
+            AddFspFingerprintValue(ref low, ref high, candidate.ResourceMask.Low);
+            AddFspFingerprintValue(ref low, ref high, candidate.ResourceMask.High);
+            AddFspPlacementFingerprint(ref low, ref high, candidate.Placement);
+            AddFspFingerprintValue(
+                ref low,
+                ref high,
+                candidate is LoadStoreMicroOp loadStore
+                    ? unchecked((ulong)(uint)loadStore.MemoryBankId)
+                    : ulong.MaxValue);
+
+            AddFspFingerprintValue(ref low, ref high, admission.IsStealable ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, admission.IsControlFlow ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, admission.IsMemoryOp ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, admission.WritesRegister ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, admission.HasSideEffects ? 1UL : 0UL);
+            AddFspFingerprintValue(ref low, ref high, unchecked((ulong)(uint)admission.OwnerContextId));
+            AddFspFingerprintValue(ref low, ref high, admission.DomainTag);
+            AddFspPlacementFingerprint(ref low, ref high, admission.Placement);
+            AddFspFingerprintValue(ref low, ref high, admission.RegisterHazardMask);
+            AddFspFingerprintValue(ref low, ref high, admission.StructuralSafetyMask.Low);
+            AddFspFingerprintValue(ref low, ref high, admission.StructuralSafetyMask.High);
+            AddFspFingerprintValue(
+                ref low,
+                ref high,
+                unchecked((ulong)(uint)admission.AssistCoalescingDescriptor.GetHashCode()));
+            AddFspRegisterListFingerprint(ref low, ref high, admission.ReadRegisters);
+            AddFspRegisterListFingerprint(ref low, ref high, admission.WriteRegisters);
+            AddFspRangeListFingerprint(ref low, ref high, admission.ReadMemoryRanges);
+            AddFspRangeListFingerprint(ref low, ref high, admission.NormalizedReadMemoryRanges);
+            AddFspRangeListFingerprint(ref low, ref high, admission.WriteMemoryRanges);
+            return new FspSnapshotFingerprint(low, high);
+        }
+
+        private static (ulong Low, ulong High) CreateFspFingerprintSeed() =>
+            (14695981039346656037UL, 7809847782465536322UL);
+
+        private static void AddFspPlacementFingerprint(
+            ref ulong low,
+            ref ulong high,
+            SlotPlacementMetadata placement)
+        {
+            AddFspFingerprintValue(ref low, ref high, (ulong)placement.RequiredSlotClass);
+            AddFspFingerprintValue(ref low, ref high, (ulong)placement.PinningKind);
+            AddFspFingerprintValue(ref low, ref high, placement.PinnedLaneId);
+            AddFspFingerprintValue(ref low, ref high, placement.DomainTag);
+        }
+
+        private static void AddFspRegisterListFingerprint(
+            ref ulong low,
+            ref ulong high,
+            IReadOnlyList<int> values)
+        {
+            AddFspFingerprintValue(ref low, ref high, (ulong)values.Count);
+            for (int index = 0; index < values.Count; index++)
+            {
+                AddFspFingerprintValue(
+                    ref low,
+                    ref high,
+                    unchecked((ulong)(uint)values[index]));
+            }
+        }
+
+        private static void AddFspRangeListFingerprint(
+            ref ulong low,
+            ref ulong high,
+            IReadOnlyList<(ulong Address, ulong Length)> ranges)
+        {
+            AddFspFingerprintValue(ref low, ref high, (ulong)ranges.Count);
+            for (int index = 0; index < ranges.Count; index++)
+            {
+                AddFspFingerprintValue(ref low, ref high, ranges[index].Address);
+                AddFspFingerprintValue(ref low, ref high, ranges[index].Length);
+            }
+        }
+
+        private static void AddFspFingerprintValue(
+            ref ulong low,
+            ref ulong high,
+            ulong value)
+        {
+            unchecked
+            {
+                low = (low ^ value) * 1099511628211UL;
+                high = (high + value + 0x9E3779B97F4A7C15UL) * 14029467366897019727UL;
+                high ^= high >> 29;
+            }
         }
 
         /// <summary>

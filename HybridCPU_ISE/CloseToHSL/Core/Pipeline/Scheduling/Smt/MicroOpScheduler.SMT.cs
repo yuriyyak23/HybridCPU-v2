@@ -99,9 +99,19 @@ namespace YAKSys_Hybrid_CPU.Core
                     nextEmptySlot);
 
                 // Kick SCHED1 for the next cycle's candidates
+                RebuildFspStageContext(
+                    result,
+                    ownerVirtualThreadId,
+                    out BundleResourceCertificate4Way nextBundleCert,
+                    out SmtBundleMetadata4Way nextBundleMetadata,
+                    out BoundaryGuardState nextBoundaryGuard);
                 PipelineFspStage1_Nominate(
                     ownerVirtualThreadId,
-                    CreateEligibleSmtNominationState(eligibleVirtualThreadMask));
+                    CreateEligibleSmtNominationState(eligibleVirtualThreadMask),
+                    result,
+                    nextBundleCert,
+                    nextBundleMetadata,
+                    nextBoundaryGuard);
 
                 ClearAssistNominationPorts();
                 TotalSchedulerCycles++;
@@ -111,7 +121,13 @@ namespace YAKSys_Hybrid_CPU.Core
             // If pipelined mode is active but SCHED1 hasn't run yet, prime the pipeline
             if (PipelinedFspEnabled && _fspCurrentStage == FspPipelineStage.SCHED1)
             {
-                PipelineFspStage1_Nominate(ownerVirtualThreadId, nominationState);
+                PipelineFspStage1_Nominate(
+                    ownerVirtualThreadId,
+                    nominationState,
+                    result,
+                    bundleCert,
+                    bundleMetadata,
+                    boundaryGuard);
                 // First cycle: no injection yet (pipeline priming), return original bundle
                 ClearAssistNominationPorts();
                 TotalSchedulerCycles++;
@@ -237,7 +253,10 @@ namespace YAKSys_Hybrid_CPU.Core
 
                     // Commit
                     result[lane] = candidate;
-                    MaterializePostStageBIssuedAttempt(candidate, lane);
+                    MaterializePostStageBIssuedAttempt(
+                        candidate,
+                        lane,
+                        bundleMetadata);
                     candidate.IsFspInjected = true;
                     bundleCert.AddOperation(candidate);
                     opportunityState = opportunityState.WithOccupiedSlot(lane);
@@ -349,32 +368,115 @@ namespace YAKSys_Hybrid_CPU.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void MaterializePostStageBIssuedAttempt(MicroOp candidate, int lane)
+        private void MaterializePostStageBIssuedAttempt(
+            MicroOp candidate,
+            int lane,
+            SmtBundleMetadata4Way bundleMetadata)
         {
             MaterializePostStageBIssuedAttempt(
                 candidate,
                 candidate.PostStageBIdentityTemplate,
-                lane);
+                lane,
+                bundleMetadata);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void MaterializePostStageBIssuedAttempt(
+        private void MaterializePostStageBIssuedAttempt(
             MicroOp candidate,
             PostStageBIdentityTemplate? template,
-            int lane)
+            int lane,
+            SmtBundleMetadata4Way bundleMetadata)
         {
-            if (template is null)
-                return;
-
-            if (candidate.PostStageBIssuedAttempt is not null)
+            if (template is not null)
             {
-                throw new InvalidOperationException(
-                    "A MicroOp cannot receive a second issued-attempt carrier in one Stage-B commit.");
+                if (candidate.PostStageBIssuedAttempt is not null)
+                {
+                    throw new InvalidOperationException(
+                        "A MicroOp cannot receive a second issued-attempt carrier in one Stage-B commit.");
+                }
+
+                candidate.PostStageBIssuedAttempt =
+                    PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, LaneId.Create(lane));
+                candidate.PostStageBIdentityTemplate = null;
             }
 
-            candidate.PostStageBIssuedAttempt =
-                PostStageBIssuedAttempt.CreateAfterSuccessfulStageB(template, LaneId.Create(lane));
-            candidate.PostStageBIdentityTemplate = null;
+            if (candidate is not VmxMicroOp vmx)
+                return;
+
+            if (_virtualizationAdmissionService is null)
+                return;
+
+            VirtualizationAdmissionIssueResult issue =
+                _virtualizationAdmissionService.IssueVirtualizationAdmissionAfterStageB(
+                    _currentReplayPhase,
+                    bundleMetadata,
+                    vmx,
+                    vmx.Placement.PinnedLaneId,
+                    lane);
+            if (!issue.IsIssued || issue.Certificate is null)
+                return;
+
+            VirtualizationAdmissionValidationResult validation =
+                _virtualizationAdmissionService.ValidateVirtualizationAdmission(
+                    _currentReplayPhase,
+                    bundleMetadata,
+                    vmx,
+                    vmx.Placement.PinnedLaneId,
+                    lane,
+                    issue.Certificate);
+            if (validation.IsValidForFaultOnlyTransport)
+                vmx.AttachVirtualizationAdmission(issue.Certificate);
+        }
+
+        /// <summary>
+        /// Materializes E1 only after the canonical issue packet has selected a live
+        /// foreground lane. VMX is a serial/SystemSingleton carrier and therefore is
+        /// not expected to arrive through SMT donor injection.
+        /// </summary>
+        internal bool TryAttachVirtualizationAdmissionAfterCanonicalLaneMaterialization(
+            BundleIssuePacket issuePacket,
+            IssuePacketLane issueLane)
+        {
+            if (issueLane.MicroOp is not VmxMicroOp vmx ||
+                _virtualizationAdmissionService is null ||
+                !issueLane.IsOccupied ||
+                issueLane.PhysicalLaneIndex != 7)
+            {
+                return false;
+            }
+
+            SmtBundleMetadata4Way bundleMetadata =
+                SmtBundleMetadata4Way.Empty(issueLane.OwnerThreadId);
+            for (byte laneIndex = 0; laneIndex < 8; laneIndex++)
+            {
+                IssuePacketLane packetLane = issuePacket.GetPhysicalLane(laneIndex);
+                if (packetLane.IsOccupied)
+                    bundleMetadata = bundleMetadata.WithOperation(packetLane.MicroOp);
+            }
+
+            VirtualizationAdmissionIssueResult issue =
+                _virtualizationAdmissionService.IssueVirtualizationAdmissionAfterStageB(
+                    _currentReplayPhase,
+                    bundleMetadata,
+                    vmx,
+                    issueLane.SlotIndex,
+                    issueLane.PhysicalLaneIndex);
+            if (!issue.IsIssued || issue.Certificate is null)
+                return false;
+
+            VirtualizationAdmissionValidationResult validation =
+                _virtualizationAdmissionService.ValidateVirtualizationAdmission(
+                    _currentReplayPhase,
+                    bundleMetadata,
+                    vmx,
+                    issueLane.SlotIndex,
+                    issueLane.PhysicalLaneIndex,
+                    issue.Certificate);
+            if (!validation.IsValidForFaultOnlyTransport)
+                return false;
+
+            vmx.AttachVirtualizationAdmission(issue.Certificate);
+            return true;
         }
 
         /// <summary>

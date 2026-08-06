@@ -5,7 +5,7 @@ public sealed class Rf1211aExpandedBridgeDeletionEligibilityReconciliationTests
     [Fact]
     public void ExpandedMatrixRetainsEveryNonZeroCallerSurfaceGroup()
     {
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.11a-expanded-bridge-compatibility-deletion-eligibility-reconciliation.md");
         string[] groups =
         [
@@ -47,7 +47,7 @@ public sealed class Rf1211aExpandedBridgeDeletionEligibilityReconciliationTests
     [Fact]
     public void LedgerOpensOnlyTheFinalPostReconciliationAudit()
     {
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
         Assert.Contains("RF-12.11a | closed expanded deletion-eligibility reconciliation", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-12 is closed at RF-12.12h", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-12.12c | superseded final exit audit", ledger, StringComparison.Ordinal);

@@ -2,20 +2,20 @@
 
 ## Architectural Position
 
-SecureCompute is a neutral runtime-domain architecture. Its center is descriptor-owned policy and Stage B runtime admission. It is not a virtualization mode and is not an ISA capability extension.
+SecureCompute is intended as a neutral runtime-domain architecture. Current code contains descriptor-shaped policy and a generic runtime admission service; it does not yet prove CPU Stage-B integration. It is not a virtualization mode and is not an ISA capability extension.
 
-Stage A may classify an operation, but it does not require a secure descriptor for ordinary execution and does not own the secure decision. Stage B joins the neutral runtime context, operation class, descriptor state, domain/address-space binding, grants, evidence and operation-specific policies.
+The required architecture is a canonical decode/operation identity followed by SafetyVerifier issuance of an immutable certificate and a production issue carrier. That chain is absent. Existing generic admission accepts a caller-selected operation class and can obtain a full descriptor from either the runtime context or the request.
 
 ## Authority Hierarchy
 
-Authority is accepted only from neutral runtime owners:
+Future authority may be accepted only from neutral runtime owners:
 
-1. runtime domain context;
-2. root SecureCompute descriptor;
-3. operation-specific descriptor and policy;
-4. current typed grants and epochs;
-5. bounded evidence or visibility policy;
-6. an owner-specific RFC/ADR implementation for any future positive effect.
+1. a canonical descriptor registry with opaque binding and one lifecycle owner;
+2. SafetyVerifier-issued operation/domain/VT/slot/epoch/effects certificate;
+3. operation-specific policy with exhaustive deny-by-default taxonomy;
+4. a runtime-owned mint/revoke grant ledger;
+5. a named production effect owner and typed result;
+6. separately owned completion, retire, migration and evidence publication paths.
 
 Compatibility frontends, VMX decode, VMCS fields, `VmxCaps`, VMCALL recognition, trap decisions, telemetry, documentation and tests do not own runtime authority.
 
@@ -43,4 +43,4 @@ Passing one class does not imply the next class.
 - backend owner: `AllowedProofOnlyNoExecution`.
 - secure hypercall: `AllowedAdmittedDenied` or fail-closed denial; no backend success.
 
-No current SecureCompute path establishes production backend execution.
+No current SecureCompute path establishes production backend execution. Policy classes, caller booleans, documentation and source-string checks are not authority or reachability proof.

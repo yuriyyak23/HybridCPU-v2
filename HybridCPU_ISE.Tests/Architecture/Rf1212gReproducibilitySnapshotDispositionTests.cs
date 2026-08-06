@@ -5,7 +5,7 @@ public sealed class Rf1212gReproducibilitySnapshotDispositionTests
     [Fact]
     public void EvidenceDoesNotClaimAnImmutableSnapshotForTheDirtyTree()
     {
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12g-reproducibility-snapshot-disposition.md");
 
         Assert.Contains("687 entries", evidence, StringComparison.Ordinal);
@@ -18,7 +18,7 @@ public sealed class Rf1212gReproducibilitySnapshotDispositionTests
     [Fact]
     public void LedgerRecordsTheLaterCancelledSnapshotDisposition()
     {
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
 
         Assert.Contains("RF-12 is closed at RF-12.12h", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-12.12g | closed", ledger, StringComparison.Ordinal);

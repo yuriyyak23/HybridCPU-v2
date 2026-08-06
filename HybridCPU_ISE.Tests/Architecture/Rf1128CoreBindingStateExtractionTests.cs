@@ -151,8 +151,8 @@ public sealed class Rf1128CoreBindingStateExtractionTests
     public void LedgerAndEvidenceCloseOnlyCoreBindingAndDeferSnapshotHardening()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.28-core-binding-state-extraction.md");
         Assert.Contains("RF-11.28 | closed CoreBindingState", ledger, StringComparison.Ordinal);
         Assert.Contains("exactly four", evidence, StringComparison.OrdinalIgnoreCase);

@@ -315,9 +315,9 @@ public sealed class SecurePositiveRuntimeExecutionActivationPhase20Tests
         Assert.Contains("no production SecureCompute activation is approved", phase20);
         Assert.Contains("SecurePositiveRuntimeExecutionActivationPolicy", phase20);
         Assert.Contains("owner/path/reachability scoped source-scan policy", phase20);
-        Assert.Contains("Implemented Phase 20 Future-Gated Runtime Activation Tests", conformance);
+        Assert.Contains("Implemented Phase 20 Pre-Activation Classifier Tests", conformance);
         Assert.Contains("Phase 20 tests proving manifest coverage is required but manifest-only records are not execution proof", release);
-        Assert.Contains("Phase 20 remains future-gated because no named positive runtime owner/path/reachability chain is locally proven", backlog);
+        Assert.Contains("Phase 20 remains a pre-activation evidence classifier", backlog);
     }
 
     private static SecurePositiveRuntimeExecutionActivationPolicy Policy =>

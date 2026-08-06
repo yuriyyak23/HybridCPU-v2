@@ -41,8 +41,8 @@ public sealed class Rf1135CsrEffectRefThisHardeningTests
     public void EvidenceClosesOnlyCsrEffectMaterialization()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.35-csr-effect-ref-this-hardening.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.35-csr-effect-ref-this-hardening.md");
         Assert.Contains("RF-11.35 CSR-effect materialization ref-this seam hardening", ledger, StringComparison.Ordinal);
         Assert.Contains("no production state declaration", evidence, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("--minimal-logs", evidence, StringComparison.Ordinal);

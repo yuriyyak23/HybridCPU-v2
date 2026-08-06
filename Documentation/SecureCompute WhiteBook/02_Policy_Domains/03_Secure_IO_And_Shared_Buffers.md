@@ -17,6 +17,8 @@ Secure I/O uses explicit descriptor-owned shared buffers. Buffer ID alone is not
 
 Hypercall shared-buffer arguments additionally require a current typed argument grant.
 
+Current shared-buffer lookup is first-match and does not reject overlapping ranges or duplicate buffer IDs. The map must be canonicalized before any device path can consume it.
+
 ## DMA Rules
 
 - neutral I/O owner is mandatory;
@@ -25,6 +27,8 @@ Hypercall shared-buffer arguments additionally require a current typed argument 
 - range and direction must match;
 - stale owner, lifetime, evidence or grant binding is denied;
 - raw private pointers and forged opaque handles are denied.
+
+These are policy requirements. No production DMA engine, device owner or IOMMU programming/revocation path was found consuming the admission result, so no I/O side effect is authorized.
 
 ## Policy-Only Result
 
@@ -49,3 +53,5 @@ backend-success requests fail closed. `SecureHypercallBackendOwnerAbiRegistry`
 defines a neutral typed proof-only owner/service contract and exact decoded-leaf,
 service-ID and owner-ID allocations. Execution, completion publication and
 retire publication remain closed.
+
+The registry is an identifier/proof classifier, not a hypercall executor or backend-result owner.

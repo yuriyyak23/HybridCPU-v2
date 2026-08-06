@@ -314,8 +314,7 @@ public sealed class
         "section", "md base",
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
-    private static string Evidence(string root) => Read(root, "Documentation",
-        "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+    private static string Evidence(string root) => Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6ad-memory-bank-geometry-authoritative-replacement-valid-input-cutover.md");
 
     private static string Read(string root, params string[] components) =>

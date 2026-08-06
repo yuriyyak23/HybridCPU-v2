@@ -61,7 +61,7 @@ This is intentional. It gives the project evidence that the frontend can cross t
 
 Current explicit denials include:
 
-- `GuestCr0` and `GuestCr4`: no neutral privileged execution-state semantics;
+- `GuestCr0` and `GuestCr4`: guarded read-only direct projection exists through the neutral privileged execution-state descriptor; missing or mismatched descriptor/domain/address-space/epoch/visibility/migration/conformance facts deny, and no mutation/backend/completion/retire or architectural VMREAD path is opened;
 - host execution aliases: no neutral host-execution owner;
 - `HostCr3`: no neutral host-address-space owner;
 - compatibility-control fields: no admitted neutral control-bit value contract;

@@ -13,7 +13,7 @@ namespace HybridCPU_ISE.Tests.Architecture;
 /// </summary>
 public sealed class IsaAuthorityInventoryTests
 {
-    private const string StaticPolicyAuthority = "OpcodeRegistry.Opcodes (current static metadata; RF-03 replacement)";
+    private const string StaticPolicyAuthority = "GeneratedIsaCatalog served through OpcodeRegistry.Opcodes (manifest-derived static metadata; RF-13.36 facade)";
     private const string EncodingLegalityAuthority = "VliwDecoderV4 (mixed current encoding legality; RF-05 closure)";
     private const string RuntimeLegalityOwner = "Runtime admission/materialization services (state-dependent legality; RF-06 named contracts)";
     private const string EvidenceProducer = "InstructionSupportStatusCatalog plus decoder/materializer/retire probes (report only; RF-06 join)";

@@ -107,9 +107,9 @@ public sealed class Rf084tExitReadinessClosedWorldReconciliationTests
     public void CurrentQueueNamesResidualRegisterWritesAndNoOpenNamedFamily()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "03_RF08_EXIT_READINESS_LEDGER.md");
         Assert.Contains("| RF-08.4bb | complete; RF-08 exit accepted |", status, StringComparison.Ordinal);
         Assert.Contains("18 source files", ledger, StringComparison.Ordinal);

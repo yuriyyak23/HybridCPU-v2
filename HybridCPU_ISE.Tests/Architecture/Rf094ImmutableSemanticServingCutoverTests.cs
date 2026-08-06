@@ -144,11 +144,11 @@ public sealed class Rf094ImmutableSemanticServingCutoverTests
     public void DocumentationClosesRf09WithoutExpandingClaims()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string gate = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string gate = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "02_RF09_ENTRY_GATE.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
             "RF09", "rf09.4-immutable-semantic-serving-cutover.md");
         string paper = Read(root, "ResearchPaper", "section", "md base",
             "7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");

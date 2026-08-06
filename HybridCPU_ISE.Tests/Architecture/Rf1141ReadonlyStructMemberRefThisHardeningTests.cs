@@ -23,12 +23,12 @@ public sealed class Rf1141ReadonlyStructMemberRefThisHardeningTests
     {
         string prod = Sources(Path.Combine(Root(), "HybridCPU_ISE"));
         Assert.Empty(Regex.Matches(prod, @"\bref\s+this(?:\s*[,\)]|\.)"));
-        Assert.Equal(66, Regex.Matches(prod, @"partial\s+class\s+CPU_Core").Count);
+        Assert.Equal(67, Regex.Matches(prod, @"partial\s+class\s+CPU_Core").Count);
     }
     [Fact]
     public void EvidenceClosesOnlyReadonlyMemberAliases()
     {
-        string root = Root(); string l = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md"); string e = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.41-readonly-struct-member-ref-this-hardening.md");
+        string root = Root(); string l = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md"); string e = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.41-readonly-struct-member-ref-this-hardening.md");
         Assert.Contains("RF-11.41 readonly struct-member ref-this hardening", l); Assert.Contains("no state declaration", e, StringComparison.OrdinalIgnoreCase); Assert.Contains("--minimal-logs", e); Assert.Contains("RF-11.42", l);
     }
     static string VectorConfig() => Read(Root(), "HybridCPU_ISE", "CloseToHSL", "Core", "Architecture", "State", "Architectural", "CPU_Core.VectorConfig.cs");

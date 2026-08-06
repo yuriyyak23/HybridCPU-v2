@@ -13,7 +13,7 @@ Relevant paths:
 - `CloseToHSL/Core/Runtime/Domains/Legality/DomainLegalityService.cs`
 - `CloseToHSL/Core/Runtime/Domains/Scheduling/DomainSchedulingAdmission.cs`
 
-VMX may project `GuestPc`, `GuestSp`, and `GuestFlags` only from a materialized `ExecutionDomainReadOnlyStateView`. Control-like fields such as `GuestCr0` and `GuestCr4` remain denied until a neutral privileged execution-state owner defines real semantics. Host execution aliases remain denied until a separate neutral host-execution owner exists.
+VMX may directly project `GuestPc`, `GuestSp`, and `GuestFlags` only from a materialized `ExecutionDomainReadOnlyStateView`. `GuestCr0` and `GuestCr4` may be projected only through the separate neutral `PrivilegedExecutionStateDescriptor` and field-specific service after descriptor/domain/address-space/epoch/visibility/`RevalidatedAfterRestore`/conformance gates. That closure is read-only projection only and grants no backend, mutation, completion or retire authority. Host execution aliases remain denied until a separate neutral host-execution owner exists.
 
 ## Memory Domain
 

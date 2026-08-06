@@ -24,7 +24,7 @@ public sealed class Rf083gAuthorizedScalarLoadExactHandoffTests
     public void AdrKeepsMemoryAuthorityAndPublicationAtTheirExistingOwners()
     {
         string root = FindRepositoryRoot();
-        string adr = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "02_Authority", "ADR-009_VLIW_Retirement.md");
+        string adr = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "02_Authority", "ADR-009_VLIW_Retirement.md");
 
         Assert.Contains("RF-08.3g authorised scalar-load transport", adr, StringComparison.Ordinal);
         Assert.Contains("memory timing, MSHR", adr, StringComparison.Ordinal);

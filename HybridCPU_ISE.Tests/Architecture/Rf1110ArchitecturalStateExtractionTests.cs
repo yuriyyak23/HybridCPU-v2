@@ -101,8 +101,8 @@ public sealed class Rf1110ArchitecturalStateExtractionTests
     public void LedgerAndEvidenceCloseOnlyArchitecturalState()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.10-architectural-state-extraction.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.10-architectural-state-extraction.md");
         Assert.Contains("RF-11.10 | closed ArchitecturalState", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-11.11 SchedulingState", ledger, StringComparison.Ordinal);
         Assert.Contains("27", evidence, StringComparison.Ordinal);

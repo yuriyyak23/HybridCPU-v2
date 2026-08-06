@@ -16,12 +16,12 @@ public sealed class Rf1142CoreTableDefaultNullLifecycleInventoryTests
     }
     [Fact] public void AuthorityDoesNotDefineClassArrayAbsentSlotPolicy()
     {
-        string root=Root();string adr=Read(root,"Documentation", "ArchitectureAuthorityRefactor","02_Authority","ADR-010_CPU_Core_State_Ownership.md");string e=Read(root,"Documentation", "ArchitectureAuthorityRefactor","Evidence","RF11","rf11.42-core-table-default-null-lifecycle-inventory.md");
+        string root=Root();string adr=Read(root,"Documentation", "Documentation", "ArchitectureAuthorityRefactor","02_Authority","ADR-010_CPU_Core_State_Ownership.md");string e=Read(root,"Documentation", "Documentation", "ArchitectureAuthorityRefactor","Evidence","RF11","rf11.42-core-table-default-null-lifecycle-inventory.md");
         Assert.Contains("sealed partial class CPU_Core",adr);Assert.Contains("do not define",e,StringComparison.OrdinalIgnoreCase);Assert.Contains("RF-11.43",e);
     }
     [Fact] public void InventoryMovesNoRuntimeState()
     {
-        string root=Root();string l=Read(root,"Documentation", "ArchitectureAuthorityRefactor","10_RF11","00_CURRENT_STATUS_AND_LEDGER.md");string e=Read(root,"Documentation", "ArchitectureAuthorityRefactor","Evidence","RF11","rf11.42-core-table-default-null-lifecycle-inventory.md");
+        string root=Root();string l=Read(root,"Documentation", "Documentation", "ArchitectureAuthorityRefactor","10_RF11","00_CURRENT_STATUS_AND_LEDGER.md");string e=Read(root,"Documentation", "Documentation", "ArchitectureAuthorityRefactor","Evidence","RF11","rf11.42-core-table-default-null-lifecycle-inventory.md");
         Assert.Contains("RF-11.42 CPU_Core table/default/null lifecycle inventory/freeze",l);Assert.Contains("no production code",e,StringComparison.OrdinalIgnoreCase);Assert.Contains("TestAssemblerConsoleApps was not run",e);
     }
     static string Sources(string p)=>string.Join('\n',Directory.GetFiles(p,"*.cs",SearchOption.AllDirectories).Where(f=>!f.Contains("\\bin\\")&&!f.Contains("\\obj\\")).Select(File.ReadAllText));

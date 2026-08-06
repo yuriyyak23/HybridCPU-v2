@@ -353,8 +353,7 @@ public sealed class Rf126aeAcceptedRequestPhysicalBankBindingInventoryTests
         "section", "md base",
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
-    private static string Evidence(string root) => Read(root, "Documentation",
-        "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+    private static string Evidence(string root) => Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6ae-accepted-request-physical-bank-binding-inventory-decision.md");
 
     private static string ReadTree(string root) =>

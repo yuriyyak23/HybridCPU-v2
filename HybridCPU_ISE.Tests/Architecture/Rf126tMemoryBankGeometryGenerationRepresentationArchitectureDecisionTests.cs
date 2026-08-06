@@ -182,7 +182,7 @@ public sealed class Rf126tMemoryBankGeometryGenerationRepresentationArchitecture
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
     private static string Evidence(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6t-memory-bank-geometry-generation-representation-architecture-decision.md");
 
     private static string ReadTree(string path, params string[] excludedPaths) =>

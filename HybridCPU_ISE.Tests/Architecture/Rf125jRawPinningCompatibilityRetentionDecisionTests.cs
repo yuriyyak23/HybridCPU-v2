@@ -28,8 +28,8 @@ public sealed class Rf125jRawPinningCompatibilityRetentionDecisionTests
     {
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base", "3_Architectural_Overview_and_Frontend_Contract.md");
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5j-raw-pinning-compatibility-retention-decision.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5j-raw-pinning-compatibility-retention-decision.md");
 
         Assert.Contains("It expires only after valid-input parity", paper, StringComparison.Ordinal);
         Assert.Contains("and a zero-caller", paper, StringComparison.Ordinal);
@@ -47,7 +47,7 @@ public sealed class Rf125jRawPinningCompatibilityRetentionDecisionTests
     {
         string root = FindRepositoryRoot();
         string laneId = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "LaneId.cs");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5j-raw-pinning-compatibility-retention-decision.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", "rf12.5j-raw-pinning-compatibility-retention-decision.md");
 
         Assert.Contains("public readonly record struct LaneId", laneId, StringComparison.Ordinal);
         Assert.DoesNotContain("struct ChannelId", evidence, StringComparison.Ordinal);

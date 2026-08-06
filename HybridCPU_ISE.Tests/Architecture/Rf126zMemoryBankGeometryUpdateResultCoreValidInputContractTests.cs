@@ -286,7 +286,7 @@ public sealed class Rf126zMemoryBankGeometryUpdateResultCoreValidInputContractTe
             '/', Path.DirectorySeparatorChar)));
 
     private static string Evidence(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6z-memory-bank-geometry-update-result-core-valid-input-contract.md");
 
     private static string JoinSources(

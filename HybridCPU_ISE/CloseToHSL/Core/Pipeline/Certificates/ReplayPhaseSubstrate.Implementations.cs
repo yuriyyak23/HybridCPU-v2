@@ -264,7 +264,9 @@ namespace YAKSys_Hybrid_CPU.Core
     /// <summary>
     /// Internal runtime legality service for inter-core + SMT hot paths plus adjacent diagnostics.
     /// </summary>
-    internal sealed class RuntimeLegalityService : IRuntimeLegalityService
+    internal sealed class RuntimeLegalityService :
+        IRuntimeLegalityService,
+        IVirtualizationAdmissionService
     {
         private readonly ILegalityChecker _legalityChecker;
         private readonly ILegalityCertificateCacheCoordinator _cacheCoordinator;
@@ -388,6 +390,49 @@ namespace YAKSys_Hybrid_CPU.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public VirtualizationAdmissionIssueResult IssueVirtualizationAdmissionAfterStageB(
+            ReplayPhaseContext phase,
+            SmtBundleMetadata4Way bundleMetadata,
+            MicroOp candidate,
+            int sourceSlotId,
+            int selectedLane)
+        {
+            return _legalityChecker is SafetyVerifier verifier
+                ? verifier.IssueVirtualizationAdmissionAfterStageB(
+                    phase,
+                    bundleMetadata,
+                    candidate,
+                    sourceSlotId,
+                    selectedLane)
+                : new VirtualizationAdmissionIssueResult(
+                    VirtualizationAdmissionIssueDecision.NotVmxMicroOp,
+                    null,
+                    "Only the canonical SafetyVerifier can issue E1 admission.");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public VirtualizationAdmissionValidationResult ValidateVirtualizationAdmission(
+            ReplayPhaseContext phase,
+            SmtBundleMetadata4Way bundleMetadata,
+            MicroOp candidate,
+            int sourceSlotId,
+            int selectedLane,
+            SafetyVerifier.VirtualizationAdmissionCertificate? certificate)
+        {
+            return _legalityChecker is SafetyVerifier verifier
+                ? verifier.ValidateVirtualizationAdmission(
+                    phase,
+                    bundleMetadata,
+                    candidate,
+                    sourceSlotId,
+                    selectedLane,
+                    certificate)
+                : new VirtualizationAdmissionValidationResult(
+                    VirtualizationAdmissionValidationDecision.IssuerMismatch,
+                    "Only the canonical SafetyVerifier can validate E1 admission.");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RefreshSmtAfterMutation(
             ReplayPhaseContext phase,
             BundleResourceCertificate4Way certificate,
@@ -405,6 +450,11 @@ namespace YAKSys_Hybrid_CPU.Core
         public void InvalidatePhaseMismatch(ReplayPhaseContext phase)
         {
             _cacheCoordinator.InvalidatePhaseMismatch(phase);
+            if (_legalityChecker is SafetyVerifier verifier)
+            {
+                verifier.InvalidateVirtualizationAdmissions(
+                    ReplayPhaseInvalidationReason.PhaseMismatch);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -414,6 +464,8 @@ namespace YAKSys_Hybrid_CPU.Core
             bool invalidateFourWay = true)
         {
             _cacheCoordinator.Invalidate(reason, invalidateInterCore, invalidateFourWay);
+            if (_legalityChecker is SafetyVerifier verifier)
+                verifier.InvalidateVirtualizationAdmissions(reason);
         }
     }
 

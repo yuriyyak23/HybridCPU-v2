@@ -72,9 +72,9 @@ public sealed class Rf107VectorSegmentStorePublicationInventoryTests
         string paper = Read(root,
             "ResearchPaper/section/md base/7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
         string status = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
         string evidence = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.7-vector-segment-store-publication-inventory.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.7-vector-segment-store-publication-inventory.md");
 
         Assert.Contains("RF-10.7 freezes exactly the retained `StoreSegmentMicroOp`", paper, StringComparison.Ordinal);
         Assert.Contains("does not authorize a runtime cutover", paper, StringComparison.Ordinal);

@@ -4,6 +4,8 @@
 
 Every checkpoint candidate requires an explicit payload class and admission decision. Object presence does not make state serializable.
 
+Current code does not fully enforce that rule: unknown payload classes fall through to `Allowed` in both migration admission and checkpoint classification. This default-allow behavior is a blocker and must become exhaustive deny-by-default before checkpoint work.
+
 Output-manifest classification exists for future positive paths. The manifest
 names request state, internal backend result, internal completion record,
 guest-visible output, retire-visible state and recomputed-after-restore state.
@@ -37,10 +39,12 @@ Restore may require:
 - revalidation or re-attestation;
 - private-memory sealed/encrypted contract validation.
 
+Current restore APIs receive several of these conditions as caller booleans. No serializer owner, key owner, anti-replay protocol or atomic restore transaction is implemented.
+
 Recomputed-after-restore values are rebuilt facts. They are not deserialized runtime authority.
 
 Output manifest entries require owner/path/reachability classification. Recomputed-after-restore entries also require restore validation proof.
 
 ## Current Limit
 
-The repository contains fail-closed migration, checkpoint and output-manifest classification policy. It does not establish live secure-domain migration, key management, device-handle migration, completion/retire publication or positive backend continuation after restore.
+The repository contains migration, checkpoint and output-manifest classifiers, but their existence and caller assertions are not a checkpoint protocol. It does not establish live secure-domain migration, key management, anti-replay, device-handle migration, completion/retire publication or positive backend continuation after restore.

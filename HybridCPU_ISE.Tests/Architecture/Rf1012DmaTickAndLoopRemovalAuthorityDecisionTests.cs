@@ -33,7 +33,7 @@ public sealed class Rf1012DmaTickAndLoopRemovalAuthorityDecisionTests
     {
         string root = FindRepositoryRoot();
         string evidence = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.12-dma-tick-and-loop-removal-authority-decision.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF10/rf10.12-dma-tick-and-loop-removal-authority-decision.md"));
 
         Assert.Contains("No production or timing source changes in RF-10.12", evidence, StringComparison.Ordinal);
         Assert.Contains("RF-10.13 is authorized", evidence, StringComparison.Ordinal);
@@ -44,7 +44,7 @@ public sealed class Rf1012DmaTickAndLoopRemovalAuthorityDecisionTests
     {
         string root = FindRepositoryRoot();
         string status = NormalizeWhitespace(Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md"));
 
         Assert.Contains("RF-10.12 | closed architecture decision", status, StringComparison.Ordinal);
         Assert.Contains("RF-10.13", status, StringComparison.Ordinal);

@@ -11,10 +11,21 @@ A gate is not closed by narrative alone. Closure requires:
 - release-gate assertions;
 - status wording consistent with the actual closure class.
 
+## Evidence Classes
+
+| Evidence | Valid use | Not valid for |
+| --- | --- | --- |
+| executable named production-path test | behavior and reachability of that exact path | unrelated owners or paths |
+| direct policy unit test | policy semantics | production call graph or side effects |
+| source/path scan | forbidden dependency and candidate discovery | executability or authority |
+| documentation/string test | wording consistency | runtime conformance or release approval |
+
+Documentation/source-string checks are excluded from the execution-proof numerator. Caller-supplied booleans named `Validated`, `Authorized` or `...Proven` are inputs, not evidence.
+
 ## Mandatory Negative Boundaries
 
 - ordinary absent/disabled/unmaterialized descriptor remains no-effect;
-- non-ordinary absent/disabled/unmaterialized descriptor fails closed through Stage B;
+- non-ordinary absent/disabled/unmaterialized descriptor fails closed in direct generic admission tests; production CPU routing remains open;
 - proof-only owner does not execute;
 - admitted-denied hypercall does not execute or publish;
 - projection does not mutate or publish;
@@ -53,3 +64,5 @@ The release gate keeps these states distinct:
 7. named limited activation.
 
 The current SecureCompute implementation does not reach a positive backend execution step.
+
+Release reproduction additionally requires an immutable reachable SHA, clean-tree disclosure, exact SDK and build properties, generator commands, test filters/counts/results and hashes for generated artifacts. The current checkout does not satisfy that release-evidence standard.

@@ -153,7 +153,7 @@ public sealed class Rf106VectorSegmentLoadMemoryCycleTests
         string paper = Read(root,
             "ResearchPaper/section/md base/7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
         string status = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/09_RF10/00_CURRENT_STATUS_AND_LEDGER.md");
 
         int loadStart = vector.IndexOf("public class LoadSegmentMicroOp", StringComparison.Ordinal);
         int loadEnd = vector.IndexOf("public class Load2DMicroOp", loadStart, StringComparison.Ordinal);

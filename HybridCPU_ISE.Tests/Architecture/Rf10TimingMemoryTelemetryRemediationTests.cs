@@ -25,6 +25,7 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
             Assert.Equal(1UL, accepted.DataReadAcceptedRequests);
             Assert.Equal(1UL, accepted.DataWriteAcceptedRequests);
             Assert.Equal(0UL, accepted.CompletedRequests);
+            Assert.Equal(2UL, accepted.OutstandingRequests);
 
             memory.AdvanceCycles(1);
             MemoryCycleTelemetrySnapshot serviced = memory.CycleController.GetTelemetrySnapshot();
@@ -44,7 +45,13 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
             Assert.True(memory.CycleController.TryTakeCompletion(read.RequestId, out _));
             Assert.True(memory.CycleController.TryTakeCompletion(store.RequestId, out _));
             Assert.False(memory.CycleController.TryTakeCompletion(read.RequestId, out _));
-            Assert.Equal(published, memory.CycleController.GetTelemetrySnapshot());
+            MemoryCycleTelemetrySnapshot consumed = memory.CycleController.GetTelemetrySnapshot();
+            Assert.Equal(2UL, consumed.ConsumedCompletions);
+            Assert.Equal(0UL, consumed.CanceledRequests);
+            Assert.Equal(0UL, consumed.OutstandingRequests);
+            Assert.Equal(
+                consumed.TelemetryBaselineOutstandingRequests + consumed.AcceptedRequests,
+                consumed.CanceledRequests + consumed.ConsumedCompletions + consumed.OutstandingRequests);
         });
     }
 
@@ -98,6 +105,9 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
             Assert.Equal(0UL, snapshot.CompletedRequests);
             Assert.Equal(0UL, snapshot.DataReadBytes);
             Assert.Equal(0UL, snapshot.CompletionPublicationCycles);
+            Assert.Equal(1UL, snapshot.CanceledRequests);
+            Assert.Equal(0UL, snapshot.ConsumedCompletions);
+            Assert.Equal(0UL, snapshot.OutstandingRequests);
             Assert.False(memory.CycleController.TryTakeCompletion(accepted.RequestId, out _));
         });
     }
@@ -119,6 +129,32 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
             memory.AdvanceCycles(1);
             Assert.Equal(3UL, memory.CycleController.MemoryCycle);
             Assert.Equal(1UL, memory.CycleController.GetTelemetrySnapshot().ControllerCycles);
+        });
+    }
+
+    [Fact]
+    public void TelemetryResetCapturesLiveIdentityBaselineForExactLifecycleBalance()
+    {
+        WithMappedMemory((unusedMainMemory, memory) =>
+        {
+            _ = unusedMainMemory;
+            MemoryAdmissionResult accepted =
+                memory.CycleController.TryAcceptSingleLaneScalarLoad(0, 0x200, 8);
+            Assert.Equal(MemoryAdmissionStatus.Accepted, accepted.Status);
+
+            memory.ResetStatistics();
+            MemoryCycleTelemetrySnapshot reset = memory.CycleController.GetTelemetrySnapshot();
+            Assert.Equal(1UL, reset.TelemetryBaselineOutstandingRequests);
+            Assert.Equal(0UL, reset.AcceptedRequests);
+            Assert.Equal(1UL, reset.OutstandingRequests);
+
+            Assert.True(memory.CycleController.TryCancel(accepted.RequestId));
+            MemoryCycleTelemetrySnapshot canceled = memory.CycleController.GetTelemetrySnapshot();
+            Assert.Equal(1UL, canceled.CanceledRequests);
+            Assert.Equal(0UL, canceled.OutstandingRequests);
+            Assert.Equal(
+                canceled.TelemetryBaselineOutstandingRequests + canceled.AcceptedRequests,
+                canceled.CanceledRequests + canceled.ConsumedCompletions + canceled.OutstandingRequests);
         });
     }
 
@@ -165,6 +201,10 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
                 Assert.Equal(0L, zeroReport.InstructionFetchReadBytes);
                 Assert.False(zeroReport.InstructionFetchRequestTelemetryAvailable);
                 Assert.False(zeroReport.MemoryBankConflictRejectTelemetryAvailable);
+                Assert.Equal(0L, zeroReport.MemoryTelemetryBaselineOutstandingRequests);
+                Assert.Equal(0L, zeroReport.MemoryCanceledRequests);
+                Assert.Equal(0L, zeroReport.MemoryConsumedCompletions);
+                Assert.Equal(0L, zeroReport.MemoryOutstandingRequests);
 
                 Assert.Equal(
                     MemoryAdmissionStatus.Accepted,
@@ -174,11 +214,274 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
                 Assert.Equal(1L, acceptedReport.MemoryAcceptedRequests);
                 Assert.Equal(1L, acceptedReport.DataReadAcceptedRequests);
                 Assert.Equal(0L, acceptedReport.MemoryCompletedRequests);
+                Assert.Equal(1L, acceptedReport.MemoryOutstandingRequests);
             });
         }
         finally
         {
             Processor.CurrentProfilingOptions = originalOptions;
+        }
+    }
+
+    [Fact]
+    public void PerformanceReportFormsExactMemoryTelemetryIntervalsWithoutMutatingSnapshots()
+    {
+        var baseline = new PerformanceReport
+        {
+            MemoryCycleTelemetrySchemaVersion = MemoryCycleTelemetrySnapshot.SchemaVersion,
+            MemoryCycleTelemetryAvailable = true,
+            MemoryControllerCycles = 10,
+            MemoryAcceptedRequests = 3,
+            MemoryCompletedRequests = 2,
+            DataReadAcceptedRequests = 2,
+            DataReadCompletedRequests = 1,
+            DataWriteAcceptedRequests = 1,
+            DataWriteCompletedRequests = 1,
+            DataReadBytes = 8,
+            CommittedDataWriteBytes = 4,
+            InstructionFetchReadBytesTelemetryAvailable = true,
+            InstructionFetchReadBytes = 32,
+            MemoryTelemetryBaselineOutstandingRequests = 1,
+            MemoryCanceledRequests = 1,
+            MemoryConsumedCompletions = 2,
+            MemoryOutstandingRequests = 1
+        };
+        var current = new PerformanceReport
+        {
+            MemoryCycleTelemetrySchemaVersion = MemoryCycleTelemetrySnapshot.SchemaVersion,
+            MemoryCycleTelemetryAvailable = true,
+            MemoryControllerCycles = 14,
+            MemoryAcceptedRequests = 5,
+            MemoryCompletedRequests = 4,
+            DataReadAcceptedRequests = 3,
+            DataReadCompletedRequests = 2,
+            DataWriteAcceptedRequests = 2,
+            DataWriteCompletedRequests = 2,
+            DataReadBytes = 16,
+            CommittedDataWriteBytes = 8,
+            InstructionFetchReadBytesTelemetryAvailable = true,
+            InstructionFetchReadBytes = 56,
+            MemoryTelemetryBaselineOutstandingRequests = 1,
+            MemoryCanceledRequests = 2,
+            MemoryConsumedCompletions = 4,
+            MemoryOutstandingRequests = 2
+        };
+
+        PerformanceReport interval = current.CreateMemoryCycleTelemetryIntervalSince(baseline);
+
+        Assert.True(interval.MemoryCycleTelemetryAvailable);
+        Assert.Equal(4, interval.MemoryControllerCycles);
+        Assert.Equal(2, interval.MemoryAcceptedRequests);
+        Assert.Equal(2, interval.MemoryCompletedRequests);
+        Assert.Equal(1, interval.DataReadAcceptedRequests);
+        Assert.Equal(1, interval.DataReadCompletedRequests);
+        Assert.Equal(1, interval.DataWriteAcceptedRequests);
+        Assert.Equal(1, interval.DataWriteCompletedRequests);
+        Assert.Equal(8, interval.DataReadBytes);
+        Assert.Equal(4, interval.CommittedDataWriteBytes);
+        Assert.True(interval.InstructionFetchReadBytesTelemetryAvailable);
+        Assert.Equal(24, interval.InstructionFetchReadBytes);
+        Assert.Equal(1, interval.MemoryTelemetryBaselineOutstandingRequests);
+        Assert.Equal(1, interval.MemoryCanceledRequests);
+        Assert.Equal(2, interval.MemoryConsumedCompletions);
+        Assert.Equal(2, interval.MemoryOutstandingRequests);
+        Assert.Equal(14, current.MemoryControllerCycles);
+        Assert.Equal(10, baseline.MemoryControllerCycles);
+    }
+
+    [Fact]
+    public void PerformanceReportMarksCounterRegressionAndSchemaChangeUnavailable()
+    {
+        var baseline = new PerformanceReport
+        {
+            MemoryCycleTelemetrySchemaVersion = MemoryCycleTelemetrySnapshot.SchemaVersion,
+            MemoryCycleTelemetryAvailable = true,
+            MemoryControllerCycles = 10,
+            MemoryAcceptedRequests = 4,
+            InstructionFetchReadBytesTelemetryAvailable = true,
+            InstructionFetchReadBytes = 40
+        };
+        var resetCurrent = new PerformanceReport
+        {
+            MemoryCycleTelemetrySchemaVersion = MemoryCycleTelemetrySnapshot.SchemaVersion,
+            MemoryCycleTelemetryAvailable = true,
+            MemoryControllerCycles = 1,
+            MemoryAcceptedRequests = 1,
+            InstructionFetchReadBytesTelemetryAvailable = true,
+            InstructionFetchReadBytes = 4
+        };
+        var schemaChanged = new PerformanceReport
+        {
+            MemoryCycleTelemetrySchemaVersion = "memory-cycle-telemetry-vNext",
+            MemoryCycleTelemetryAvailable = true,
+            MemoryControllerCycles = 11,
+            MemoryAcceptedRequests = 5
+        };
+
+        PerformanceReport resetInterval = resetCurrent.CreateMemoryCycleTelemetryIntervalSince(baseline);
+        PerformanceReport schemaInterval = schemaChanged.CreateMemoryCycleTelemetryIntervalSince(baseline);
+
+        Assert.False(resetInterval.MemoryCycleTelemetryAvailable);
+        Assert.Equal(0, resetInterval.MemoryControllerCycles);
+        Assert.Equal(0, resetInterval.MemoryAcceptedRequests);
+        Assert.False(resetInterval.InstructionFetchReadBytesTelemetryAvailable);
+        Assert.Equal(0, resetInterval.InstructionFetchReadBytes);
+        Assert.False(schemaInterval.MemoryCycleTelemetryAvailable);
+        Assert.Equal(0, schemaInterval.MemoryControllerCycles);
+    }
+
+    [Fact]
+    public void AdditiveDiagnosticIntervalRebasesEveryConsumedSharedCumulativeProducer()
+    {
+        string[] cumulativeProperties =
+        [
+            nameof(PerformanceReport.TotalBursts),
+            nameof(PerformanceReport.TotalBytesTransferred),
+            nameof(PerformanceReport.NopAvoided),
+            nameof(PerformanceReport.NopDueToNoClassCapacity),
+            nameof(PerformanceReport.NopDueToPinnedConstraint),
+            nameof(PerformanceReport.NopDueToResourceConflict),
+            nameof(PerformanceReport.NopDueToDynamicState),
+            nameof(PerformanceReport.ClassFlexibleInjects),
+            nameof(PerformanceReport.HardPinnedInjects),
+            nameof(PerformanceReport.EligibilityMaskedCycles),
+            nameof(PerformanceReport.EligibilityMaskedReadyCandidates),
+            nameof(PerformanceReport.PhaseCertificateReadyHits),
+            nameof(PerformanceReport.PhaseCertificateReadyMisses),
+            nameof(PerformanceReport.EstimatedPhaseCertificateChecksSaved),
+            nameof(PerformanceReport.PhaseCertificateInvalidations),
+            nameof(PerformanceReport.PhaseCertificateMutationInvalidations),
+            nameof(PerformanceReport.PhaseCertificatePhaseMismatchInvalidations),
+            nameof(PerformanceReport.SmtOwnerContextGuardRejects),
+            nameof(PerformanceReport.SmtDomainGuardRejects),
+            nameof(PerformanceReport.SmtBoundaryGuardRejects),
+            nameof(PerformanceReport.SmtSharedResourceCertificateRejects),
+            nameof(PerformanceReport.SmtRegisterGroupCertificateRejects),
+            nameof(PerformanceReport.SmtLegalityRejectByAluClass),
+            nameof(PerformanceReport.SmtLegalityRejectByLsuClass),
+            nameof(PerformanceReport.SmtLegalityRejectByDmaStreamClass),
+            nameof(PerformanceReport.SmtLegalityRejectByBranchControl),
+            nameof(PerformanceReport.SmtLegalityRejectBySystemSingleton),
+            nameof(PerformanceReport.L1BypassHits),
+            nameof(PerformanceReport.ForegroundWarmAttempts),
+            nameof(PerformanceReport.ForegroundWarmSuccesses),
+            nameof(PerformanceReport.ForegroundWarmReuseHits),
+            nameof(PerformanceReport.ForegroundBypassHits),
+            nameof(PerformanceReport.AssistWarmAttempts),
+            nameof(PerformanceReport.AssistWarmSuccesses),
+            nameof(PerformanceReport.AssistWarmReuseHits),
+            nameof(PerformanceReport.AssistBypassHits),
+            nameof(PerformanceReport.StreamWarmTranslationRejects),
+            nameof(PerformanceReport.StreamWarmBackendRejects),
+            nameof(PerformanceReport.AssistWarmResidentBudgetRejects),
+            nameof(PerformanceReport.AssistWarmLoadingBudgetRejects),
+            nameof(PerformanceReport.AssistWarmNoVictimRejects)
+        ];
+
+        foreach (string propertyName in cumulativeProperties)
+        {
+            var baseline = new PerformanceReport();
+            var current = new PerformanceReport();
+            baseline.GetType().GetProperty(propertyName)!.SetValue(baseline, 10L);
+            current.GetType().GetProperty(propertyName)!.SetValue(current, 15L);
+
+            PerformanceReport interval = current.CreateAdditiveDiagnosticIntervalSince(baseline);
+
+            Assert.Equal(5L, interval.GetType().GetProperty(propertyName)!.GetValue(interval));
+            Assert.Equal(15L, current.GetType().GetProperty(propertyName)!.GetValue(current));
+        }
+    }
+
+    [Fact]
+    public void AdditiveDiagnosticIntervalFailsClosedForNumericOnlyCounterRegression()
+    {
+        var baseline = new PerformanceReport { ForegroundWarmAttempts = 7 };
+        var current = new PerformanceReport { ForegroundWarmAttempts = 2 };
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => current.CreateAdditiveDiagnosticIntervalSince(baseline));
+
+        Assert.Contains(nameof(PerformanceReport.ForegroundWarmAttempts), exception.Message, StringComparison.Ordinal);
+        Assert.Contains("no availability carrier", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void TestAssemblerPerformanceConsumersHaveClosedWorldAggregationPolicies()
+    {
+        string root = FindRepositoryRoot();
+        string consumerSource = Read(root, "TestAssemblerConsoleApps/SimpleAsmApp.Metrics.cs");
+        string aggregationSource = Read(root, "TestAssemblerConsoleApps/SimpleAsmApp.cs");
+        string intervalSource = Read(root,
+            "HybridCPU_ISE/NonRTL/Processor/Performance/PerformanceReport.DiagnosticIntervals.cs");
+
+        string[] additive = SplitNames("""
+            TotalBursts TotalBytesTransferred NopAvoided NopDueToNoClassCapacity
+            NopDueToPinnedConstraint NopDueToResourceConflict NopDueToDynamicState
+            ClassFlexibleInjects HardPinnedInjects EligibilityMaskedCycles
+            EligibilityMaskedReadyCandidates PhaseCertificateReadyHits
+            PhaseCertificateReadyMisses EstimatedPhaseCertificateChecksSaved
+            PhaseCertificateInvalidations PhaseCertificateMutationInvalidations
+            PhaseCertificatePhaseMismatchInvalidations SmtOwnerContextGuardRejects
+            SmtDomainGuardRejects SmtBoundaryGuardRejects
+            SmtSharedResourceCertificateRejects SmtRegisterGroupCertificateRejects
+            SmtLegalityRejectByAluClass SmtLegalityRejectByLsuClass
+            SmtLegalityRejectByDmaStreamClass SmtLegalityRejectByBranchControl
+            SmtLegalityRejectBySystemSingleton L1BypassHits ForegroundWarmAttempts
+            ForegroundWarmSuccesses ForegroundWarmReuseHits ForegroundBypassHits
+            AssistWarmAttempts AssistWarmSuccesses AssistWarmReuseHits AssistBypassHits
+            StreamWarmTranslationRejects StreamWarmBackendRejects
+            AssistWarmResidentBudgetRejects AssistWarmLoadingBudgetRejects
+            AssistWarmNoVictimRejects
+            """);
+        string[] lastValue = SplitNames("""
+            LastEligibilityRequestedMask LastEligibilityNormalizedMask
+            LastEligibilityReadyPortMask LastEligibilityVisibleReadyMask
+            LastEligibilityMaskedReadyMask LastSmtLegalityRejectKind
+            LastSmtLegalityAuthoritySource MemoryTelemetryBaselineOutstandingRequests
+            MemoryOutstandingRequests
+            """);
+        string[] memoryProjection = SplitNames("""
+            MemoryCycleTelemetrySchemaVersion MemoryCycleTelemetryAvailable
+            MemoryControllerCycles MemoryReadServiceCycles
+            MemoryStoreReadinessServiceCycles MemoryCompletionPublicationCycles
+            MemoryAcceptedRequests MemoryCompletedRequests DataReadAcceptedRequests
+            DataReadCompletedRequests DataWriteAcceptedRequests DataWriteCompletedRequests
+            DataReadBytes CommittedDataWriteBytes InstructionFetchReadBytesTelemetryAvailable
+            InstructionFetchReadBytes InstructionFetchRequestTelemetryAvailable
+            MemoryQueueFullRejects MemoryBankConflictRejectTelemetryAvailable
+            MemoryBankConflictRejects MemoryTelemetryBaselineOutstandingRequests
+            MemoryCanceledRequests MemoryConsumedCompletions MemoryOutstandingRequests
+            """);
+
+        string[] actual = System.Text.RegularExpressions.Regex
+            .Matches(consumerSource, @"\bperformance\.([A-Za-z_][A-Za-z0-9_]*)")
+            .Select(match => match.Groups[1].Value)
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+        string[] classified = additive
+            .Concat(lastValue)
+            .Concat(memoryProjection)
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(72, actual.Length);
+        Assert.Equal(actual, classified);
+        foreach (string propertyName in additive)
+        {
+            Assert.Contains(
+                $"interval.{propertyName} = SubtractMonotonicOrThrow",
+                intervalSource,
+                StringComparison.Ordinal);
+        }
+
+        foreach (string propertyName in lastValue)
+        {
+            Assert.Contains(
+                $"nameof(PerformanceReport.{propertyName})",
+                aggregationSource,
+                StringComparison.Ordinal);
         }
     }
 
@@ -191,21 +494,49 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
         string performanceProducer = Read(root,
             "HybridCPU_ISE/NonRTL/Processor/Performance/Processor.Performance.cs");
         string consoleReport = Read(root,
-            "TestAssemblerConsoleApps/PostRef1TimingMemoryReport.cs");
+            "TestAssemblerConsoleApps/TimingMemoryReport.cs");
         string program = Read(root, "TestAssemblerConsoleApps/Program.cs");
         string controller = Read(root,
             "TestAssemblerConsoleApps/DiagnosticRunController.cs");
+        string manifest = Read(root,
+            "TestAssemblerConsoleApps/DiagnosticArtifactManifest.cs");
+        string pipelineStageFlow = Read(root,
+            "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.PipelineExecution.StageFlow.cs");
 
         Assert.Contains("MemoryCycleTelemetryAvailable", performanceReport, StringComparison.Ordinal);
+        Assert.Contains("CreateMemoryCycleTelemetryIntervalSince", performanceReport, StringComparison.Ordinal);
         Assert.Contains("GetTelemetrySnapshot()", performanceProducer, StringComparison.Ordinal);
+        Assert.Contains("timing-memory-report/v3", consoleReport, StringComparison.Ordinal);
         Assert.Contains("post-ref1-timing-memory-v2", consoleReport, StringComparison.Ordinal);
         Assert.Contains("new(\"Available\", value", consoleReport, StringComparison.Ordinal);
         Assert.Contains("new(\"Unavailable\", null", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("metrics.MemoryStalls <= metrics.StallCycles", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("metrics.StallCycles - metrics.MemoryStalls", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("NonMemoryStallCycles: nonMemoryStallCycles", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("WAW is an event counter, not a general cycle bucket", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("pipeCtrl.StallCycles++;", pipelineStageFlow, StringComparison.Ordinal);
+        Assert.Contains("if (stallDecision.CountMemoryStall)", pipelineStageFlow, StringComparison.Ordinal);
+        Assert.Contains("pipeCtrl.MemoryStalls++;", pipelineStageFlow, StringComparison.Ordinal);
         Assert.Contains("BankConflictRejects", consoleReport, StringComparison.Ordinal);
         Assert.Contains("InstructionFetchAcceptedRequests", consoleReport, StringComparison.Ordinal);
-        Assert.Contains("generatedFiles[\"post_ref1_timing_memory\"]", program, StringComparison.Ordinal);
-        Assert.Contains("\"post_ref1_timing_memory\"", controller, StringComparison.Ordinal);
+        Assert.Contains("CanceledMemoryRequests", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("ConsumedMemoryCompletions", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("OutstandingMemoryRequests", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("RequestIdentityBalanceDisposition", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("timing_memory_report.json", consoleReport, StringComparison.Ordinal);
         Assert.Contains("post_ref1_timing_memory_report.json", consoleReport, StringComparison.Ordinal);
+        Assert.Contains("TimingMemoryReport.ManifestKey", program, StringComparison.Ordinal);
+        Assert.Contains("TimingMemoryReport.LegacyManifestKey", program, StringComparison.Ordinal);
+        Assert.Contains("RenderTelemetryMetric(report.NonMemoryStallCyclesMetric)", program, StringComparison.Ordinal);
+        Assert.Contains("TimingMemoryReport.ManifestKey", controller, StringComparison.Ordinal);
+        Assert.Contains("TimingMemoryReport.LegacyManifestKey", controller, StringComparison.Ordinal);
+        Assert.Contains("diagnostic-run-manifest/v1", manifest, StringComparison.Ordinal);
+        Assert.Contains("CreateAdditiveDiagnosticIntervalSince(previousPerformanceSnapshot)",
+            Read(root, "TestAssemblerConsoleApps/SimpleAsmApp.cs"), StringComparison.Ordinal);
+        Assert.Contains("IsMemoryTelemetryAvailability(property.Name)",
+            Read(root, "TestAssemblerConsoleApps/SimpleAsmApp.cs"), StringComparison.Ordinal);
+        Assert.Contains("IsLastValueDiagnostic(property.Name)",
+            Read(root, "TestAssemblerConsoleApps/SimpleAsmApp.cs"), StringComparison.Ordinal);
     }
 
     private static void WithMappedMemory(Action<Processor.MainMemoryArea, MemorySubsystem> body)
@@ -240,6 +571,9 @@ public sealed class Rf10TimingMemoryTelemetryRemediationTests
         File.ReadAllText(Path.Combine(
             root,
             relativePath.Replace('/', Path.DirectorySeparatorChar)));
+
+    private static string[] SplitNames(string value) =>
+        value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     private static string FindRepositoryRoot()
     {

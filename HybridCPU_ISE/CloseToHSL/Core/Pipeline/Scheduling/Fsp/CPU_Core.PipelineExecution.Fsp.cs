@@ -199,6 +199,12 @@ namespace YAKSys_Hybrid_CPU
                     if (candidate == null)
                         continue;
 
+                    // An issued MicroOp is an exact completed Stage-B attempt,
+                    // not a reusable nomination carrier. Preserve its identity
+                    // and leave replay to a fresh semantic carrier.
+                    if (candidate.PostStageBIssuedAttempt is not null)
+                        continue;
+
                     if (!CanNominateIntraCoreSmtCandidate(candidate))
                         continue;
 
@@ -249,8 +255,13 @@ namespace YAKSys_Hybrid_CPU
                 // The approved contour is deliberately limited to the RF-06
                 // scalar RegisterWrite family. Unsupported scalar carriers keep
                 // the unchanged legacy path and receive no issued identity.
+                if (candidate.PostStageBIssuedAttempt is not null)
+                {
+                    candidate.PostStageBIdentityTemplate = null;
+                    return;
+                }
+
                 candidate.PostStageBIdentityTemplate = null;
-                candidate.PostStageBIssuedAttempt = null;
                 if (candidate is not Core.ScalarALUMicroOp)
                     return;
 

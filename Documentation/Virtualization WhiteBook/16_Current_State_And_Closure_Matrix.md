@@ -1,6 +1,6 @@
 # Current State And Closure Matrix
 
-This chapter records the current virtualization status as of 2026-06-12.
+This chapter records the current virtualization status as rechecked on 2026-08-06.
 
 ## Current Facts
 
@@ -28,8 +28,9 @@ This chapter records the current virtualization status as of 2026-06-12.
 | VMCS fields | Generated read-only/denied | Runtime descriptors / completion | Projection schema |
 | VMREAD completion-owned fields | Projected read-only | `CompletionRecord` | Recomputed compatibility value |
 | VMREAD memory-owned fields | Projected read-only for admitted slice | `MemoryDomainDescriptor` / translation view | Compatibility value projection |
-| VMREAD execution-owned fields | Projected read-only only for `GuestPc`/`GuestSp`/`GuestFlags` | `ExecutionDomainDescriptor` / read-only state view | Compatibility value projection |
-| VMREAD privileged/control/host fields | Explicitly denied | Missing neutral privileged/control/host owner | Fail-closed alias |
+| VMREAD execution-owned fields | Direct read-only projection for `GuestPc`/`GuestSp`/`GuestFlags` | `ExecutionDomainDescriptor` / read-only state view | Compatibility value projection; not architectural VMREAD |
+| VMREAD `GuestCr0`/`GuestCr4` | Guarded direct read-only projection only | `PrivilegedExecutionStateDescriptor` plus field-specific policy | All gates required; no mutation/backend/completion/retire |
+| Other VMREAD privileged/control/host fields | Explicitly denied | Missing neutral privileged/control/host owner | Fail-closed alias |
 | VMWRITE | Denied/fail-closed | No admitted neutral owner | Denied alias |
 | VMCALL trap projection | Admitted-denied | Neutral trap policy/result | VMX exit projection |
 | VMCALL backend admission | Closed as fail-closed | `HypercallBackendAdmissionService`; no backend owner | Missing neutral owner |
@@ -54,7 +55,7 @@ Generated read-only VMREAD value projection:
 - `Vpid` is tied to neutral address-space tagging;
 - `Cr3TargetCount` is tied to neutral address-space target count;
 - execution-owned `GuestPc`, `GuestSp`, and `GuestFlags` project only from `ExecutionDomainReadOnlyStateView`;
-- `GuestCr0`, `GuestCr4`, host execution aliases, `HostCr3`, compatibility-control fields, unknown fields, and all writes remain denied.
+- `GuestCr0`/`GuestCr4` project only through the guarded privileged-state contract; host execution aliases, `HostCr3`, compatibility-control fields, unknown fields, all writes, and any widening remain denied.
 
 Neutral trap/completion/backend split:
 
@@ -82,7 +83,7 @@ Descriptor readiness and migration/evidence proof:
 - Successful VMX intercept/exit retire publication without neutral owner.
 - Feature-complete VMREAD backend execution.
 - VMREAD values for privileged/control/host/nested fields without explicit neutral owner/value source.
-- Neutral privileged execution-state owner for `GuestCr0` and `GuestCr4`.
+- Architectural VMREAD integration/writeback for `GuestCr0`/`GuestCr4`; the direct guarded projection owner exists but is not a production instruction path.
 - Neutral host-address-space owner for `HostCr3`.
 - Neutral host-execution owner for host PC/SP/flags/control aliases.
 - Control-bit VMREAD mapper over a materialized neutral compatibility-control value contract.

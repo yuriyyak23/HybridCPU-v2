@@ -8,7 +8,7 @@ public sealed class Rf129brDonorAssistEpochRawCompatibilityRetentionDecisionTest
         string paper = Read("ResearchPaper", "section", "md base", "6_Assist_Coupled_Data_Movement_and_Donor_Semantics.md");
         string runtime = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Assist", "Runtime", "AssistRuntime.cs");
         string factory = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "MicroOps", "Assist", "AssistMicroOp.cs");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
         Assert.Contains("raw wrap/default behavior is compatibility state", paper, StringComparison.Ordinal);
         Assert.Contains("no common checked `AssistEpoch` type", paper, StringComparison.Ordinal);
         Assert.Contains("no JSON, binary replay trace or compiler/ISA encoding", paper, StringComparison.Ordinal);

@@ -54,15 +54,15 @@ public sealed class Rf1134SystemEventRefThisHardeningTests
         string testSupport = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Core", "CPU_Core.TestSupport.cs");
         Assert.Empty(Regex.Matches(testSupport, @"\bref\s+this\s*[,\)]"));
         Assert.Empty(Regex.Matches(production, @"\bref\s+this\s*[,\)]"));
-        Assert.Equal(66, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
+        Assert.Equal(67, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
     }
 
     [Fact]
     public void EvidenceClosesOnlySystemEventFamily()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.34-system-event-ref-this-hardening.md");
         Assert.Contains("RF-11.34 system-event materialization ref-this seam hardening", ledger, StringComparison.Ordinal);
         Assert.Contains("no production state declaration", evidence, StringComparison.OrdinalIgnoreCase);

@@ -47,6 +47,7 @@ namespace YAKSys_Hybrid_CPU.Core
         {
             if ((uint)vtId >= SMT_WAYS) return;
             if (op == null) return;
+            if (op.PostStageBIssuedAttempt is not null) return;
 
             _smtPorts[vtId] = op;
             _smtPortValid[vtId] = true;

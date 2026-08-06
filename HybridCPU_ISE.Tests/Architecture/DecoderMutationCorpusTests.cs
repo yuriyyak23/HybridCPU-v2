@@ -160,6 +160,7 @@ public sealed class DecoderMutationCorpusTests
             File.ReadAllText(Path.Combine(
                 FindRepositoryRoot(),
                 "Documentation",
+                "Documentation",
                 "ArchitectureAuthorityRefactor",
                 "Evidence",
                 "RF05",

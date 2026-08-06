@@ -31,7 +31,7 @@ Current projection owner categories include:
 Examples:
 
 - `GuestPc`, `GuestSp`, and `GuestFlags` project from an execution-domain read-only state view when that view is materialized;
-- `GuestCr0` and `GuestCr4` are schema-owned by execution descriptors but remain denied until neutral privileged execution-state semantics exist;
+- `GuestCr0` and `GuestCr4` are schema-owned by execution descriptors and have a guarded read-only direct projection through a separate neutral privileged execution-state descriptor; all missing-gate cases, writes and wider effects remain denied;
 - `GuestCr3`, `EptPointer`, `Vpid`, and `Cr3TargetCount` project from memory-domain descriptors;
 - `HostCr3` remains denied because no neutral host-address-space owner exists;
 - `HostPc`, `HostSp`, `HostFlags`, and `HostCr0` remain denied because no neutral host-execution owner exists;
@@ -71,7 +71,7 @@ VMREAD opcode
 | `Vpid` | Projected read-only only when tagging is enabled and non-zero | `MemoryDomainReadOnlyTranslationView.AddressSpaceTag` |
 | `Cr3TargetCount` | Projected read-only | `MemoryDomainReadOnlyTranslationView.AddressSpaceTargetCount` |
 | `GuestPc`, `GuestSp`, `GuestFlags` | Projected read-only only when materialized | `ExecutionDomainDescriptor.TryCreateReadOnlyStateView()` / `ExecutionDomainReadOnlyStateView` |
-| `GuestCr0`, `GuestCr4` | Denied | `PrivilegedExecutionStateProjectionDenied`; no neutral privileged execution-state owner/value source |
+| `GuestCr0`, `GuestCr4` | Guarded read-only direct projection | Allowed only with materialized neutral privileged-state descriptor, matching domain/address-space/epoch, visibility, `RevalidatedAfterRestore`, and conformance proof; otherwise `PrivilegedExecutionStateProjectionDenied`; never mutation/backend/completion/retire |
 | `HostPc`, `HostSp`, `HostFlags`, `HostCr0` | Denied | `HostExecutionStateOwnerMissing`; no neutral host-execution owner |
 | `HostCr3` | Denied | `HostAddressSpaceOwnerMissing`; guest/domain address-space root cannot be reused as host CR3 |
 | Compatibility-control fields | Denied | `CompatibilityControlValueProjectionDenied`; no admitted neutral control-bit VMREAD contract |
@@ -90,7 +90,7 @@ Memory-owned VMREAD values come from `MemoryDomainReadOnlyTranslationView`, not 
 
 Execution-owned `GuestPc`, `GuestSp`, and `GuestFlags` come only from `ExecutionDomainReadOnlyStateView` when that state is materialized. The view carries materialization metadata such as `IsMaterialized`, `HasCompleteGuestPcSpFlags`, and `StateEpoch`; that metadata is not VMREAD value projection.
 
-Control-like execution fields remain closed. `GuestCr0` and `GuestCr4` require a separate neutral privileged execution-state design before they can become read-only compatibility values.
+Control-like execution fields remain closed except for the exact guarded `GuestCr0`/`GuestCr4` read-only projection above. That exception is field-local compatibility projection, not architectural VMREAD, VMCS state, control mutation, backend execution, completion publication or retire publication.
 
 ## Removed Authority
 

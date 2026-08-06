@@ -88,8 +88,8 @@ public sealed class Rf1117FrontendStateResidualCompletionTests
     public void LedgerAndEvidenceCloseOnlyFrontendResidualCompletion()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.17-frontend-state-residual-completion.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.17-frontend-state-residual-completion.md");
         Assert.Contains("RF-11.17 | closed FrontendState residual completion", ledger, StringComparison.Ordinal);
         Assert.Contains("exactly two", evidence, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("no current/next", evidence, StringComparison.OrdinalIgnoreCase);

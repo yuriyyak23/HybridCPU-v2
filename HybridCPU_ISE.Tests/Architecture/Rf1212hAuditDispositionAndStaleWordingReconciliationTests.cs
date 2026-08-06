@@ -6,9 +6,9 @@ public sealed class Rf1212hAuditDispositionAndStaleWordingReconciliationTests
     public void CurrentDocumentsCloseRf12WithoutTreatingDirtyCountsAsIdentity()
     {
         string root = Root();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string overview = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "00_Overview", "00_README.md");
-        string index = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "README.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string overview = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "00_Overview", "00_README.md");
+        string index = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "README.md");
 
         Assert.Contains("RF-12 is closed at RF-12.12h", ledger, StringComparison.Ordinal);
         Assert.Contains("Historical entry snapshot and authority", ledger, StringComparison.Ordinal);
@@ -22,7 +22,7 @@ public sealed class Rf1212hAuditDispositionAndStaleWordingReconciliationTests
     [Fact]
     public void EvidenceSeparatesVolatileCountsFromCancelledSnapshotWork()
     {
-        string evidence = Read(Root(), "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read(Root(), "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12h-audit-disposition-and-stale-wording-reconciliation.md");
 
         Assert.Contains("687 entries", evidence, StringComparison.Ordinal);

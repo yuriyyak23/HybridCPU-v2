@@ -8,7 +8,7 @@ public sealed class Rf111StableCoreIdentityDecisionTests
     public void DecisionDefinesStableReferenceFacadeWithoutPrematureRuntimeExtraction()
     {
         string root = FindRepositoryRoot();
-        string decision = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
+        string decision = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
             "ADR-010_CPU_Core_State_Ownership.md");
 
         Assert.Contains("target facade is a reference type", decision, StringComparison.OrdinalIgnoreCase);
@@ -83,9 +83,9 @@ public sealed class Rf111StableCoreIdentityDecisionTests
     public void LedgerClosesOnlyDecisionAndQueuesIdentityHardening()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
             "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.1-stable-core-identity-and-containment-decision.md");
 
         Assert.Contains("RF-11.1 | closed architecture decision", status, StringComparison.Ordinal);
@@ -98,7 +98,7 @@ public sealed class Rf111StableCoreIdentityDecisionTests
     private static string Decision()
     {
         string root = FindRepositoryRoot();
-        return Read(root, "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
+        return Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "02_Authority",
             "ADR-010_CPU_Core_State_Ownership.md");
     }
 

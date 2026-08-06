@@ -7,7 +7,7 @@ public sealed class Rf129buPhaseCertificateTemplateKeyAuthorityDecisionTests
     {
         string paper = Read("ResearchPaper", "section", "md base", "7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
         string substrate = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Certificates", "ReplayPhaseSubstrate.Implementations.cs");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
         Assert.Contains("Legality-template key scope, absence, and authority", paper, StringComparison.Ordinal);
         Assert.Contains("internal, layout-specific equality carrier", paper, StringComparison.Ordinal);
         Assert.Contains("invalid/default key means that no reusable legality template is present", paper, StringComparison.Ordinal);

@@ -216,8 +216,7 @@ public sealed class
         "section", "md base",
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
-    private static string Evidence(string root) => Read(root, "Documentation",
-        "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+    private static string Evidence(string root) => Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6aq-scalar-store-stored-binding-retention-validation-boundary-decision.md");
 
     private static IEnumerable<string> FilesContaining(string root, string marker) =>

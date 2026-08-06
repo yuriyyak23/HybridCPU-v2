@@ -135,9 +135,9 @@ public sealed class Rf092ReplayContextAndInvalidationTests
         string root = FindRepositoryRoot();
         string paper = Read(root, "ResearchPaper", "section", "md base",
             "7_Replay_Stable_Placement_Replay_Tokens_and_Execution_Boundaries.md");
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF09",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF09",
             "rf09.2-context-and-code-epoch-invalidation.md");
 
         Assert.Contains("RF-09 context authority and mutation closure", paper, StringComparison.Ordinal);

@@ -263,6 +263,13 @@ namespace YAKSys_Hybrid_CPU.Core
             /// <summary>Identity template paired with that exact nomination.</summary>
             public PostStageBIdentityTemplate? IdentityTemplate;
 
+            /// <summary>
+            /// Immutable scheduling fingerprint captured with the nomination.
+            /// Reference equality alone cannot detect mutation of the same carrier
+            /// between SCHED1 and SCHED2.
+            /// </summary>
+            public FspSnapshotFingerprint CandidateFingerprint;
+
             /// <summary>Memory bank ID if candidate is Load/Store, -1 otherwise.</summary>
 
             /// <summary>True if candidate is a memory operation (Load/Store).</summary>
@@ -274,6 +281,27 @@ namespace YAKSys_Hybrid_CPU.Core
             /// <summary>Pinning kind of the candidate (ClassFlexible or HardPinned).</summary>
 
             /// <summary>Pinned lane ID for HardPinned candidates (0–7), 0 for ClassFlexible.</summary>
+        }
+
+        private readonly struct FspSnapshotFingerprint : IEquatable<FspSnapshotFingerprint>
+        {
+            public FspSnapshotFingerprint(ulong low, ulong high)
+            {
+                Low = low;
+                High = high;
+            }
+
+            public ulong Low { get; }
+
+            public ulong High { get; }
+
+            public bool Equals(FspSnapshotFingerprint other) =>
+                Low == other.Low && High == other.High;
+
+            public override bool Equals(object? obj) =>
+                obj is FspSnapshotFingerprint other && Equals(other);
+
+            public override int GetHashCode() => HashCode.Combine(Low, High);
         }
 
         private sealed class LoopPhaseTracker
@@ -753,6 +781,13 @@ namespace YAKSys_Hybrid_CPU.Core
         /// </summary>
         private int _fspOwnerVirtualThreadId;
 
+        private FspSnapshotFingerprint _fspBundleFingerprint;
+        private readonly MicroOp?[] _fspBundleReferences = new MicroOp?[8];
+        private BundleResourceCertificateIdentity4Way _fspBundleCertificateIdentity;
+        private SmtBundleMetadata4Way _fspBundleMetadata;
+        private BoundaryGuardState _fspBoundaryGuard;
+        private ReplayPhaseContext _fspReplayPhase;
+
         /// <summary>Number of cycles added by the 2-stage FSP pipeline (diagnostic).</summary>
         public long FspPipelineLatencyCycles { get; private set; }
 
@@ -780,6 +815,12 @@ namespace YAKSys_Hybrid_CPU.Core
         /// Runtime-local legality service for inter-core/SMT decision paths and adjacent diagnostics.
         /// </summary>
         private readonly IRuntimeLegalityService _runtimeLegalityService;
+
+        /// <summary>
+        /// Internal E1 issuer/validator available only when the canonical runtime
+        /// legality service is installed. Public/custom legality services cannot mint it.
+        /// </summary>
+        private readonly IVirtualizationAdmissionService? _virtualizationAdmissionService;
 
         /// <summary>Number of scheduling cycles executed while a replay phase was active.</summary>
         public long ReplayAwareCycles { get; private set; }
@@ -1437,6 +1478,8 @@ namespace YAKSys_Hybrid_CPU.Core
             _runtimeLegalityService =
                 runtimeLegalityService ??
                 RuntimeLegalityServiceFactory.CreateDefault(this);
+            _virtualizationAdmissionService =
+                _runtimeLegalityService as IVirtualizationAdmissionService;
 
             // Initialize all scoreboard slots to -1 (free)
             for (int i = 0; i < SCOREBOARD_SLOTS; i++)

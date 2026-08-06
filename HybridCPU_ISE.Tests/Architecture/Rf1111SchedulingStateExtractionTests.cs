@@ -82,8 +82,8 @@ public sealed class Rf1111SchedulingStateExtractionTests
     public void LedgerAndEvidenceCloseOnlySchedulingState()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.11-scheduling-state-extraction.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.11-scheduling-state-extraction.md");
         Assert.Contains("RF-11.11 | closed SchedulingState", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-11.12 ExecutionState", ledger, StringComparison.Ordinal);
         Assert.Contains("pod-shared", evidence, StringComparison.OrdinalIgnoreCase);

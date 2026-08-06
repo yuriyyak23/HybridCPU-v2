@@ -14,6 +14,8 @@
 
 Regions are classified as private, shared, measured or runtime-mutable policy regions.
 
+Current lookup is first-match iteration. Construction does not reject overlapping ranges, duplicate semantic regions or arithmetic ambiguity. The descriptor is therefore a policy model, not a canonical enforced memory map.
+
 ## Admission Rules
 
 - missing, unmaterialized or stale memory descriptor -> denied;
@@ -25,6 +27,8 @@ Regions are classified as private, shared, measured or runtime-mutable policy re
 - runtime-mutable touch -> requires dirty and migration classification.
 
 Measured memory admission is not private-domain activation evidence.
+
+No production load/store/fetch, cache, translation or DMA effect path was found calling this policy. An enforced private-memory path remains open.
 
 ## Private Migration
 

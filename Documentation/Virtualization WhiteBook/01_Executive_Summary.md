@@ -40,8 +40,8 @@ The authority split has three layers:
 - `Core/VMX/Substrate` authority has been removed from the current model.
 - VMCSv2 mutable helper authority has been fenced or removed.
 - Generated/frontend projection inventory is treated as compatibility artifact inventory, not as runtime state authority.
-- VMREAD value projection is open only for completion-owned fields, memory-owned `GuestCr3`/`EptPointer`/`Vpid`/`Cr3TargetCount`, and execution-owned `GuestPc`/`GuestSp`/`GuestFlags`.
-- `GuestCr0`, `GuestCr4`, host execution aliases, `HostCr3`, compatibility-control fields, unknown fields, and all writes remain explicitly denied.
+- Direct VMREAD value projection is open only for completion-owned fields, memory-owned `GuestCr3`/`EptPointer`/`Vpid`/`Cr3TargetCount`, execution-owned `GuestPc`/`GuestSp`/`GuestFlags`, and guarded privileged-state-owned `GuestCr0`/`GuestCr4`. This is not an architectural VMREAD instruction path.
+- `GuestCr0`/`GuestCr4` require all descriptor/domain/address-space/epoch/visibility/`RevalidatedAfterRestore`/conformance gates and authorize no mutation, backend, completion or retire. Host execution aliases, `HostCr3`, compatibility-control fields, unknown fields, all writes, and any widening remain explicitly denied.
 - Trap projection now has a neutral result, hypercall backend admission policy, completion route policy, and retire/completion publication fences.
 - Completion and retire are structurally separable: the future-gated neutral fence can publish a completion record with `CompletionPublishedRetireDenied` while retire remains false. Neither positive route descriptor is connected to VMX frontend.
 

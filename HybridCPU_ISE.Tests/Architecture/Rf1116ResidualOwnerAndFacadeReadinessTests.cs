@@ -116,7 +116,7 @@ public sealed class Rf1116ResidualOwnerAndFacadeReadinessTests
         string root = FindRoot();
         string productionRoot = Path.Combine(root, "HybridCPU_ISE");
         string[] sources = SourceFiles(productionRoot).Select(File.ReadAllText).ToArray();
-        Assert.Equal(66, sources.Count(source => source.Contains("sealed partial class CPU_Core", StringComparison.Ordinal)));
+        Assert.Equal(67, sources.Count(source => source.Contains("sealed partial class CPU_Core", StringComparison.Ordinal)));
 
         string production = string.Join("\n", sources);
         Assert.Equal(34, AssignmentCount(production, "IF"));
@@ -152,8 +152,8 @@ public sealed class Rf1116ResidualOwnerAndFacadeReadinessTests
     public void LedgerAndEvidenceCloseInventoryOnlyAndSelectOneResidualDomain()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.16-residual-owner-and-facade-readiness-inventory.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.16-residual-owner-and-facade-readiness-inventory.md");
         Assert.Contains("RF-11.16 | closed residual inventory/freeze", ledger, StringComparison.Ordinal);
         Assert.Contains("reference-facade conversion | blocked", evidence, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("RF-11.17 FrontendState residual completion", ledger, StringComparison.Ordinal);

@@ -115,9 +115,9 @@ public sealed class Rf112CoreIdentityAndCopySeamHardeningTests
     public void LedgerClosesOnlyCopyHardeningAndQueuesEmptyRoot()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
             "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.2-core-identity-and-copy-seam-hardening.md");
 
         Assert.Contains("RF-11.2 | closed identity/copy hardening", status, StringComparison.Ordinal);

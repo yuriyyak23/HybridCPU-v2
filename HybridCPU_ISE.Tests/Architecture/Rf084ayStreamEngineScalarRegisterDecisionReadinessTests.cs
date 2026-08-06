@@ -76,9 +76,9 @@ public sealed class Rf084ayStreamEngineScalarRegisterDecisionReadinessTests
     {
         string root = FindRepositoryRoot();
         string paper = ReadPaper();
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF08",
             "rf08.4ay-streamengine-scalar-register-decision-readiness-audit.md");
-        string status = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
+        string status = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "08_RF08_RF09",
             "00_CURRENT_STATUS_AND_READING_ORDER.md");
 
         Assert.Contains("At RF-08.4aw both rows still expired at RF-08 exit", paper, StringComparison.Ordinal);

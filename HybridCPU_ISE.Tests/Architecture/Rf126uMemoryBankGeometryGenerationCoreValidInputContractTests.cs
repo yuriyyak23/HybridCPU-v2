@@ -260,7 +260,7 @@ public sealed class Rf126uMemoryBankGeometryGenerationCoreValidInputContractTest
         FindRepositoryRoot(), ContractRelativePath.Split('/'));
 
     private static string Evidence(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6u-memory-bank-geometry-generation-core-valid-input-contract.md");
 
     private static string JoinSources(

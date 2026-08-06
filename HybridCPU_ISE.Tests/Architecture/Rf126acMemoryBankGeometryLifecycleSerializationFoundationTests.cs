@@ -103,7 +103,7 @@ public sealed class Rf126acMemoryBankGeometryLifecycleSerializationFoundationTes
     }
 
     [Fact]
-    public void ResetAndLegacyProgressHoldOwnerGateAcrossPositionalMutation()
+    public void ObservationResetAndLegacyProgressRetainTheirOwnerGates()
     {
         string helpers = Helpers(FindRepositoryRoot());
 
@@ -117,7 +117,9 @@ public sealed class Rf126acMemoryBankGeometryLifecycleSerializationFoundationTes
             StringComparison.Ordinal);
         Assert.Contains("ProcessBankQueues();", helpers,
             StringComparison.Ordinal);
-        Assert.Contains("bankQueues[i].Clear();", helpers,
+        Assert.Contains("Telemetry reset is observation-only", helpers,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("bankQueues[i].Clear();", helpers,
             StringComparison.Ordinal);
     }
 
@@ -311,11 +313,11 @@ public sealed class Rf126acMemoryBankGeometryLifecycleSerializationFoundationTes
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
     private static string Decision(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6ab-memory-bank-geometry-lifecycle-quiescence-architecture-decision.md");
 
     private static string Evidence(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6ac-memory-bank-geometry-lifecycle-serialization-foundation.md");
 
     private static string SubsystemTree(

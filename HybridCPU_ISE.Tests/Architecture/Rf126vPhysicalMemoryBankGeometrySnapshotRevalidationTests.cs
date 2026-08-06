@@ -152,7 +152,7 @@ public sealed class Rf126vPhysicalMemoryBankGeometrySnapshotRevalidationTests
         {
             ["HybridCPU_ISE/CloseToHSL/Core/Execution/Memory/LoadStore/MemoryBankRouting.cs"] = 2,
             ["HybridCPU_ISE/CloseToHSL/Memory/Subsystem/MemorySubsystem.cs"] = 11,
-            ["HybridCPU_ISE/CloseToHSL/Memory/Subsystem/MemorySubsystem.Helpers.cs"] = 12,
+            ["HybridCPU_ISE/CloseToHSL/Memory/Subsystem/MemorySubsystem.Helpers.cs"] = 11,
             ["HybridCPU_ISE/Machine/IseObservationService.cs"] = 8,
             ["HybridCPU_ISE/NonRTL/Processor/Performance/Processor.Performance.cs"] = 1
         });
@@ -351,7 +351,7 @@ public sealed class Rf126vPhysicalMemoryBankGeometrySnapshotRevalidationTests
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
     private static string Evidence(string root) => Read(root,
-        "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6v-physical-memory-bank-geometry-snapshot-revalidation-decision.md");
 
     private static string ReadTree(

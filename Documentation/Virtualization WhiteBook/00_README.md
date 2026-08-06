@@ -4,6 +4,8 @@ Status date: 2026-06-12.
 
 This WhiteBook is the split architecture record for the current HybridCPU ISE virtualization layer. It is written against the live `CloseToHSL/Core/Runtime` and `CloseToHSL/Core/Virtualization` code contours plus the VMX refactoring audit corpus.
 
+2026-08-06 provenance note: the inspected `CloseToHSL` tree is present in the working copy but is currently untracked while the tracked `CloseToRTL` tree has pending deletions. Current behavior claims are therefore worktree observations bound by `HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/evidence/2026-08-06-current-worktree-evidence.json`, not reproducible `HEAD` evidence until that relocation is committed.
+
 The development source of truth is `HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/`. When roadmap wording or current/future classification differs, the activation plan wins. This WhiteBook explains that plan and the confirmed implementation state; it does not independently approve activation.
 
 The central rule is simple: virtualization authority is neutral runtime authority. VMX is a frozen compatibility frontend. VMX vocabulary can describe compatibility ABI, generated projection, denied aliases, and VMX-facing completion vocabulary, but it must not own execution domains, trap policy, completion publication, memory authority, capability grants, migration payloads, secure-compute authority, or host evidence.
@@ -55,7 +57,8 @@ This pack is grounded in:
 - The neutral runtime owns domains, capabilities, evidence, memory, I/O, lanes, nested composition, trap policy, completion routing, retire publication, and secure-compute policy.
 - VMCS/VMCSv2 is generated/read-only/denied projection vocabulary, not a state store.
 - `VmExitReason`, `ExitQualification`, and `TrapDecision` are VMX-facing projection vocabulary only.
-- VMREAD has partial generated/read-only value projection after runtime admission, but only for fields with explicit neutral owner/value sources.
+- VMREAD has partial direct generated/read-only value projection after runtime admission, but only for fields with explicit neutral owner/value sources. This direct service is not connected to canonical architectural VMREAD execution or retire writeback.
+- `GuestCr0`/`GuestCr4` have a guarded, field-local read-only projection only after privileged-state descriptor, domain/address-space/epoch, visibility, `RevalidatedAfterRestore`, and conformance gates; mutation, backend, completion, retire and widening remain denied.
 - VMCALL has neutral trap, backend-admission, route, completion, and retire fences, but production backend execution remains denied.
 - `TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication` now represents a future-gated completion-only route flag split; it is not used by VMX frontend and does not by itself publish a completion record.
 

@@ -68,8 +68,8 @@ public sealed class Rf1151ClassEraByRefAbiClosedWorldReauditTests
     [Fact]
     public void EvidenceNamesOnlyExitAuditNext()
     {
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.51-class-era-by-ref-abi-closed-world-reaudit.md");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.51-class-era-by-ref-abi-closed-world-reaudit.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
         Assert.Contains("not an identity-replacement path", evidence, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("RF-11.52", ledger, StringComparison.Ordinal);
     }

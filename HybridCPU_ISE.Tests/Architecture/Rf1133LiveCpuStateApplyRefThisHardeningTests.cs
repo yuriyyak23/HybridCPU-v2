@@ -47,7 +47,7 @@ public sealed class Rf1133LiveCpuStateApplyRefThisHardeningTests
     {
         string root = FindRoot();
         string production = ReadSources(Path.Combine(root, "HybridCPU_ISE"));
-        Assert.Equal(66, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
+        Assert.Equal(67, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
         string stageFlow = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline",
             "ExecutionFlow", "StageFlow", "CPU_Core.PipelineExecution.StageFlow.cs");
         AssertOrder(stageFlow, "MemoryCyclePlatformOrchestrator.AdvanceCoreObservedPlatformEdge(",
@@ -60,8 +60,8 @@ public sealed class Rf1133LiveCpuStateApplyRefThisHardeningTests
     public void EvidenceClosesOnlyApplyToFamily()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.33-live-cpu-state-apply-ref-this-hardening.md");
         Assert.Contains("RF-11.33 LiveCpuStateAdapter.ApplyTo ref-this seam hardening", ledger, StringComparison.Ordinal);
         Assert.Contains("no production state declaration", evidence, StringComparison.OrdinalIgnoreCase);

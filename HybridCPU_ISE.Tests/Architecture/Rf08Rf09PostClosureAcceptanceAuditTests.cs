@@ -6,9 +6,9 @@ public sealed class Rf08Rf09PostClosureAcceptanceAuditTests
     public void CurrentLedgersAreClosedUniqueAndFreeOfSupersededOpenClaims()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string exit = Read(root, "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/03_RF08_EXIT_READINESS_LEDGER.md");
-        string gate = Read(root, "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/02_RF09_ENTRY_GATE.md");
+        string status = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/00_CURRENT_STATUS_AND_READING_ORDER.md");
+        string exit = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/03_RF08_EXIT_READINESS_LEDGER.md");
+        string gate = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/02_RF09_ENTRY_GATE.md");
 
         Assert.Contains("| RF-08 | closed |", status, StringComparison.Ordinal);
         Assert.Contains("| RF-09 | closed; RF-09.0 through RF-09.4 complete |", status, StringComparison.Ordinal);
@@ -38,13 +38,13 @@ public sealed class Rf08Rf09PostClosureAcceptanceAuditTests
         string root = FindRepositoryRoot();
         string paper = Read(root,
             "ResearchPaper/section/md base/5_Two_Stage_Admission_and_Bundle_Compositional_SMT_Packing.md");
-        string adr = Read(root, "Documentation/ArchitectureAuthorityRefactor/02_Authority/ADR-009_VLIW_Retirement.md");
+        string adr = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/02_Authority/ADR-009_VLIW_Retirement.md");
         string audit = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/05_RF08_RF09_POST_CLOSURE_ACCEPTANCE_AUDIT.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/05_RF08_RF09_POST_CLOSURE_ACCEPTANCE_AUDIT.md");
 
-        Assert.True(File.Exists(Path.Combine(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
+        Assert.True(File.Exists(Path.Combine(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
             "RF08", "rf08.4ax-atomic-returned-result-decision-readiness-audit.md")));
-        Assert.True(File.Exists(Path.Combine(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
+        Assert.True(File.Exists(Path.Combine(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence",
             "RF08", "rf08.4ay-streamengine-scalar-register-decision-readiness-audit.md")));
         Assert.Contains("At RF-08.4aw both rows still expired", paper, StringComparison.Ordinal);
         Assert.Contains("RF-08.4az", paper, StringComparison.Ordinal);
@@ -60,9 +60,9 @@ public sealed class Rf08Rf09PostClosureAcceptanceAuditTests
     {
         string root = FindRepositoryRoot();
         string evidence = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/Evidence/RF08/rf08.4bb-consolidated-exit-evidence.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/Evidence/RF08/rf08.4bb-consolidated-exit-evidence.md");
         string audit = Read(root,
-            "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/05_RF08_RF09_POST_CLOSURE_ACCEPTANCE_AUDIT.md");
+            "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/05_RF08_RF09_POST_CLOSURE_ACCEPTANCE_AUDIT.md");
 
         string residualSection = Slice(evidence, "## Approved residual exclusions",
             "## Retained-unreachable constructor sources and exact triggers");
@@ -94,9 +94,9 @@ public sealed class Rf08Rf09PostClosureAcceptanceAuditTests
     public void PredicateDispositionAndNextPromptAreCurrent()
     {
         string root = FindRepositoryRoot();
-        string status = Read(root, "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/00_CURRENT_STATUS_AND_READING_ORDER.md");
-        string governance = Read(root, "Documentation/ArchitectureAuthorityRefactor/05_Governance/05_Invariants_Dependency_Risks_DoD.md");
-        string prompt = Read(root, "Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/06_RF10_CONTINUATION_PROMPT.md");
+        string status = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/00_CURRENT_STATUS_AND_READING_ORDER.md");
+        string governance = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/05_Governance/05_Invariants_Dependency_Risks_DoD.md");
+        string prompt = Read(root, "Documentation/Documentation/ArchitectureAuthorityRefactor/08_RF08_RF09/06_RF10_CONTINUATION_PROMPT.md");
 
         Assert.Contains("| RF-08.4ao | complete architecture decision C-C |", status, StringComparison.Ordinal);
         Assert.Contains("PredicateStateWrite` approved split-topology exclusion", governance, StringComparison.Ordinal);

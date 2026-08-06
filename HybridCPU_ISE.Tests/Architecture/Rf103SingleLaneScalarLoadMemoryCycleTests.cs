@@ -221,7 +221,7 @@ public sealed class Rf103SingleLaneScalarLoadMemoryCycleTests
         string status = File.ReadAllText(Path.Combine(
             root,
             "Documentation",
-            "ArchitectureAuthorityRefactor",
+            "Documentation", "ArchitectureAuthorityRefactor",
             "09_RF10",
             "00_CURRENT_STATUS_AND_LEDGER.md"));
 

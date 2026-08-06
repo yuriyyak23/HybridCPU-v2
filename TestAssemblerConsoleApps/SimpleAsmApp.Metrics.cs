@@ -177,7 +177,11 @@ internal sealed partial class SimpleAsmApp
             performance.InstructionFetchRequestTelemetryAvailable,
             Convert.ToUInt64(performance.MemoryQueueFullRejects),
             performance.MemoryBankConflictRejectTelemetryAvailable,
-            Convert.ToUInt64(performance.MemoryBankConflictRejects));
+            Convert.ToUInt64(performance.MemoryBankConflictRejects),
+            Convert.ToUInt64(performance.MemoryTelemetryBaselineOutstandingRequests),
+            Convert.ToUInt64(performance.MemoryCanceledRequests),
+            Convert.ToUInt64(performance.MemoryConsumedCompletions),
+            Convert.ToUInt64(performance.MemoryOutstandingRequests));
     }
 
     private CompilerPackingDiagnostics AnalyzeCompilerPacking(HybridCpuCompiledProgram compiledProgram)

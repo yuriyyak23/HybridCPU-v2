@@ -160,8 +160,8 @@ public sealed class SecureComputePhase21ConformanceMatrixTests
         Assert.Contains("SecureComputePhase21ConformanceEvidencePolicy", phase21);
         Assert.Contains("Implemented Phase 21 Conformance Evidence Gate Tests", phase21);
         Assert.Contains("Phase 21 is closed only for the current negative/future-gated conformance matrix", phase21);
-        Assert.Contains("Phase 21 conformance evidence policy is a release-input classifier only", release);
-        Assert.Contains("Phase 21 conformance matrix is closed only for current negative/future-gated evidence", backlog);
+        Assert.Contains("Phase 21 tests proving current conformance evidence is release-input evidence only", release);
+        Assert.Contains("Phase 21 remains a negative/future-gated conformance matrix", backlog);
     }
 
     private static SecureComputePhase21ConformanceEvidencePolicy Policy =>

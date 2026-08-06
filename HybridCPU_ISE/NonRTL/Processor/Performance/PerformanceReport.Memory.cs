@@ -122,6 +122,118 @@ namespace YAKSys_Hybrid_CPU
         public long MemoryQueueFullRejects { get; set; }
         public bool MemoryBankConflictRejectTelemetryAvailable { get; set; }
         public long MemoryBankConflictRejects { get; set; }
+        public long MemoryTelemetryBaselineOutstandingRequests { get; set; }
+        public long MemoryCanceledRequests { get; set; }
+        public long MemoryConsumedCompletions { get; set; }
+        public long MemoryOutstandingRequests { get; set; }
+
+        /// <summary>
+        /// Creates an observation-only interval view of the cumulative RF-10
+        /// memory-controller counters. The current report is not modified.
+        /// A missing baseline, schema change, or counter regression means that
+        /// no truthful interval can be formed and is reported as unavailable.
+        /// </summary>
+        public PerformanceReport CreateMemoryCycleTelemetryIntervalSince(PerformanceReport baseline)
+        {
+            ArgumentNullException.ThrowIfNull(baseline);
+
+            var interval = (PerformanceReport)MemberwiseClone();
+            long controllerCycles = 0;
+            long readServiceCycles = 0;
+            long storeReadinessCycles = 0;
+            long publicationCycles = 0;
+            long acceptedRequests = 0;
+            long completedRequests = 0;
+            long dataReadAccepted = 0;
+            long dataReadCompleted = 0;
+            long dataWriteAccepted = 0;
+            long dataWriteCompleted = 0;
+            long dataReadBytes = 0;
+            long committedWriteBytes = 0;
+            long queueFullRejects = 0;
+            long canceledRequests = 0;
+            long consumedCompletions = 0;
+            bool compatible = MemoryCycleTelemetryAvailable &&
+                              baseline.MemoryCycleTelemetryAvailable &&
+                              string.Equals(
+                                  MemoryCycleTelemetrySchemaVersion,
+                                  baseline.MemoryCycleTelemetrySchemaVersion,
+                                  StringComparison.Ordinal) &&
+                              MemoryTelemetryBaselineOutstandingRequests ==
+                                  baseline.MemoryTelemetryBaselineOutstandingRequests &&
+                              TrySubtract(MemoryControllerCycles, baseline.MemoryControllerCycles, out controllerCycles) &&
+                              TrySubtract(MemoryReadServiceCycles, baseline.MemoryReadServiceCycles, out readServiceCycles) &&
+                              TrySubtract(MemoryStoreReadinessServiceCycles, baseline.MemoryStoreReadinessServiceCycles, out storeReadinessCycles) &&
+                              TrySubtract(MemoryCompletionPublicationCycles, baseline.MemoryCompletionPublicationCycles, out publicationCycles) &&
+                              TrySubtract(MemoryAcceptedRequests, baseline.MemoryAcceptedRequests, out acceptedRequests) &&
+                              TrySubtract(MemoryCompletedRequests, baseline.MemoryCompletedRequests, out completedRequests) &&
+                              TrySubtract(DataReadAcceptedRequests, baseline.DataReadAcceptedRequests, out dataReadAccepted) &&
+                              TrySubtract(DataReadCompletedRequests, baseline.DataReadCompletedRequests, out dataReadCompleted) &&
+                              TrySubtract(DataWriteAcceptedRequests, baseline.DataWriteAcceptedRequests, out dataWriteAccepted) &&
+                              TrySubtract(DataWriteCompletedRequests, baseline.DataWriteCompletedRequests, out dataWriteCompleted) &&
+                              TrySubtract(DataReadBytes, baseline.DataReadBytes, out dataReadBytes) &&
+                              TrySubtract(CommittedDataWriteBytes, baseline.CommittedDataWriteBytes, out committedWriteBytes) &&
+                              TrySubtract(MemoryQueueFullRejects, baseline.MemoryQueueFullRejects, out queueFullRejects) &&
+                              TrySubtract(MemoryCanceledRequests, baseline.MemoryCanceledRequests, out canceledRequests) &&
+                              TrySubtract(MemoryConsumedCompletions, baseline.MemoryConsumedCompletions, out consumedCompletions);
+
+            interval.MemoryCycleTelemetryAvailable = compatible;
+            interval.MemoryControllerCycles = compatible ? controllerCycles : 0;
+            interval.MemoryReadServiceCycles = compatible ? readServiceCycles : 0;
+            interval.MemoryStoreReadinessServiceCycles = compatible ? storeReadinessCycles : 0;
+            interval.MemoryCompletionPublicationCycles = compatible ? publicationCycles : 0;
+            interval.MemoryAcceptedRequests = compatible ? acceptedRequests : 0;
+            interval.MemoryCompletedRequests = compatible ? completedRequests : 0;
+            interval.DataReadAcceptedRequests = compatible ? dataReadAccepted : 0;
+            interval.DataReadCompletedRequests = compatible ? dataReadCompleted : 0;
+            interval.DataWriteAcceptedRequests = compatible ? dataWriteAccepted : 0;
+            interval.DataWriteCompletedRequests = compatible ? dataWriteCompleted : 0;
+            interval.DataReadBytes = compatible ? dataReadBytes : 0;
+            interval.CommittedDataWriteBytes = compatible ? committedWriteBytes : 0;
+            interval.MemoryQueueFullRejects = compatible ? queueFullRejects : 0;
+            interval.MemoryTelemetryBaselineOutstandingRequests = compatible
+                ? MemoryTelemetryBaselineOutstandingRequests
+                : 0;
+            interval.MemoryCanceledRequests = compatible ? canceledRequests : 0;
+            interval.MemoryConsumedCompletions = compatible ? consumedCompletions : 0;
+            interval.MemoryOutstandingRequests = compatible ? MemoryOutstandingRequests : 0;
+
+            long instructionFetchReadBytes = 0;
+            bool fetchBytesCompatible = compatible &&
+                                        InstructionFetchReadBytesTelemetryAvailable &&
+                                        baseline.InstructionFetchReadBytesTelemetryAvailable &&
+                                        TrySubtract(
+                                            InstructionFetchReadBytes,
+                                            baseline.InstructionFetchReadBytes,
+                                            out instructionFetchReadBytes);
+            interval.InstructionFetchReadBytesTelemetryAvailable = fetchBytesCompatible;
+            interval.InstructionFetchReadBytes = fetchBytesCompatible ? instructionFetchReadBytes : 0;
+
+            long bankConflictRejects = 0;
+            bool bankRejectsCompatible = compatible &&
+                                         MemoryBankConflictRejectTelemetryAvailable &&
+                                         baseline.MemoryBankConflictRejectTelemetryAvailable &&
+                                         TrySubtract(
+                                             MemoryBankConflictRejects,
+                                             baseline.MemoryBankConflictRejects,
+                                             out bankConflictRejects);
+            interval.MemoryBankConflictRejectTelemetryAvailable = bankRejectsCompatible;
+            interval.MemoryBankConflictRejects = bankRejectsCompatible ? bankConflictRejects : 0;
+
+            return interval;
+        }
+
+        private static bool TrySubtract(long current, long baseline, out long difference)
+        {
+            if (current < baseline)
+            {
+                difference = 0;
+                return false;
+            }
+
+            difference = current - baseline;
+            return true;
+        }
 
         /// <summary>
         /// Stalls on load operations

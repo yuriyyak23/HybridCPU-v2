@@ -112,6 +112,12 @@ namespace YAKSys_Hybrid_CPU.Core
     {
         private VmxRetireEffect _resolvedRetireEffect;
 
+        internal SafetyVerifier.VirtualizationAdmissionCertificate? VirtualizationAdmission
+        {
+            get;
+            private set;
+        }
+
         /// <summary>Decoded instruction IR forwarded to the VMX execution unit.</summary>
         public Pipeline.MicroOps.InstructionIR? Instruction { get; set; }
 
@@ -162,6 +168,33 @@ namespace YAKSys_Hybrid_CPU.Core
         // ── Helper ────────────────────────────────────────────────────────────
 
         public VmxRetireEffect CreateRetireEffect() => _resolvedRetireEffect;
+
+        internal bool TryResolveFrozenOperation(out VmxOperationKind operation)
+        {
+            var instruction = Instruction ?? BuildInstructionIR();
+            if (instruction.CanonicalOpcode.Value != unchecked((ushort)OpCode))
+            {
+                operation = default;
+                return false;
+            }
+
+            return InstructionRegistry.TryResolvePublishedVmxOperationKind(
+                in instruction,
+                out operation);
+        }
+
+        internal void AttachVirtualizationAdmission(
+            SafetyVerifier.VirtualizationAdmissionCertificate certificate)
+        {
+            ArgumentNullException.ThrowIfNull(certificate);
+            if (VirtualizationAdmission is not null)
+            {
+                throw new InvalidOperationException(
+                    "A VmxMicroOp cannot receive a second virtualization admission certificate.");
+            }
+
+            VirtualizationAdmission = certificate;
+        }
 
         private static bool HasArchitecturalRegister(byte registerId) =>
             registerId != 0 &&

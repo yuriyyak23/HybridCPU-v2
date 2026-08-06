@@ -294,8 +294,7 @@ public sealed class
         "section", "md base",
         "3_Architectural_Overview_and_Frontend_Contract.md");
 
-    private static string Evidence(string root) => Read(root, "Documentation",
-        "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+    private static string Evidence(string root) => Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
         "rf12.6ag-controller-stored-binding-consumer-revalidation-decision.md");
 
     private static string ReadTree(string root) =>

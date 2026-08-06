@@ -6,7 +6,7 @@ public sealed class Rf129blDonorAssistEpochAuthorityDecisionTests
     public void PaperSeparatesRemoteZeroAbsenceAndForbidsCrossCoreEpochAuthority()
     {
         string paper = Read("ResearchPaper", "section", "md base", "6_Assist_Coupled_Data_Movement_and_Donor_Semantics.md");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
         Assert.Contains("Remote donor transport carries a distinct donor-assist freshness observation", paper, StringComparison.Ordinal);
         Assert.Contains("retained compatibility form for no explicit donor-epoch observation", paper, StringComparison.Ordinal);
         Assert.Contains("cannot be reinterpreted as one", paper, StringComparison.Ordinal);

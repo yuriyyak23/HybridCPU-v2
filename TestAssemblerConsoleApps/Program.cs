@@ -408,7 +408,11 @@ internal static class Program
                     generatedFiles["metrics"] = "metrics.json";
                     TimingMemoryReport timingMemoryReport = TimingMemoryReport.Create(metrics);
                     writer.WriteJson(TimingMemoryReport.ArtifactFileName, timingMemoryReport);
-                    generatedFiles["post_ref1_timing_memory"] = TimingMemoryReport.ArtifactFileName;
+                    writer.WriteJson(
+                        TimingMemoryReport.LegacyArtifactFileName,
+                        timingMemoryReport.AsLegacyCompatibilityProjection());
+                    generatedFiles[TimingMemoryReport.ManifestKey] = TimingMemoryReport.ArtifactFileName;
+                    generatedFiles[TimingMemoryReport.LegacyManifestKey] = TimingMemoryReport.LegacyArtifactFileName;
                     status = string.IsNullOrWhiteSpace(metrics.FailureMessage)
                         ? DiagnosticRunStatus.Succeeded
                         : DiagnosticRunStatus.Failed;
@@ -730,11 +734,12 @@ internal static class Program
         TimingMemoryReport report = TimingMemoryReport.Create(metrics);
         Console.WriteLine($"Timing/memory comparison schema: {report.SchemaVersion} / producer {report.ProducerSchemaVersion}");
         Console.WriteLine($"Timing comparison policy: {report.TimingComparisonPolicy}");
-        Console.WriteLine($"Cycle decomposition: total={report.TotalCycles}, pipeline-stall={report.PipelineStallCycles}, memory-stall={report.MemoryStallCycles}, non-memory-stall={report.NonMemoryStallCycles}");
+        Console.WriteLine($"Cycle decomposition: total={report.TotalCycles}, pipeline-stall={report.PipelineStallCycles}, memory-stall={report.MemoryStallCycles}, non-memory-stall={RenderTelemetryMetric(report.NonMemoryStallCyclesMetric)}");
         Console.WriteLine($"Fine-grained cycle breakdown: {report.FineGrainedCycleBreakdownAvailability}");
         Console.WriteLine($"Memory telemetry disposition: {report.MemoryTelemetryDisposition}");
         Console.WriteLine($"Memory telemetry note: {report.MemoryTelemetryMessage}");
         Console.WriteLine($"Memory requests: accepted={RenderTelemetryMetric(report.AcceptedMemoryRequests)}, completed={RenderTelemetryMetric(report.CompletedMemoryRequests)}");
+        Console.WriteLine($"Memory request lifecycle: telemetry-baseline-outstanding={RenderTelemetryMetric(report.TelemetryBaselineOutstandingRequests)}, canceled={RenderTelemetryMetric(report.CanceledMemoryRequests)}, consumed={RenderTelemetryMetric(report.ConsumedMemoryCompletions)}, outstanding={RenderTelemetryMetric(report.OutstandingMemoryRequests)}, identity-balance={report.RequestIdentityBalanceDisposition}");
         Console.WriteLine($"Data reads: accepted={RenderTelemetryMetric(report.DataReadAcceptedRequests)}, completed={RenderTelemetryMetric(report.DataReadCompletedRequests)}, bytes={RenderTelemetryMetric(report.DataReadBytes)}");
         Console.WriteLine($"Data writes: accepted={RenderTelemetryMetric(report.DataWriteAcceptedRequests)}, completed={RenderTelemetryMetric(report.DataWriteCompletedRequests)}, committed-bytes={RenderTelemetryMetric(report.CommittedDataWriteBytes)}");
         Console.WriteLine($"Instruction fetch: accepted={RenderTelemetryMetric(report.InstructionFetchAcceptedRequests)}, completed={RenderTelemetryMetric(report.InstructionFetchCompletedRequests)}, physical-read-bytes={RenderTelemetryMetric(report.InstructionFetchReadBytes)}");

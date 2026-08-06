@@ -146,9 +146,9 @@ public sealed class Rf116DecodeStateExtractionTests
     public void LedgerAndEvidenceCloseOnlyDecodeState()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11",
             "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.6-decode-state-extraction.md");
 
         Assert.Contains("RF-11.6 | closed DecodeState", ledger, StringComparison.Ordinal);

@@ -70,8 +70,8 @@ public sealed class Rf1150LiveAccessorRefReturnCutoverTests
     [Fact]
     public void EvidenceNamesOnlyByRefAbiReauditNext()
     {
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.50-live-accessor-ref-return-cutover.md");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11", "rf11.50-live-accessor-ref-return-cutover.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
         Assert.Contains("six production callers", evidence, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("--minimal-logs", evidence, StringComparison.Ordinal);
         Assert.Contains("RF-11.51", ledger, StringComparison.Ordinal);

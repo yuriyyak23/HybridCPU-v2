@@ -44,6 +44,7 @@ internal sealed class DiagnosticRunController
         string stderrPath = writer.GetPath("stderr.log");
         string metricsPath = writer.GetPath("metrics.json");
         string timingMemoryReportPath = writer.GetPath(TimingMemoryReport.ArtifactFileName);
+        string legacyTimingMemoryReportPath = writer.GetPath(TimingMemoryReport.LegacyArtifactFileName);
         string replayPath = writer.GetPath("replay_report.json");
         string safetyNegativeControlsPath = writer.GetPath("safety_verifier_negative_controls.json");
         string replayReusePath = writer.GetPath("replay_reuse_report.json");
@@ -148,8 +149,13 @@ internal sealed class DiagnosticRunController
         RegisterGeneratedFile(
             generatedFiles,
             timingMemoryReportPath,
-            "post_ref1_timing_memory",
+            TimingMemoryReport.ManifestKey,
             TimingMemoryReport.ArtifactFileName);
+        RegisterGeneratedFile(
+            generatedFiles,
+            legacyTimingMemoryReportPath,
+            TimingMemoryReport.LegacyManifestKey,
+            TimingMemoryReport.LegacyArtifactFileName);
         RegisterGeneratedFile(generatedFiles, replayPath, "replay_report", "replay_report.json");
         RegisterGeneratedFile(generatedFiles, safetyNegativeControlsPath, "safety_verifier_negative_controls", "safety_verifier_negative_controls.json");
         RegisterGeneratedFile(generatedFiles, replayReusePath, "replay_reuse_report", "replay_reuse_report.json");

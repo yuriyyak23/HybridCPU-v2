@@ -44,6 +44,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
             "29_hv_owner_response_watchdog.md",
             "30_hv_final_wait_baseline.md",
             "31_hv_post_baseline_artifact_sentry.md",
+            "32_e1_nonforgeable_safetyverifier_admission_contract.md",
         ];
 
         foreach (string file in requiredFiles)
@@ -1519,6 +1520,280 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         {
             Assert.DoesNotContain(forbidden, docs, StringComparison.OrdinalIgnoreCase);
         }
+    }
+
+    [Fact]
+    public void CurrentHeadReconciliation_UsesManifestAndStrictE0ThroughE9Order()
+    {
+        string planRoot = GetPlanRoot();
+        string manifestPath = Path.Combine(
+            planRoot,
+            "evidence",
+            "2026-08-06-clean-head-evidence.json");
+
+        Assert.True(File.Exists(manifestPath), manifestPath);
+        string manifest = File.ReadAllText(manifestPath);
+        Assert.Contains("b6d4871e0f06ebde07015e393c0d36af0362f506", manifest);
+        Assert.Contains("8400dab01aadf560c1338f50711b08d4409178b5", manifest);
+        Assert.Contains("f794ea378779fe153a206af5fe287571884b1bc4", manifest);
+        Assert.Contains("\"external_side_load_allowed\": false", manifest);
+        Assert.Contains("\"git_status_at_observation\": \"clean\"", manifest);
+        Assert.Contains("\"canonical_tree\": \"HybridCPU_ISE/CloseToHSL\"", manifest);
+        Assert.Contains("\"canonical_tree_tracked_file_count\": 928", manifest);
+        Assert.Contains("\"obsolete_tree_tracked_file_count\": 0", manifest);
+        Assert.Contains("\"close_to_rtl_may_satisfy_evidence\": false", manifest);
+        Assert.Contains("\"file_count\": 33", manifest);
+
+        string[] planRecords = Directory
+            .GetFiles(planRoot, "*.md", SearchOption.TopDirectoryOnly)
+            .OrderBy(path => Path.GetFileName(path), StringComparer.Ordinal)
+            .Select(path => $"{Path.GetFileName(path)}:{Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant()}")
+            .ToArray();
+        byte[] aggregateBytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\n", planRecords));
+        string aggregate = Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(aggregateBytes))
+            .ToLowerInvariant();
+        Assert.Contains(
+            $"\"aggregate_sha256\": \"{aggregate}\"",
+            manifest[manifest.IndexOf("\"evidence_update_plan_corpus\"", StringComparison.Ordinal)..]);
+
+        string index = ReadPlan("00_virtualization_activation_refactoring_index.md");
+        string matrix = ReadPlan("01_current_state_and_gap_matrix.md");
+        string rollout = ReadPlan("17_phase_rollout_and_pr_order.md");
+        string journal = ReadPlan("19_open_decision_backlog.md");
+
+        Assert.Contains("Files `20` through `31` are retained only as immutable historical wait/check snapshots", index);
+        Assert.Contains("pipeline-executed", matrix);
+        Assert.Contains("direct projection API", matrix);
+        Assert.Contains("model/scaffolding", matrix);
+        Assert.Contains("unreachable/isolated", matrix);
+        Assert.Contains("not architectural VMREAD", matrix);
+
+        string[] phases = ["E0 -", "E1 -", "E2 -", "E3 -", "E4 -", "E5 -", "E6 -", "E7 -", "E8 -", "E9 -"];
+        int previous = -1;
+        foreach (string phase in phases)
+        {
+            int current = rollout.IndexOf(phase, StringComparison.Ordinal);
+            Assert.True(current > previous, $"{phase} must follow its dependency");
+            previous = current;
+        }
+
+        Assert.Contains("Owner: `UNASSIGNED`", rollout);
+        Assert.Contains("Current state: `NO-GO`", rollout);
+        Assert.Contains("Current state: `CLOSED/EVIDENCE-ONLY`", rollout);
+        Assert.Contains("Files `20_hv_rfc_intake_packet.md` through `31_hv_post_baseline_artifact_sentry.md`", journal);
+        Assert.Contains("unchanged external state does not create another phase or permission", journal);
+    }
+
+    [Fact]
+    public void E1ProductionContract_IsSafetyVerifierOwnedAndBackendIncapable()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string contract = ReadPlan("32_e1_nonforgeable_safetyverifier_admission_contract.md");
+
+        foreach (string required in new[]
+                 {
+                     "E1 IMPLEMENTED / FAULT-ONLY TRANSPORT / NO BACKEND AUTHORITY",
+                     "opaque attempt-bound capability",
+                     "source slot and verified working slot",
+                     "bundle identity, issue-attempt identity and attempt epoch",
+                     "replay epoch and issuer invalidation generation",
+                     "capability-grant identity, scope and revocation epoch",
+                     "evidence-policy identity/digest and evidence epoch",
+                     "issuer-owned live issuance state",
+                     "cannot authorize VMCALL backend execution",
+                     "E1 is `CLOSED/FAULT-ONLY`",
+                 })
+        {
+            Assert.Contains(required, contract);
+        }
+
+        string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
+        string[] certificateFiles = Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories)
+            .Where(path => File.ReadAllText(path).Contains(
+                "VirtualizationAdmissionCertificate",
+                StringComparison.Ordinal))
+            .Select(path => Path.GetRelativePath(coreRoot, path).Replace('\\', '/'))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+        Assert.Equal(
+            new[]
+            {
+                "Pipeline/Certificates/ReplayPhaseSubstrate.Implementations.cs",
+                "Pipeline/Certificates/ReplayPhaseSubstrate.Interfaces.cs",
+                "Pipeline/MicroOps/Types/MicroOp.IO.cs",
+                "Pipeline/Safety/SafetyVerifier.VirtualizationAdmission.cs",
+            },
+            certificateFiles);
+
+        string productionCore = string.Concat(
+            Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories)
+                .Select(File.ReadAllText));
+        Assert.DoesNotContain("BackendExecutionAuthorized: true", productionCore);
+        Assert.DoesNotContain("HypercallBackendAdmissionDecision.Allowed", productionCore);
+
+        string certificateSource = File.ReadAllText(Path.Combine(
+            coreRoot,
+            "Pipeline",
+            "Safety",
+            "SafetyVerifier.VirtualizationAdmission.cs"));
+        Assert.Contains("internal sealed class VirtualizationAdmissionCertificate", certificateSource);
+        Assert.Contains("internal bool BackendExecutionAuthorized => false", certificateSource);
+        Assert.Contains("internal bool CompletionPublicationAuthorized => false", certificateSource);
+        Assert.Contains("internal bool RetirePublicationAuthorized => false", certificateSource);
+        Assert.Contains("_liveVirtualizationAdmissions", certificateSource);
+
+        string materialization = File.ReadAllText(Path.Combine(
+            coreRoot,
+            "Pipeline",
+            "ExecutionFlow",
+            "Materialization",
+            "CPU_Core.PipelineExecution.Materialization.cs"));
+        Assert.Contains(
+            "TryAttachVirtualizationAdmissionAfterCanonicalLaneMaterialization",
+            materialization);
+
+        string decode = File.ReadAllText(Path.Combine(
+            coreRoot,
+            "Virtualization",
+            "Compatibility",
+            "Frontend",
+            "Decode",
+            "VmxCompatDecodeBoundary.cs"));
+        Assert.Contains("bool DescriptorValidated", decode);
+        Assert.Contains("bool CapabilityValidated", decode);
+        Assert.Contains("bool SchedulingValidated", decode);
+        Assert.Contains("bool NoEmissionValidated", decode);
+        Assert.DoesNotContain("Certificate", decode);
+
+        string handlersRoot = Path.Combine(
+            coreRoot,
+            "Virtualization",
+            "Compatibility",
+            "Frontend",
+            "Handlers");
+        string handlers = string.Concat(
+            Directory.GetFiles(handlersRoot, "*.cs", SearchOption.AllDirectories)
+                .Select(File.ReadAllText));
+        Assert.DoesNotContain("SafetyVerifier", handlers);
+        Assert.DoesNotContain("VirtualizationAdmissionCertificate", handlers);
+
+        string vmxMicroOp = File.ReadAllText(Path.Combine(
+            coreRoot,
+            "Pipeline",
+            "MicroOps",
+            "Types",
+            "MicroOp.IO.cs"));
+        Assert.Contains("VmxRetireEffect.Fault", vmxMicroOp);
+        Assert.DoesNotContain("BackendExecutionAuthorized = true", vmxMicroOp);
+    }
+
+    [Fact]
+    public void CanonicalProjectAndActivePlan_DoNotUseObsoleteCloseToRtlTree()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string project = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "HybridCPU_ISE.csproj"));
+        Assert.Contains("CloseToHSL", project);
+        Assert.DoesNotContain("CloseToRTL", project);
+
+        foreach (string activePlan in new[]
+                 {
+                     "00_virtualization_activation_refactoring_index.md",
+                     "01_current_state_and_gap_matrix.md",
+                     "02_global_forbidden_regressions_and_static_gates.md",
+                     "17_phase_rollout_and_pr_order.md",
+                     "18_release_gate_for_limited_runtime_virtualization.md",
+                     "32_e1_nonforgeable_safetyverifier_admission_contract.md",
+                 })
+        {
+            string text = ReadPlan(activePlan);
+            Assert.DoesNotContain("tracked `CloseToRTL`", text);
+            Assert.DoesNotContain("pending `CloseToRTL` deletions", text);
+            Assert.DoesNotContain("untracked `CloseToHSL`", text);
+        }
+    }
+
+    [Fact]
+    public void CurrentWorktreeProductionContours_HaveNoActivationBackendCompletionOrRetireShortcut()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string ReadSource(string relativePath) => File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            relativePath.Replace('/', Path.DirectorySeparatorChar)));
+
+        string dispatcher = ReadSource(
+            "HybridCPU_ISE/CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs");
+        string microOp = ReadSource(
+            "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs");
+        string retire = ReadSource(
+            "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs");
+        string vmcallFrontend = ReadSource(
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs");
+        string backendAdmission = ReadSource(
+            "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs");
+        string compatibilityCompletion = ReadSource(
+            "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Completion/CompletionRecordCompatibilityProjection.cs");
+
+        Assert.Contains("return ExecutionResult.VmxFault();", dispatcher);
+        Assert.DoesNotContain("AdmitVmReadProjection", dispatcher);
+        Assert.DoesNotContain("AdmitVmCallTrapProjection", dispatcher);
+        Assert.Contains("_resolvedRetireEffect = VmxRetireEffect.Fault", microOp);
+        Assert.Contains("ApplyRemovedFrontendFailClosedEffect", retire);
+        Assert.Contains("return Core.VmxRetireOutcome.Fault", retire);
+
+        Assert.Contains("HypercallBackendAdmissionRequest.MissingNeutralOwner", vmcallFrontend);
+        Assert.Contains("TrapCompletionRouteRequest.ProjectionOnlyDenied", vmcallFrontend);
+        Assert.DoesNotContain("BackendExecutionAuthorized: true", vmcallFrontend);
+        Assert.DoesNotContain("TrapCompletionRouteDescriptor.RuntimeOwnedCompletionPublication", vmcallFrontend);
+        Assert.DoesNotContain("TrapCompletionRouteDescriptor.RuntimeOwnedPublication", vmcallFrontend);
+        Assert.DoesNotContain("new CompletionRecord", vmcallFrontend);
+
+        Assert.DoesNotContain(
+            "\n    Allowed =",
+            backendAdmission.Replace("\r\n", "\n", StringComparison.Ordinal));
+        Assert.DoesNotContain("BackendExecutionAuthorized: true", backendAdmission);
+        Assert.Contains("DeniedNeutralBackendOwnerRfcAdr", backendAdmission);
+
+        Assert.Contains("new CompletionRecord", compatibilityCompletion);
+        Assert.Contains("publicationFence.CompletionPublicationAllowed", compatibilityCompletion);
+
+        string frontendRoot = Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Virtualization",
+            "Compatibility",
+            "Frontend");
+        string[] frontendCompletionConstructors = Directory
+            .GetFiles(frontendRoot, "*.cs", SearchOption.AllDirectories)
+            .Where(path => File.ReadAllText(path).Contains("new CompletionRecord", StringComparison.Ordinal))
+            .ToArray();
+        string onlyConstructor = Assert.Single(frontendCompletionConstructors);
+        Assert.EndsWith(
+            Path.Combine("Projection", "Completion", "CompletionRecordCompatibilityProjection.cs"),
+            onlyConstructor,
+            StringComparison.OrdinalIgnoreCase);
+
+        string productionComposition = string.Concat(
+            Directory.GetFiles(
+                    Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Execution"),
+                    "*.cs",
+                    SearchOption.AllDirectories)
+                .Concat(Directory.GetFiles(
+                    Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline"),
+                    "*.cs",
+                    SearchOption.AllDirectories))
+                .Concat(Directory.GetFiles(
+                    Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Runtime"),
+                    "*.cs",
+                    SearchOption.AllDirectories))
+                .Select(File.ReadAllText));
+        Assert.DoesNotContain("FromCompatibilityExit(", productionComposition);
+        Assert.DoesNotContain("TryFromCompatibilityExit(", productionComposition);
     }
 
     private static string ReadPlan(string fileName) =>

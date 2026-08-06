@@ -28,14 +28,28 @@ Therefore the numbers below remain **Pre-Ref1 / pre-RF-10 historical evidence**;
 they must not be used as a timing or wall-clock pass/fail baseline for a current
 run.
 
-Each simple execution profile now emits
-`post_ref1_timing_memory_report.json` alongside `metrics.json`. The artifact
-separates functional comparison from timing comparison, records the available
-coarse cycle buckets, and reports when legacy burst/byte counters are zero while
-pipeline memory waits are non-zero. Such a zero means `unavailable while memory
-wait is observed`, not “no memory activity”. Fine-grained fetch, admission,
-memory-completion, execute, writeback and early-return cycle buckets still
-require producer telemetry from the RF-10 memory owner.
+Each simple execution profile now emits the canonical
+`timing_memory_report.json` (`timing-memory-report/v3`) alongside `metrics.json`.
+For existing machine consumers it also emits
+`post_ref1_timing_memory_report.json` with the prior
+`post-ref1-timing-memory-v2` schema value. The manifest retains the
+`post_ref1_timing_memory` key and adds `timing_memory`; its own schema remains
+`diagnostic-run-manifest/v1`.
+
+Both projections separate functional observation from timing comparison and
+transport only producer-owned values. `Availability="Available", Value=0`
+means measured zero. `Availability="Unavailable", Value=null` means no truthful
+producer exists. Pipeline memory wait plus zero legacy burst/byte counters does
+not prove absence of memory activity. Fine-grained fetch, admission,
+memory-completion, execute, writeback and early-return cycle buckets remain
+unavailable; no consumer-side timing cause or cache bucket is reconstructed.
+The top-level non-memory remainder is exact: the central pipeline owner counts
+every stalled cycle in `StallCycles` and increments `MemoryStalls` only inside
+that same decision when `CountMemoryStall` is true. Therefore
+`NonMemoryStallCycles = StallCycles - MemoryStalls`; the subtraction fails
+closed as `Unavailable` if the nested-counter invariant is ever violated. WAW
+remains an event counter, so a numerical match must not be generalized into a
+one-WAW-equals-one-cycle contract.
 
 ## 2. Executive Summary
 
@@ -163,9 +177,10 @@ Two IPC metrics are printed, and they should not be treated as interchangeable.
 
 `Raw cycle IPC = InstructionsRetired / CycleCount`
 
-For a post-Ref1 run, compare this only to a separately created post-RF-10 timing
-baseline. `post_ref1_timing_memory_report.json` records this policy with the
-observed cycle and memory-telemetry state.
+For a current run, compare this only to an independently established post-RF-10
+timing baseline. `timing_memory_report.json` records this policy with the
+observed cycle and memory-telemetry state; the legacy-named alias exists only
+for JSON/manifest compatibility.
 
 This is the main top-line throughput number for article use because it is end-to-end with total cycles in the denominator.
 

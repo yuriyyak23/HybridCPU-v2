@@ -19,7 +19,7 @@ public sealed class Rf130CleanupEntryInventoryTests
     ];
 
     [Fact]
-    public void StaticIsaCandidates_RecordGeneratedAndHandwrittenStorageWithoutClaimingDeletionEligibility()
+    public void StaticIsaCandidates_RecordGeneratedStorageAfterRawRowRemoval()
     {
         string facade = Read("HybridCPU_ISE", "NonRTL", "Arch", "IsaV4Surface.cs");
         Assert.Contains("GeneratedIsaCatalog.GetStaticPolicy", facade, StringComparison.Ordinal);
@@ -28,9 +28,9 @@ public sealed class Rf130CleanupEntryInventoryTests
         Assert.DoesNotContain("new Dictionary", facade, StringComparison.Ordinal);
 
         string generator = Read("tools", "HybridCPU.IsaGen", "Program.cs");
-        Assert.Contains("OpcodeRegistry.Opcodes", generator, StringComparison.Ordinal);
-        Assert.Contains("IsaV4Surface.MandatoryCoreOpcodes", generator, StringComparison.Ordinal);
-        Assert.Contains("IsaV4Surface.PipelineClassMap", generator, StringComparison.Ordinal);
+        Assert.Contains("ReadStrictManifest(manifestPath)", generator, StringComparison.Ordinal);
+        Assert.Contains("VerifyGeneratedCatalogParity(catalog)", generator, StringComparison.Ordinal);
+        Assert.DoesNotContain("BuildCSharpCatalog", generator, StringComparison.Ordinal);
 
         string[] handwrittenRowFiles = SourceFiles("HybridCPU_ISE")
             .Where(path => !IsGenerated(path))
@@ -38,15 +38,7 @@ public sealed class Rf130CleanupEntryInventoryTests
             .Select(Relative)
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
-        Assert.Equal(
-            new[]
-            {
-                "HybridCPU_ISE/NonRTL/Arch/OpcodeInfo.Registry.Data.MemoryControl.cs",
-                "HybridCPU_ISE/NonRTL/Arch/OpcodeInfo.Registry.Data.Scalar.cs",
-                "HybridCPU_ISE/NonRTL/Arch/OpcodeInfo.Registry.Data.System.cs",
-                "HybridCPU_ISE/NonRTL/Arch/OpcodeInfo.Registry.Data.Vector.cs",
-            },
-            handwrittenRowFiles);
+        Assert.Empty(handwrittenRowFiles);
 
         string classifier = Read("HybridCPU_ISE", "NonRTL", "Arch", "InstructionClassifier.cs");
         Assert.Contains("GeneratedIsaCatalog.TryGetDescriptor", classifier, StringComparison.Ordinal);
@@ -115,9 +107,13 @@ public sealed class Rf130CleanupEntryInventoryTests
             .Select(match => match.Groups[1].Value)
             .Where(path => !path.StartsWith("obj_r6fresh", StringComparison.OrdinalIgnoreCase))
             .ToArray();
-        Assert.Equal(41, excludedFixtures.Length);
-        Assert.Equal(37, excludedFixtures.Count(path => File.Exists(Path.Combine(Root, "HybridCPU_ISE.Tests", path))));
-        Assert.Equal(4, excludedFixtures.Count(path => !File.Exists(Path.Combine(Root, "HybridCPU_ISE.Tests", path))));
+        Assert.Equal(37, excludedFixtures.Length);
+        Assert.All(excludedFixtures, path => Assert.True(File.Exists(Path.Combine(Root, "HybridCPU_ISE.Tests", path)), path));
+
+        string quarantineManifest = Read("eng", "test-quarantine.json");
+        Assert.Contains("\"schemaVersion\": 2", quarantineManifest, StringComparison.Ordinal);
+        Assert.Contains("\"entryStatus\": \"quarantined\"", quarantineManifest, StringComparison.Ordinal);
+        Assert.Contains("\"reviewedPhase\": \"RF-13.24\"", quarantineManifest, StringComparison.Ordinal);
 
         Assert.Empty(SourceFiles("HybridCPU_ISE.Tests")
             .SelectMany(path => File.ReadLines(path))
@@ -127,8 +123,8 @@ public sealed class Rf130CleanupEntryInventoryTests
     [Fact]
     public void LedgerAndEvidence_NameRollbackAndTheSingleNextSlice()
     {
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "12_RF13", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read("Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13", "rf13.0-cleanup-entry-inventory-freeze.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "12_RF13", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF13", "rf13.0-cleanup-entry-inventory-freeze.md");
 
         Assert.Contains("RF-13.0", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-13.1", ledger, StringComparison.Ordinal);

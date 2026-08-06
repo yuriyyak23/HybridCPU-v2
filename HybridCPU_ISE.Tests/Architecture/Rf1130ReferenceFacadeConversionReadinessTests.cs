@@ -29,7 +29,7 @@ public sealed class Rf1130ReferenceFacadeConversionReadinessTests
         string root = FindRoot();
         string production = ReadSources(Path.Combine(root, "HybridCPU_ISE"));
         Assert.Equal(0, Regex.Matches(production, @"partial\s+struct\s+CPU_Core").Count);
-        Assert.Equal(66, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
+        Assert.Equal(67, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
         Assert.Equal(289, Regex.Matches(production,
             @"\b(?:ref|in|out)\s+(?:Processor\.)?CPU_Core\b").Count);
         Assert.Equal(40, SourceFiles(Path.Combine(root, "HybridCPU_ISE")).Count(file =>
@@ -111,8 +111,8 @@ public sealed class Rf1130ReferenceFacadeConversionReadinessTests
     public void LedgerAndEvidenceCloseReadinessInventoryWithoutConversion()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.30-reference-facade-conversion-readiness.md");
         Assert.Contains("RF-11.30 | closed reference-facade conversion readiness", ledger, StringComparison.Ordinal);
         Assert.Contains("not ready", evidence, StringComparison.OrdinalIgnoreCase);

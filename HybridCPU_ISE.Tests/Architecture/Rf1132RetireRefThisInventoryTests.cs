@@ -67,7 +67,7 @@ public sealed class Rf1132RetireRefThisInventoryTests
     {
         string root = FindRoot();
         string production = ReadSources(Path.Combine(root, "HybridCPU_ISE"));
-        Assert.Equal(66, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
+        Assert.Equal(67, Regex.Matches(production, @"partial\s+class\s+CPU_Core").Count);
         Assert.Empty(Regex.Matches(production, @"\bref\s+this\s*[,\)]"));
         Assert.Equal(3, Regex.Matches(production,
             @"\bExecuteMicroOpWithStableCoreIdentity\((?:pipeEX\.MicroOp|lane\.MicroOp!?)\)").Count);
@@ -77,8 +77,8 @@ public sealed class Rf1132RetireRefThisInventoryTests
     public void LedgerClosesInventoryWithoutProductionMutation()
     {
         string root = FindRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "10_RF11", "00_CURRENT_STATUS_AND_LEDGER.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF11",
             "rf11.32-retire-ref-this-inventory-freeze.md");
         Assert.Contains("RF-11.32 retire ref-this inventory/freeze", ledger, StringComparison.Ordinal);
         Assert.Contains("no production state declaration", evidence, StringComparison.OrdinalIgnoreCase);

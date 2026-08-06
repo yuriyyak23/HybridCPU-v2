@@ -6,7 +6,7 @@ public sealed class Rf1212aFinalExitAuditEvidenceCompletenessTests
     public void FinalAuditMatrixNamesEveryPaperFamilyAndItsClosureEvidence()
     {
         string root = FindRepositoryRoot();
-        string audit = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string audit = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12a-final-exit-audit-evidence-completeness-amendment.md");
         string paper = Read(root, "ResearchPaper", "section", "md base",
             "3_Architectural_Overview_and_Frontend_Contract.md");
@@ -28,7 +28,7 @@ public sealed class Rf1212aFinalExitAuditEvidenceCompletenessTests
             Assert.Contains(row, audit, StringComparison.Ordinal);
 
         Assert.Contains("No universal channel, domain, device, token,", paper, StringComparison.Ordinal);
-        string reconciliation = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string reconciliation = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12b-external-audit-reconciliation-and-reopened-handoff.md");
         Assert.Contains("closure verdict is superseded by this reconciliation", reconciliation, StringComparison.Ordinal);
         Assert.Contains("No compatibility API has the required zero caller inventory", audit, StringComparison.Ordinal);
@@ -38,7 +38,7 @@ public sealed class Rf1212aFinalExitAuditEvidenceCompletenessTests
     public void EveryReferencedFinalArtifactExistsAndGenericIdentityTypesRemainAbsent()
     {
         string root = FindRepositoryRoot();
-        string audit = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string audit = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12a-final-exit-audit-evidence-completeness-amendment.md");
         string production = ReadTree(root, "HybridCPU_ISE");
         string[] artifacts =
@@ -57,7 +57,7 @@ public sealed class Rf1212aFinalExitAuditEvidenceCompletenessTests
         foreach (string artifact in artifacts)
         {
             Assert.Contains(artifact, audit, StringComparison.Ordinal);
-            Assert.True(File.Exists(Path.Combine(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", artifact)));
+            Assert.True(File.Exists(Path.Combine(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12", artifact)));
         }
 
         Assert.DoesNotMatch(@"\b(?:record\s+struct|struct|class)\s+(?:VirtualThreadId|ChannelId|DomainId|TokenId)\b", production);

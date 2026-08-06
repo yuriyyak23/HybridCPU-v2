@@ -6,10 +6,10 @@ public sealed class Rf1212dCurrentStatusDocumentationReconciliationTests
     public void CanonicalCurrentStatusDocumentsNameOnlyRf1212d()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string overview = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "00_Overview", "00_README.md");
-        string evidence = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "README.md");
-        string clarification = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "HybridCPU-v2_Ref1_Refactoring_Plan_Clarifications.md");
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string overview = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "00_Overview", "00_README.md");
+        string evidence = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "README.md");
+        string clarification = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "HybridCPU-v2_Ref1_Refactoring_Plan_Clarifications.md");
 
         const string current = "RF-12 is closed at RF-12.12h";
         Assert.Contains(current, ledger, StringComparison.Ordinal);
@@ -25,7 +25,7 @@ public sealed class Rf1212dCurrentStatusDocumentationReconciliationTests
     [Fact]
     public void LedgerSupersedesPrematureFinalVerdictsAndStaleQueueRows()
     {
-        string ledger = Read(FindRepositoryRoot(), "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read(FindRepositoryRoot(), "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
 
         Assert.Contains("RF-12.12c | superseded final exit audit", ledger, StringComparison.Ordinal);
         Assert.Contains("RF-12.12d | closed current-status reconciliation", ledger, StringComparison.Ordinal);
@@ -41,7 +41,7 @@ public sealed class Rf1212dCurrentStatusDocumentationReconciliationTests
     [Fact]
     public void ReconciliationEvidencePreservesPaperAuthorityAndSeparatesLaterGaps()
     {
-        string evidence = Read(FindRepositoryRoot(), "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string evidence = Read(FindRepositoryRoot(), "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12d-current-status-documentation-reconciliation.md");
 
         Assert.Contains("not architectural authority", evidence, StringComparison.Ordinal);

@@ -8,7 +8,7 @@ public sealed class Rf1210BridgeInventoryTests
         string guard = Read("HybridCPU_ISE.Tests", "Architecture", "Rf120ResourceIdIngressGuardTests.cs");
         string replay = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "MicroOps", "Replay", "ReplayToken.cs");
         string key = Read("HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Certificates", "ReplayPhaseSubstrate.cs");
-        string ledger = Read("Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string ledger = Read("Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
 
         Assert.Contains("JsonSerializer.Deserialize<VtId>(json)", guard, StringComparison.Ordinal);
         Assert.Contains("JsonSerializer.Deserialize<ReplayToken>(json)", replay, StringComparison.Ordinal);

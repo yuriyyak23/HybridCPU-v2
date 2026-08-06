@@ -6,10 +6,10 @@ public sealed class Rf1212bExternalAuditReconciliationTests
     public void CurrentLedgerIsClosedAndHistoricalHandoffsAreLabelled()
     {
         string root = FindRepositoryRoot();
-        string ledger = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
-        string migration = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "04_CoreMigration", "04_RF07_RF13_Core_Migration.md");
-        string clarification = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "HybridCPU-v2_Ref1_Refactoring_Plan_Clarifications.md");
-        string reconciliation = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string ledger = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "11_RF12", "00_ENTRY_STATUS_AND_ROADMAP.md");
+        string migration = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "04_CoreMigration", "04_RF07_RF13_Core_Migration.md");
+        string clarification = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "HybridCPU-v2_Ref1_Refactoring_Plan_Clarifications.md");
+        string reconciliation = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12b-external-audit-reconciliation-and-reopened-handoff.md");
 
         Assert.Contains("RF-12 is closed at RF-12.12h", ledger, StringComparison.Ordinal);
@@ -25,7 +25,7 @@ public sealed class Rf1212bExternalAuditReconciliationTests
         string root = FindRepositoryRoot();
         string scheduler = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "Scheduling", "Admission", "MicroOpScheduler.Admission.cs");
         string masks = Read(root, "HybridCPU_ISE", "CloseToHSL", "Core", "Pipeline", "MicroOps", "Types", "MicroOp.cs");
-        string reconciliation = Read(root, "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
+        string reconciliation = Read(root, "Documentation", "Documentation", "ArchitectureAuthorityRefactor", "Evidence", "RF12",
             "rf12.12b-external-audit-reconciliation-and-reopened-handoff.md");
 
         Assert.Contains("1 << lane", scheduler, StringComparison.Ordinal);
