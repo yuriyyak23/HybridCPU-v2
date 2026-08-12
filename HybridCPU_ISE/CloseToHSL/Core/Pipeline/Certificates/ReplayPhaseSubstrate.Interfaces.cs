@@ -185,6 +185,16 @@ namespace YAKSys_Hybrid_CPU.Core
             int sourceSlotId,
             int selectedLane,
             SafetyVerifier.VirtualizationAdmissionCertificate? certificate);
+
+        VirtualizationOperandCaptureResult CaptureVirtualizationOperandsAfterE1Validation(
+            ReplayPhaseContext phase,
+            SmtBundleMetadata4Way bundleMetadata,
+            VmxMicroOp carrier,
+            int sourceSlotId,
+            int selectedLane,
+            SafetyVerifier.VirtualizationAdmissionCertificate? certificate,
+            ulong rs1Value,
+            ulong restoreGeneration);
     }
 
     /// <summary>

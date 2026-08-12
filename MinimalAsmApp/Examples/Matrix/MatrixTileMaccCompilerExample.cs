@@ -16,10 +16,10 @@ public sealed class MatrixTileMaccCompilerExample : ICpuExample
 
     public CpuExampleResult Run() =>
         MatrixTileCompilerExampleSupport.Run(
-            "MTILE_MACC emitted through CompileMtileMacc/AppAsmFacade.MtileMacc with explicit policy sidebands.",
-            "CompileMtileMacc",
+            "MTILE_MACC emitted through CompileMtileMaccWithDecision with explicit policy sidebands.",
+            "CompileMtileMaccWithDecision",
             Instruction.MTILE_MACC,
-            facade => facade.MtileMacc(
+            context => context.CompileMtileMaccWithDecision(
                 CompilerMatrixTileTileOperand.Create(1),
                 CompilerMatrixTileTileOperand.Create(2),
                 CompilerMatrixTileTileOperand.Create(3),

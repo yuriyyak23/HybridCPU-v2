@@ -137,6 +137,8 @@ public sealed partial class VmxCompatibilityAdmissionService
                 projection.Reason);
         }
 
+        bool exactPrivilegedExecutionStateField = request.FieldId is
+            (ushort)VmcsField.GuestCr0 or (ushort)VmcsField.GuestCr4;
         RuntimeBoundaryAdmissionResult admission = _runtimeAdmission.Validate(
             new RuntimeBoundaryAdmissionRequest(
                 Context: request.Context,
@@ -146,7 +148,9 @@ public sealed partial class VmxCompatibilityAdmissionService
                     DomainRuntimeOperationKind.ReadCompatibilityProjection,
                     requiresCapabilityGrant: false,
                     isProjectionOnly: true),
-                DomainBoundary: DomainBoundaryDescriptor.FullDomainRuntime,
+                DomainBoundary: exactPrivilegedExecutionStateField
+                    ? DomainBoundaryDescriptor.ExecutionOnly
+                    : DomainBoundaryDescriptor.FullDomainRuntime,
                 CapabilityRequirement: CapabilityBoundaryRequirement.None,
                 EvidenceRequirement: EvidenceBoundaryRequirement.GuestVisible(
                     EvidenceVisibilityClass.CompatibilityAlias)));

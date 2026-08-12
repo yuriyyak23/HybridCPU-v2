@@ -759,6 +759,9 @@ namespace YAKSys_Hybrid_CPU
                     private uint _vectorStreamDirtyVtMask;
                     private RetireWindowTypedEffectKind _typedEffectKind;
                     private bool _atomicEffectCaptured;
+                    private readonly Core.ArchitecturalCompletionCandidate[]
+                        _architecturalCompletionCandidates;
+                    private int _architecturalCompletionCandidateCount;
 
                     public RetireWindowBatch(
                         Span<RetireRecord> retireRecords,
@@ -780,11 +783,34 @@ namespace YAKSys_Hybrid_CPU
                         _vectorStreamDirtyVtMask = 0;
                         _typedEffectKind = RetireWindowTypedEffectKind.None;
                         _atomicEffectCaptured = false;
+                        _architecturalCompletionCandidates =
+                            new Core.ArchitecturalCompletionCandidate[effects.Length];
+                        _architecturalCompletionCandidateCount = 0;
                     }
 
                     public ReadOnlySpan<RetireRecord> RetireRecords => _retireRecords[.._retireRecordCount];
                     public ReadOnlySpan<RetireWindowEffect> Effects => _effects[.._effectCount];
                     public bool AssistBoundaryKilledThisRetireWindow => _assistBoundaryKilledThisRetireWindow;
+
+                    public void CaptureArchitecturalCompletionCandidate(
+                        in Core.ArchitecturalCompletionCandidate candidate)
+                    {
+                        if ((uint)_architecturalCompletionCandidateCount >=
+                            (uint)_architecturalCompletionCandidates.Length)
+                        {
+                            throw new InvalidOperationException(
+                                "Architectural completion candidate capacity was exhausted.");
+                        }
+
+                        _architecturalCompletionCandidates[
+                            _architecturalCompletionCandidateCount++] = candidate;
+                    }
+
+                    public ReadOnlySpan<Core.ArchitecturalCompletionCandidate>
+                        ArchitecturalCompletionCandidates =>
+                            _architecturalCompletionCandidates.AsSpan(
+                                0,
+                                _architecturalCompletionCandidateCount);
 
                     public Core.Pipeline.PipelineEvent GetPipelineEventPayload(byte pipelineEventSlot)
                     {

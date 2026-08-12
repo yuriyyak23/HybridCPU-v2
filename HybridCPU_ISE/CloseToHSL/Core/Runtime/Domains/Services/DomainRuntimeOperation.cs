@@ -13,6 +13,7 @@ public enum DomainRuntimeOperationKind : byte
     SaveDomainState = 8,
     RestoreDomainState = 9,
     ProjectCompatibilityTrap = 10,
+    InvokeHypercall = 11,
 }
 
 public enum DomainRuntimeOperationSource : byte
@@ -20,6 +21,13 @@ public enum DomainRuntimeOperationSource : byte
     CompatibilityFrontend = 0,
     RuntimeService = 1,
     MigrationReplay = 2,
+}
+
+public enum DomainRuntimeOperationAuthorityClass : byte
+{
+    ProjectionOnly = 0,
+    NoStateExecution = 1,
+    AuthoritativeMutation = 2,
 }
 
 public sealed partial class DomainRuntimeOperation
@@ -38,11 +46,26 @@ public sealed partial class DomainRuntimeOperation
         DomainRuntimeOperationSource source,
         bool requiresCapabilityGrant,
         bool isProjectionOnly)
+        : this(
+            kind,
+            source,
+            requiresCapabilityGrant,
+            isProjectionOnly
+                ? DomainRuntimeOperationAuthorityClass.ProjectionOnly
+                : DomainRuntimeOperationAuthorityClass.AuthoritativeMutation)
+    {
+    }
+
+    public DomainRuntimeOperation(
+        DomainRuntimeOperationKind kind,
+        DomainRuntimeOperationSource source,
+        bool requiresCapabilityGrant,
+        DomainRuntimeOperationAuthorityClass authorityClass)
     {
         Kind = kind;
         Source = source;
         RequiresCapabilityGrant = requiresCapabilityGrant;
-        IsProjectionOnly = isProjectionOnly;
+        AuthorityClass = authorityClass;
     }
 
     public DomainRuntimeOperationKind Kind { get; }
@@ -51,7 +74,13 @@ public sealed partial class DomainRuntimeOperation
 
     public bool RequiresCapabilityGrant { get; }
 
-    public bool IsProjectionOnly { get; }
+    public DomainRuntimeOperationAuthorityClass AuthorityClass { get; }
+
+    public bool IsProjectionOnly =>
+        AuthorityClass == DomainRuntimeOperationAuthorityClass.ProjectionOnly;
+
+    public bool IsNoStateExecution =>
+        AuthorityClass == DomainRuntimeOperationAuthorityClass.NoStateExecution;
 
     public static DomainRuntimeOperation FromCompatibilityFrontend(
         DomainRuntimeOperationKind kind,
@@ -64,6 +93,6 @@ public sealed partial class DomainRuntimeOperation
             isProjectionOnly);
 
     public bool CanMutateAuthoritativeState =>
-        !IsProjectionOnly &&
+        AuthorityClass == DomainRuntimeOperationAuthorityClass.AuthoritativeMutation &&
         Source != DomainRuntimeOperationSource.MigrationReplay;
 }

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using HybridCPU.Compiler.Core.IR;
+using HybridCPU.Compiler.Core.IR.Authority;
+using HybridCPU.Compiler.Core.IR.Intent;
+using HybridCPU.Compiler.Core.IR.Lowering.Production;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core.Contracts;
@@ -16,6 +19,15 @@ namespace HybridCPU.Compiler.Core
         private const int MaxLocalListSchedulingInstructionsPerBlock = 48;
 
         /// <summary>
+        /// Routes an already constructed compiler carrier package through the
+        /// exact production-provider boundary. The result is compiler evidence
+        /// only; runtime admission and every lifecycle authority remain pending.
+        /// </summary>
+        public static CompilerProductionDispatchResult DispatchProductionPackage(
+            CompilerCompiledProgramDispatchRequest request) =>
+            CompilerProductionLoweringDispatcher.Default.DispatchCompiledProgram(request);
+
+        /// <summary>
         /// Compiles a VLIW instruction stream through the full canonical pipeline.
         /// </summary>
         public static HybridCpuCompiledProgram CompileProgram(
@@ -27,7 +39,8 @@ namespace HybridCPU.Compiler.Core
             VliwBundleAnnotations? bundleAnnotations = null,
             ulong domainTag = 0,
             Action<string, string>? progressObserver = null,
-            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null)
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null,
+            IReadOnlyList<CompilerVirtualizationIntentBinding>? virtualizationIntentBindings = null)
         {
             ValidateFrontendMode(frontendMode);
 
@@ -47,7 +60,8 @@ namespace HybridCPU.Compiler.Core
                 entryPointDeclarations,
                 bundleAnnotations: bundleAnnotations,
                 domainTag: domainTag,
-                controlFlowTargetReferences: controlFlowTargetReferences);
+                controlFlowTargetReferences: controlFlowTargetReferences,
+                virtualizationIntentBindings: virtualizationIntentBindings);
             progressObserver?.Invoke("IrBuild", $"IR contains {program.Instructions.Count} instruction(s) across {program.BasicBlocks.Count} basic block(s).");
 
             progressObserver?.Invoke("ScheduleStarting", $"Scheduling {program.BasicBlocks.Count} basic block(s).");
@@ -106,7 +120,8 @@ namespace HybridCPU.Compiler.Core
             VliwBundleAnnotations? bundleAnnotations = null,
             ulong domainTag = 0,
             Action<string, string>? progressObserver = null,
-            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null)
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null,
+            IReadOnlyList<CompilerVirtualizationIntentBinding>? virtualizationIntentBindings = null)
         {
             HybridCpuCompiledProgram compiledProgram = CompileProgram(
                 virtualThreadId,
@@ -117,7 +132,8 @@ namespace HybridCPU.Compiler.Core
                 bundleAnnotations,
                 domainTag,
                 progressObserver,
-                controlFlowTargetReferences);
+                controlFlowTargetReferences,
+                virtualizationIntentBindings);
             return EmitProgram(compiledProgram, baseAddress, progressObserver);
         }
 

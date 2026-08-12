@@ -1,6 +1,10 @@
 using System;
 using System.Buffers.Binary;
 using HybridCPU.Compiler.Core.IR;
+using HybridCPU.Compiler.Core.IR.Authority;
+using HybridCPU.Compiler.Core.IR.Contours;
+using HybridCPU.Compiler.Core.IR.Intent;
+using HybridCPU.Compiler.Core.IR.Lowering;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Arch;
 using YAKSys_Hybrid_CPU.Core;
@@ -318,7 +322,12 @@ internal sealed partial class SimpleAsmApp
                 AvailableRequirements = CompilerBackendLoweringContract.FutureDscRequiredRequirements,
                 AssumesHardwareCoherence = true
             });
-        Require(!dscCoherence.IsAllowed, "DSC production lowering accepted hardware coherence assumption.");
+        CompilerLoweringDecision dscCoherenceDecision = AdaptBackendObservation(
+            dscCoherence,
+            SemanticIntentKind.DmaStreamCompute,
+            ExecutionContourKind.DmaStreamComputeLane6,
+            "EvaluateProductionDscLowering:hardware-coherence");
+        RequireRejected(dscCoherenceDecision, "DSC production lowering accepted hardware coherence assumption.");
 
         CompilerBackendLoweringDecision l7Coherence = CompilerBackendLoweringContract.EvaluateProductionL7Lowering(
             new CompilerBackendLoweringRequest
@@ -328,9 +337,14 @@ internal sealed partial class SimpleAsmApp
                 AvailableRequirements = CompilerBackendLoweringContract.FutureL7RequiredRequirements,
                 AssumesHardwareCoherence = true
             });
-        Require(!l7Coherence.IsAllowed, "L7 production lowering accepted hardware coherence assumption.");
+        CompilerLoweringDecision l7CoherenceDecision = AdaptBackendObservation(
+            l7Coherence,
+            SemanticIntentKind.ExternalAcceleratorCommand,
+            ExecutionContourKind.L7SdcLane7,
+            "EvaluateProductionL7Lowering:hardware-coherence");
+        RequireRejected(l7CoherenceDecision, "L7 production lowering accepted hardware coherence assumption.");
 
-        return $"dscCarrierNoConflictIommu=true; l7CarrierNoConflictCache=true; compilerNoRuntimeLowering=true; dscCoherenceAllowed={dscCoherence.IsAllowed}; l7CoherenceAllowed={l7Coherence.IsAllowed}";
+        return $"dscCarrierNoConflictIommu=true; l7CarrierNoConflictCache=true; compilerNoRuntimeLowering=true; dscCoherenceStatus={dscCoherenceDecision.ProductionLoweringStatus}; l7CoherenceStatus={l7CoherenceDecision.ProductionLoweringStatus}";
     }
 
     private static string ProbeL7FailClosedNoRd()
@@ -408,7 +422,12 @@ internal sealed partial class SimpleAsmApp
                     State = CompilerBackendCapabilityState.DescriptorOnly,
                     UsesDescriptorEvidenceOnly = true
                 });
-        Require(!dscDescriptorOnly.IsAllowed, "Descriptor-only DSC evidence became production lowering.");
+        CompilerLoweringDecision dscDescriptorDecision = AdaptBackendObservation(
+            dscDescriptorOnly,
+            SemanticIntentKind.DmaStreamCompute,
+            ExecutionContourKind.DmaStreamComputeLane6,
+            "EvaluateProductionDscLowering:descriptor-only");
+        RequireRejected(dscDescriptorDecision, "Descriptor-only DSC evidence became production lowering.");
 
         CompilerBackendLoweringDecision dscParserOnly =
             CompilerBackendLoweringContract.EvaluateProductionDscLowering(
@@ -419,7 +438,12 @@ internal sealed partial class SimpleAsmApp
                     AvailableRequirements = CompilerBackendLoweringContract.FutureDscRequiredRequirements,
                     UsesParserValidationOnly = true
                 });
-        Require(!dscParserOnly.IsAllowed, "Parser-only DSC evidence became production lowering.");
+        CompilerLoweringDecision dscParserDecision = AdaptBackendObservation(
+            dscParserOnly,
+            SemanticIntentKind.DmaStreamCompute,
+            ExecutionContourKind.DmaStreamComputeLane6,
+            "EvaluateProductionDscLowering:parser-only");
+        RequireRejected(dscParserDecision, "Parser-only DSC evidence became production lowering.");
 
         CompilerBackendLoweringDecision dscPartial =
             CompilerBackendLoweringContract.EvaluateProductionDscLowering(
@@ -430,7 +454,12 @@ internal sealed partial class SimpleAsmApp
                     AvailableRequirements = CompilerBackendLoweringContract.FutureDscRequiredRequirements,
                     AssumesSuccessfulPartialCompletion = true
                 });
-        Require(!dscPartial.IsAllowed, "DSC production lowering accepted successful partial completion.");
+        CompilerLoweringDecision dscPartialDecision = AdaptBackendObservation(
+            dscPartial,
+            SemanticIntentKind.DmaStreamCompute,
+            ExecutionContourKind.DmaStreamComputeLane6,
+            "EvaluateProductionDscLowering:partial-completion");
+        RequireRejected(dscPartialDecision, "DSC production lowering accepted successful partial completion.");
 
         CompilerBackendLoweringDecision l7ModelOnly =
             CompilerBackendLoweringContract.EvaluateProductionL7Lowering(
@@ -440,7 +469,12 @@ internal sealed partial class SimpleAsmApp
                     State = CompilerBackendCapabilityState.ModelOnly,
                     UsesModelOrTestHelper = true
                 });
-        Require(!l7ModelOnly.IsAllowed, "Model-only L7 evidence became production lowering.");
+        CompilerLoweringDecision l7ModelDecision = AdaptBackendObservation(
+            l7ModelOnly,
+            SemanticIntentKind.ExternalAcceleratorCommand,
+            ExecutionContourKind.L7SdcLane7,
+            "EvaluateProductionL7Lowering:model-only");
+        RequireRejected(l7ModelDecision, "Model-only L7 evidence became production lowering.");
 
         CompilerBackendLoweringDecision l7FakeHelper =
             CompilerBackendLoweringContract.EvaluateProductionL7Lowering(
@@ -451,14 +485,58 @@ internal sealed partial class SimpleAsmApp
                     AvailableRequirements = CompilerBackendLoweringContract.FutureL7RequiredRequirements,
                     UsesModelOrTestHelper = true
                 });
-        Require(!l7FakeHelper.IsAllowed, "Fake/model helper L7 evidence became production lowering.");
+        CompilerLoweringDecision l7FakeHelperDecision = AdaptBackendObservation(
+            l7FakeHelper,
+            SemanticIntentKind.ExternalAcceleratorCommand,
+            ExecutionContourKind.L7SdcLane7,
+            "EvaluateProductionL7Lowering:model-helper");
+        RequireRejected(l7FakeHelperDecision, "Fake/model helper L7 evidence became production lowering.");
 
-        Require(!CompilerBackendLoweringContract.CanSelectForProductionLowering(CompilerBackendCapabilityState.DescriptorOnly), "DescriptorOnly is production-selectable.");
-        Require(!CompilerBackendLoweringContract.CanSelectForProductionLowering(CompilerBackendCapabilityState.ParserOnly), "ParserOnly is production-selectable.");
-        Require(!CompilerBackendLoweringContract.CanSelectForProductionLowering(CompilerBackendCapabilityState.ModelOnly), "ModelOnly is production-selectable.");
-        Require(!CompilerBackendLoweringContract.CanSelectForProductionLowering(CompilerBackendCapabilityState.ExecutableExperimental), "ExecutableExperimental is production-selectable.");
+        RequireRejected(ObserveDscProductionState(CompilerBackendCapabilityState.DescriptorOnly), "DescriptorOnly is production-selectable.");
+        RequireRejected(ObserveDscProductionState(CompilerBackendCapabilityState.ParserOnly), "ParserOnly is production-selectable.");
+        RequireRejected(ObserveDscProductionState(CompilerBackendCapabilityState.ModelOnly), "ModelOnly is production-selectable.");
+        RequireRejected(ObserveDscProductionState(CompilerBackendCapabilityState.ExecutableExperimental), "ExecutableExperimental is production-selectable.");
 
-        return $"dscDescriptorAllowed={dscDescriptorOnly.IsAllowed}; dscParserAllowed={dscParserOnly.IsAllowed}; dscPartialAllowed={dscPartial.IsAllowed}; l7ModelAllowed={l7ModelOnly.IsAllowed}; l7FakeAllowed={l7FakeHelper.IsAllowed}";
+        return $"dscDescriptorStatus={dscDescriptorDecision.ProductionLoweringStatus}; dscParserStatus={dscParserDecision.ProductionLoweringStatus}; dscPartialStatus={dscPartialDecision.ProductionLoweringStatus}; l7ModelStatus={l7ModelDecision.ProductionLoweringStatus}; l7FakeStatus={l7FakeHelperDecision.ProductionLoweringStatus}";
+    }
+
+    private static CompilerLoweringDecision ObserveDscProductionState(
+        CompilerBackendCapabilityState state)
+    {
+        CompilerBackendLoweringDecision observation =
+            CompilerBackendLoweringContract.EvaluateProductionDscLowering(
+                new CompilerBackendLoweringRequest
+                {
+                    Surface = CompilerBackendLoweringSurface.Lane6DmaStreamCompute,
+                    State = state,
+                    AvailableRequirements = CompilerBackendLoweringContract.FutureDscRequiredRequirements
+                });
+
+        return AdaptBackendObservation(
+            observation,
+            SemanticIntentKind.DmaStreamCompute,
+            ExecutionContourKind.DmaStreamComputeLane6,
+            $"EvaluateProductionDscLowering:state:{state}");
+    }
+
+    private static CompilerLoweringDecision AdaptBackendObservation(
+        CompilerBackendLoweringDecision observation,
+        SemanticIntentKind intentKind,
+        ExecutionContourKind contourKind,
+        string sourceApi) =>
+        CompilerLoweringDecision.FromLegacyBackendLoweringDecision(
+            observation,
+            sourceApi,
+            intentKind,
+            contourKind);
+
+    private static void RequireRejected(CompilerLoweringDecision decision, string message)
+    {
+        Require(
+            decision.DecisionKind == CompilerLoweringDecisionKind.Rejected &&
+            decision.ProductionLoweringStatus == CompilerProductionLoweringStatus.Rejected &&
+            decision.ExecutionClaim == CompilerExecutionClaim.NoExecutionClaim,
+            message);
     }
 
     private static string ProbePhase12MigrationGate()

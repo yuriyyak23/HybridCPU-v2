@@ -16,14 +16,14 @@ public sealed class NonVmxBooleanInvertExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunAppFacadeExample(
-            "Compiler facade emitted canonical ANDN, ORN, and XNOR carriers.",
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
+            "Typed scalar compiler emitted canonical ANDN, ORN, and XNOR carriers.",
             [
                 new(
                     "ANDN",
-                    "IAppAsmFacade.AndWithInvertedSecond",
+                    "HybridCpuNonVmxScalarCompiler.AndWithInvertedSecond",
                     Instruction.ANDN,
-                    facade => facade.AndWithInvertedSecond(
+                    compiler => compiler.AndWithInvertedSecond(
                         new AsmRegister(11),
                         new AsmRegister(1),
                         new AsmRegister(2)),
@@ -33,9 +33,9 @@ public sealed class NonVmxBooleanInvertExample : ICpuExample
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "ORN",
-                    "IAppAsmFacade.OrWithInvertedSecond",
+                    "HybridCpuNonVmxScalarCompiler.OrWithInvertedSecond",
                     Instruction.ORN,
-                    facade => facade.OrWithInvertedSecond(
+                    compiler => compiler.OrWithInvertedSecond(
                         new AsmRegister(12),
                         new AsmRegister(1),
                         new AsmRegister(2)),
@@ -45,9 +45,9 @@ public sealed class NonVmxBooleanInvertExample : ICpuExample
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "XNOR",
-                    "IAppAsmFacade.ExclusiveNor",
+                    "HybridCpuNonVmxScalarCompiler.ExclusiveNor",
                     Instruction.XNOR,
-                    facade => facade.ExclusiveNor(
+                    compiler => compiler.ExclusiveNor(
                         new AsmRegister(13),
                         new AsmRegister(1),
                         new AsmRegister(2)),

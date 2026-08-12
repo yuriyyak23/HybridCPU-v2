@@ -16,41 +16,41 @@ public sealed class NonVmxScalarMinMaxExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunAppFacadeExample(
-            "Compiler facade emitted canonical signed and unsigned scalar min/max carriers.",
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
+            "Typed scalar compiler emitted canonical signed and unsigned scalar min/max carriers.",
             [
                 new(
                     "MIN",
-                    "IAppAsmFacade.ScalarMinSigned",
+                    "HybridCpuNonVmxScalarCompiler.ScalarMinSigned",
                     Instruction.MIN,
-                    facade => facade.ScalarMinSigned(new AsmRegister(14), new AsmRegister(1), new AsmRegister(2)),
+                    compiler => compiler.ScalarMinSigned(new AsmRegister(14), new AsmRegister(1), new AsmRegister(2)),
                     ExpectedRd: 14,
                     ExpectedRs1: 1,
                     ExpectedRs2: 2,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "MAX",
-                    "IAppAsmFacade.ScalarMaxSigned",
+                    "HybridCpuNonVmxScalarCompiler.ScalarMaxSigned",
                     Instruction.MAX,
-                    facade => facade.ScalarMaxSigned(new AsmRegister(15), new AsmRegister(1), new AsmRegister(2)),
+                    compiler => compiler.ScalarMaxSigned(new AsmRegister(15), new AsmRegister(1), new AsmRegister(2)),
                     ExpectedRd: 15,
                     ExpectedRs1: 1,
                     ExpectedRs2: 2,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "MINU",
-                    "IAppAsmFacade.ScalarMinUnsigned",
+                    "HybridCpuNonVmxScalarCompiler.ScalarMinUnsigned",
                     Instruction.MINU,
-                    facade => facade.ScalarMinUnsigned(new AsmRegister(16), new AsmRegister(1), new AsmRegister(2)),
+                    compiler => compiler.ScalarMinUnsigned(new AsmRegister(16), new AsmRegister(1), new AsmRegister(2)),
                     ExpectedRd: 16,
                     ExpectedRs1: 1,
                     ExpectedRs2: 2,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "MAXU",
-                    "IAppAsmFacade.ScalarMaxUnsigned",
+                    "HybridCpuNonVmxScalarCompiler.ScalarMaxUnsigned",
                     Instruction.MAXU,
-                    facade => facade.ScalarMaxUnsigned(new AsmRegister(17), new AsmRegister(1), new AsmRegister(2)),
+                    compiler => compiler.ScalarMaxUnsigned(new AsmRegister(17), new AsmRegister(1), new AsmRegister(2)),
                     ExpectedRd: 17,
                     ExpectedRs1: 1,
                     ExpectedRs2: 2,

@@ -6,6 +6,12 @@ public readonly record struct DomainBoundaryDescriptor(
     bool RequiresMemoryDomain,
     bool RequiresIoDomain)
 {
+    public static DomainBoundaryDescriptor ExecutionOnly { get; } =
+        new(
+            RequiresExecutionDomain: true,
+            RequiresMemoryDomain: false,
+            RequiresIoDomain: false);
+
     public static DomainBoundaryDescriptor FullDomainRuntime { get; } =
         new(
             RequiresExecutionDomain: true,

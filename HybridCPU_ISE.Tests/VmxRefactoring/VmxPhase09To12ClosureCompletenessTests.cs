@@ -114,6 +114,7 @@ public sealed class VmxPhase09To12ClosureCompletenessTests
             "HybridCPU_ISE",
             "docs",
             "ref2",
+            "Old",
             "VirtualiztionRefactoringNew",
             fileName));
 

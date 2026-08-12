@@ -16,50 +16,50 @@ public sealed class NonVmxScalarExtensionExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunAppFacadeExample(
-            "Compiler facade emitted canonical byte/half/word scalar extension carriers.",
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
+            "Typed scalar compiler emitted canonical byte/half/word scalar extension carriers.",
             [
                 new(
                     "SEXT.B",
-                    "IAppAsmFacade.SignExtendByte",
+                    "HybridCpuNonVmxScalarCompiler.SignExtendByte",
                     Instruction.SEXT_B,
-                    facade => facade.SignExtendByte(new AsmRegister(20), new AsmRegister(1)),
+                    compiler => compiler.SignExtendByte(new AsmRegister(20), new AsmRegister(1)),
                     ExpectedRd: 20,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "SEXT.H",
-                    "IAppAsmFacade.SignExtendHalf",
+                    "HybridCpuNonVmxScalarCompiler.SignExtendHalf",
                     Instruction.SEXT_H,
-                    facade => facade.SignExtendHalf(new AsmRegister(21), new AsmRegister(1)),
+                    compiler => compiler.SignExtendHalf(new AsmRegister(21), new AsmRegister(1)),
                     ExpectedRd: 21,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "ZEXT.H",
-                    "IAppAsmFacade.ZeroExtendHalf",
+                    "HybridCpuNonVmxScalarCompiler.ZeroExtendHalf",
                     Instruction.ZEXT_H,
-                    facade => facade.ZeroExtendHalf(new AsmRegister(22), new AsmRegister(1)),
+                    compiler => compiler.ZeroExtendHalf(new AsmRegister(22), new AsmRegister(1)),
                     ExpectedRd: 22,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "SEXT.W",
-                    "IAppAsmFacade.SignExtendWord",
+                    "HybridCpuNonVmxScalarCompiler.SignExtendWord",
                     Instruction.SEXT_W,
-                    facade => facade.SignExtendWord(new AsmRegister(23), new AsmRegister(1)),
+                    compiler => compiler.SignExtendWord(new AsmRegister(23), new AsmRegister(1)),
                     ExpectedRd: 23,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,
                     ExpectedDataType: DataTypeEnum.INT32),
                 new(
                     "ZEXT.W",
-                    "IAppAsmFacade.ZeroExtendWord",
+                    "HybridCpuNonVmxScalarCompiler.ZeroExtendWord",
                     Instruction.ZEXT_W,
-                    facade => facade.ZeroExtendWord(new AsmRegister(24), new AsmRegister(1)),
+                    compiler => compiler.ZeroExtendWord(new AsmRegister(24), new AsmRegister(1)),
                     ExpectedRd: 24,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,

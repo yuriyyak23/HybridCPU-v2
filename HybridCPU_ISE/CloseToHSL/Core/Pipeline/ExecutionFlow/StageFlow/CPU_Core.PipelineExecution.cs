@@ -369,6 +369,27 @@ namespace YAKSys_Hybrid_CPU
                         ref retireBatch,
                         capturedRetireEffects);
 
+                    ulong exactHypercallRetireWindowIdentity = _nextDomainHypercallRetireWindowIdentity++;
+                    if (exactHypercallRetireWindowIdentity == 0)
+                        exactHypercallRetireWindowIdentity = _nextDomainHypercallRetireWindowIdentity++;
+                    ulong exactHypercallRetireOrderEpoch = _domainHypercallRetireOrderEpoch++;
+                    if (exactHypercallRetireOrderEpoch == 0)
+                        exactHypercallRetireOrderEpoch = _domainHypercallRetireOrderEpoch++;
+                    for (int ri = 0; ri < retireLaneCount; ri++)
+                    {
+                        byte laneIndex = retireOrder[ri];
+                        ScalarWriteBackLaneState lane = pipeWB.GetLane(laneIndex);
+                        if (lane.IsOccupied && IsExactHypercallPendingCanonicalRetire(lane.MicroOp))
+                        {
+                            IssueExactHypercallRetireGrant(
+                                lane,
+                                laneIndex,
+                                checked((byte)ri),
+                                exactHypercallRetireWindowIdentity,
+                                exactHypercallRetireOrderEpoch);
+                        }
+                    }
+
                     // Preserve existing selected-prefix publication order after complete
                     // prevalidation. Faulting and younger lanes never entered this batch.
                     for (int ri = 0; ri < retireLaneCount; ri++)

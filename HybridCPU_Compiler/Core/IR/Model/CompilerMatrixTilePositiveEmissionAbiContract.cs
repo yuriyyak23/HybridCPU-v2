@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HybridCPU.Compiler.Core.API.Facade;
 using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Arch;
@@ -346,25 +345,25 @@ public static class CompilerMatrixTilePositiveEmissionAbiContract
             "MTILE_LOAD",
             InstructionsEnum.MTILE_LOAD,
             CompilerMatrixTilePositiveEmissionKind.MtileLoad,
-            nameof(HybridCpuThreadCompilerContext.CompileMtileLoad),
+            nameof(HybridCpuThreadCompilerContext.CompileMtileLoadWithDecision),
             "tile destination, canonical tile descriptor, tile memory/fault ABI inputs"),
         Create(
             "MTILE_STORE",
             InstructionsEnum.MTILE_STORE,
             CompilerMatrixTilePositiveEmissionKind.MtileStore,
-            nameof(HybridCpuThreadCompilerContext.CompileMtileStore),
+            nameof(HybridCpuThreadCompilerContext.CompileMtileStoreWithDecision),
             "tile source, canonical tile descriptor, tile memory/fault ABI inputs"),
         Create(
             "MTILE_MACC",
             InstructionsEnum.MTILE_MACC,
             CompilerMatrixTilePositiveEmissionKind.MtileMacc,
-            nameof(HybridCpuThreadCompilerContext.CompileMtileMacc),
+            nameof(HybridCpuThreadCompilerContext.CompileMtileMaccWithDecision),
             "source tiles, accumulator tile/result footprint, accumulator policy ABI"),
         Create(
             "MTRANSPOSE",
             InstructionsEnum.MTRANSPOSE,
             CompilerMatrixTilePositiveEmissionKind.Mtranspose,
-            nameof(HybridCpuThreadCompilerContext.CompileMtranspose),
+            nameof(HybridCpuThreadCompilerContext.CompileMtransposeWithDecision),
             "source/destination tile operands, transpose policy ABI")
     ];
 
@@ -387,20 +386,28 @@ public static class CompilerMatrixTilePositiveEmissionAbiContract
 
     public static IReadOnlyList<CompilerMatrixTilePositiveEmissionRow> Rows => RowTable;
 
+    public static IReadOnlySet<string> TypedPublicHelperNames { get; } =
+        new HashSet<string>(
+            RowTable.Select(static row => row.HelperName),
+            StringComparer.Ordinal);
+
+    public static IReadOnlySet<string> CompatibilityHelperNames { get; } =
+        new HashSet<string>(
+            [
+                "CompileMtileLoad",
+                "CompileMtileStore",
+                "CompileMtileMacc",
+                "CompileMtranspose",
+                "MtileLoad",
+                "MtileStore",
+                "MtileMacc",
+                "Mtranspose"
+            ],
+            StringComparer.Ordinal);
+
     public static IReadOnlySet<string> PublicHelperNames { get; } =
         new HashSet<string>(
-            RowTable.Select(static row => row.HelperName)
-                .Concat(
-                [
-                    nameof(HybridCpuThreadCompilerContext.CompileMtileLoadWithDecision),
-                    nameof(HybridCpuThreadCompilerContext.CompileMtileStoreWithDecision),
-                    nameof(HybridCpuThreadCompilerContext.CompileMtileMaccWithDecision),
-                    nameof(HybridCpuThreadCompilerContext.CompileMtransposeWithDecision),
-                    nameof(IAppAsmFacade.MtileLoad),
-                    nameof(IAppAsmFacade.MtileStore),
-                    nameof(IAppAsmFacade.MtileMacc),
-                    nameof(IAppAsmFacade.Mtranspose)
-                ]),
+            TypedPublicHelperNames.Concat(CompatibilityHelperNames),
             StringComparer.Ordinal);
 
     public static bool IsMatrixTilePositiveOpcode(uint opCode) =>

@@ -16,10 +16,10 @@ public sealed class MatrixTileLoadCompilerExample : ICpuExample
 
     public CpuExampleResult Run() =>
         MatrixTileCompilerExampleSupport.Run(
-            "MTILE_LOAD emitted through CompileMtileLoad/AppAsmFacade.MtileLoad.",
-            "CompileMtileLoad",
+            "MTILE_LOAD emitted through CompileMtileLoadWithDecision.",
+            "CompileMtileLoadWithDecision",
             Instruction.MTILE_LOAD,
-            facade => facade.MtileLoad(
+            context => context.CompileMtileLoadWithDecision(
                 CompilerMatrixTileTileOperand.Create(1),
                 MatrixTileCompilerExampleSupport.CreateDescriptor(),
                 MatrixTileCompilerExampleSupport.CreateMemoryFault(0x7000)),

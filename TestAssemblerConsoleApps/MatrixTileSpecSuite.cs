@@ -1194,21 +1194,21 @@ internal sealed class MatrixTileSpecSuite
                 };
             var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
 
-            context.CompileMtileLoad(
+            context.CompileMtileLoadWithDecision(
                 CompilerMatrixTileTileOperand.Create(1),
                 descriptor,
                 CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress));
-            context.CompileMtileStore(
+            context.CompileMtileStoreWithDecision(
                 CompilerMatrixTileTileOperand.Create(1),
                 descriptor,
                 CompilerMatrixTileMemoryFaultAbiInputs.Create(StoreDestinationBaseAddress));
-            context.CompileMtileMacc(
+            context.CompileMtileMaccWithDecision(
                 CompilerMatrixTileTileOperand.Create(1),
                 CompilerMatrixTileTileOperand.Create(2),
                 CompilerMatrixTileTileOperand.Create(3),
                 descriptor,
                 accumulatorPolicy);
-            context.CompileMtranspose(
+            context.CompileMtransposeWithDecision(
                 CompilerMatrixTileTileOperand.Create(3),
                 CompilerMatrixTileTileOperand.Create(4),
                 descriptor,
@@ -1283,21 +1283,21 @@ internal sealed class MatrixTileSpecSuite
                 };
             var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
 
-            context.CompileMtileLoad(
+            context.CompileMtileLoadWithDecision(
                 CompilerMatrixTileTileOperand.Create(101),
                 descriptor,
                 CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress));
-            context.CompileMtileStore(
+            context.CompileMtileStoreWithDecision(
                 CompilerMatrixTileTileOperand.Create(101),
                 descriptor,
                 CompilerMatrixTileMemoryFaultAbiInputs.Create(StoreDestinationBaseAddress));
-            context.CompileMtileMacc(
+            context.CompileMtileMaccWithDecision(
                 CompilerMatrixTileTileOperand.Create(101),
                 CompilerMatrixTileTileOperand.Create(102),
                 CompilerMatrixTileTileOperand.Create(103),
                 descriptor,
                 accumulatorPolicy);
-            context.CompileMtranspose(
+            context.CompileMtransposeWithDecision(
                 CompilerMatrixTileTileOperand.Create(101),
                 CompilerMatrixTileTileOperand.Create(104),
                 descriptor,
@@ -1414,21 +1414,21 @@ internal sealed class MatrixTileSpecSuite
 
             HybridCpuCompiledProgram compiledProgram = BuildCompilerProgram(context =>
             {
-                context.CompileMtileLoad(
+                context.CompileMtileLoadWithDecision(
                     CompilerMatrixTileTileOperand.Create(21),
                     descriptor,
                     CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress));
-                context.CompileMtileStore(
+                context.CompileMtileStoreWithDecision(
                     CompilerMatrixTileTileOperand.Create(22),
                     descriptor,
                     CompilerMatrixTileMemoryFaultAbiInputs.Create(StoreDestinationBaseAddress));
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(23),
                     CompilerMatrixTileTileOperand.Create(24),
                     CompilerMatrixTileTileOperand.Create(25),
                     descriptor,
                     accumulatorPolicy);
-                context.CompileMtranspose(
+                context.CompileMtransposeWithDecision(
                     CompilerMatrixTileTileOperand.Create(26),
                     CompilerMatrixTileTileOperand.Create(27),
                     descriptor,
@@ -1600,7 +1600,7 @@ internal sealed class MatrixTileSpecSuite
             int negativeCompilerEmissions = 0;
 
             HybridCpuCompiledProgram missingMaccNumeric = BuildCompilerProgram(context =>
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(301),
                     CompilerMatrixTileTileOperand.Create(302),
                     CompilerMatrixTileTileOperand.Create(303),
@@ -1616,7 +1616,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram tamperedMaccNumeric = BuildCompilerProgram(context =>
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(311),
                     CompilerMatrixTileTileOperand.Create(312),
                     CompilerMatrixTileTileOperand.Create(313),
@@ -1638,7 +1638,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram mismatchedMaccLayout = BuildCompilerProgram(context =>
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(321),
                     CompilerMatrixTileTileOperand.Create(322),
                     CompilerMatrixTileTileOperand.Create(323),
@@ -1654,7 +1654,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram transposeWithNumeric = BuildCompilerProgram(context =>
-                context.CompileMtranspose(
+                context.CompileMtransposeWithDecision(
                     CompilerMatrixTileTileOperand.Create(331),
                     CompilerMatrixTileTileOperand.Create(332),
                     descriptor,
@@ -1669,7 +1669,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram transposeWrongLayout = BuildCompilerProgram(context =>
-                context.CompileMtranspose(
+                context.CompileMtransposeWithDecision(
                     CompilerMatrixTileTileOperand.Create(341),
                     CompilerMatrixTileTileOperand.Create(342),
                     descriptor,
@@ -1684,7 +1684,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram loadWithComputeSideband = BuildCompilerProgram(context =>
-                context.CompileMtileLoad(
+                context.CompileMtileLoadWithDecision(
                     CompilerMatrixTileTileOperand.Create(351),
                     descriptor,
                     CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress)));
@@ -1702,7 +1702,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram storeWithComputeSideband = BuildCompilerProgram(context =>
-                context.CompileMtileStore(
+                context.CompileMtileStoreWithDecision(
                     CompilerMatrixTileTileOperand.Create(361),
                     descriptor,
                     CompilerMatrixTileMemoryFaultAbiInputs.Create(StoreDestinationBaseAddress)));
@@ -1720,7 +1720,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram loadWrongResource = BuildCompilerProgram(context =>
-                context.CompileMtileLoad(
+                context.CompileMtileLoadWithDecision(
                     CompilerMatrixTileTileOperand.Create(371),
                     descriptor,
                     CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress)));
@@ -1804,24 +1804,24 @@ internal sealed class MatrixTileSpecSuite
                 };
 
             HybridCpuCompiledProgram loadProgram = BuildCompilerProgram(context =>
-                context.CompileMtileLoad(
+                context.CompileMtileLoadWithDecision(
                     CompilerMatrixTileTileOperand.Create(41),
                     compilerDescriptor,
                     CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress)));
             HybridCpuCompiledProgram storeProgram = BuildCompilerProgram(context =>
-                context.CompileMtileStore(
+                context.CompileMtileStoreWithDecision(
                     CompilerMatrixTileTileOperand.Create(41),
                     compilerDescriptor,
                     CompilerMatrixTileMemoryFaultAbiInputs.Create(StoreDestinationBaseAddress)));
             HybridCpuCompiledProgram maccProgram = BuildCompilerProgram(context =>
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(41),
                     CompilerMatrixTileTileOperand.Create(42),
                     CompilerMatrixTileTileOperand.Create(43),
                     compilerDescriptor,
                     accumulatorPolicy));
             HybridCpuCompiledProgram transposeProgram = BuildCompilerProgram(context =>
-                context.CompileMtranspose(
+                context.CompileMtransposeWithDecision(
                     CompilerMatrixTileTileOperand.Create(41),
                     CompilerMatrixTileTileOperand.Create(44),
                     compilerDescriptor,
@@ -1959,10 +1959,10 @@ internal sealed class MatrixTileSpecSuite
             MatrixTileLayoutPolicy transposeLayoutPolicy = MatrixTileLayoutPolicyAbi.CreateTransposePolicy();
             CompilerMatrixTileAccumulatorPolicyAbi accumulatorPolicy = CompilerMatrixTileAccumulatorPolicyAbi.CreateForRuntimeDerivedFootprint(descriptor, numericPolicy, maccLayoutPolicy);
             CompilerMatrixTileTransposePolicyAbi transposePolicy = CompilerMatrixTileTransposePolicyAbi.CreateForRuntimeDerivedDestination(descriptor) with { MatrixTileLayoutPolicy = transposeLayoutPolicy };
-            HybridCpuCompiledProgram loadProgram = BuildCompilerProgram(context => context.CompileMtileLoad(CompilerMatrixTileTileOperand.Create(41), compilerDescriptor, CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress)));
-            HybridCpuCompiledProgram storeProgram = BuildCompilerProgram(context => context.CompileMtileStore(CompilerMatrixTileTileOperand.Create(41), compilerDescriptor, CompilerMatrixTileMemoryFaultAbiInputs.Create(StoreDestinationBaseAddress)));
-            HybridCpuCompiledProgram maccProgram = BuildCompilerProgram(context => context.CompileMtileMacc(CompilerMatrixTileTileOperand.Create(41), CompilerMatrixTileTileOperand.Create(42), CompilerMatrixTileTileOperand.Create(43), compilerDescriptor, accumulatorPolicy));
-            HybridCpuCompiledProgram transposeProgram = BuildCompilerProgram(context => context.CompileMtranspose(CompilerMatrixTileTileOperand.Create(41), CompilerMatrixTileTileOperand.Create(44), compilerDescriptor, transposePolicy));
+            HybridCpuCompiledProgram loadProgram = BuildCompilerProgram(context => context.CompileMtileLoadWithDecision(CompilerMatrixTileTileOperand.Create(41), compilerDescriptor, CompilerMatrixTileMemoryFaultAbiInputs.Create(LoadSourceBaseAddress)));
+            HybridCpuCompiledProgram storeProgram = BuildCompilerProgram(context => context.CompileMtileStoreWithDecision(CompilerMatrixTileTileOperand.Create(41), compilerDescriptor, CompilerMatrixTileMemoryFaultAbiInputs.Create(StoreDestinationBaseAddress)));
+            HybridCpuCompiledProgram maccProgram = BuildCompilerProgram(context => context.CompileMtileMaccWithDecision(CompilerMatrixTileTileOperand.Create(41), CompilerMatrixTileTileOperand.Create(42), CompilerMatrixTileTileOperand.Create(43), compilerDescriptor, accumulatorPolicy));
+            HybridCpuCompiledProgram transposeProgram = BuildCompilerProgram(context => context.CompileMtransposeWithDecision(CompilerMatrixTileTileOperand.Create(41), CompilerMatrixTileTileOperand.Create(44), compilerDescriptor, transposePolicy));
             AssertLoweredSidebands(loadProgram, InstructionsEnum.MTILE_LOAD, null, null, requireLane6: true);
             AssertLoweredSidebands(storeProgram, InstructionsEnum.MTILE_STORE, null, null, requireLane6: true);
             AssertLoweredSidebands(maccProgram, InstructionsEnum.MTILE_MACC, numericPolicy, maccLayoutPolicy, requireLane6: false);
@@ -1995,7 +1995,7 @@ internal sealed class MatrixTileSpecSuite
             int negativeCompilerEmissions = 0;
 
             HybridCpuCompiledProgram missingMaccNumeric = BuildCompilerProgram(context =>
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(401),
                     CompilerMatrixTileTileOperand.Create(402),
                     CompilerMatrixTileTileOperand.Create(403),
@@ -2015,7 +2015,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram tamperedMaccNumeric = BuildCompilerProgram(context =>
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(411),
                     CompilerMatrixTileTileOperand.Create(412),
                     CompilerMatrixTileTileOperand.Create(413),
@@ -2041,7 +2041,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram maccWithTransposeLayout = BuildCompilerProgram(context =>
-                context.CompileMtileMacc(
+                context.CompileMtileMaccWithDecision(
                     CompilerMatrixTileTileOperand.Create(421),
                     CompilerMatrixTileTileOperand.Create(422),
                     CompilerMatrixTileTileOperand.Create(423),
@@ -2061,7 +2061,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram transposeWithNumeric = BuildCompilerProgram(context =>
-                context.CompileMtranspose(
+                context.CompileMtransposeWithDecision(
                     CompilerMatrixTileTileOperand.Create(431),
                     CompilerMatrixTileTileOperand.Create(432),
                     compilerDescriptor,
@@ -2080,7 +2080,7 @@ internal sealed class MatrixTileSpecSuite
             negativeCompilerEmissions++;
 
             HybridCpuCompiledProgram transposeWithMaccLayout = BuildCompilerProgram(context =>
-                context.CompileMtranspose(
+                context.CompileMtransposeWithDecision(
                     CompilerMatrixTileTileOperand.Create(441),
                     CompilerMatrixTileTileOperand.Create(442),
                     compilerDescriptor,

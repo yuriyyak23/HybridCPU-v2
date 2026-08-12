@@ -16,10 +16,10 @@ public sealed class MatrixTileStoreCompilerExample : ICpuExample
 
     public CpuExampleResult Run() =>
         MatrixTileCompilerExampleSupport.Run(
-            "MTILE_STORE emitted through CompileMtileStore/AppAsmFacade.MtileStore.",
-            "CompileMtileStore",
+            "MTILE_STORE emitted through CompileMtileStoreWithDecision.",
+            "CompileMtileStoreWithDecision",
             Instruction.MTILE_STORE,
-            facade => facade.MtileStore(
+            context => context.CompileMtileStoreWithDecision(
                 CompilerMatrixTileTileOperand.Create(1),
                 MatrixTileCompilerExampleSupport.CreateDescriptor(),
                 MatrixTileCompilerExampleSupport.CreateMemoryFault(0x7100)),

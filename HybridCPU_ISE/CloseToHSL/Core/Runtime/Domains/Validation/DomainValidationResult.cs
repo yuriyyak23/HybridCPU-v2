@@ -21,6 +21,7 @@ public enum DomainValidationFailureReason : byte
     EventQueueRejected = 16,
     MissingCompletionRouteDescriptor = 17,
     CompletionSourceDenied = 18,
+    InvalidOperationAuthorityClass = 19,
 }
 
 public sealed partial class DomainValidationResult
@@ -51,18 +52,23 @@ public sealed partial class DomainValidationResult
 
     public static DomainValidationResult RequireRuntimeContext(
         DomainRuntimeContext context)
+        => RequireRuntimeContext(context, DomainBoundaryDescriptor.FullDomainRuntime);
+
+    public static DomainValidationResult RequireRuntimeContext(
+        DomainRuntimeContext context,
+        DomainBoundaryDescriptor operationDomainRequirement)
     {
-        if (!context.HasExecutionDomain)
+        if (operationDomainRequirement.RequiresExecutionDomain && !context.HasExecutionDomain)
         {
             return Fail(DomainValidationFailureReason.MissingExecutionDomain);
         }
 
-        if (!context.HasMemoryDomain)
+        if (operationDomainRequirement.RequiresMemoryDomain && !context.HasMemoryDomain)
         {
             return Fail(DomainValidationFailureReason.MissingMemoryDomain);
         }
 
-        if (!context.HasIoDomain)
+        if (operationDomainRequirement.RequiresIoDomain && !context.HasIoDomain)
         {
             return Fail(DomainValidationFailureReason.MissingIoDomain);
         }
@@ -83,9 +89,19 @@ public sealed partial class DomainValidationResult
         }
 
         if (!operation.CanMutateAuthoritativeState &&
-            !operation.IsProjectionOnly)
+            !operation.IsProjectionOnly &&
+            !operation.IsNoStateExecution)
         {
             return Fail(DomainValidationFailureReason.ProjectionCannotMutateState);
+        }
+
+
+        if (operation.IsNoStateExecution &&
+            operation.Source != DomainRuntimeOperationSource.RuntimeService)
+        {
+            return Fail(
+                DomainValidationFailureReason.InvalidOperationAuthorityClass,
+                "No-state execution is available only to a neutral runtime service operation.");
         }
 
         return Passed;

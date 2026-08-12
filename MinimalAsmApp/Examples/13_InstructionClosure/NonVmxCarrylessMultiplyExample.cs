@@ -16,32 +16,32 @@ public sealed class NonVmxCarrylessMultiplyExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunAppFacadeExample(
-            "Compiler facade emitted canonical carry-less multiply carriers.",
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
+            "Typed scalar compiler emitted canonical carry-less multiply carriers.",
             [
                 new(
                     "CLMUL",
-                    "IAppAsmFacade.BinaryPolynomialProductLow",
+                    "HybridCpuNonVmxScalarCompiler.BinaryPolynomialProductLow",
                     Instruction.CLMUL,
-                    facade => facade.BinaryPolynomialProductLow(new AsmRegister(18), new AsmRegister(1), new AsmRegister(2)),
+                    compiler => compiler.BinaryPolynomialProductLow(new AsmRegister(18), new AsmRegister(1), new AsmRegister(2)),
                     ExpectedRd: 18,
                     ExpectedRs1: 1,
                     ExpectedRs2: 2,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "CLMULH",
-                    "IAppAsmFacade.BinaryPolynomialProductHigh",
+                    "HybridCpuNonVmxScalarCompiler.BinaryPolynomialProductHigh",
                     Instruction.CLMULH,
-                    facade => facade.BinaryPolynomialProductHigh(new AsmRegister(19), new AsmRegister(1), new AsmRegister(2)),
+                    compiler => compiler.BinaryPolynomialProductHigh(new AsmRegister(19), new AsmRegister(1), new AsmRegister(2)),
                     ExpectedRd: 19,
                     ExpectedRs1: 1,
                     ExpectedRs2: 2,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "CLMULR",
-                    "IAppAsmFacade.BinaryPolynomialProductReverse",
+                    "HybridCpuNonVmxScalarCompiler.BinaryPolynomialProductReverse",
                     Instruction.CLMULR,
-                    facade => facade.BinaryPolynomialProductReverse(new AsmRegister(20), new AsmRegister(1), new AsmRegister(2)),
+                    compiler => compiler.BinaryPolynomialProductReverse(new AsmRegister(20), new AsmRegister(1), new AsmRegister(2)),
                     ExpectedRd: 20,
                     ExpectedRs1: 1,
                     ExpectedRs2: 2,

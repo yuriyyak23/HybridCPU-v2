@@ -1,4 +1,3 @@
-using HybridCPU.Compiler.Core.API.Facade;
 using HybridCPU.Compiler.Core.IR;
 using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
@@ -19,19 +18,17 @@ internal static class MatrixTileCompilerExampleSupport
             elementSizeBytes: 1,
             strideBytes: 2);
 
-#pragma warning disable CS0618
     public static CpuExampleResult Run(
         string output,
         string helperName,
         Instruction expectedOpcode,
-        Action<AppAsmFacade> emit,
+        Action<HybridCpuThreadCompilerContext> emit,
         MatrixTileNumericPolicy? expectedNumericPolicy,
         MatrixTileLayoutPolicy? expectedLayoutPolicy)
     {
         var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
-        var facade = new AppAsmFacade(0, context);
 
-        emit(facade);
+        emit(context);
 
         VLIW_Instruction[] sourceInstructions = context.GetCompiledInstructions().ToArray();
         if (sourceInstructions.Length != 1)
@@ -83,8 +80,6 @@ internal static class MatrixTileCompilerExampleSupport
                 $"typed-slot agreement valid = {compiledProgram.AdmissibilityAgreement.AllTypedSlotFactsValid}"
             ]);
     }
-#pragma warning restore CS0618
-
     public static CompilerMatrixTileDescriptorAbi CreateDescriptor(
         DataTypeEnum elementType = DataTypeEnum.INT8) =>
         new(Tile2X2I8, elementType);

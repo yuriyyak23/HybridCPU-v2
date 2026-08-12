@@ -84,7 +84,9 @@ namespace YAKSys_Hybrid_CPU.Core
                 VtId = vtId,
                 BundleSerial = bundleSerial,
                 CauseCode = IllegalInstructionCauseCode,
-                FaultAddress = 0
+                FaultAddress = 0,
+                HasFaultAddress = false,
+                FaultAddressSemantic = NeutralFaultAddressSemantic.None
             };
         }
 
@@ -111,12 +113,47 @@ namespace YAKSys_Hybrid_CPU.Core
     public sealed class VmxMicroOp : MicroOp
     {
         private VmxRetireEffect _resolvedRetireEffect;
+        private DomainHypercallCanonicalComposition.ExecutionDispatch? _exactHypercallDispatch;
+        private VmReadScalarResultReceipt? _vmReadScalarResultReceipt;
+        private ulong _vmReadScalarResult;
+        private bool _vmReadScalarResultReady;
 
         internal SafetyVerifier.VirtualizationAdmissionCertificate? VirtualizationAdmission
         {
             get;
             private set;
         }
+
+        internal VirtualizationOperandSnapshot? VirtualizationOperandSnapshot
+        {
+            get;
+            private set;
+        }
+
+        internal DomainHypercallExecutionResult? ExactHypercallExecutionResult
+        {
+            get;
+            private set;
+        }
+
+        internal DomainHypercallRuntimeExecutor.ExecutionReceipt? ExactHypercallExecutionReceipt =>
+            ExactHypercallExecutionResult?.Receipt;
+
+        internal DomainHypercallCompletionPublicationResult? ExactHypercallCompletionPublication
+        {
+            get;
+            private set;
+        }
+
+        internal DomainHypercallRetireOwner.VirtualizationRetireGrant? ExactHypercallRetireGrant
+        {
+            get;
+            private set;
+        }
+
+        internal ulong ExactHypercallRetireWindowIdentity { get; private set; }
+        internal ulong ExactHypercallRetireOrderEpoch { get; private set; }
+        internal bool HasVmReadScalarResultReceipt => _vmReadScalarResultReceipt is not null;
 
         /// <summary>Decoded instruction IR forwarded to the VMX execution unit.</summary>
         public Pipeline.MicroOps.InstructionIR? Instruction { get; set; }
@@ -154,6 +191,27 @@ namespace YAKSys_Hybrid_CPU.Core
             {
                 throw new InvalidOperationException(
                     $"Unknown frozen VMX opcode {Arch.OpcodeRegistry.GetMnemonicOrHex(instr.CanonicalOpcode.Value)}.");
+            }
+
+            if (operation == VmxOperationKind.VmRead &&
+                _vmReadScalarResultReceipt is not null &&
+                _vmReadScalarResultReceipt.TryValidateSpeculative(
+                    core.CurrentVirtualizationRestoreGeneration))
+            {
+                _vmReadScalarResult = _vmReadScalarResultReceipt.Value;
+                _vmReadScalarResultReady = true;
+                _resolvedRetireEffect = default;
+                return true;
+            }
+
+            if (operation == VmxOperationKind.VmCall &&
+                _exactHypercallDispatch is not null &&
+                ExactHypercallExecutionResult is null)
+            {
+                ExactHypercallExecutionResult = _exactHypercallDispatch.Execute(
+                    this,
+                    out DomainHypercallCompletionPublicationResult? publication);
+                ExactHypercallCompletionPublication = publication;
             }
 
             _resolvedRetireEffect = VmxRetireEffect.Fault(
@@ -194,6 +252,96 @@ namespace YAKSys_Hybrid_CPU.Core
             }
 
             VirtualizationAdmission = certificate;
+        }
+
+        internal void AttachVirtualizationOperandSnapshot(
+            VirtualizationOperandSnapshot snapshot)
+        {
+            ArgumentNullException.ThrowIfNull(snapshot);
+            if (VirtualizationAdmission is null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive operands before E1.");
+            if (VirtualizationOperandSnapshot is not null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive a second operand snapshot.");
+
+            VirtualizationOperandSnapshot = snapshot;
+        }
+
+        internal void AttachExactHypercallExecutionDispatch(
+            DomainHypercallCanonicalComposition.ExecutionDispatch dispatch)
+        {
+            ArgumentNullException.ThrowIfNull(dispatch);
+            if (VirtualizationAdmission is null || VirtualizationOperandSnapshot is null)
+                throw new InvalidOperationException("Exact hypercall dispatch requires canonical E1 and operands.");
+            if (_exactHypercallDispatch is not null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive a second exact hypercall dispatch.");
+
+            _exactHypercallDispatch = dispatch;
+        }
+
+        internal void AttachExactHypercallRetireGrant(
+            DomainHypercallRetireOwner.VirtualizationRetireGrant grant,
+            ulong retireWindowIdentity,
+            ulong orderEpoch)
+        {
+            ArgumentNullException.ThrowIfNull(grant);
+            if (ExactHypercallRetireGrant is not null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive a second E6 retire grant.");
+            ExactHypercallRetireGrant = grant;
+            ExactHypercallRetireWindowIdentity = retireWindowIdentity;
+            ExactHypercallRetireOrderEpoch = orderEpoch;
+        }
+
+        internal void AttachVmReadScalarResultReceipt(
+            VmReadScalarResultReceipt receipt,
+            ulong fieldSelector)
+        {
+            ArgumentNullException.ThrowIfNull(receipt);
+            if (_vmReadScalarResultReceipt is not null)
+                throw new InvalidOperationException("A VMREAD carrier cannot receive a second scalar-result receipt.");
+            if (!receipt.MatchesCarrier(this, fieldSelector))
+                throw new InvalidOperationException(
+                    "VMREAD scalar-result receipt mismatched the canonical attempt, VT, field, domain, or destination carrier.");
+            _vmReadScalarResultReceipt = receipt;
+        }
+
+        public override bool TryGetPrimaryWriteBackResult(out ulong value)
+        {
+            value = _vmReadScalarResult;
+            return _vmReadScalarResultReady && _vmReadScalarResultReceipt is not null;
+        }
+
+        public override void CapturePrimaryWriteBackResult(ulong value)
+        {
+            if (_vmReadScalarResultReady)
+                _vmReadScalarResult = value;
+        }
+
+        public override void EmitWriteBackRetireRecords(
+            ref Processor.CPU_Core core,
+            Span<RetireRecord> retireRecords,
+            ref int retireRecordCount)
+        {
+            if (!_vmReadScalarResultReady || _vmReadScalarResultReceipt is null)
+                return;
+            if (_vmReadScalarResult != _vmReadScalarResultReceipt.Value)
+            {
+                throw new InvalidOperationException(
+                    "VMREAD scalar writeback value no longer matches its attempt-bound projection receipt.");
+            }
+            if (!_vmReadScalarResultReceipt.TryConsumeAtRetire(
+                    core.CurrentVirtualizationRestoreGeneration))
+            {
+                throw new InvalidOperationException(
+                    "VMREAD scalar-result receipt is stale, replayed, revoked, restored, or already consumed.");
+            }
+
+            AppendWriteBackRetireRecord(
+                retireRecords,
+                ref retireRecordCount,
+                RetireRecord.RegisterWrite(
+                    NormalizeExecutionVtId(OwnerThreadId),
+                    _vmReadScalarResultReceipt.DestinationRegister,
+                    _vmReadScalarResult));
         }
 
         private static bool HasArchitecturalRegister(byte registerId) =>

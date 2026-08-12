@@ -155,7 +155,7 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
             Assert.DoesNotContain(forbidden, vmcsWriteSource);
         }
 
-        string compilerAndNonVmxSource = ReadRepositorySources(
+        string compilerAndNonVmxSource = ReadRepositorySourcesExcludingExactProbeCompilerGate(
             "HybridCPU_Compiler/API",
             "HybridCPU_Compiler/Core",
             "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions/NonVmx");
@@ -239,6 +239,7 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
             "HybridCPU_ISE",
             "docs",
             "ref2",
+            "Old",
             "VirtualiztionRefactoringNew",
             fileName));
 
@@ -266,6 +267,39 @@ public sealed class VmxConformanceGoldenArtifactsAndStaticGatesTests
                 .Where(static path =>
                     !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) &&
                     !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(static path => path, StringComparer.Ordinal)
+                .Select(File.ReadAllText);
+        }));
+    }
+
+    private static string ReadRepositorySourcesExcludingExactProbeCompilerGate(params string[] relativeRoots)
+    {
+        string repositoryRoot = FindRepositoryRoot();
+        HashSet<string> exactGateFiles = new(
+            [
+                Path.GetFullPath(Path.Combine(repositoryRoot, "HybridCPU_Compiler", "Core", "IR", "Model", "CompilerExactProbeEmissionDecisionV1.cs")),
+                Path.GetFullPath(Path.Combine(repositoryRoot, "HybridCPU_Compiler", "Core", "IR", "Construction", "CompilerExactProbeEmissionLowerer.cs")),
+                Path.GetFullPath(Path.Combine(repositoryRoot, "HybridCPU_Compiler", "Core", "IR", "Construction", "CompilerVirtualizationIngressValidator.cs")),
+                Path.GetFullPath(Path.Combine(repositoryRoot, "HybridCPU_Compiler", "API", "Threading", "ThreadCompilerContext.ExactProbe.cs"))
+            ],
+            StringComparer.OrdinalIgnoreCase);
+
+        return string.Join(Environment.NewLine, relativeRoots.SelectMany(relativeRoot =>
+        {
+            string root = Path.Combine(
+                repositoryRoot,
+                relativeRoot.Replace('/', Path.DirectorySeparatorChar));
+            if (!Directory.Exists(root))
+            {
+                throw new DirectoryNotFoundException($"Missing repository source root: {relativeRoot}");
+            }
+
+            return Directory
+                .GetFiles(root, "*.cs", SearchOption.AllDirectories)
+                .Where(path =>
+                    !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) &&
+                    !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) &&
+                    !exactGateFiles.Contains(Path.GetFullPath(path)))
                 .OrderBy(static path => path, StringComparer.Ordinal)
                 .Select(File.ReadAllText);
         }));

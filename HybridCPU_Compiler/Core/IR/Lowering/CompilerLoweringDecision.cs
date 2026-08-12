@@ -413,6 +413,52 @@ public abstract record CompilerLoweringDecision(
             LegacyTranslation: null,
             reason);
     }
+
+    public static CompilerLoweringDecision FromTypedCarrierEmission(
+        string sourceApi,
+        SemanticIntentKind intentKind,
+        ExecutionContourKind contourKind,
+        string noFallbackProofId,
+        string reason)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sourceApi);
+        ArgumentException.ThrowIfNullOrWhiteSpace(noFallbackProofId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+
+        return new CompilerTypedCarrierEmissionLoweringDecision(
+            CompilerLoweringDecisionKind.StructuralOnly,
+            intentKind,
+            contourKind,
+            new CompilerCoreResultHeader(
+                CompilerAuthorityClass.TransportConstruction,
+                CompilerAuthoritySourceKind.CompilerAbiValidator,
+                CompilerEvidenceClass.StructuralAdmissionEvidence,
+                CompilerPublicationClass.CarrierBytesOnly,
+                CompilerExecutionClaim.NoExecutionClaim,
+                CompilerRuntimeAuthorityDependency.RuntimeLegalityARequired |
+                CompilerRuntimeAuthorityDependency.RuntimeLegalityBRequired |
+                CompilerRuntimeAuthorityDependency.RuntimeExecutionRequired |
+                CompilerRuntimeAuthorityDependency.RuntimeCommitRequired |
+                CompilerRuntimeAuthorityDependency.RuntimeRetireRequired |
+                CompilerRuntimeAuthorityDependency.RuntimePublicationRequired),
+            CompilerEmissionClass.CarrierCandidate,
+            CompilerProductionLoweringStatus.NotProductionLowering,
+            NoFallbackProof.Forbidden(
+                noFallbackProofId,
+                "Typed carrier construction cannot select cross-contour fallback or runtime authority."),
+            FallbackPolicy.Forbidden("Typed carrier construction cannot route fallback."),
+            [CompilerProducedArtifactKind.Carrier, CompilerProducedArtifactKind.Evidence],
+            [
+                CompilerRequiredArtifactKind.RuntimeLegalityA,
+                CompilerRequiredArtifactKind.RuntimeLegalityB,
+                CompilerRequiredArtifactKind.RuntimeCommit,
+                CompilerRequiredArtifactKind.RuntimeRetire,
+                CompilerRequiredArtifactKind.RuntimePublication
+            ],
+            [CompilerRejectReason.CarrierIsNotPublication, CompilerRejectReason.RuntimeAuthorityOwned],
+            LegacyTranslation: null,
+            reason);
+    }
 }
 
 public sealed record CompilerPositiveEmissionResult<TPlan>(
@@ -539,6 +585,35 @@ public sealed record CompilerLegacyHelperRecoveryLoweringDecision(
         Reason);
 
 public sealed record CompilerPositiveHelperEmissionLoweringDecision(
+    CompilerLoweringDecisionKind DecisionKind,
+    SemanticIntentKind IntentKind,
+    ExecutionContourKind ContourKind,
+    CompilerCoreResultHeader Header,
+    CompilerEmissionClass EmissionClass,
+    CompilerProductionLoweringStatus ProductionLoweringStatus,
+    NoFallbackProof NoFallbackProof,
+    FallbackPolicy FallbackPolicy,
+    IReadOnlyList<CompilerProducedArtifactKind> ProducedArtifacts,
+    IReadOnlyList<CompilerRequiredArtifactKind> RequiredArtifacts,
+    IReadOnlyList<CompilerRejectReason> RejectReasons,
+    LegacyApiTranslation? LegacyTranslation,
+    string Reason)
+    : CompilerLoweringDecision(
+        DecisionKind,
+        IntentKind,
+        ContourKind,
+        Header,
+        EmissionClass,
+        ProductionLoweringStatus,
+        NoFallbackProof,
+        FallbackPolicy,
+        ProducedArtifacts,
+        RequiredArtifacts,
+        RejectReasons,
+        LegacyTranslation,
+        Reason);
+
+public sealed record CompilerTypedCarrierEmissionLoweringDecision(
     CompilerLoweringDecisionKind DecisionKind,
     SemanticIntentKind IntentKind,
     ExecutionContourKind ContourKind,

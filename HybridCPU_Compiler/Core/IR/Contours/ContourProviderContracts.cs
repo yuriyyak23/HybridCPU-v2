@@ -153,8 +153,8 @@ public sealed class DefaultContourLoweringProviderRegistry : IContourLoweringPro
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        // Phase 04 defines the separate resolution boundary only. No
-        // production provider is registered until a later provider phase.
+        // Production providers are compiler package constructors only. Their
+        // registration never grants runtime admission or lifecycle authority.
         if (context.ProductionProfile.Mode != CompilerProductionLoweringProfileMode.ExplicitlyEnabled ||
             !context.TargetProfile.AllowsBackendEmission ||
             !context.ProductionProfile.EnabledContours.Contains(contourKind) ||

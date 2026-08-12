@@ -157,7 +157,8 @@ namespace YAKSys_Hybrid_CPU
                         lane);
                 }
 
-                if (lane.GeneratedVmxEffect is Core.VmxRetireEffect vmxEffect)
+                if (lane.GeneratedVmxEffect is Core.VmxRetireEffect vmxEffect &&
+                    !IsExactHypercallPendingCanonicalRetire(lane.MicroOp))
                 {
                     retireBatch.CaptureGeneratedVmxEffect(
                         laneIndex,
@@ -195,6 +196,42 @@ namespace YAKSys_Hybrid_CPU
                             lane.PC,
                             lane.VirtualThreadId);
                     }
+
+                    if (lane.GeneratedEvent is Core.Pipeline.TrapEntryEvent trapEntry &&
+                        lane.PostStageBIssuedAttempt is Core.PostStageBIssuedAttempt issuedAttempt)
+                    {
+                        Core.Decoder.VliwOperationId operationId =
+                            issuedAttempt.ScheduledOperation.OperationId;
+                        if (operationId.VirtualThreadId != lane.VirtualThreadId ||
+                            issuedAttempt.ScheduledOperation.PhysicalLane != laneIndex ||
+                            trapEntry.VtId != lane.VirtualThreadId ||
+                            trapEntry.BundleSerial != operationId.WorkingBundleSequence)
+                        {
+                            throw new InvalidOperationException(
+                                "Canonical trap completion identity diverged from its live Stage-B carrier.");
+                        }
+
+                        retireBatch.CaptureArchitecturalCompletionCandidate(
+                            new Core.ArchitecturalCompletionCandidate(
+                                lane.DomainTag,
+                                lane.OwnerContextId,
+                                lane.VirtualThreadId,
+                                operationId.OperationAttempt,
+                                Core.ArchitecturalCompletionEventIdentity.Create(
+                                    operationId.WorkingBundleSequence,
+                                    operationId.WorkingSlotIndex),
+                                new Core.NeutralArchitecturalCompletionFacts(
+                                    Core.NeutralArchitecturalCompletionClass.TrapEntry,
+                                    Core.NeutralScalarFact.Present(trapEntry.CauseCode),
+                                    Core.NeutralScalarFact.Absent,
+                                    trapEntry.HasFaultAddress
+                                        ? new Core.NeutralAddressFact(
+                                            true,
+                                            trapEntry.FaultAddress,
+                                            trapEntry.FaultAddressSemantic)
+                                        : Core.NeutralAddressFact.Absent,
+                                    Core.NeutralAuxiliaryFact.Absent)));
+                    }
                 }
 
                 if (IsVectorStreamDirtyRetireOpcode(lane.OpCode))
@@ -215,7 +252,14 @@ namespace YAKSys_Hybrid_CPU
                 byte laneIndex,
                 in ScalarWriteBackLaneState lane)
             {
-                if (lane.GeneratedVmxEffect == null &&
+                if (lane.MicroOp is Core.VmxMicroOp vmx &&
+                    vmx.ExactHypercallRetireGrant is not null)
+                {
+                    ConsumeExactHypercallRetireGrant(vmx);
+                }
+
+                if ((lane.GeneratedVmxEffect == null ||
+                     lane.MicroOp is Core.VmxMicroOp { ExactHypercallRetireGrant: not null }) &&
                     lane.GeneratedAtomicEffect == null)
                 {
                     RecordTraceEvent(
@@ -717,6 +761,8 @@ namespace YAKSys_Hybrid_CPU
                     retiredPcWriteTarget,
                     retiredPcWriteVtId);
 
+                CommitArchitecturalCompletionAtCanonicalRetireBoundary(ref retireBatch);
+
                 if (retireLaneCount != 0 && retireContourCarrierMask == 0)
                 {
                     throw new InvalidOperationException(
@@ -750,6 +796,20 @@ namespace YAKSys_Hybrid_CPU
             private bool TryDeliverPendingVmxEventAtProductionSafeBoundary(int virtualThreadId)
             {
                 return false;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void CommitArchitecturalCompletionAtCanonicalRetireBoundary(
+                ref RetireWindowBatch retireBatch)
+            {
+                ReadOnlySpan<Core.ArchitecturalCompletionCandidate> candidates =
+                    retireBatch.ArchitecturalCompletionCandidates;
+                for (int index = 0; index < candidates.Length; index++)
+                {
+                    _ = ArchitecturalCompletionCommitOwner.CommitAtCanonicalRetireBoundary(
+                        CanonicalPipelineCompletionProducer,
+                        candidates[index]);
+                }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1378,7 +1438,9 @@ namespace YAKSys_Hybrid_CPU
                         VtId = vtId,
                         BundleSerial = pipelineEvent.BundleSerial,
                         CauseCode = trapEntryEvent.CauseCode,
-                        FaultAddress = trapEntryEvent.FaultAddress
+                        FaultAddress = trapEntryEvent.FaultAddress,
+                        HasFaultAddress = trapEntryEvent.HasFaultAddress,
+                        FaultAddressSemantic = trapEntryEvent.FaultAddressSemantic
                     },
                     Core.Pipeline.MretEvent => new Core.Pipeline.MretEvent
                     {
@@ -1435,7 +1497,9 @@ namespace YAKSys_Hybrid_CPU
 
                 if (microOp is Core.TrapMicroOp trapMicroOp)
                 {
-                    return trapMicroOp.CreatePipelineEvent();
+                    ulong bundleSequence = trapMicroOp.PostStageBIssuedAttempt?
+                        .ScheduledOperation.OperationId.WorkingBundleSequence ?? 0;
+                    return trapMicroOp.CreatePipelineEvent(bundleSequence);
                 }
 
                 return null;

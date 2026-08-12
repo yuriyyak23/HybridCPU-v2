@@ -16,14 +16,14 @@ public sealed class NonVmxRdcycleExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunPlatformFacadeExample(
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
             "Platform facade emitted a canonical RDCYCLE carrier; RDTIME/RDINSTRET/PAUSE remain closed.",
             [
                 new(
                     "RDCYCLE",
-                    "IPlatformAsmFacade.ReadSystemCycleCounter",
+                    "HybridCpuNonVmxScalarCompiler.ReadSystemCycleCounter",
                     Instruction.RDCYCLE,
-                    facade => facade.ReadSystemCycleCounter(new AsmRegister(21)),
+                    compiler => compiler.ReadSystemCycleCounter(new AsmRegister(21)),
                     ExpectedRd: 21,
                     ExpectedRs1: 0,
                     ExpectedRs2: 0,

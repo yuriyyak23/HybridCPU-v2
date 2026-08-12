@@ -128,6 +128,13 @@ public sealed partial class RuntimeBoundaryAdmissionService
 
         SecureComputeDomainDescriptor? secureDescriptor =
             context.SecureCompute ?? request.SecureDescriptor;
+        if (request.Operation.IsNoStateExecution && secureDescriptor is not null)
+        {
+            return Deny(
+                RuntimeBoundaryAdmissionDecision.SecureDomainBoundaryDenied,
+                "Ordinary no-state runtime execution cannot enter a SecureCompute domain.");
+        }
+
         if (request.SecureOperationClass != SecureDomainOperationClass.Ordinary)
         {
             SecureDomainAdmissionResult secureAdmission = _secureAdmission.Admit(
@@ -185,6 +192,7 @@ public sealed partial class RuntimeBoundaryAdmissionService
             request.RootAuthority,
             context,
             request.Operation,
+            request.DomainBoundary,
             request.CapabilityRequirement);
 
         if (!authority.IsAllowed)

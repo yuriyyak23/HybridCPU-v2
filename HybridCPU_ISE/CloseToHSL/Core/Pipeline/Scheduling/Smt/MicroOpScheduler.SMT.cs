@@ -476,8 +476,77 @@ namespace YAKSys_Hybrid_CPU.Core
                 return false;
 
             vmx.AttachVirtualizationAdmission(issue.Certificate);
+            OnCanonicalVirtualizationAdmissionMaterialized(
+                issuePacket,
+                issueLane,
+                bundleMetadata,
+                vmx,
+                issue.Certificate);
             return true;
         }
+
+        internal bool TryAttachVirtualizationOperandSnapshotAfterCanonicalValueRead(
+            BundleIssuePacket issuePacket,
+            IssuePacketLane issueLane,
+            ulong rs1Value,
+            ulong restoreGeneration)
+        {
+            if (issueLane.MicroOp is not VmxMicroOp vmx ||
+                vmx.VirtualizationAdmission is null ||
+                _virtualizationAdmissionService is null ||
+                !issueLane.IsOccupied ||
+                issueLane.PhysicalLaneIndex != 7)
+            {
+                return false;
+            }
+
+            SmtBundleMetadata4Way bundleMetadata =
+                SmtBundleMetadata4Way.Empty(issueLane.OwnerThreadId);
+            for (byte laneIndex = 0; laneIndex < 8; laneIndex++)
+            {
+                IssuePacketLane packetLane = issuePacket.GetPhysicalLane(laneIndex);
+                if (packetLane.IsOccupied)
+                    bundleMetadata = bundleMetadata.WithOperation(packetLane.MicroOp);
+            }
+
+            VirtualizationOperandCaptureResult result =
+                _virtualizationAdmissionService.CaptureVirtualizationOperandsAfterE1Validation(
+                    _currentReplayPhase,
+                    bundleMetadata,
+                    vmx,
+                    issueLane.SlotIndex,
+                    issueLane.PhysicalLaneIndex,
+                    vmx.VirtualizationAdmission,
+                    rs1Value,
+                    restoreGeneration);
+            if (!result.IsCaptured || result.Snapshot is null)
+                return false;
+
+            vmx.AttachVirtualizationOperandSnapshot(result.Snapshot);
+            OnCanonicalVirtualizationOperandMaterialized(
+                issuePacket,
+                issueLane,
+                bundleMetadata,
+                vmx,
+                vmx.VirtualizationAdmission,
+                result.Snapshot);
+            return true;
+        }
+
+        partial void OnCanonicalVirtualizationOperandMaterialized(
+            BundleIssuePacket issuePacket,
+            IssuePacketLane issueLane,
+            SmtBundleMetadata4Way bundleMetadata,
+            VmxMicroOp carrier,
+            SafetyVerifier.VirtualizationAdmissionCertificate e1,
+            VirtualizationOperandSnapshot operand);
+
+        partial void OnCanonicalVirtualizationAdmissionMaterialized(
+            BundleIssuePacket issuePacket,
+            IssuePacketLane issueLane,
+            SmtBundleMetadata4Way bundleMetadata,
+            VmxMicroOp carrier,
+            SafetyVerifier.VirtualizationAdmissionCertificate e1);
 
         /// <summary>
         /// Enable 2-stage pipelined FSP arbitration for HLS timing closure.
@@ -527,6 +596,9 @@ namespace YAKSys_Hybrid_CPU.Core
             }
 
             _currentReplayPhase = phase;
+            _exactVmReadScalarDelivery?.ObserveReplayPhase(phase);
+            _exactGuestPcSpFlagsVmReadScalarDelivery?.ObserveReplayPhase(phase);
+            _exactMemoryOwnedVmReadScalarDelivery?.ObserveReplayPhase(phase);
             if (phase.IsActive)
             {
                 ReplayAwareCycles++;

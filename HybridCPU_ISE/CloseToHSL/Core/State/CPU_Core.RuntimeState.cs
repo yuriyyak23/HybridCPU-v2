@@ -217,6 +217,16 @@ namespace YAKSys_Hybrid_CPU
             public ref Core.Registers.Retire.RetireCoordinator RetireCoordinator =>
                 ref Runtime.Retire.Coordinator;
 
+            internal Core.ArchitecturalCompletionCommitOwner ArchitecturalCompletionCommitOwner =>
+                Runtime.Retire.CompletionCommitOwner;
+
+            internal Core.DomainCompletionObservationOwner DomainCompletionObservationOwner =>
+                Runtime.Retire.CompletionCommitOwner.ObservationOwner;
+
+            private Core.ArchitecturalCompletionCommitOwner.ProducerRegistration
+                CanonicalPipelineCompletionProducer =>
+                    Runtime.Retire.CanonicalPipelineCompletionProducer;
+
             private ref Core.PipelineContourCertificate decodePublicationCertificate =>
                 ref Runtime.Retire.DecodePublicationCertificate;
 

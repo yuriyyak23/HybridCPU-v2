@@ -16,14 +16,14 @@ public sealed class NonVmxRotateExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunAppFacadeExample(
-            "Compiler facade emitted canonical register and immediate rotate carriers.",
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
+            "Typed scalar compiler emitted canonical register and immediate rotate carriers.",
             [
                 new(
                     "ROL",
-                    "IAppAsmFacade.RotateLeftRegister",
+                    "HybridCpuNonVmxScalarCompiler.RotateLeftRegister",
                     Instruction.ROL,
-                    facade => facade.RotateLeftRegister(
+                    compiler => compiler.RotateLeftRegister(
                         new AsmRegister(7),
                         new AsmRegister(1),
                         new AsmRegister(2)),
@@ -33,9 +33,9 @@ public sealed class NonVmxRotateExample : ICpuExample
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "ROR",
-                    "IAppAsmFacade.RotateRightRegister",
+                    "HybridCpuNonVmxScalarCompiler.RotateRightRegister",
                     Instruction.ROR,
-                    facade => facade.RotateRightRegister(
+                    compiler => compiler.RotateRightRegister(
                         new AsmRegister(8),
                         new AsmRegister(1),
                         new AsmRegister(2)),
@@ -45,9 +45,9 @@ public sealed class NonVmxRotateExample : ICpuExample
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "ROLI",
-                    "IAppAsmFacade.RotateLeftByImmediate",
+                    "HybridCpuNonVmxScalarCompiler.RotateLeftByImmediate",
                     Instruction.ROLI,
-                    facade => facade.RotateLeftByImmediate(new AsmRegister(9), new AsmRegister(1), 5),
+                    compiler => compiler.RotateLeftByImmediate(new AsmRegister(9), new AsmRegister(1), 5),
                     ExpectedRd: 9,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,
@@ -55,9 +55,9 @@ public sealed class NonVmxRotateExample : ICpuExample
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "RORI",
-                    "IAppAsmFacade.RotateRightByImmediate",
+                    "HybridCpuNonVmxScalarCompiler.RotateRightByImmediate",
                     Instruction.RORI,
-                    facade => facade.RotateRightByImmediate(new AsmRegister(10), new AsmRegister(1), 9),
+                    compiler => compiler.RotateRightByImmediate(new AsmRegister(10), new AsmRegister(1), 9),
                     ExpectedRd: 10,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,

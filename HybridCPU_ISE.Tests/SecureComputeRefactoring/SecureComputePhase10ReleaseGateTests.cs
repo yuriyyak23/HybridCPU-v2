@@ -1561,6 +1561,7 @@ public sealed class SecureComputePhase10ReleaseGateTests
             "HybridCPU_ISE",
             "docs",
             "ref2",
+            "Old",
             "SecureComputerefactoringNew");
 
     private static string SecureComputeActivationPlanRoot() =>

@@ -48,6 +48,15 @@ namespace YAKSys_Hybrid_CPU.Core.Pipeline
         /// Zero for non-address traps such as illegal instruction.
         /// </summary>
         public ulong FaultAddress { get; init; }
+
+        /// <summary>
+        /// Explicit presence is independent of the scalar value so a legal zero
+        /// address is not confused with an absent address fact.
+        /// </summary>
+        public bool HasFaultAddress { get; init; }
+
+        /// <summary>Neutral address meaning supplied by the exact producer.</summary>
+        public NeutralFaultAddressSemantic FaultAddressSemantic { get; init; }
     }
 
     // Privilege-return events

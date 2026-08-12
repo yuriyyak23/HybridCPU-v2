@@ -145,6 +145,27 @@ namespace YAKSys_Hybrid_CPU
                     this.ArchRenameMap,
                     this.ArchCommitMap,
                     this.ArchContexts);
+                var completionObservationGeneration =
+                    new CompletionGenerationAuthority();
+                var completionObservationOwner =
+                    new DomainCompletionObservationOwner(
+                        completionObservationGeneration);
+                Runtime.Retire.CompletionCommitOwner =
+                    new ArchitecturalCompletionCommitOwner(
+                        _virtualizationRestoreGenerationOwner,
+                        completionObservationOwner);
+                Runtime.Retire.CanonicalPipelineCompletionProducer =
+                    Runtime.Retire.CompletionCommitOwner.RegisterProducer(
+                        new ArchitecturalCompletionProducerPolicy(
+                            "CanonicalPipelineTrapEntryProducer",
+                            NeutralArchitecturalCompletionClass.TrapEntry,
+                            RequiresReason: true,
+                            AllowsQualification: false,
+                            NeutralFaultAddressSemantic.VirtualAddress,
+                            NeutralFaultAuxiliarySemantic.None));
+                this._domainHypercallRetireOwner = new DomainHypercallRetireOwner();
+                this._nextDomainHypercallRetireWindowIdentity = 1;
+                this._domainHypercallRetireOrderEpoch = 1;
 
                 // Blueprint Р’В§3.40 / Р’В§4.50: VMCS structure РІР‚вЂќ per-core VMCS manager.
                 this.IsVMXRoot = false;

@@ -21,9 +21,22 @@ public sealed partial class DomainLegalityService
         DomainRuntimeContext context,
         DomainRuntimeOperation operation,
         CapabilityBoundaryRequirement capabilityRequirement)
+        => Validate(
+            context,
+            operation,
+            DomainBoundaryDescriptor.FullDomainRuntime,
+            capabilityRequirement);
+
+    public DomainValidationResult Validate(
+        DomainRuntimeContext context,
+        DomainRuntimeOperation operation,
+        DomainBoundaryDescriptor operationDomainRequirement,
+        CapabilityBoundaryRequirement capabilityRequirement)
     {
         DomainValidationResult contextValidation =
-            DomainValidationResult.RequireRuntimeContext(context);
+            DomainValidationResult.RequireRuntimeContext(
+                context,
+                operationDomainRequirement);
         if (!contextValidation.IsValid)
         {
             return contextValidation;

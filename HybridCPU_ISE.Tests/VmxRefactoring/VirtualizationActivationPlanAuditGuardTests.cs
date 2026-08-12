@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace HybridCPU_ISE.Tests.VmxRefactoring;
 
@@ -45,6 +46,14 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
             "30_hv_final_wait_baseline.md",
             "31_hv_post_baseline_artifact_sentry.md",
             "32_e1_nonforgeable_safetyverifier_admission_contract.md",
+            "33_vrt_external_audit_reconciliation_and_blocker_decisions.md",
+            "34_d2_schema_attribution_and_e2_negative_substrate.md",
+            "35_a594_clean_sha_evidence_and_disabled_review_workflow.md",
+            "36_testing_only_research_runtime_probe.md",
+            "37_testing_only_canonical_issue_materialization_composition.md",
+            "38_first_production_vmcall_slice_repository_owner_adr.md",
+            "39_post_probe_no_state_v1_expansion_contract.md",
+            "VirtualizationActivationStatusV1.json",
         ];
 
         foreach (string file in requiredFiles)
@@ -53,11 +62,158 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         }
 
         string index = ReadPlan("00_virtualization_activation_refactoring_index.md");
-        Assert.Contains("planning corpus only", index);
-        Assert.Contains("does not approve activation", index);
+        Assert.Contains("activation dependency corpus", index);
+        Assert.Contains("does not approve broad VMX backend authority", index);
         Assert.Contains("AllowedProofOnlyNoExecution", index);
         Assert.Contains("AllowedAdmittedDenied", index);
         Assert.Contains("no positive path may merge without negative tests", index);
+    }
+
+    [Fact]
+    public void Phase39_AcceptsExpansionContractAndOpensOnlyDefaultOffExactCompilerGate()
+    {
+        string phase39 = ReadPlan("39_post_probe_no_state_v1_expansion_contract.md");
+
+        Assert.Contains("EXPANSION CONTRACT ACCEPTED", phase39);
+        Assert.Contains("EXACT COMPILER GATE IMPLEMENTED DEFAULT-OFF", phase39);
+        Assert.Contains("No new runtime E0/D2 is created", phase39);
+        Assert.Contains("D2-HV-VMCALL-RUNTIME-V1-PROBE-0001", phase39);
+        Assert.Contains("33076e430fcbc05cf0774d08baadc6d7840f88029fcfb28a458558af82f93ca8", phase39);
+        Assert.Contains("AllowedLeaf           = 0x0001", phase39);
+        Assert.Contains("CompilerEmissionEnabled = false by default", phase39);
+        Assert.Contains("cannot create E1, E2", phase39);
+        Assert.Contains("Generic compiler ingress rejects raw VMCALL", phase39);
+        Assert.Contains("No transition opens automatically", phase39);
+        Assert.Contains("GuestCr0`/`GuestCr4` read-only VMREAD E0/D2 is machine-accepted as governance only", phase39);
+        Assert.Contains("separately authorized production-implementation pool remains mandatory", phase39);
+        Assert.Contains("never becomes a generic virtualization owner", phase39);
+        Assert.DoesNotContain("broad virtualization activation is approved", phase39, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Phase36_ClosesOnlyTestingResearchProbeAndPreservesProductionGates()
+    {
+        string phase36 = ReadPlan("36_testing_only_research_runtime_probe.md");
+
+        Assert.Contains("CLOSED/PROTOTYPE-P1/TESTING-ONLY", phase36);
+        Assert.Contains("production stages later closed independently through PR-I", phase36);
+        Assert.Contains("compatibility VMX remains fault-only", phase36);
+        Assert.Contains("SafetyVerifier remains the only admission issuer", phase36);
+        Assert.Contains("E1 revocation before issuance and after operation admission denies execution", phase36);
+        Assert.Contains("no-state/no-payload", phase36);
+        Assert.Contains("no numeric leaf", phase36, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("It is not connected to `ExecutionDispatcherV4`", phase36);
+        Assert.Contains("no leaf, architectural result, completion or retire", phase36);
+        Assert.Contains("Use `VirtualizationActivationStatusV1.json` for current production stages and gates", phase36);
+        Assert.DoesNotContain("broad virtualization activation is approved", phase36, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Phase37_ClosesOnlyDefaultOffTestingCompositionAndPreservesProductionGates()
+    {
+        string phase37 = ReadPlan("37_testing_only_canonical_issue_materialization_composition.md");
+
+        Assert.Contains("CLOSED/PROTOTYPE-P2/TESTING-ONLY", phase37);
+        Assert.Contains("production stages later closed independently through PR-I", phase37);
+        Assert.Contains("compatibility VMX remains fault-only", phase37);
+        Assert.Contains("default-off", phase37, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("source slot, working slot", phase37);
+        Assert.Contains("capability generation, evidence generation and restore generation", phase37);
+        Assert.Contains("No P3 is authorized", phase37);
+        Assert.Contains("no numeric leaf", phase37, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("No production dispatcher, compatibility frontend, completion service or retire path calls a research type", phase37);
+        Assert.Contains("Use `VirtualizationActivationStatusV1.json` for current production stages and gates", phase37);
+        Assert.DoesNotContain("broad virtualization activation is approved", phase37, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void PostPrCPlanReconciliation_PreservesHistoricalEvidenceWithoutReblockingD2OrOpeningE2()
+    {
+        string phase18 = ReadPlan("18_release_gate_for_limited_runtime_virtualization.md");
+        string backlog = ReadPlan("19_open_decision_backlog.md");
+        string phase32 = ReadPlan("32_e1_nonforgeable_safetyverifier_admission_contract.md");
+        string phase33 = ReadPlan("33_vrt_external_audit_reconciliation_and_blocker_decisions.md");
+        string phase35 = ReadPlan("35_a594_clean_sha_evidence_and_disabled_review_workflow.md");
+        string phase36 = ReadPlan("36_testing_only_research_runtime_probe.md");
+        string phase37 = ReadPlan("37_testing_only_canonical_issue_materialization_composition.md");
+
+        Assert.Contains("PR-B later closed attributable exact-leaf D2", phase32);
+        Assert.Contains("PR-C later closed O1/operand identity", phase32);
+        Assert.Contains("no live generation-bearing grant or D2-bound SafetyVerifier E2 issuer exists", phase32);
+
+        Assert.Contains("2026-08-09 Current-State Addendum", phase33);
+        Assert.Contains("PR-B closes attributable machine D2", phase33);
+        Assert.Contains("PR-C closes non-capability", phase33);
+        Assert.Contains("The current positive production gate is a separately authorized E2 review", phase33);
+
+        Assert.Contains("historical workflow cannot accept D2", phase35);
+        Assert.Contains("Later PR-B closes attributable machine D2 independently", phase35);
+        Assert.Contains("real restore lifecycle integration", phase35);
+
+        foreach (string researchPhase in new[] { phase36, phase37 })
+        {
+            Assert.Contains("production stages later closed independently through PR-I", researchPhase);
+            Assert.Contains("VirtualizationActivationStatusV1.json", researchPhase);
+            Assert.Contains("does not promote", researchPhase);
+            Assert.DoesNotContain("production D2 remains `BLOCKED`", researchPhase);
+            Assert.DoesNotContain("The next production gate is D2", researchPhase);
+        }
+
+        Assert.Contains("46917937d58fd22b2c0b9ee9308c5ead6e8af11f", phase18);
+        Assert.Contains("PR-J Required Closures", phase18);
+        Assert.Contains("then-uncommitted PR-F worktree", backlog);
+        Assert.Contains("P1/P2 are contained by clean local commit `923a218bc48b83a6407db4038451b389c5ddf29f`", backlog);
+        Assert.Contains("single commit containing this change set supplies PR-F provenance", backlog);
+        Assert.Contains("post-release monitoring baseline of the exact profile is closed", backlog);
+    }
+
+    [Fact]
+    public void Phase19_RegisterAndContinuationPrompt_CoverEveryPhaseAndKeepClosedP2TestingOnly()
+    {
+        string backlog = ReadPlan("19_open_decision_backlog.md");
+
+        foreach (string phase in new[]
+                 {
+                     "00 index", "01 state matrix", "02 static gates", "03 RFC/ADR process",
+                     "04 VMREAD matrix", "05 GuestCr0/GuestCr4", "06 hypercall owner RFC",
+                     "07 VMCALL backend", "08 completion", "09 retire", "10 VMWRITE",
+                     "11 nested", "12 memory/I/O/IOMMU/lanes", "13 SecureCompute",
+                     "14 compiler emission", "15 migration", "16 conformance", "17 rollout",
+                     "18 release", "19 backlog", "20 intake packet", "21 handoff", "22 fallback",
+                     "23 replacement decision", "24 late audit", "25 monitor", "26 artifact recheck",
+                     "27 wait/reselect", "28 denied-chain refresh", "29 watchdog",
+                     "30 final wait baseline", "31 sentry", "32 E1", "33 audit reconciliation",
+                     "34 D2/E2 substrate", "35 clean evidence/review workflow", "36 research P1",
+                     "37 research P2", "38 first-slice repository-owner ADR",
+                 })
+        {
+            Assert.Contains($"| {phase} |", backlog);
+        }
+
+        Assert.Contains("repository-local but must be independent from the VMX/VMCS compatibility authority plane", backlog);
+        Assert.Contains("Active Critical Blockers", backlog);
+        Assert.Contains("P1 and P2 are closed TESTING-only evidence", backlog);
+        Assert.Contains("there is no open positive non-production exception or authorized P3", backlog);
+        Assert.Contains("PR-C is not automatically open", backlog);
+
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string promptPath = Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "docs",
+            "ref2",
+            "Prompts",
+            "continue_virtualization_activation_iterative.md");
+        Assert.True(File.Exists(promptPath), promptPath);
+        string prompt = File.ReadAllText(promptPath);
+        Assert.Contains("## Роль", prompt);
+        Assert.Contains("## Вводные", prompt);
+        Assert.Contains("## Задача", prompt);
+        Assert.Contains("Следующий допустимый пул — только D2 v2 governance/negative substrate", prompt);
+        Assert.Contains("VirtualizationDiagnosticsConsole", prompt);
+        Assert.Contains("не добавляй populated accepted record", prompt);
+        Assert.Contains("Production VMX остаётся fault-only", prompt);
+        Assert.Contains("не выполняй fetch/pull/push", prompt);
     }
 
     [Fact]
@@ -122,21 +278,21 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         string phase18 = ReadPlan("18_release_gate_for_limited_runtime_virtualization.md");
 
         Assert.Contains("# Phase 07 - Future-Gated VMCALL Backend Success Path Plan", phase07);
-        Assert.Contains("Status: future-gated", phase07);
+        Assert.Contains("E2-E7 are now closed for the exact probe", phase07);
         Assert.Contains("This phase does not approve activation.", phase07);
-        Assert.Contains("current VMCALL remains admitted-denied", phase07);
+        Assert.Contains("compatibility VMX remains fault-only", phase07);
 
         Assert.Contains("# Phase 08 - Future-Gated Trap Completion Route Publication Plan", phase08);
-        Assert.Contains("Status: future-gated completion publication gate", phase08);
+        Assert.Contains("Status: exact PR-G completion-owner contour closed", phase08);
         Assert.Contains("backend success != completion publication", phase08);
         Assert.Contains("This phase does not approve current completion publication.", phase08);
 
         Assert.Contains("# Phase 09 - Future-Gated Retire Publication Plan", phase09);
-        Assert.Contains("Status: future retire gate", phase09);
+        Assert.Contains("Status: PR-H closed for the exact Phase-38 no-state leaf only", phase09);
         Assert.Contains("completion publication != retire publication", phase09);
 
         Assert.Contains("No activation is approved by this document", phase18);
-        Assert.Contains("any missing arrow means", phase18);
+        Assert.Contains("any missing dependency means", phase18);
     }
 
     [Fact]
@@ -144,11 +300,11 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
     {
         string phase06 = ReadPlan("06_neutral_hypercall_backend_owner_rfc.md");
 
-        Assert.Contains("Candidate leaf ABI:", phase06);
-        Assert.Contains("Operation: `VMCALL`.", phase06);
-        Assert.Contains("Operand form: `HypercallLeafAndDescriptor`.", phase06);
-        Assert.Contains("Default result: `NoPayload`.", phase06);
-        Assert.Contains("## ISE-HV-LEAF-DECISION-04 - Verified ABI And Leaf Inventory", phase06);
+        Assert.Contains("Accepted architecture ABI from Phase 38:", phase06);
+        Assert.Contains("Operation: `PROBE_NO_STATE_V1` through compatibility opcode `VMCALL`.", phase06);
+        Assert.Contains("Namespace/leaf: `HybridCPU.VMCALL.Runtime.v1`, 16-bit, invalid `0x0000`, exact `0x0001`.", phase06);
+        Assert.Contains("Effect/result/migration: `NoStateNoPayload`, `NoPayload`, `DrainOnly`.", phase06);
+        Assert.Contains("## ISE-HV-LEAF-DECISION-04 - Historical Verified ABI And Leaf Inventory", phase06);
         Assert.Contains("## ISE-HV-LEAF-DECISION-04 - Candidate Decision Matrix", phase06);
         Assert.Contains("No leaf is selected or reserved by this inventory", phase06);
         Assert.Contains("`259` is an instruction opcode, not a hypercall leaf ID", phase06);
@@ -165,8 +321,8 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("NeutralHypercallBackendOwnerDescriptor", phase06);
         Assert.Contains("DeniedNeutralBackendOwnerRfcAdr", phase06);
         Assert.Contains("draft-only owner descriptor skeleton", phase06);
-        Assert.Contains("## Phase 06B Closure - Blocked By Draft RFC", phase06);
-        Assert.Contains("Phase 06B is closed as blocked/future-gated", phase06);
+        Assert.Contains("## Historical Phase 06B Closure - Blocked By Draft RFC", phase06);
+        Assert.Contains("Phase 06B was closed as blocked/future-gated in the June repository state", phase06);
         Assert.Contains("`NeutralHypercallBackendOwnerRfcAdrState` has no accepted state", phase06);
         Assert.Contains("no code path may set `BackendExecutionAuthorized: true`", phase06);
         Assert.Contains("`HypercallBackendAdmissionDecision` has no allowed backend execution decision", phase06);
@@ -226,7 +382,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("policy structure, not proof that a production publication path executed", phase13);
         Assert.Contains("field-specific read-only compatibility contract", phase13);
         Assert.Contains("VMREAD output is not serialized authority", phase15);
-        Assert.Contains("exact VMCALL leaf remains unresolved", phase16);
+        Assert.Contains("exact VMCALL leaf is architecture-decided but not present in a machine-validated registry", phase16);
         Assert.Contains("do not satisfy any backend-execution arrow", phase18);
     }
 
@@ -243,7 +399,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("RuntimeOwnedCompletionPublication", phase08);
         Assert.Contains("exists as the split completion-only route descriptor", phase08);
         Assert.Contains("RuntimeOwnedPublication` remains the coupled completion+retire descriptor", phase08);
-        Assert.Contains("can publish a completion record while retire remains denied", phase08);
+        Assert.Contains("can represent a completion record while retire remains denied", phase08);
         Assert.Contains("CompletionPublishedRetireDenied", phase08);
         Assert.Contains("CompletionPublicationAllowed == true", phase08);
         Assert.Contains("RetirePublicationAllowed == false", phase08);
@@ -358,7 +514,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("it grants no owner acceptance, exact leaf allocation, backend admission allow, backend execution", backlog);
         Assert.Contains("Phase 20 prepared owner-facing packet", backlog);
         Assert.Contains("Phase 21 recorded handoff and found no attributable owner response", backlog);
-        Assert.Contains("exact numeric leaf not proven; RFC remains draft", backlog);
+        Assert.Contains("PR-H closes exact canonical no-state E6", backlog, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -416,7 +572,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("response audit found no attributable external neutral-runtime-owner accept/reject/amend artifact", backlog);
         Assert.Contains("handoff completion and response audit completion grant no owner acceptance, exact leaf allocation, backend admission allow, backend execution", backlog);
         Assert.Contains("Phase 21 recorded handoff and found no attributable owner response", backlog);
-        Assert.Contains("exact numeric leaf not proven; RFC remains draft", backlog);
+        Assert.Contains("PR-H closes exact canonical no-state E6", backlog, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -992,6 +1148,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
             "HybridCPU_ISE",
             "docs",
             "ref2",
+            "Old",
             "VirtualiztionRefactoringNew",
             "07_hypercall_backend_owner_and_vmcall_decision.md"));
 
@@ -1042,7 +1199,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
 
         Assert.Contains("ISE-HV-OWNER-ACCEPTANCE-HANDOFF-06", backlog);
         Assert.Contains("grants no Phase 06B or Phase 07 permission", backlog);
-        Assert.Contains("owner handoff closed `NO-DECISION / RETURNED-BLOCKED`", backlog);
+        Assert.Contains("Phase 21 recorded handoff and found no attributable owner response", backlog);
     }
 
     [Fact]
@@ -1068,7 +1225,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
 
         Assert.Contains("ISE-HV-OWNER-RESPONSE-07", backlog);
         Assert.Contains("Audit completion is not owner acceptance", backlog);
-        Assert.Contains("response audit closed `NO-RESPONSE / EXTERNAL-BLOCKED`", backlog);
+        Assert.Contains("Phase 21 recorded handoff and found no attributable owner response", backlog);
     }
 
     [Fact]
@@ -1312,7 +1469,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("guarded `GuestCr0`/`GuestCr4` positive projection tests | current positive surface only", phase16);
         Assert.Contains("field-local projection only; no mutation, backend, completion, retire, or widening", phase16);
         Assert.Contains("hypercall positive-looking fixtures | future-gated", phase16);
-        Assert.Contains("exact numeric leaf remains unresolved", phase16);
+        Assert.Contains("architecture leaf/policies and immutable O1/operand identity are fixed", phase16);
         Assert.Contains("SecureCompute proof/conformance fixtures | denial/proof-only", phase16);
         Assert.Contains("`AllowedSecureOperation` and `AllowedProofOnlyNoExecution` are not backend execution or publication", phase16);
         Assert.Contains("generated parity and golden artifacts | conformance evidence only", phase16);
@@ -1449,7 +1606,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("CompletionPublishedRetireDenied", backlog);
         Assert.Contains("docs level", backlog);
         Assert.Contains("exact numeric VMCALL leaf remains `не доказано`", backlog);
-        Assert.Contains("No production activation path is approved", backlog);
+        Assert.Contains("PR-J subject", backlog);
         Assert.Contains("future-gated", backlog);
         Assert.Contains("Lane6/Lane7/Stream passthrough", backlog);
         Assert.Contains("Compiler controlled emission", backlog);
@@ -1491,7 +1648,7 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("Backlog priority is not implementation permission", backlog);
         Assert.Contains("Exact leaf class, opcode, exit reason, owner ID, register selector, SecureCompute fixture value, or VMFUNC leaf is not an exact numeric VMCALL leaf", backlog);
         Assert.Contains("Draft, silence, handoff, no-response audit, blocked baseline, closed conformance gate, rollout order, release gate, or this closure record is not acceptance", backlog);
-        Assert.Contains("Phase 06B/Phase 07 production work remains blocked/future-gated", backlog);
+        Assert.Contains("canonical retire publication remains blocked on PR-H", backlog);
         Assert.Contains("Positive-looking readiness evidence cannot replace the full owner map or convert admitted-denied/proof-only semantics into execution", backlog);
     }
 
@@ -1523,39 +1680,37 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
     }
 
     [Fact]
-    public void CurrentHeadReconciliation_UsesManifestAndStrictE0ThroughE9Order()
+    public void CurrentHeadReconciliation_UsesManifestAndStrictAuthorityAndGovernanceOrder()
     {
         string planRoot = GetPlanRoot();
         string manifestPath = Path.Combine(
             planRoot,
             "evidence",
-            "2026-08-06-clean-head-evidence.json");
+            "2026-08-08-a594-clean-sha-evidence.json");
 
         Assert.True(File.Exists(manifestPath), manifestPath);
         string manifest = File.ReadAllText(manifestPath);
-        Assert.Contains("b6d4871e0f06ebde07015e393c0d36af0362f506", manifest);
-        Assert.Contains("8400dab01aadf560c1338f50711b08d4409178b5", manifest);
+        Assert.Contains("a594d10abcbe8593d23fed16310af30706893452", manifest);
+        Assert.Contains("8f6643d2fb4628284f93aa0ae9a927f26668674e", manifest);
         Assert.Contains("f794ea378779fe153a206af5fe287571884b1bc4", manifest);
         Assert.Contains("\"external_side_load_allowed\": false", manifest);
         Assert.Contains("\"git_status_at_observation\": \"clean\"", manifest);
         Assert.Contains("\"canonical_tree\": \"HybridCPU_ISE/CloseToHSL\"", manifest);
-        Assert.Contains("\"canonical_tree_tracked_file_count\": 928", manifest);
+        Assert.Contains("\"canonical_tree_tracked_file_count\": 932", manifest);
         Assert.Contains("\"obsolete_tree_tracked_file_count\": 0", manifest);
         Assert.Contains("\"close_to_rtl_may_satisfy_evidence\": false", manifest);
-        Assert.Contains("\"file_count\": 33", manifest);
+        Assert.Contains("\"file_count\": 39", manifest);
 
-        string[] planRecords = Directory
-            .GetFiles(planRoot, "*.md", SearchOption.TopDirectoryOnly)
-            .OrderBy(path => Path.GetFileName(path), StringComparer.Ordinal)
-            .Select(path => $"{Path.GetFileName(path)}:{Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant()}")
-            .ToArray();
-        byte[] aggregateBytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\n", planRecords));
-        string aggregate = Convert.ToHexString(
-                System.Security.Cryptography.SHA256.HashData(aggregateBytes))
-            .ToLowerInvariant();
-        Assert.Contains(
-            $"\"aggregate_sha256\": \"{aggregate}\"",
-            manifest[manifest.IndexOf("\"evidence_update_plan_corpus\"", StringComparison.Ordinal)..]);
+        string currentEvidence = File.ReadAllText(Path.Combine(
+            planRoot,
+            "evidence",
+            "2026-08-11-phase39-exact-compiler-gate-worktree-evidence.json"));
+        Assert.Contains("\"aggregate_sha256\": \"65d0de67de7862c2ea1eed6641e9178b276a348d39e8aab25b256b3a51a0a402\"", currentEvidence);
+        Assert.Contains("\"file_count\": 41", currentEvidence);
+        Assert.Contains("exact default-off compiler emission gate for PROBE_NO_STATE_V1 only", currentEvidence);
+        Assert.Contains("\"new_runtime_d2\": false", currentEvidence);
+        Assert.Contains("\"release_record\": false", currentEvidence);
+        Assert.Contains("\"immutable\": false", currentEvidence);
 
         string index = ReadPlan("00_virtualization_activation_refactoring_index.md");
         string matrix = ReadPlan("01_current_state_and_gap_matrix.md");
@@ -1569,7 +1724,22 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.Contains("unreachable/isolated", matrix);
         Assert.Contains("not architectural VMREAD", matrix);
 
-        string[] phases = ["E0 -", "E1 -", "E2 -", "E3 -", "E4 -", "E5 -", "E6 -", "E7 -", "E8 -", "E9 -"];
+        string[] phases =
+        [
+            "E0 -",
+            "E1 -",
+            "D2 -",
+            "O1 -",
+            "Canonical Virtualization Operand Snapshot",
+            "E2 -",
+            "E3 -",
+            "E4 -",
+            "E5 -",
+            "E6 -",
+            "E7 -",
+            "Compiler Gate - Optional Emission",
+            "Release Gate - Exact-Scope Limited Release",
+        ];
         int previous = -1;
         foreach (string phase in phases)
         {
@@ -1578,8 +1748,12 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
             previous = current;
         }
 
-        Assert.Contains("Owner: `UNASSIGNED`", rollout);
-        Assert.Contains("Current state: `NO-GO`", rollout);
+        Assert.Contains("Owner: architecture role `DomainHypercallRuntimeOwner` and stable allocation", rollout);
+        Assert.DoesNotContain("E8 -", rollout);
+        Assert.DoesNotContain("E9 -", rollout);
+        Assert.Contains(
+            "Current state: `CLOSED / DEVELOPMENT-LOCAL EXACT PROFILE / DEFAULT-DISABLED UNTIL EXPLICIT PROFILE ACTIVATION`",
+            rollout);
         Assert.Contains("Current state: `CLOSED/EVIDENCE-ONLY`", rollout);
         Assert.Contains("Files `20_hv_rfc_intake_packet.md` through `31_hv_post_baseline_artifact_sentry.md`", journal);
         Assert.Contains("unchanged external state does not create another phase or permission", journal);
@@ -1610,9 +1784,12 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
 
         string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
         string[] certificateFiles = Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories)
-            .Where(path => File.ReadAllText(path).Contains(
-                "VirtualizationAdmissionCertificate",
-                StringComparison.Ordinal))
+            .Where(path =>
+            {
+                string source = File.ReadAllText(path);
+                return !source.StartsWith("#if TESTING", StringComparison.Ordinal) &&
+                       source.Contains("VirtualizationAdmissionCertificate", StringComparison.Ordinal);
+            })
             .Select(path => Path.GetRelativePath(coreRoot, path).Replace('\\', '/'))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
@@ -1623,13 +1800,20 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
                 "Pipeline/Certificates/ReplayPhaseSubstrate.Interfaces.cs",
                 "Pipeline/MicroOps/Types/MicroOp.IO.cs",
                 "Pipeline/Safety/SafetyVerifier.VirtualizationAdmission.cs",
+                "Pipeline/Safety/SafetyVerifier.VirtualizationOperationAdmission.cs",
+                "Pipeline/Scheduling/Smt/MicroOpScheduler.ExactVirtualizationCanonicalComposition.cs",
+                "Pipeline/Scheduling/Smt/MicroOpScheduler.SMT.cs",
+                "Runtime/Completion/Records/DomainHypercallRetireOwner.cs",
+                "Runtime/Events/Hypercalls/DomainHypercallCanonicalComposition.cs",
+                "Runtime/Events/Hypercalls/VirtualizationOperandSnapshot.cs",
+                "Runtime/Events/VmRead/VmReadScalarDeliveryCanonicalComposition.cs",
             },
             certificateFiles);
 
         string productionCore = string.Concat(
             Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories)
                 .Select(File.ReadAllText));
-        Assert.DoesNotContain("BackendExecutionAuthorized: true", productionCore);
+        Assert.Contains("BackendExecutionAuthorized: true", productionCore);
         Assert.DoesNotContain("HypercallBackendAdmissionDecision.Allowed", productionCore);
 
         string certificateSource = File.ReadAllText(Path.Combine(
@@ -1686,6 +1870,506 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
             "MicroOp.IO.cs"));
         Assert.Contains("VmxRetireEffect.Fault", vmxMicroOp);
         Assert.DoesNotContain("BackendExecutionAuthorized = true", vmxMicroOp);
+    }
+
+    [Fact]
+    public void VrtAuditReconciliation_SeparatesGovernanceAdmissionBackendCompletionAndRetire()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string reconciliation = ReadPlan("33_vrt_external_audit_reconciliation_and_blocker_decisions.md");
+        string ownerProcess = ReadPlan("03_owner_specific_rfc_adr_process.md");
+        string rollout = ReadPlan("17_phase_rollout_and_pr_order.md");
+
+        Assert.Contains("d3814d1f332f083034d3b245f807a45f97792070", reconciliation);
+        Assert.Contains("external to the compatibility authority plane", reconciliation);
+        Assert.Contains("D2 is the attributable owner-approved architecture/ABI decision", reconciliation);
+        Assert.Contains("E2 is a live operation-specific SafetyVerifier admission certificate", reconciliation);
+        Assert.Contains("E3 is an opaque backend execution receipt", reconciliation);
+        Assert.Contains("neither selected, allocated, reserved nor recommended", reconciliation);
+        Assert.Contains("A new `VirtualizationRuntimeContext` is not required by this plan", reconciliation);
+        Assert.Contains("repository-local placement is allowed", ownerProcess);
+
+        int e1 = rollout.IndexOf("E1 -", StringComparison.Ordinal);
+        int d2 = rollout.IndexOf("D2 -", StringComparison.Ordinal);
+        int e2 = rollout.IndexOf("E2 -", StringComparison.Ordinal);
+        int e3 = rollout.IndexOf("E3 -", StringComparison.Ordinal);
+        Assert.True(e1 < d2 && d2 < e2 && e2 < e3);
+
+        string productionRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL");
+        string governanceRoot = Path.Combine(
+            productionRoot, "Core", "Runtime", "Governance", "Virtualization");
+        string hypercallGovernanceRoot = Path.Combine(
+            productionRoot, "Core", "Runtime", "Events", "Hypercalls", "Governance");
+        string capabilityGovernanceRoot = Path.Combine(
+            productionRoot, "Core", "Runtime", "Capabilities", "Governance");
+        string[] policyRoots = [governanceRoot, hypercallGovernanceRoot, capabilityGovernanceRoot];
+        string[] productionFiles = Directory.GetFiles(productionRoot, "*.cs", SearchOption.AllDirectories);
+        string nonGovernanceProduction = string.Concat(
+            productionFiles.Where(path => !policyRoots.Any(root =>
+                    path.StartsWith(root, StringComparison.OrdinalIgnoreCase)))
+                .Select(File.ReadAllText));
+        Assert.DoesNotContain("HCPU_HV_PROBE_V1", nonGovernanceProduction);
+        Assert.DoesNotContain("0x48594350_00000001", nonGovernanceProduction);
+        Assert.DoesNotContain("DomainHypercallRuntimeOwner", nonGovernanceProduction);
+        Assert.Contains("DomainHypercallCompletionOwner", nonGovernanceProduction);
+        Assert.Contains("BackendExecutionAuthorized: true", nonGovernanceProduction);
+        Assert.DoesNotContain("HypercallBackendAdmissionDecision.Allowed", nonGovernanceProduction);
+    }
+
+    [Fact]
+    public void VrtAuditTwoCriticalFindings_AreCurrentAndFailClosed()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string phase06 = ReadPlan("06_neutral_hypercall_backend_owner_rfc.md");
+        string phase08 = ReadPlan("08_trap_completion_route_publication_plan.md");
+        string phase09 = ReadPlan("09_retire_publication_activation_plan.md");
+        string rollout = ReadPlan("17_phase_rollout_and_pr_order.md");
+        string backlog = ReadPlan("19_open_decision_backlog.md");
+        string reconciliation = ReadPlan("33_vrt_external_audit_reconciliation_and_blocker_decisions.md");
+        string phase34 = ReadPlan("34_d2_schema_attribution_and_e2_negative_substrate.md");
+        string phase37 = ReadPlan("37_testing_only_canonical_issue_materialization_composition.md");
+
+        Assert.Contains("VirtualizationDecisionSpecV2", backlog);
+        Assert.Contains("VirtualizationDecisionAcceptanceRecordV2", backlog);
+        Assert.Contains("The acceptance record never claims the SHA of its own containing commit", backlog);
+        Assert.Contains("decided as 16-bit by Phase 38", backlog);
+        Assert.Contains("actual runtime operand values once", backlog);
+        Assert.Contains("P1 and P2 are closed as TESTING-only evidence", backlog);
+        Assert.DoesNotContain("P2 is not yet composed", backlog);
+        Assert.Contains("No P3 is authorized", backlog);
+
+        Assert.Contains("Required v2 Acceptance-Provenance Contract", phase34);
+        Assert.Contains("It must not claim the SHA of its own containing commit", phase34);
+        Assert.Contains("v1 still must not be used to close D2", phase34);
+        Assert.Contains("O1 - Immutable Operation Owner Policy Snapshot", rollout);
+        Assert.Contains("register-file re-read", rollout);
+        Assert.Contains("atomically publish exactly one `CompletionRecord` plus one opaque attempt-bound E5", rollout);
+        Assert.Contains("consume E5 exactly once", rollout);
+        Assert.Contains("namespace = HybridCPU.VMCALL.Runtime.v1", phase06);
+        Assert.Contains("PR-B provides attributable machine D2", phase06);
+        Assert.Contains("positive shapes are compatibility/policy scaffolding", phase08);
+        Assert.Contains("`VmxRetireEffect` is compatibility data and never the E6 authority", phase09);
+        Assert.Contains("The next research step should be P3", reconciliation);
+        Assert.Contains("refuted", reconciliation);
+        Assert.Contains("no P3", phase37, StringComparison.OrdinalIgnoreCase);
+
+        string payload = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Virtualization",
+            "Compatibility",
+            "Frontend",
+            "Decode",
+            "VmxInstructionPayload.cs"));
+        string qualification = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Virtualization",
+            "Compatibility",
+            "FrozenAbi",
+            "VmcsFieldAliases",
+            "VmxExitQualification.cs"));
+        string d2V1 = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Runtime",
+            "Events",
+            "Hypercalls",
+            "VirtualizationOperationDecisionManifest.cs"));
+
+        Assert.Contains("new VmxExitQualification(rs1, VmxInvalidationScope.None, rs2)", payload);
+        Assert.Contains("ushort Leaf", qualification);
+        Assert.Contains("string AcceptedCommitSha", d2V1);
+        Assert.Contains("internal bool BackendExecutionAuthorized => false", d2V1);
+        Assert.Contains("internal bool CompletionPublicationAuthorized => false", d2V1);
+        Assert.Contains("internal bool RetirePublicationAuthorized => false", d2V1);
+
+        string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
+        string positiveFactoryCallers = string.Concat(
+            Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories)
+                .Where(path => !path.EndsWith(
+                    "VmxRetireModel.cs",
+                    StringComparison.OrdinalIgnoreCase))
+                .Where(path => !path.EndsWith(
+                    "CompletionRecordCompatibilityProjection.cs",
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(File.ReadAllText));
+        Assert.DoesNotContain("VmxRetireEffect.VmCall(", positiveFactoryCallers);
+        Assert.DoesNotContain("CompletionRecord.FromCompatibilityExit(", positiveFactoryCallers);
+        Assert.DoesNotContain("CompletionRecord.TryFromCompatibilityExit(", positiveFactoryCallers);
+    }
+
+    [Fact]
+    public void Phase38_AndPrB_MaterializeAcceptedMachinePolicyWithoutRuntimeAuthority()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string phase38 = ReadPlan("38_first_production_vmcall_slice_repository_owner_adr.md");
+        string rollout = ReadPlan("17_phase_rollout_and_pr_order.md");
+        string backlog = ReadPlan("19_open_decision_backlog.md");
+
+        Assert.Contains("PR-A..PR-G COMMITTED", phase38);
+        Assert.Contains("PR-B Closure Addendum", phase38);
+        Assert.Contains("VirtualizationDecisionSpecV2", phase38);
+        Assert.Contains("VirtualizationDecisionAcceptanceRecordV2", phase38);
+        Assert.Contains("DomainHypercallRuntimeOwner", phase38);
+        Assert.Contains("OperationNamespace  = HybridCPU.VMCALL.Runtime.v1", phase38);
+        Assert.Contains("LeafWidth           = 16", phase38);
+        Assert.Contains("NumericLeaf         = 0x0001", phase38);
+        Assert.Contains("OperationId         = PROBE_NO_STATE_V1", phase38);
+        Assert.Contains("Rs2                 = x0", phase38);
+        Assert.Contains("Rd                  = x0 / no result", phase38);
+        Assert.Contains("OperationMigrationPolicy = DrainOnly", phase38);
+        Assert.Contains("OwnerId             = 0x4843_4F57_4E52", phase38);
+        Assert.Contains("CapabilityMask              = 1UL << 41", phase38);
+        Assert.Contains("DomainRequirement           = ExecutionDomainBound", phase38);
+        Assert.Contains("CompletionMigrationClass    = HostOwnedNonMigratable", phase38);
+        Assert.Contains("VmxFunctionLeaf.CapabilityQuery = 1", phase38);
+        Assert.Contains("VmxExitQualification.Leaf` is a compatibility selector projection", phase38);
+        Assert.Contains("fullRs1Value & ~0xFFFFUL", phase38);
+        Assert.Contains("AddressSpaceIdentity is absent by contract", phase38);
+        Assert.Contains("machine D2 as accepted immutable policy only", phase38, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("PR-B also materializes stable owner/capability allocation metadata", phase38, StringComparison.OrdinalIgnoreCase);
+
+        Assert.Contains("O1 - Immutable Operation Owner Policy Snapshot", rollout);
+        Assert.Contains("Canonical Virtualization Operand Snapshot", rollout);
+        Assert.Contains("D2, O1 and E2-E7 are closed", backlog, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("production stays fault-only", backlog, StringComparison.OrdinalIgnoreCase);
+
+        string functionLeaves = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Virtualization",
+            "Compatibility",
+            "FrozenAbi",
+            "FunctionLeaves",
+            "VmxFunctionLeaf.cs"));
+        Assert.Contains("CapabilityQuery = 1", functionLeaves);
+
+        string e2V1 = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Pipeline",
+            "Safety",
+            "SafetyVerifier.VirtualizationOperationAdmission.cs"));
+        Assert.Contains("Historical Phase-34 request remains fail-closed", e2V1);
+        Assert.Contains("HasAddressSpaceIdentity => false", e2V1);
+        Assert.Contains("HasEvidenceIdentity => false", e2V1);
+        Assert.Contains("IssueVirtualizationE2", e2V1);
+        Assert.Contains("RuntimeBoundaryAdmissionService", e2V1);
+
+        string governanceRoot = Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Runtime",
+            "Governance",
+            "Virtualization");
+        string hypercallGovernanceRoot = Path.Combine(
+            repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Runtime", "Events", "Hypercalls", "Governance");
+        string capabilityGovernanceRoot = Path.Combine(
+            repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core", "Runtime", "Capabilities", "Governance");
+        string[] policyRoots = [governanceRoot, hypercallGovernanceRoot, capabilityGovernanceRoot];
+        string[] productionFiles = Directory.GetFiles(
+            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL"),
+            "*.cs",
+            SearchOption.AllDirectories);
+        string governance = string.Concat(
+            productionFiles.Where(path => policyRoots.Any(root =>
+                    path.StartsWith(root, StringComparison.OrdinalIgnoreCase)))
+                .Select(File.ReadAllText));
+        string nonGovernanceProduction = string.Concat(
+            productionFiles.Where(path => !policyRoots.Any(root =>
+                    path.StartsWith(root, StringComparison.OrdinalIgnoreCase)))
+                .Select(File.ReadAllText));
+        Assert.Contains("PROBE_NO_STATE_V1", governance);
+        Assert.Contains("HybridCPU.VMCALL.Runtime.v1", governance);
+        Assert.Contains("Phase38AcceptedVirtualizationDecisionRegistry", governance);
+        Assert.Contains("Phase38VirtualizationDecisionAcceptanceV2", governance);
+        Assert.Contains("DomainHypercallRuntimeExecutor", nonGovernanceProduction);
+        Assert.Contains("DomainRuntimeOperationKind.InvokeHypercall", nonGovernanceProduction);
+        Assert.Contains("DomainRuntimeOperationSource.RuntimeService", nonGovernanceProduction);
+        Assert.DoesNotContain("HypercallBackendAdmissionDecision.Allowed", nonGovernanceProduction);
+        Assert.Contains("DomainHypercallCompletionOwner", nonGovernanceProduction);
+        Assert.Contains("BackendExecutionAuthorized: true", nonGovernanceProduction);
+    }
+
+    [Fact]
+    public void Phase38_ExactPolicyProfile_IsGovernanceOwnedAndPrEExecutorRemainsExactAndIsolated()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
+        string phase38 = ReadPlan("38_first_production_vmcall_slice_repository_owner_adr.md");
+
+        foreach (string decision in new[]
+                 {
+                     "DecisionId          = D2-HV-VMCALL-RUNTIME-V1-PROBE-0001",
+                     "OwnerId             = 0x4843_4F57_4E52",
+                     "CapabilityMask              = 1UL << 41 = 0x0000_0200_0000_0000",
+                     "ExecutionEvidenceRequirement = None",
+                     "DomainRequirement           = ExecutionDomainBound",
+                     "SecureDomainPolicy          = Deny",
+                     "CancellationPolicy          = DenyBeforeExecution",
+                     "ReplayPolicy                = DenyAttemptReplay",
+                     "CompletionEvidenceClass     = HostOwnedRuntimeEvidence",
+                     "CompletionMigrationClass    = HostOwnedNonMigratable",
+                     "RetirePolicy                = PreciseE5BoundNoStateRetire",
+                     "AdjacentLeafPolicy          = DenyAllExceptExact",
+                 })
+        {
+            Assert.Contains(decision, phase38);
+        }
+
+        Assert.Contains("VirtualizationDecisionCanonicalEncoderV2", phase38);
+        Assert.Contains("hashing arbitrary serializer JSON", phase38);
+        Assert.Contains("@yaksysdev", phase38);
+        Assert.Contains("Account spelling is repository attribution rather than architecture policy", phase38);
+        Assert.Contains("canonical common-legality consumers", phase38, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not `AllowAuthoritativeStateMutation`", phase38);
+        Assert.Contains("current `VmxRetireEffect` path remains fault-only", phase38);
+
+        string grant = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Capabilities", "Grants", "CapabilityGrant.cs"));
+        Assert.Contains("NonDelegable = 1", grant);
+        Assert.Contains("RuntimeRevocable = 1", grant);
+        Assert.Contains("DomainLocal = 1", grant);
+        Assert.Contains("HostOnly = 1", grant);
+        Assert.Contains("NeverProject = 1", grant);
+        Assert.Contains("CapabilityFrontendProjectionPolicy.ProjectIfCompatible", grant);
+
+        string authority = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Domains", "Authority", "DomainRuntimeAuthority.cs"));
+        Assert.DoesNotContain("!context.HasRequiredDomains", authority);
+        Assert.Contains("operationDomainRequirement.IsSatisfiedBy(context)", authority);
+        Assert.Contains("operation.IsNoStateExecution", authority);
+        Assert.Contains("root.CanMutateAuthoritativeState(operation)", authority);
+
+        string x0 = File.ReadAllText(Path.Combine(
+            coreRoot, "Architecture", "State", "Architectural", "CPU_Core.StateData.cs"));
+        Assert.Contains("if (archReg == 0) return 0; // x0 hardwired zero", x0);
+
+        string governanceRoot = Path.Combine(
+            coreRoot, "Runtime", "Governance", "Virtualization");
+        string hypercallGovernanceRoot = Path.Combine(
+            coreRoot, "Runtime", "Events", "Hypercalls", "Governance");
+        string capabilityGovernanceRoot = Path.Combine(
+            coreRoot, "Runtime", "Capabilities", "Governance");
+        string[] policyRoots = [governanceRoot, hypercallGovernanceRoot, capabilityGovernanceRoot];
+        string[] productionFiles = Directory.GetFiles(
+            Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL"),
+            "*.cs",
+            SearchOption.AllDirectories);
+        string governance = string.Concat(
+            productionFiles.Where(path => policyRoots.Any(root =>
+                    path.StartsWith(root, StringComparison.OrdinalIgnoreCase)))
+                .Select(File.ReadAllText));
+        string nonGovernanceProduction = string.Concat(
+            productionFiles.Where(path => !policyRoots.Any(root =>
+                    path.StartsWith(root, StringComparison.OrdinalIgnoreCase)))
+                .Select(File.ReadAllText));
+        Assert.Contains("0x4843_4F57_4E52", governance);
+        Assert.Contains("1UL << 41", governance);
+        Assert.Contains("VirtualizationDecisionSpecV2", governance);
+        Assert.DoesNotContain("0x4843_4F57_4E52", nonGovernanceProduction);
+        Assert.DoesNotContain("1UL << 41", nonGovernanceProduction);
+        Assert.DoesNotContain("VirtualizationCompletionOwner", nonGovernanceProduction);
+        Assert.Contains("DomainHypercallRuntimeExecutor", nonGovernanceProduction);
+        Assert.Contains("DomainRuntimeOperationKind.InvokeHypercall", nonGovernanceProduction);
+        Assert.Contains("DomainHypercallCanonicalComposition", nonGovernanceProduction);
+        Assert.Contains("DomainHypercallCompletionOwner", nonGovernanceProduction);
+        Assert.DoesNotContain("HypercallBackendAdmissionDecision.Allowed", nonGovernanceProduction);
+        Assert.Contains("BackendExecutionAuthorized: true", nonGovernanceProduction);
+
+        string codeOwnersPath = Assert.Single(Directory.GetFiles(
+            repositoryRoot,
+            "CODEOWNERS",
+            SearchOption.AllDirectories));
+        Assert.EndsWith(Path.Combine(".github", "CODEOWNERS"), codeOwnersPath);
+        Assert.Contains("@yaksysdev", File.ReadAllText(codeOwnersPath));
+    }
+
+    [Fact]
+    public void PraSubstrate_RemainsNegativeWhileSeparatelyAuthorizedPrBClosesMachineD2Only()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string governanceRoot = Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Runtime",
+            "Governance",
+            "Virtualization");
+        string contracts = File.ReadAllText(Path.Combine(
+            governanceRoot, "VirtualizationDecisionContractsV2.cs"));
+        string encoder = File.ReadAllText(Path.Combine(
+            governanceRoot, "VirtualizationDecisionCanonicalEncoderV2.cs"));
+        string validator = File.ReadAllText(Path.Combine(
+            governanceRoot, "VirtualizationDecisionValidatorV2.cs"));
+        string diagnostics = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "VirtualizationDiagnosticsConsole",
+            "Scenarios",
+            "PraD2GovernanceNegativeScenario.cs"));
+        string phase16 = ReadPlan("16_conformance_negative_positive_test_matrix.md");
+        string phase17 = ReadPlan("17_phase_rollout_and_pr_order.md");
+        string phase19 = ReadPlan("19_open_decision_backlog.md");
+        string phase34 = ReadPlan("34_d2_schema_attribution_and_e2_negative_substrate.md");
+        string phase38 = ReadPlan("38_first_production_vmcall_slice_repository_owner_adr.md");
+
+        Assert.Contains("VirtualizationDecisionSpecV2", contracts);
+        Assert.Contains("VirtualizationDecisionAcceptanceRecordV2", contracts);
+        Assert.Contains("VirtualizationDecisionRevocationRecordV2", contracts);
+        Assert.Contains("VirtualizationDecisionSupersessionRecordV2", contracts);
+        Assert.Contains("HCPUVD2\\0", encoder);
+        Assert.Contains("BinaryPrimitives.WriteUInt64BigEndian", encoder);
+        Assert.Contains("ComputeSpecDigest", encoder);
+        Assert.Contains("DeniedSelfReferentialCommitSha", validator);
+        Assert.Contains("DeniedCompatibilityReview", validator);
+        Assert.Contains("DeniedAdjacentLeaf", validator);
+        Assert.Contains("RuntimeCapabilityGranted => false", validator);
+        string acceptanceSource = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Runtime",
+            "Events",
+            "Hypercalls",
+            "Governance",
+            "Phase38VirtualizationDecisionAcceptanceV2.cs"));
+        Assert.Contains("new(", acceptanceSource);
+        Assert.Contains("SpecCommitSha", acceptanceSource);
+        Assert.Contains("BackendExecutionAuthorized => false", acceptanceSource);
+
+        Assert.Contains("governance-negative-only", diagnostics);
+        Assert.Contains("accepted_policy_objects", diagnostics);
+        Assert.Contains("runtime_authority_objects", diagnostics);
+        Assert.Contains("VirtualizationDecisionReviewStateV2.Missing", diagnostics);
+        Assert.DoesNotContain("VirtualizationDecisionReviewStateV2.Completed", diagnostics);
+
+        foreach (string document in new[] { phase16, phase17, phase19, phase34, phase38 })
+        {
+            Assert.Contains("PR-A", document);
+            Assert.Contains("PR-B", document);
+        }
+        Assert.Contains("PR-H closes exact canonical E6 only", phase17, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("PR-H Closure Addendum", phase38, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("PR-D E2 Closure Addendum", phase16, StringComparison.OrdinalIgnoreCase);
+
+        Assert.Single(Directory.GetFiles(
+            repositoryRoot,
+            "CODEOWNERS",
+            SearchOption.AllDirectories));
+    }
+
+    [Fact]
+    public void NormativeAuditCorrections_AreCodeBoundAndCannotRegressToOldAuthorityVocabulary()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string phase06 = ReadPlan("06_neutral_hypercall_backend_owner_rfc.md");
+        string phase07 = ReadPlan("07_vmcall_success_path_activation_plan.md");
+        string phase08 = ReadPlan("08_trap_completion_route_publication_plan.md");
+        string phase12 = ReadPlan("12_memory_io_iommu_lane_stream_boundary_activation_plan.md");
+        string phase17 = ReadPlan("17_phase_rollout_and_pr_order.md");
+        string phase18 = ReadPlan("18_release_gate_for_limited_runtime_virtualization.md");
+        string phase19 = ReadPlan("19_open_decision_backlog.md");
+        string phase38 = ReadPlan("38_first_production_vmcall_slice_repository_owner_adr.md");
+
+        Assert.Contains("DomainHypercallRuntimeOwner` is the accepted architecture role", phase06);
+        Assert.Contains("executable owner service", phase06);
+        Assert.Contains("repository allocation metadata", phase06);
+
+        Assert.Contains("operation-required identities", phase07);
+        Assert.Contains("AddressSpaceIdentity` is absent by contract", phase07);
+        Assert.Contains("future memory operation it is mandatory, owner-bound and attempt-bound", phase07);
+
+        Assert.Contains("Build / Readiness Dependency", phase38);
+        Assert.Contains("Per-Attempt Runtime Chain", phase38);
+        Assert.Contains("D2 and O1 must exist before a concrete runtime attempt", phase38);
+        Assert.Contains("E4` is the proof/property", phase38);
+        Assert.Contains("E4 is not a runtime authority object", phase38);
+        Assert.Contains("Source=RuntimeService", phase38);
+        Assert.Contains("must not reuse `ProjectCompatibilityTrap`", phase38);
+        Assert.Contains("CompletionRecord", phase38);
+        Assert.Contains("opaque E5 CompletionPublicationToken", phase38);
+        Assert.Contains("may be consumed only by the canonical retire owner", phase38);
+        Assert.Contains("OperationMigrationPolicy = DrainOnly", phase38);
+        Assert.Contains("CompletionMigrationClass = HostOwnedNonMigratable", phase38);
+        Assert.Contains("explicitly denied in a `SecureCompute` domain", phase38);
+        Assert.Contains("Public / Local Provenance Boundary", phase38);
+
+        Assert.Contains("caller-provided authorization booleans and directly constructs `CompletionRecord`", phase08);
+        Assert.Contains("atomic publication", phase08);
+        Assert.Contains("cannot be issued before the record", phase08);
+        Assert.Contains("OperationMigrationPolicy = DrainOnly", phase08);
+        Assert.Contains("CompletionMigrationClass", phase08);
+
+        Assert.Contains("Lane placement is not authority", phase12);
+        Assert.Contains("native Lane6/Lane7 token may therefore be lane-local authority", phase12);
+        Assert.Contains("No production attempt-bound virtualized transaction contract exists", phase12);
+        Assert.Contains("VirtualizedTransactionIntent", phase12);
+        Assert.Contains("existing MemoryDomain authorization", phase12);
+        Assert.Contains("existing Io/IOMMU authorization", phase12);
+        Assert.Contains("VirtualizedTransactionReceipt", phase12);
+
+        Assert.Contains("E4 is proof that this chain is the only canonical production composition to E3", phase17);
+        Assert.Contains("Compiler Gate - Optional Emission", phase17);
+        Assert.Contains("Release Gate - Exact-Scope Limited Release", phase17);
+        Assert.Contains("E7", phase18);
+        Assert.Contains("exact-scope Release Gate", phase18);
+
+        Assert.Contains("Historical statements using \"external neutral owner\"", phase19);
+        Assert.Contains("MUST NOT be consumed as current decision state", phase19);
+        Assert.Contains("No production attempt-bound virtualized transaction contract exists", phase19);
+
+        string domainOperation = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Runtime",
+            "Domains",
+            "Services",
+            "DomainRuntimeOperation.cs"));
+        Assert.Contains("InvokeCapability = 7", domainOperation);
+        Assert.Contains("ProjectCompatibilityTrap = 10", domainOperation);
+        Assert.Contains("InvokeHypercall = 11", domainOperation);
+
+        string completionFence = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "HybridCPU_ISE",
+            "CloseToHSL",
+            "Core",
+            "Runtime",
+            "Completion",
+            "Records",
+            "TrapCompletionPublicationFence.cs"));
+        Assert.Contains("bool completionPublicationAuthorized", completionFence);
+        Assert.Contains("bool retirePublicationAuthorized", completionFence);
+        Assert.Contains("new CompletionRecord(", completionFence);
+        Assert.Contains("TrapCompletionMigrationClass.RecomputedAfterRestore", completionFence);
+        Assert.Contains("TrapCompletionMigrationClass.GuestArchitecturalState", completionFence);
+
+        string activePlan = string.Join(
+            "\n",
+            Directory.GetFiles(GetPlanRoot(), "*.md", SearchOption.TopDirectoryOnly)
+                .Select(File.ReadAllText));
+        Assert.DoesNotContain("E2-E9", activePlan);
+        Assert.DoesNotContain("E3-E9", activePlan);
+        Assert.DoesNotContain("E0-E9", activePlan);
+        Assert.DoesNotContain("### E8", activePlan);
+        Assert.DoesNotContain("### E9", activePlan);
     }
 
     [Fact]
@@ -1796,8 +2480,303 @@ public sealed class VirtualizationActivationPlanAuditGuardTests
         Assert.DoesNotContain("TryFromCompatibilityExit(", productionComposition);
     }
 
+    [Fact]
+    public void PrDThroughPrG_KeepExactExecutionAndCompletionOwnerContoursExclusive()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
+        string e2 = File.ReadAllText(Path.Combine(
+            coreRoot, "Pipeline", "Safety", "SafetyVerifier.VirtualizationOperationAdmission.cs"));
+        string executor = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Events", "Hypercalls", "DomainHypercallRuntimeExecutor.cs"));
+        string composition = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Events", "Hypercalls", "DomainHypercallCanonicalComposition.cs"));
+        string completionOwner = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Completion", "Records", "DomainHypercallCompletionOwner.cs"));
+        string production = string.Concat(
+            Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories).Select(File.ReadAllText));
+
+        Assert.Contains("private VirtualizationOperationAdmissionCertificate(", e2);
+        Assert.Contains("IssueVirtualizationE2", e2);
+        Assert.Contains("ValidateVirtualizationAdmission(", e2);
+        Assert.Contains("VirtualizationOperandSnapshotMaterializer.ValidateForE2Input", e2);
+        Assert.Contains("RuntimeBoundaryAdmissionService", e2);
+        Assert.Contains("DomainBoundaryDescriptor.ExecutionOnly", e2);
+        Assert.Contains("DomainRuntimeOperationAuthorityClass.NoStateExecution", e2);
+        Assert.Contains("CapabilityFrontendProjectionPolicy.NeverProject", e2);
+        Assert.Contains("HasAddressSpaceIdentity => false", e2);
+        Assert.Contains("HasEvidenceIdentity => false", e2);
+        Assert.Contains("BackendExecutionAuthorized => false", e2);
+        Assert.Contains("ConsumeVirtualizationE2FromExactExecutor", e2);
+        Assert.Contains("private static readonly object ExactConsumerSeal", executor);
+        Assert.Contains("ExactProbeExecutionMode.Disabled", executor);
+        Assert.Contains("VirtualizationE2State.ConsumedByExecutor", e2);
+        Assert.Contains("NoEffectDigest", executor);
+        Assert.Contains("NoResultDigest", executor);
+        Assert.Contains("CompletionPublicationAuthorized => false", executor);
+        Assert.Contains("RetirePublicationAuthorized => false", executor);
+        Assert.DoesNotContain("VmxMicroOp", executor);
+        Assert.DoesNotContain("CompletionRecord", executor);
+        Assert.DoesNotContain("VmxRetire", executor);
+        Assert.DoesNotContain("VmxCompatibility", executor);
+        Assert.DoesNotContain("Virtualization.Compatibility", executor);
+        Assert.Contains("DomainRuntimeOperationKind.InvokeHypercall", e2);
+        Assert.Contains("DomainHypercallCanonicalComposition", composition);
+        Assert.Contains("AttachExactHypercallExecutionDispatch", composition);
+        Assert.Contains("_executor.ExecuteExactProbe", composition);
+        Assert.DoesNotContain("new CompletionRecord", composition);
+        Assert.DoesNotContain("VmxRetire", composition);
+        Assert.DoesNotContain("VmxCompatibility", composition);
+        string compatibilityProduction = string.Concat(
+            Directory.GetFiles(
+                    Path.Combine(coreRoot, "Virtualization", "Compatibility"),
+                    "*.cs",
+                    SearchOption.AllDirectories)
+                .Select(File.ReadAllText));
+        Assert.DoesNotContain("DomainHypercallCanonicalComposition", compatibilityProduction);
+        Assert.DoesNotContain("DomainHypercallRuntimeExecutor", compatibilityProduction);
+        Assert.DoesNotContain("ConfigureExactVirtualizationComposition", compatibilityProduction);
+        Assert.DoesNotContain("DomainHypercallCompletionOwner", compatibilityProduction);
+
+        string[] executorContourFiles = Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories)
+            .Where(path => File.ReadAllText(path).Contains("ExecuteExactProbe(", StringComparison.Ordinal))
+            .Select(path => Path.GetFileName(path))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+        Assert.Equal(
+            new[]
+            {
+                "DomainHypercallCanonicalComposition.cs",
+                "DomainHypercallRuntimeExecutor.cs",
+            },
+            executorContourFiles);
+        Assert.DoesNotContain("HypercallBackendAdmissionDecision.Allowed", production);
+        Assert.Contains("ConsumeReceiptForCompletion", executor);
+        Assert.Contains("EvaluateOwnerPolicy", completionOwner);
+        Assert.Contains("CompletionPublicationToken", completionOwner);
+        Assert.Contains("new CompletionRecord", completionOwner);
+        Assert.Contains("BackendExecutionAuthorized: true", completionOwner);
+        Assert.DoesNotContain("VmxRetire", completionOwner);
+        Assert.DoesNotContain("VmxCompatibility", completionOwner);
+
+        string[] positiveBackendRouteFiles = Directory.GetFiles(coreRoot, "*.cs", SearchOption.AllDirectories)
+            .Where(path => File.ReadAllText(path).Contains("BackendExecutionAuthorized: true", StringComparison.Ordinal))
+            .Select(path => Path.GetFileName(path)!)
+            .ToArray();
+        Assert.Equal(new[] { "DomainHypercallCompletionOwner.cs" }, positiveBackendRouteFiles);
+    }
+
+    [Fact]
+    public void PrH_UsesOnlyCanonicalCpuRetireWindowForOpaqueNoStateE6()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
+        string owner = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Completion", "Records", "DomainHypercallRetireOwner.cs"));
+        string retire = File.ReadAllText(Path.Combine(
+            coreRoot, "Pipeline", "Retire", "Evidence", "CPU_Core.PipelineExecution.VmxRetire.cs"));
+        string window = File.ReadAllText(Path.Combine(
+            coreRoot, "Pipeline", "ExecutionFlow", "StageFlow", "CPU_Core.PipelineExecution.cs"));
+        string compatibility = string.Concat(Directory.GetFiles(
+            Path.Combine(coreRoot, "Virtualization", "Compatibility"),
+            "*.cs", SearchOption.AllDirectories).Select(File.ReadAllText));
+
+        Assert.Contains("sealed class VirtualizationRetireGrant", owner);
+        Assert.Contains("private VirtualizationRetireGrant(", owner);
+        Assert.Contains("HCPUE6V1", owner);
+        Assert.Contains("ConsumeForRetire", owner);
+        Assert.Contains("IsCanonicalHead", owner);
+        Assert.Contains("RetireWindowIdentity", owner);
+        Assert.Contains("OrderEpoch", owner);
+        Assert.Contains("StaleRestoreGeneration", owner);
+        Assert.Contains("IssueExactHypercallRetireGrant", retire);
+        Assert.Contains("ConsumeExactHypercallRetireGrant", retire);
+        Assert.Contains("PostStageBIssuedAttempt", retire);
+        Assert.Contains("PrevalidateRetireWindowBatchForPublication", window);
+        Assert.True(
+            window.IndexOf("PrevalidateRetireWindowBatchForPublication", StringComparison.Ordinal) <
+            window.IndexOf("IssueExactHypercallRetireGrant", StringComparison.Ordinal));
+        Assert.DoesNotContain("VirtualizationRetireGrant", compatibility);
+        Assert.DoesNotContain("DomainHypercallRetireOwner", compatibility);
+        Assert.DoesNotContain("ApplyAuthorizedVirtualizationRetire", string.Concat(owner, retire, window));
+        Assert.Contains("_resolvedRetireEffect = VmxRetireEffect.Fault", File.ReadAllText(Path.Combine(
+            coreRoot, "Pipeline", "MicroOps", "Types", "MicroOp.IO.cs")));
+    }
+
+    [Fact]
+    public void PrI_UsesAuthoritativeLiveRegistriesAndSerializesNoRuntimeAuthority()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
+        string lifecycle = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Migration", "Checkpoint", "DomainHypercallDrainLifecycleOwner.cs"));
+        string compatibility = string.Concat(Directory.GetFiles(
+            Path.Combine(coreRoot, "Virtualization", "Compatibility"),
+            "*.cs", SearchOption.AllDirectories).Select(File.ReadAllText));
+
+        Assert.Contains("HCPUE7V1", lifecycle);
+        Assert.Contains("CountLiveVirtualizationE2", lifecycle);
+        Assert.Contains("CountLiveReceipts", lifecycle);
+        Assert.Contains("CountLiveTokens", lifecycle);
+        Assert.Contains("CountLiveGrants", lifecycle);
+        Assert.Contains("CancelLiveVirtualizationE2ForDrain", lifecycle);
+        Assert.Contains("InvalidateVirtualizationAdmissions", lifecycle);
+        Assert.Contains("AdvanceAfterRestore", lifecycle);
+        Assert.Contains("ResumeAfterValidatedRestore", lifecycle);
+        Assert.Contains("ContainsRuntimeAuthority", lifecycle);
+        Assert.DoesNotContain("CompletionRecord", lifecycle);
+        Assert.DoesNotContain("BackendExecutionAuthorized: true", lifecycle);
+        Assert.DoesNotContain("DomainHypercallDrainLifecycleOwner", compatibility);
+
+        string phase17 = ReadPlan("17_phase_rollout_and_pr_order.md");
+        string phase38 = ReadPlan("38_first_production_vmcall_slice_repository_owner_adr.md");
+        Assert.Contains("CLOSED/EXACT E7/DRAIN-ONLY/POLICY-IDENTITY-ONLY", phase17);
+        Assert.Contains("PR-I Closure Addendum", phase38);
+        Assert.Contains("requires a new explicit authorization", phase17, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void PrJ_UsesExactLifecycleGateAndKeepsReleaseEvidenceNonAuthoritative()
+    {
+        string repositoryRoot = VmxDocumentationMigrationClaimHygieneTests.FindRepositoryRoot();
+        string coreRoot = Path.Combine(repositoryRoot, "HybridCPU_ISE", "CloseToHSL", "Core");
+        string lifecycleGate = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Migration", "Checkpoint", "DomainHypercallLifecycleGate.cs"));
+        string lifecycle = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Migration", "Checkpoint", "DomainHypercallDrainLifecycleOwner.cs"));
+        string activation = File.ReadAllText(Path.Combine(
+            coreRoot, "Runtime", "Events", "Hypercalls", "DomainHypercallExactRuntimeProfile.cs"));
+        string compatibility = string.Concat(Directory.GetFiles(
+            Path.Combine(coreRoot, "Virtualization", "Compatibility"),
+            "*.cs", SearchOption.AllDirectories).Select(File.ReadAllText));
+        string diagnostics = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "VirtualizationDiagnosticsConsole",
+            "Scenarios",
+            "PrjExactReleaseActivationRollbackScenario.cs"));
+
+        Assert.Contains("DomainHypercallTransitionKind", lifecycleGate);
+        Assert.Contains("TransitionsInFlight", lifecycleGate);
+        Assert.Contains("LifecycleEpoch", lifecycleGate);
+        Assert.Contains("DomainHypercallLifecycleState.DisabledFaultOnly", lifecycleGate);
+        Assert.Contains("TransitionsInFlight == 0", lifecycle);
+        Assert.Contains("BeginDrain", activation);
+        Assert.Contains("WaitForTransitionQuiescence", lifecycleGate);
+        Assert.Contains("ExactBindingAndGrantRevoked", activation);
+        Assert.Contains("DeterministicFaultOnlyFallbackRestored", activation);
+        Assert.DoesNotContain("enableVmcall", activation, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("DomainHypercallLifecycleGate", compatibility);
+        Assert.DoesNotContain("DomainHypercallExactRuntimeProfile", compatibility);
+        Assert.Contains("non-authority", diagnostics, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void CurrentActivationStatus_IsCanonicalAndCurrentSectionsCannotDrift()
+    {
+        string statusText = ReadPlan("VirtualizationActivationStatusV1.json");
+        using JsonDocument status = JsonDocument.Parse(statusText);
+        JsonElement root = status.RootElement;
+        JsonElement stages = root.GetProperty("Stages");
+        JsonElement gates = root.GetProperty("Gates");
+
+        Assert.Equal("hybridcpu.virtualization-activation-status/v1", root.GetProperty("Schema").GetString());
+        Assert.Equal("CurrentStatusSourceOnly", root.GetProperty("EvaluationRole").GetString());
+        Assert.False(root.GetProperty("HistoricalSectionsParticipateInCurrentState").GetBoolean());
+        Assert.Equal("46917937d58fd22b2c0b9ee9308c5ead6e8af11f", root.GetProperty("PrIContainingCommitSha").GetString());
+        Assert.Equal("1150abad86d260b63cc17a076cb23af32f074c1f", root.GetProperty("PrIContainingTreeSha").GetString());
+        Assert.Equal("Closed", stages.GetProperty("D2").GetString());
+        Assert.Equal("Closed", stages.GetProperty("O1").GetString());
+        Assert.Equal("ClosedFaultOnly", stages.GetProperty("E1").GetString());
+        foreach (string stage in new[] { "E2", "E3", "E4", "E5", "E6", "E7" })
+        {
+            Assert.Equal("Closed", stages.GetProperty(stage).GetString());
+        }
+
+        Assert.Equal("ClosedExactProbeControlledEmissionDefaultDisabled", gates.GetProperty("CompilerGate").GetString());
+        Assert.Equal("ClosedDevelopmentLocalExactProfile", gates.GetProperty("ReleaseGate").GetString());
+        Assert.Equal("Denied", gates.GetProperty("BroadActivation").GetString());
+        JsonElement compilerEmission = root.GetProperty("CompilerEmission");
+        Assert.Equal("ExactProbeOnlyDefaultDisabled", compilerEmission.GetProperty("State").GetString());
+        Assert.Equal("CompilerEmissionDecisionV1", compilerEmission.GetProperty("DecisionSchema").GetString());
+        Assert.Equal("D2-HV-VMCALL-RUNTIME-V1-PROBE-0001", compilerEmission.GetProperty("ReferencedDecisionId").GetString());
+        Assert.Equal("PROBE_NO_STATE_V1", compilerEmission.GetProperty("AllowedOperation").GetString());
+        Assert.Equal("0x0001", compilerEmission.GetProperty("AllowedLeaf").GetString());
+        Assert.Equal("None", compilerEmission.GetProperty("RuntimeAuthority").GetString());
+        Assert.False(compilerEmission.GetProperty("RuntimeCorrectnessDependency").GetBoolean());
+        Assert.Equal("CompilerEmissionEnabled=false", compilerEmission.GetProperty("Rollback").GetString());
+        Assert.Equal("ClosedExactProfileDefaultDisabled", root.GetProperty("ExactActivation").GetString());
+        Assert.Equal("LimitedScopedActivationOfProbeNoStateV1Only", root.GetProperty("ReleaseClaim").GetString());
+        Assert.Equal("NoAutomaticActivationExpansion", root.GetProperty("NextOpenPool").GetString());
+        Assert.Equal("SubjectVerifiedDevelopmentLocal", root.GetProperty("PrJWorktreeImplementation").GetString());
+        JsonElement prJClosures = root.GetProperty("PrJRequiredClosures");
+        Assert.Equal("Closed46917937ContainingProvenance", prJClosures.GetProperty("PrIContainingShaProvenance").GetString());
+        Assert.Equal(
+            "ClosedSubjectVerified",
+            prJClosures.GetProperty("CrossRegistryConcurrencyQuiescence").GetString());
+        Assert.Equal(
+            "ClosedSubjectVerified",
+            prJClosures.GetProperty("ExactActivationKillSwitchRollback").GetString());
+        Assert.Equal(
+            "ClosedLaterNonSelfReferentialEvidenceCommit",
+            prJClosures.GetProperty("ExactScopeReleaseRecord").GetString());
+        Assert.Equal(
+            "PROBE_NO_STATE_V1 limited runtime virtualization path release-ready/activated under exact D2 profile",
+            root.GetProperty("PermittedFutureClaimAfterPrJ").GetString());
+
+        string releaseRecord = File.ReadAllText(Path.Combine(
+            GetPlanRoot(),
+            "evidence",
+            "2026-08-11-pr-j-development-local-release-record.json"));
+        Assert.Contains("bcd2d7f4654d4dab17c7a6705cb885fdd572510d", releaseRecord);
+        Assert.Contains("2ae54ab2ba4f0da1e9d95fc95dfb1ad83b080e33", releaseRecord);
+        Assert.Contains("limited scoped activation of PROBE_NO_STATE_V1 only", releaseRecord);
+        Assert.Contains("never runtime authority", releaseRecord);
+
+        string phase18Baseline = ReadSection(ReadPlan("18_release_gate_for_limited_runtime_virtualization.md"), "## Current Baseline");
+        Assert.Contains("E2-E7 are closed", phase18Baseline);
+        Assert.Contains("PR-J development-local closure", phase18Baseline);
+        Assert.DoesNotContain("E5-E7 are blocked", phase18Baseline);
+
+        string phase19Blockers = ReadSection(ReadPlan("19_open_decision_backlog.md"), "### Active Critical Blockers");
+        Assert.Contains("PR-J subject provenance - closed for development-local activation", phase19Blockers);
+        Assert.Contains("Cross-registry concurrency/quiescence and exact kill switch - closed", phase19Blockers);
+        Assert.Contains("Exact release record - closed for development-local activation", phase19Blockers);
+        Assert.DoesNotContain("no D2-bound SafetyVerifier certificate", phase19Blockers);
+        Assert.DoesNotContain("no exact-leaf executor", phase19Blockers);
+        Assert.DoesNotContain("no owner-bound atomic completion", phase19Blockers);
+
+        string phase38 = ReadPlan("38_first_production_vmcall_slice_repository_owner_adr.md");
+        string remaining = ReadSection(phase38, "## Remaining Production Blockers");
+        string next = ReadSection(phase38, "## Next Open Pool");
+        Assert.Contains("bcd2d7f4654d4dab17c7a6705cb885fdd572510d", remaining);
+        Assert.Contains("PR-J concurrency/quiescence", remaining);
+        Assert.Contains("closed for development-local activation", remaining);
+        Assert.Contains("PR-J release record", remaining);
+        Assert.Contains("PR-J closes development-local exact-profile activation evidence", next);
+        Assert.Contains("Phase 39 subsequently closes exact compiler carrier construction", next, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("No automatic runtime expansion exists", next, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("PR-I is the next admissible pool", next);
+
+        string forbiddenClaims = string.Join(
+            "\n",
+            root.GetProperty("ForbiddenClaims").EnumerateArray().Select(value => value.GetString()));
+        Assert.Contains("Virtualization complete", forbiddenClaims);
+        Assert.Contains("VMX fully activated", forbiddenClaims);
+    }
+
     private static string ReadPlan(string fileName) =>
         File.ReadAllText(Path.Combine(GetPlanRoot(), fileName));
+
+    private static string ReadSection(string document, string heading)
+    {
+        int start = document.IndexOf(heading, StringComparison.Ordinal);
+        Assert.True(start >= 0, heading);
+        int bodyStart = start + heading.Length;
+        int nextHeading = document.IndexOf("\n## ", bodyStart, StringComparison.Ordinal);
+        return nextHeading < 0
+            ? document[bodyStart..]
+            : document[bodyStart..nextHeading];
+    }
 
     private static string GetPlanRoot() =>
         Path.Combine(

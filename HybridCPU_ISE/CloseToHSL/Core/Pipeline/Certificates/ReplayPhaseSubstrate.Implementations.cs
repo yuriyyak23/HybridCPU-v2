@@ -264,12 +264,13 @@ namespace YAKSys_Hybrid_CPU.Core
     /// <summary>
     /// Internal runtime legality service for inter-core + SMT hot paths plus adjacent diagnostics.
     /// </summary>
-    internal sealed class RuntimeLegalityService :
+    internal sealed partial class RuntimeLegalityService :
         IRuntimeLegalityService,
         IVirtualizationAdmissionService
     {
         private readonly ILegalityChecker _legalityChecker;
         private readonly ILegalityCertificateCacheCoordinator _cacheCoordinator;
+        private readonly VirtualizationOperandSnapshotMaterializer _virtualizationOperandMaterializer = new();
 
         public bool IsKernelDomainIsolationEnabled => _legalityChecker.IsKernelDomainIsolationEnabled;
 
@@ -430,6 +431,41 @@ namespace YAKSys_Hybrid_CPU.Core
                 : new VirtualizationAdmissionValidationResult(
                     VirtualizationAdmissionValidationDecision.IssuerMismatch,
                     "Only the canonical SafetyVerifier can validate E1 admission.");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public VirtualizationOperandCaptureResult CaptureVirtualizationOperandsAfterE1Validation(
+            ReplayPhaseContext phase,
+            SmtBundleMetadata4Way bundleMetadata,
+            VmxMicroOp carrier,
+            int sourceSlotId,
+            int selectedLane,
+            SafetyVerifier.VirtualizationAdmissionCertificate? certificate,
+            ulong rs1Value,
+            ulong restoreGeneration)
+        {
+            VirtualizationAdmissionValidationResult validation =
+                ValidateVirtualizationAdmission(
+                    phase,
+                    bundleMetadata,
+                    carrier,
+                    sourceSlotId,
+                    selectedLane,
+                    certificate);
+            if (!validation.IsValidForFaultOnlyTransport)
+            {
+                return new VirtualizationOperandCaptureResult(
+                    VirtualizationOperandCaptureDecision.InvalidE1,
+                    null,
+                    validation.Reason);
+            }
+
+            return _virtualizationOperandMaterializer.CaptureAfterValidatedE1(
+                carrier,
+                certificate,
+                rs1Value,
+                restoreGeneration,
+                Phase38VirtualizationOperationOwnerSnapshotRegistry.ExactSnapshot);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

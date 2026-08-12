@@ -9,14 +9,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
-	  <EmbeddedResource Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
-	  <None Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+	  <Compile Remove="Documentation\Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+	  <EmbeddedResource Remove="Documentation\Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+	  <None Remove="Documentation\Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Virtualization WhiteBook\" />
-	  <Folder Include="SecureCompute WhiteBook\" />
+	  <Folder Include="Documentation\Manuals\" />
+	  <Folder Include="Documentation\Virtualization WhiteBook\" />
+	  <Folder Include="Documentation\SecureCompute WhiteBook\" />
 	</ItemGroup>
 
 </Project>

@@ -37,14 +37,23 @@ namespace HybridCPU.Compiler.Core.IR
             IReadOnlyList<IrFunctionDeclaration>? functionDeclarations = null,
             VliwBundleAnnotations? bundleAnnotations = null,
             ulong domainTag = 0,
-            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null)
+            IReadOnlyList<IrControlFlowTargetReference>? controlFlowTargetReferences = null,
+            IReadOnlyList<CompilerVirtualizationIntentBinding>? virtualizationIntentBindings = null)
         {
             var irInstructions = new List<IrInstruction>(instructions.Length);
+            IReadOnlyDictionary<int, CompilerExactProbeEmissionPlan> validatedVirtualizationIntents =
+                CompilerVirtualizationIngressValidator.Validate(instructions, virtualizationIntentBindings);
 
             for (int index = 0; index < instructions.Length; index++)
             {
                 IrSlotMetadata slotMetadata = ResolveSlotMetadata(virtualThreadId, index, bundleAnnotations);
-                irInstructions.Add(BuildInstruction(index, instructions[index], slotMetadata, domainTag));
+                validatedVirtualizationIntents.TryGetValue(index, out CompilerExactProbeEmissionPlan? exactProbePlan);
+                irInstructions.Add(BuildInstruction(
+                    index,
+                    instructions[index],
+                    slotMetadata,
+                    domainTag,
+                    exactProbePlan));
             }
 
             ApplyInstructionSourceBindings(irInstructions, instructionSourceBindings);
@@ -91,8 +100,15 @@ namespace HybridCPU.Compiler.Core.IR
             int index,
             VLIW_Instruction instruction,
             IrSlotMetadata slotMetadata,
-            ulong domainTag)
+            ulong domainTag,
+            CompilerExactProbeEmissionPlan? exactProbePlan)
         {
+            if (exactProbePlan is not null && slotMetadata.StealabilityHint)
+            {
+                throw new InvalidOperationException(
+                    "Exact PROBE_NO_STATE_V1 intent requires non-stealable SystemSingleton scheduling metadata.");
+            }
+
             var opcode = (InstructionsEnum)instruction.OpCode;
             OpcodeInfo? opcodeInfo = HybridCpuOpcodeSemantics.GetOpcodeInfo(opcode);
             ValidateExplicitAcceleratorIntent(opcode, slotMetadata);
@@ -170,6 +186,8 @@ namespace HybridCPU.Compiler.Core.IR
                 AcceleratorCommandDescriptor = slotMetadata.AcceleratorCommandDescriptor,
                 MatrixTileEmission = matrixTileEmission,
                 VectorTransferEmission = vectorTransferEmission,
+                VirtualizationIntent = exactProbePlan?.Intent,
+                VirtualizationLegalityFacts = exactProbePlan?.LegalityFacts,
             };
         }
 

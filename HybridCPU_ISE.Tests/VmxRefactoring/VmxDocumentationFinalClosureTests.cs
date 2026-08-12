@@ -72,6 +72,7 @@ public sealed class VmxDocumentationMigrationClaimHygieneTests
             "HybridCPU_ISE",
             "docs",
             "ref2",
+            "Old",
             "VirtualiztionRefactoringNew",
             fileName));
 
@@ -82,6 +83,7 @@ public sealed class VmxDocumentationMigrationClaimHygieneTests
             "HybridCPU_ISE",
             "docs",
             "ref2",
+            "Old",
             "VirtualiztionRefactoringNew");
 
         return string.Join(

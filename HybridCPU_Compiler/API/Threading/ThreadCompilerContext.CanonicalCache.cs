@@ -16,7 +16,8 @@ namespace HybridCPU.Compiler.Core.Threading
                 FrontendMode,
                 bundleAnnotations: GetBundleAnnotations(),
                 domainTag: DomainTag,
-                controlFlowTargetReferences: GetControlFlowTargetReferences());
+                controlFlowTargetReferences: GetControlFlowTargetReferences(),
+                virtualizationIntentBindings: GetVirtualizationIntentBindings());
             return _canonicalCompiledProgram;
         }
 

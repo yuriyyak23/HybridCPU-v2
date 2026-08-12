@@ -16,14 +16,14 @@ public sealed class NonVmxConditionalZeroExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunAppFacadeExample(
-            "Compiler facade emitted canonical CZERO.EQZ and CZERO.NEZ carriers without opening CSEL.",
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
+            "Typed scalar compiler emitted canonical CZERO.EQZ and CZERO.NEZ carriers without opening CSEL.",
             [
                 new(
                     "CZERO.EQZ",
-                    "IAppAsmFacade.ZeroIfConditionEqualZero",
+                    "HybridCpuNonVmxScalarCompiler.ZeroIfConditionEqualZero",
                     Instruction.CZERO_EQZ,
-                    facade => facade.ZeroIfConditionEqualZero(
+                    compiler => compiler.ZeroIfConditionEqualZero(
                         new AsmRegister(5),
                         new AsmRegister(1),
                         new AsmRegister(2)),
@@ -33,9 +33,9 @@ public sealed class NonVmxConditionalZeroExample : ICpuExample
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "CZERO.NEZ",
-                    "IAppAsmFacade.ZeroIfConditionNotEqualZero",
+                    "HybridCpuNonVmxScalarCompiler.ZeroIfConditionNotEqualZero",
                     Instruction.CZERO_NEZ,
-                    facade => facade.ZeroIfConditionNotEqualZero(
+                    compiler => compiler.ZeroIfConditionNotEqualZero(
                         new AsmRegister(6),
                         new AsmRegister(1),
                         new AsmRegister(2)),

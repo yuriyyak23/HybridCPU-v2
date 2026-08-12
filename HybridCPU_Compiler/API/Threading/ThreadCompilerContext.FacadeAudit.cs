@@ -30,6 +30,7 @@ namespace HybridCPU.Compiler.Core.Threading
             Typed("CompileMtransposeWithDecision/5", "CompileMtransposeWithDecision", "MatrixTile helper carrier plus CompilerLoweringDecision; plan is an artifact, not authority."),
             Typed("CompileVloadWithDecision/4", "CompileVloadWithDecision", "VectorTransfer helper carrier plus CompilerLoweringDecision; plan is an artifact, not authority."),
             Typed("CompileVstoreWithDecision/4", "CompileVstoreWithDecision", "VectorTransfer helper carrier plus CompilerLoweringDecision; plan is an artifact, not authority."),
+            Typed("CompileProbeNoStateV1WithDecision/2", "CompileProbeNoStateV1WithDecision", "Exact accepted probe carrier under a default-off compiler decision; runtime admission, execution, completion and retire remain runtime-owned."),
 
             Compatibility("CompileInstruction/9", "CompileInstruction", "Raw VLIW carrier compatibility facade; carrier emission is not execution, publication, commit or retire."),
             Compatibility("InsertInstruction/10", "InsertInstruction", "Raw VLIW carrier mutation compatibility facade; carrier insertion is not execution, publication, commit or retire."),

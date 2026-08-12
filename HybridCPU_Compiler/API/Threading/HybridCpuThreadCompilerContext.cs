@@ -108,6 +108,7 @@ namespace HybridCPU.Compiler.Core.Threading
             ValidateNoDirectSystemDeviceCommandEmission(opCode);
             ValidateNoDirectMatrixTileEmission(opCode);
             ValidateNoDirectVectorTransferEmission(opCode);
+            ValidateNoDirectExactProbeEmission(opCode);
             uint encodedStreamLength = RequireVliwUInt32(streamLength, nameof(streamLength));
             if (_instructionCount >= MAX_INSTRUCTIONS_PER_THREAD)
                 throw new InvalidOperationException($"VT-{_virtualThreadId.Value}: Instruction buffer overflow (max {MAX_INSTRUCTIONS_PER_THREAD})");
@@ -667,6 +668,7 @@ namespace HybridCPU.Compiler.Core.Threading
         {
             _instructionCount = 0;
             Array.Clear(_instructionSlotMetadata, 0, _instructionSlotMetadata.Length);
+            Array.Clear(_exactProbeEmissionPlans, 0, _exactProbeEmissionPlans.Length);
 
             ResetIrMetadataDeclarations();
             InvalidateCanonicalCompileCache();

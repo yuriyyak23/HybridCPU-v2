@@ -24,11 +24,11 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(EnableInternalTestHooks)' == 'true'">
-		<Compile Remove="obj\$(Configuration)\**\*.cs" />
+		<Compile Remove="obj\**\*.cs" />
 		<Compile Remove="$(BaseIntermediateOutputPath)**\*.cs" />
-		<EmbeddedResource Remove="obj\$(Configuration)\**\*" />
+		<EmbeddedResource Remove="obj\**\*" />
 		<EmbeddedResource Remove="$(BaseIntermediateOutputPath)**\*" />
-		<None Remove="obj\$(Configuration)\**\*" />
+		<None Remove="obj\**\*" />
 		<None Remove="$(BaseIntermediateOutputPath)**\*" />
 	</ItemGroup>
 

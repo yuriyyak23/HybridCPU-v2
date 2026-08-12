@@ -70,5 +70,17 @@ namespace HybridCPU.Compiler.Core.IR
         /// vector transfer carrier. Runtime-owned legality remains the final ISA authority.
         /// </summary>
         public CompilerVectorTransferEmissionPlan? VectorTransferEmission { get; init; }
+
+        /// <summary>
+        /// Compiler-only normalized virtualization intent. It is consumed by legality,
+        /// scheduling and bundle formation and is never serialized into runtime metadata.
+        /// </summary>
+        public VirtualizationCompilerIntent? VirtualizationIntent { get; init; }
+
+        /// <summary>
+        /// Compiler-only ISA/ABI/bundle legality facts for the exact intent.
+        /// Runtime admission does not consume or trust these facts.
+        /// </summary>
+        public CompilerVirtualizationLegalityFacts? VirtualizationLegalityFacts { get; init; }
     }
 }

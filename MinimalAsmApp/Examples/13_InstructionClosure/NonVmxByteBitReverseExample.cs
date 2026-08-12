@@ -16,23 +16,23 @@ public sealed class NonVmxByteBitReverseExample : ICpuExample
 
     public CpuExampleResult Run()
     {
-        return NonVmxCompilerExampleSupport.RunAppFacadeExample(
-            "Compiler facade emitted canonical REV8 and BREV8 carriers.",
+        return NonVmxCompilerExampleSupport.RunScalarCompilerExample(
+            "Typed scalar compiler emitted canonical REV8 and BREV8 carriers.",
             [
                 new(
                     "REV8",
-                    "IAppAsmFacade.ReverseByteOrder",
+                    "HybridCpuNonVmxScalarCompiler.ReverseByteOrder",
                     Instruction.REV8,
-                    facade => facade.ReverseByteOrder(new AsmRegister(18), new AsmRegister(1)),
+                    compiler => compiler.ReverseByteOrder(new AsmRegister(18), new AsmRegister(1)),
                     ExpectedRd: 18,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,
                     ExpectedDataType: DataTypeEnum.UINT64),
                 new(
                     "BREV8",
-                    "IAppAsmFacade.ReverseBitsInEachByte",
+                    "HybridCpuNonVmxScalarCompiler.ReverseBitsInEachByte",
                     Instruction.BREV8,
-                    facade => facade.ReverseBitsInEachByte(new AsmRegister(19), new AsmRegister(1)),
+                    compiler => compiler.ReverseBitsInEachByte(new AsmRegister(19), new AsmRegister(1)),
                     ExpectedRd: 19,
                     ExpectedRs1: 1,
                     ExpectedRs2: 0,

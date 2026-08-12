@@ -169,7 +169,23 @@ public sealed class VmxCompilerIsaRuntimeNoEmissionContractTests
     [Fact]
     public void CompilerEmissionSurfaceAndNonVmxIsa_DoNotEmitVirtualizationActivationOrSecureComputeAuthority()
     {
-        string compilerEmissionSource = CompilerSourceScanner.ReadCompilerEmissionSurfaceSource();
+        string compilerEmissionSource = string.Join(
+            Environment.NewLine,
+            CompilerSourceScanner.EnumerateCompilerEmissionSurfaceSourceFiles()
+                .Where(static path =>
+                {
+                    string normalized = path.Replace('\\', '/');
+                    return !normalized.EndsWith(
+                               "HybridCPU_Compiler/Core/IR/Construction/CompilerExactProbeEmissionLowerer.cs",
+                               StringComparison.Ordinal) &&
+                           !normalized.EndsWith(
+                               "HybridCPU_Compiler/API/Threading/ThreadCompilerContext.ExactProbe.cs",
+                               StringComparison.Ordinal) &&
+                           !normalized.EndsWith(
+                               "HybridCPU_Compiler/Core/IR/Construction/CompilerVirtualizationIngressValidator.cs",
+                               StringComparison.Ordinal);
+                })
+                .Select(File.ReadAllText));
         string nonVmxIsaSource = ReadRepositorySources(
             "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions/NonVmx");
         string combined = compilerEmissionSource + Environment.NewLine + nonVmxIsaSource;

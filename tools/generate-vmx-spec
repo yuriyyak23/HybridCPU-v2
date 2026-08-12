@@ -1,0 +1,14 @@
+Phase 00 VMX spec generation seed
+
+The authoritative machine-readable source for the frozen VMX8 baseline is:
+
+  HybridCPU_ISE/Arch/VmxSpecTable.cs
+
+The generated conformance consumer is:
+
+  HybridCPU_ISE.Tests/Generated/VmxSpecConformanceTests.cs
+
+This placeholder intentionally does not emit VMX-v2 artifacts in Phase 00.
+Future phases can replace it with a generator once VMCSv2 revisions, VMX-v2
+opcodes, CSR ranges, field descriptors, fail/exit/abort tables, capabilities,
+invalidation domains, and test-vector layouts are explicitly frozen.

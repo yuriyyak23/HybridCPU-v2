@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HybridCPU.Compiler.Core.API.Facade;
 using HybridCPU.Compiler.Core.Threading;
 using HybridCPU_ISE.Arch;
 using YAKSys_Hybrid_CPU.Arch;
@@ -204,13 +203,13 @@ public static class CompilerVectorTransferPositiveEmissionAbiContract
             "VLOAD",
             InstructionsEnum.VLOAD,
             CompilerVectorTransferPositiveEmissionKind.Vload,
-            nameof(HybridCpuThreadCompilerContext.CompileVload),
+            nameof(HybridCpuThreadCompilerContext.CompileVloadWithDecision),
             "destination memory base, source memory base, vector transfer shape ABI"),
         Create(
             "VSTORE",
             InstructionsEnum.VSTORE,
             CompilerVectorTransferPositiveEmissionKind.Vstore,
-            nameof(HybridCpuThreadCompilerContext.CompileVstore),
+            nameof(HybridCpuThreadCompilerContext.CompileVstoreWithDecision),
             "source memory base, destination memory base, vector transfer shape ABI")
     ];
 
@@ -237,18 +236,24 @@ public static class CompilerVectorTransferPositiveEmissionAbiContract
 
     public static IReadOnlyList<CompilerVectorTransferPositiveEmissionRow> Rows => RowTable;
 
+    public static IReadOnlySet<string> TypedPublicHelperNames { get; } =
+        new HashSet<string>(
+            RowTable.Select(static row => row.HelperName),
+            StringComparer.Ordinal);
+
+    public static IReadOnlySet<string> CompatibilityHelperNames { get; } =
+        new HashSet<string>(
+            [
+                "CompileVload",
+                "CompileVstore",
+                "VLoad",
+                "VStore"
+            ],
+            StringComparer.Ordinal);
+
     public static IReadOnlySet<string> PublicHelperNames { get; } =
         new HashSet<string>(
-            RowTable.Select(static row => row.HelperName)
-                .Concat(
-                [
-                    nameof(IPlatformAsmFacade.VLoad),
-                    nameof(IPlatformAsmFacade.VStore),
-                    nameof(HybridCpuThreadCompilerContext.CompileVload),
-                    nameof(HybridCpuThreadCompilerContext.CompileVstore),
-                    nameof(HybridCpuThreadCompilerContext.CompileVloadWithDecision),
-                    nameof(HybridCpuThreadCompilerContext.CompileVstoreWithDecision)
-                ]),
+            TypedPublicHelperNames.Concat(CompatibilityHelperNames),
             StringComparer.Ordinal);
 
     public static bool IsVectorTransferPositiveOpcode(uint opCode) =>

@@ -35,23 +35,8 @@ public class PlatformAsmFacade : AppAsmFacade, IPlatformAsmFacade
     {
     }
 
-    public void ReadSystemCycleCounter(AsmRegister dest)
-    {
-        RequireScalarFeature(CompilerNonVmxScalarFeature.ScalarSystemCounter, "RDCYCLE");
-        Context.CompileInstruction(
-            (uint)Processor.CPU_Core.InstructionsEnum.RDCYCLE,
-            (byte)DataTypeEnum.UINT64,
-            0,
-            0,
-            VLIW_Instruction.PackArchRegs(
-                Resolve(dest).Value,
-                0,
-                0),
-            0,
-            0,
-            0,
-            stealabilityPolicy: StealabilityPolicy.NotStealable);
-    }
+    public void ReadSystemCycleCounter(AsmRegister dest) =>
+        _ = NonVmxScalarCompiler.ReadSystemCycleCounter(dest);
 
     public void CsrRead(AsmRegister dest, ushort csrAddr)
     {

@@ -9,6 +9,9 @@ namespace YAKSys_Hybrid_CPU.Core;
 internal sealed class RetireState
 {
     internal RetireCoordinator Coordinator = null!;
+    internal ArchitecturalCompletionCommitOwner CompletionCommitOwner = null!;
+    internal ArchitecturalCompletionCommitOwner.ProducerRegistration
+        CanonicalPipelineCompletionProducer = null!;
     internal PipelineContourCertificate DecodePublicationCertificate;
     internal PipelineContourCertificate ExecuteCompletionCertificate;
     internal PipelineContourCertificate RetireVisibilityCertificate;

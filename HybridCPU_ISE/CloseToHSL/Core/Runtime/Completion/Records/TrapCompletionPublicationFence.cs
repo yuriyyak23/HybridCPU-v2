@@ -150,6 +150,22 @@ public sealed class TrapCompletionPublicationFence
             reason: string.Empty);
     }
 
+    internal TrapCompletionOwnerPolicyResult EvaluateOwnerPolicy(
+        TrapCompletionRouteRequest request,
+        TrapCompletionRouteResult route)
+    {
+        if (!request.RuntimeAdmission.IsAllowed || !request.TrapResult.ShouldTrap)
+            return new(false, "Completion-owner policy requires live runtime admission and a neutral event.");
+        if (!route.CompletionPublicationAuthorizedOnly ||
+            route.Decision != TrapCompletionRouteDecision.DeniedRetirePublication)
+            return new(false, "Completion-owner policy requires the split completion-only route.");
+        if (request.CompletionEvidenceClass != EvidenceVisibilityClass.HostOwnedRuntimeEvidence ||
+            request.CompletionMigrationClass != TrapCompletionMigrationClass.HostOwnedNonMigratable)
+            return new(false, "Exact probe completion must remain host-owned and non-migratable.");
+
+        return new(true, "Pure completion policy accepted; only the neutral owner may publish record plus E5.");
+    }
+
     private static TrapCompletionPublicationFenceResult PublishedCompletion(
         NeutralTrapResult result,
         uint neutralReasonCode,
@@ -193,3 +209,5 @@ public sealed class TrapCompletionPublicationFence
             RetirePublicationAuthorized: false,
             reason);
 }
+
+internal readonly record struct TrapCompletionOwnerPolicyResult(bool IsAllowed, string Reason);

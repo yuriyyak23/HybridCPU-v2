@@ -254,7 +254,7 @@ public sealed class VmxMemoryIoLaneStreamBoundaryHardeningTests
     [Fact]
     public void CompilerCoreAndNonVmxIsa_DoNotEmitVmxActivationOrMutationOpcodesForPhase10()
     {
-        string source = ReadRepositorySources(
+        string source = ReadRepositorySourcesExcludingExactProbeCompilerGate(
             "HybridCPU_Compiler/Core",
             "HybridCPU_ISE/CloseToHSL/Core/ISA/Instructions/NonVmx");
 
@@ -308,6 +308,36 @@ public sealed class VmxMemoryIoLaneStreamBoundaryHardeningTests
                 .Where(static path =>
                     !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) &&
                     !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(static path => path, StringComparer.Ordinal)
+                .Select(File.ReadAllText));
+        }
+
+        return string.Concat(sources);
+    }
+
+    private static string ReadRepositorySourcesExcludingExactProbeCompilerGate(
+        params string[] relativeRoots)
+    {
+        string repositoryRoot = ActiveVmxConformanceHelpers.FindRepositoryRoot();
+        HashSet<string> exactGateFiles = new(
+        [
+            Path.GetFullPath(Path.Combine(repositoryRoot, "HybridCPU_Compiler", "Core", "IR", "Model", "CompilerExactProbeEmissionDecisionV1.cs")),
+            Path.GetFullPath(Path.Combine(repositoryRoot, "HybridCPU_Compiler", "Core", "IR", "Construction", "CompilerExactProbeEmissionLowerer.cs")),
+            Path.GetFullPath(Path.Combine(repositoryRoot, "HybridCPU_Compiler", "Core", "IR", "Construction", "CompilerVirtualizationIngressValidator.cs"))
+        ], StringComparer.OrdinalIgnoreCase);
+
+        var sources = new List<string>();
+        foreach (string relativeRoot in relativeRoots)
+        {
+            string root = Path.Combine(
+                repositoryRoot,
+                relativeRoot.Replace('/', Path.DirectorySeparatorChar));
+            sources.AddRange(Directory
+                .GetFiles(root, "*.cs", SearchOption.AllDirectories)
+                .Where(path =>
+                    !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) &&
+                    !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) &&
+                    !exactGateFiles.Contains(Path.GetFullPath(path)))
                 .OrderBy(static path => path, StringComparer.Ordinal)
                 .Select(File.ReadAllText));
         }

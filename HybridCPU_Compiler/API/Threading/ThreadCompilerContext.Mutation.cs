@@ -26,6 +26,7 @@ namespace HybridCPU.Compiler.Core.Threading
             ValidateNoDirectSystemDeviceCommandEmission(opCode);
             ValidateNoDirectMatrixTileEmission(opCode);
             ValidateNoDirectVectorTransferEmission(opCode);
+            ValidateNoDirectExactProbeEmission(opCode);
             ValidateInsertionIndex(instructionIndex, nameof(instructionIndex));
             EnsureInstructionCapacity();
             uint encodedStreamLength = RequireVliwUInt32(streamLength, nameof(streamLength));
@@ -35,6 +36,7 @@ namespace HybridCPU.Compiler.Core.Threading
             {
                 _instructions[index] = _instructions[index - 1];
                 _instructionSlotMetadata[index] = _instructionSlotMetadata[index - 1];
+                _exactProbeEmissionPlans[index] = _exactProbeEmissionPlans[index - 1];
             }
 
             _instructions[instructionIndex] = new VLIW_Instruction
@@ -51,6 +53,7 @@ namespace HybridCPU.Compiler.Core.Threading
             _instructionSlotMetadata[instructionIndex] = new InstructionSlotMetadata(
                 _virtualThreadId,
                 BuildSlotMetadata(opCode, stealabilityPolicy, _domainTag));
+            _exactProbeEmissionPlans[instructionIndex] = null;
             _instructionCount++;
 
             ShiftIrMetadataDeclarations(instructionIndex, oldInstructionCount, 1);
@@ -83,6 +86,7 @@ namespace HybridCPU.Compiler.Core.Threading
 
             Array.Copy(_instructions, copy._instructions, _instructionCount);
             Array.Copy(_instructionSlotMetadata, copy._instructionSlotMetadata, _instructionCount);
+            Array.Copy(_exactProbeEmissionPlans, copy._exactProbeEmissionPlans, _instructionCount);
             copy._instructionCount = _instructionCount;
 
             copy._labelDeclarations.AddRange(_labelDeclarations);

@@ -49,12 +49,25 @@ public sealed partial class DomainRuntimeAuthority
         DomainRuntimeContext context,
         DomainRuntimeOperation operation,
         CapabilityBoundaryRequirement capabilityRequirement)
+        => Validate(
+            root,
+            context,
+            operation,
+            DomainBoundaryDescriptor.FullDomainRuntime,
+            capabilityRequirement);
+
+    public DomainRuntimeAuthorityResult Validate(
+        RootAuthorityDescriptor? root,
+        DomainRuntimeContext context,
+        DomainRuntimeOperation operation,
+        DomainBoundaryDescriptor operationDomainRequirement,
+        CapabilityBoundaryRequirement capabilityRequirement)
     {
-        if (!context.HasRequiredDomains)
+        if (!operationDomainRequirement.IsSatisfiedBy(context))
         {
             return Deny(
                 DomainRuntimeAuthorityDecision.MissingRuntimeContext,
-                "Domain runtime authority requires execution, memory and I/O descriptors.");
+                "Domain runtime authority requires the exact operation domain boundary.");
         }
 
         if (root is null)
@@ -91,6 +104,17 @@ public sealed partial class DomainRuntimeAuthority
                 : Deny(
                     DomainRuntimeAuthorityDecision.ProjectionDenied,
                     "Compatibility projection is disabled by the execution descriptor.");
+        }
+
+
+        if (operation.IsNoStateExecution)
+        {
+            return operation.Source == DomainRuntimeOperationSource.RuntimeService &&
+                   root.IsRuntimeRoot
+                ? DomainRuntimeAuthorityResult.Allowed
+                : Deny(
+                    DomainRuntimeAuthorityDecision.MutationDenied,
+                    "No-state execution requires neutral runtime-root authority.");
         }
 
         if (!root.CanMutateAuthoritativeState(operation))

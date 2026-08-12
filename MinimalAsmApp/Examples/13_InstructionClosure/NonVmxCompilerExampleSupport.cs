@@ -1,5 +1,5 @@
 using System.Buffers.Binary;
-using HybridCPU.Compiler.Core.API.Facade;
+using HybridCPU.Compiler.Core;
 using HybridCPU.Compiler.Core.IR;
 using HybridCPU.Compiler.Core.Threading;
 using MinimalAsmApp.Examples.Abstractions;
@@ -14,31 +14,16 @@ namespace MinimalAsmApp.Examples.InstructionClosure;
 
 using Instruction = Processor.CPU_Core.InstructionsEnum;
 
-#pragma warning disable CS0618
-
-internal sealed record AppCompilerEmissionStep(
+internal sealed record ScalarCompilerEmissionStep(
     string Mnemonic,
     string HelperName,
     Instruction ExpectedOpcode,
-    Action<AppAsmFacade> Emit,
+    Action<HybridCpuNonVmxScalarCompiler> Emit,
     byte ExpectedRd,
     byte ExpectedRs1,
     byte ExpectedRs2,
     ushort ExpectedImmediate = 0,
     DataTypeEnum? ExpectedDataType = null);
-
-internal sealed record PlatformCompilerEmissionStep(
-    string Mnemonic,
-    string HelperName,
-    Instruction ExpectedOpcode,
-    Action<PlatformAsmFacade> Emit,
-    byte ExpectedRd,
-    byte ExpectedRs1,
-    byte ExpectedRs2,
-    ushort ExpectedImmediate = 0,
-    DataTypeEnum? ExpectedDataType = null);
-
-#pragma warning restore CS0618
 
 internal sealed record DmaStreamComputeCompilerDescriptorInput(
     byte[] DescriptorBytes,
@@ -57,50 +42,18 @@ internal static class NonVmxCompilerExampleSupport
     private const uint OwnerCoreId = 1;
     private const uint OwnerPodId = 2;
 
-    public static CpuExampleResult RunAppFacadeExample(
+    public static CpuExampleResult RunScalarCompilerExample(
         string output,
-        IReadOnlyList<AppCompilerEmissionStep> steps)
+        IReadOnlyList<ScalarCompilerEmissionStep> steps)
     {
         ArgumentNullException.ThrowIfNull(steps);
 
         var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
-#pragma warning disable CS0618
-        var facade = new AppAsmFacade(0, context);
-#pragma warning restore CS0618
+        var compiler = new HybridCpuNonVmxScalarCompiler(context);
 
-        foreach (AppCompilerEmissionStep step in steps)
+        foreach (ScalarCompilerEmissionStep step in steps)
         {
-            step.Emit(facade);
-        }
-
-        return BuildCompilerEmissionResult(
-            output,
-            context,
-            steps.Select(static step => new CompilerEmissionExpectation(
-                step.Mnemonic,
-                step.HelperName,
-                step.ExpectedOpcode,
-                step.ExpectedRd,
-                step.ExpectedRs1,
-                step.ExpectedRs2,
-                step.ExpectedImmediate,
-                step.ExpectedDataType)).ToArray());
-    }
-
-    public static CpuExampleResult RunPlatformFacadeExample(
-        string output,
-        IReadOnlyList<PlatformCompilerEmissionStep> steps)
-    {
-        ArgumentNullException.ThrowIfNull(steps);
-
-        var context = new HybridCpuThreadCompilerContext(virtualThreadId: 0);
-#pragma warning disable CS0618
-        var facade = new PlatformAsmFacade(0, context);
-#pragma warning restore CS0618
-
-        foreach (PlatformCompilerEmissionStep step in steps)
-        {
-            step.Emit(facade);
+            step.Emit(compiler);
         }
 
         return BuildCompilerEmissionResult(

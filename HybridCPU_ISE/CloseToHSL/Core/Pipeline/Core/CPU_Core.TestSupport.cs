@@ -953,6 +953,39 @@ namespace YAKSys_Hybrid_CPU
                 PipelineStage_WriteBack();
             }
 
+            internal void TestPrepareExactHypercallForWriteBack(
+                Core.VmxMicroOp carrier,
+                Core.PostStageBIssuedAttempt issuedAttempt,
+                ulong pc = 0x7000)
+            {
+                ArgumentNullException.ThrowIfNull(carrier);
+                ArgumentNullException.ThrowIfNull(issuedAttempt);
+                Core.SafetyVerifier.VirtualizationAdmissionCertificate e1 =
+                    carrier.VirtualizationAdmission ??
+                    throw new InvalidOperationException("Exact VMCALL WB test carrier requires E1.");
+                ScalarWriteBackLaneState lane = new();
+                lane.Clear(7);
+                lane.IsOccupied = true;
+                lane.LaneIndex = 7;
+                lane.SlotIndex = checked((byte)e1.WorkingSlotId);
+                lane.PC = pc;
+                lane.OpCode = IsaOpcodeValues.VMCALL;
+                lane.MicroOp = carrier;
+                lane.PostStageBIssuedAttempt = issuedAttempt;
+                lane.GeneratedVmxEffect = carrier.CreateRetireEffect();
+                lane.VirtualThreadId = e1.VirtualThreadId;
+                lane.OwnerThreadId = e1.OwnerContextId;
+                lane.OwnerContextId = e1.OwnerContextId;
+                lane.DomainTag = e1.DomainTag;
+                pipeWB.Clear();
+                pipeWB.SetLane(7, lane);
+                pipeWB.Valid = true;
+                pipeWB.ActiveLaneIndex = 7;
+                pipeWB.UsesExplicitPacketLanes = true;
+                pipeWB.MaterializedPhysicalLaneCount = 1;
+                pipeWB.MaterializedScalarLaneCount = 0;
+            }
+
             /// <summary>
             /// TEST-ONLY: Replace the live WB stage with a prepared snapshot before running the real retire loop.
             /// </summary>

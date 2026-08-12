@@ -7,6 +7,9 @@ namespace YAKSys_Hybrid_CPU
     {
         public sealed partial class CPU_Core
         {
+            private readonly Core.VirtualizationRestoreGenerationOwner
+                _virtualizationRestoreGenerationOwner = new();
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static bool ShouldMaterializeIssuePacketLane(
                 Core.BundleIssuePacket issuePacket,
@@ -48,11 +51,33 @@ namespace YAKSys_Hybrid_CPU
                 if (!CanVirtualThreadIssueInForeground(issueLane.OwnerThreadId))
                     return Core.IssuePacketLane.CreateEmpty(laneIndex);
 
-                _fspScheduler.TryAttachVirtualizationAdmissionAfterCanonicalLaneMaterialization(
+                bool e1Attached = _fspScheduler.TryAttachVirtualizationAdmissionAfterCanonicalLaneMaterialization(
                     issuePacket,
                     issueLane);
+                if (e1Attached && issueLane.MicroOp is Core.VmxMicroOp vmx)
+                {
+                    ulong rs1Value = GetRegisterValueWithForwarding(
+                        issueLane.OwnerThreadId,
+                        vmx.Rs1);
+                    bool operandAttached = _fspScheduler.TryAttachVirtualizationOperandSnapshotAfterCanonicalValueRead(
+                        issuePacket,
+                        issueLane,
+                        rs1Value,
+                        _virtualizationRestoreGenerationOwner.CurrentGeneration);
+                    if (!operandAttached)
+                    {
+                        _fspScheduler.TryPrepareVmReadScalarAfterCanonicalValueRead(
+                            issuePacket,
+                            issueLane,
+                            rs1Value,
+                            _virtualizationRestoreGenerationOwner.CurrentGeneration);
+                    }
+                }
                 return issueLane;
             }
+
+            internal ulong CurrentVirtualizationRestoreGeneration =>
+                _virtualizationRestoreGenerationOwner.CurrentGeneration;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void MaterializeExecuteStageLaneState()

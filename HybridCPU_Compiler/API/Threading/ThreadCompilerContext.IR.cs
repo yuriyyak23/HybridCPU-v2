@@ -17,7 +17,8 @@ namespace HybridCPU.Compiler.Core.Threading
                 GetEntryPointDeclarations(),
                 bundleAnnotations: GetBundleAnnotations(),
                 domainTag: DomainTag,
-                controlFlowTargetReferences: GetControlFlowTargetReferences());
+                controlFlowTargetReferences: GetControlFlowTargetReferences(),
+                virtualizationIntentBindings: GetVirtualizationIntentBindings());
         }
     }
 }

@@ -16,10 +16,10 @@ public sealed class MatrixTileTransposeCompilerExample : ICpuExample
 
     public CpuExampleResult Run() =>
         MatrixTileCompilerExampleSupport.Run(
-            "MTRANSPOSE emitted through CompileMtranspose/AppAsmFacade.Mtranspose with layout-only sideband.",
-            "CompileMtranspose",
+            "MTRANSPOSE emitted through CompileMtransposeWithDecision with layout-only sideband.",
+            "CompileMtransposeWithDecision",
             Instruction.MTRANSPOSE,
-            facade => facade.Mtranspose(
+            context => context.CompileMtransposeWithDecision(
                 CompilerMatrixTileTileOperand.Create(1),
                 CompilerMatrixTileTileOperand.Create(2),
                 MatrixTileCompilerExampleSupport.CreateDescriptor(),

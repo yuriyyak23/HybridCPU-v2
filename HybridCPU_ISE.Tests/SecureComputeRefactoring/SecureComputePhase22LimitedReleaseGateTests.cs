@@ -175,10 +175,35 @@ public sealed class SecureComputePhase22LimitedReleaseGateTests
 
         Assert.Contains("SecureComputePhase22LimitedReleaseGatePolicy", phase22);
         Assert.Contains("Implemented Phase 22 Fail-Closed Limited Release Gate Tests", phase21);
-        Assert.Contains("Status: hard-denied final release gate", phase22);
+        Assert.Contains("Status: permanently deny-only runtime classifier", phase22);
         Assert.Contains("Phase 18 nested execution remains excluded", phase22);
-        Assert.Contains("compiler secure emission remains closed", phase22);
-        Assert.Contains("Phase 22 remains hard-denied until independent named-path release proof exists", backlog);
+        Assert.Contains("product compiler secure emission remains closed", phase22);
+        Assert.Contains("SecureComputeReleaseEvidenceVerifier", phase22);
+        Assert.Contains("Phase 22 remains permanently deny-only", backlog);
+        Assert.Contains("separate offline verifier", backlog);
+    }
+
+    [Fact]
+    public void Docs_RecordReconciledAuthoritySplitAndCorrectedDependencyOrder()
+    {
+        string audit = ReadSecureComputeActivationPlan("24_audit_revalidation_and_dependency_order.md");
+        string decisions = ReadSecureComputeActivationPlan("25_external_analysis_reconciliation_and_recommended_decisions.md");
+
+        Assert.Contains("Status date: 2026-08-07", audit);
+        Assert.Contains("Corrected Dependency Order", decisions);
+        Assert.Contains("SecureAdmissionCertificate", decisions);
+        Assert.Contains("SecureExecutionReceipt", decisions);
+        Assert.Contains("SecureCompletionRecord", decisions);
+        Assert.Contains("hermetic test-only controlled-carrier profile", decisions);
+        Assert.Contains("remains permanently deny-only", decisions);
+        Assert.Contains("SecureComputeReleaseEvidenceVerifier", decisions);
+
+        Assert.True(
+            decisions.IndexOf("build the end-to-end disabled observational-equivalence harness", StringComparison.Ordinal) <
+            decisions.IndexOf("establish canonical ISA operation identity", StringComparison.Ordinal));
+        Assert.True(
+            decisions.IndexOf("add a hermetic test-only controlled-carrier profile", StringComparison.Ordinal) <
+            decisions.IndexOf("add one named side-effect-free backend transport probe", StringComparison.Ordinal));
     }
 
     private static SecureComputePhase21ConformanceEvidencePolicy Phase21Policy =>
