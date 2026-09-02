@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>YAKSys_Hybrid_CPU.Core</RootNamespace>
+    <AssemblyName>HybridCPU_NeutralRuntime</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="HybridCPU_NeutralRuntime.Tests" />
+  </ItemGroup>
+</Project>
