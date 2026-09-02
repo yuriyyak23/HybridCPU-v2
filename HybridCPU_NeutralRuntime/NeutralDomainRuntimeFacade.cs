@@ -122,7 +122,7 @@ internal sealed record NeutralDomainRuntimeContext(
 /// address-space tag, typed capability grant, completion receipt, or compatibility artifact.
 /// Execution transitions are semantic lifecycle decisions and expose no scheduler/lane/ISA state.
 /// </summary>
-public sealed class NeutralDomainRuntimeFacade
+public sealed partial class NeutralDomainRuntimeFacade
 {
     private sealed class BindingRecord(
         NeutralDomainBindingLease lease,
