@@ -33,6 +33,133 @@ public sealed class NeutralDomainRuntimeFacadeTests
     }
 
     [Fact]
+    public void StartParkResumeTransitionsAreExactAndSynchronous()
+    {
+        var facade = new NeutralDomainRuntimeFacade();
+        var binding = facade.Bind(NeutralDomainProfile.OrdinaryService);
+        Assert.True(binding.IsBound, binding.Reason);
+
+        var start = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Start);
+        Assert.True(start.IsTransitioned, start.Reason);
+        Assert.Equal(binding.Lease, start.Lease);
+        Assert.Equal(NeutralExecutionTransition.Start, start.Transition);
+        Assert.Equal(NeutralExecutionState.Running, start.State);
+
+        var park = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Park);
+        Assert.True(park.IsTransitioned, park.Reason);
+        Assert.Equal(NeutralExecutionState.Parked, park.State);
+
+        var resume = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Resume);
+        Assert.True(resume.IsTransitioned, resume.Reason);
+        Assert.Equal(NeutralExecutionState.Running, resume.State);
+    }
+
+    [Fact]
+    public void InvalidExecutionOrderIsDeniedWithoutChangingState()
+    {
+        var facade = new NeutralDomainRuntimeFacade();
+        var binding = facade.Bind(NeutralDomainProfile.OrdinaryService);
+        Assert.True(binding.IsBound, binding.Reason);
+
+        var prematurePark = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Park);
+        Assert.Equal(
+            NeutralExecutionTransitionDecision.InvalidTransition,
+            prematurePark.Decision);
+        Assert.Equal(NeutralExecutionState.Ready, prematurePark.State);
+
+        var start = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Start);
+        Assert.True(start.IsTransitioned, start.Reason);
+
+        var duplicateStart = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Start);
+        Assert.Equal(
+            NeutralExecutionTransitionDecision.InvalidTransition,
+            duplicateStart.Decision);
+        Assert.Equal(NeutralExecutionState.Running, duplicateStart.State);
+
+        var park = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Park);
+        Assert.True(park.IsTransitioned, park.Reason);
+        Assert.Equal(NeutralExecutionState.Parked, park.State);
+    }
+
+    [Fact]
+    public void StaleExecutionLeaseCannotTransitionLiveAuthority()
+    {
+        var facade = new NeutralDomainRuntimeFacade();
+        var binding = facade.Bind(NeutralDomainProfile.OrdinaryService);
+        Assert.True(binding.IsBound, binding.Reason);
+
+        var stale = binding.Lease with
+        {
+            Epoch = new NeutralDomainBindingEpoch(binding.Lease.Epoch.Value + 1),
+        };
+
+        var staleStart = facade.TransitionExecution(
+            stale,
+            NeutralExecutionTransition.Start);
+        Assert.Equal(NeutralExecutionTransitionDecision.Stale, staleStart.Decision);
+        Assert.Equal(NeutralExecutionState.Ready, staleStart.State);
+
+        var exactStart = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Start);
+        Assert.True(exactStart.IsTransitioned, exactStart.Reason);
+        Assert.Equal(NeutralExecutionState.Running, exactStart.State);
+    }
+
+    [Fact]
+    public void ClosedBindingCannotProduceExecutionTransitions()
+    {
+        var facade = new NeutralDomainRuntimeFacade();
+        var binding = facade.Bind(NeutralDomainProfile.OrdinaryService);
+        Assert.True(binding.IsBound, binding.Reason);
+        Assert.True(facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Start).IsTransitioned);
+        Assert.True(facade.Close(binding.Lease).IsClosed);
+
+        var park = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Park);
+
+        Assert.Equal(NeutralExecutionTransitionDecision.Revoked, park.Decision);
+        Assert.Equal(0, facade.ActiveBindingCount);
+    }
+
+    [Fact]
+    public void UndefinedExecutionTransitionFailsClosedWithoutMutation()
+    {
+        var facade = new NeutralDomainRuntimeFacade();
+        var binding = facade.Bind(NeutralDomainProfile.OrdinaryService);
+        Assert.True(binding.IsBound, binding.Reason);
+
+        var malformed = facade.TransitionExecution(
+            binding.Lease,
+            (NeutralExecutionTransition)255);
+
+        Assert.Equal(NeutralExecutionTransitionDecision.Faulted, malformed.Decision);
+        Assert.Equal(NeutralExecutionState.Ready, malformed.State);
+
+        var exactStart = facade.TransitionExecution(
+            binding.Lease,
+            NeutralExecutionTransition.Start);
+        Assert.True(exactStart.IsTransitioned, exactStart.Reason);
+    }
+
+    [Fact]
     public void ExactEpochIsRequiredToCloseAndClosedLeaseCannotBeReused()
     {
         var facade = new NeutralDomainRuntimeFacade();
@@ -84,6 +211,9 @@ public sealed class NeutralDomainRuntimeFacadeTests
             "Iommu",
             "Lane",
             "Opcode",
+            "Bundle",
+            "Slot",
+            "Smt",
         };
 
         var publicMethods = typeof(NeutralDomainRuntimeFacade)
