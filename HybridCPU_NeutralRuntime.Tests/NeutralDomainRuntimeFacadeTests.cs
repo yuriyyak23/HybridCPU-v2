@@ -268,6 +268,7 @@ public sealed class NeutralDomainRuntimeFacadeTests
             {
                 nameof(NeutralDomainRuntimeFacade.BindDmaGrant),
                 nameof(NeutralDomainRuntimeFacade.CloseDmaGrant),
+                "get_" + nameof(NeutralDomainRuntimeFacade.ActiveDmaGrantCount),
             }.OrderBy(static name => name, StringComparer.Ordinal),
             dmaMethods);
         Assert.DoesNotContain(publicMethods, static method =>
