@@ -61,6 +61,7 @@ public enum NeutralDeviceCloseDecision : byte
     Stale,
     Revoked,
     Faulted,
+    ActiveDependents,
 }
 
 public readonly record struct NeutralDeviceCloseResult(
@@ -199,6 +200,14 @@ public sealed partial class NeutralDomainRuntimeFacade
                 NeutralDeviceCloseDecision.Revoked,
                 record.Lease,
                 "Neutral device lease has already been closed.");
+        }
+
+        if (HasActiveMmioLeasesForDevice(record.Lease))
+        {
+            return new NeutralDeviceCloseResult(
+                NeutralDeviceCloseDecision.ActiveDependents,
+                record.Lease,
+                "Neutral MMIO leases must close before the owning device lease.");
         }
 
         var domainDecision = ValidateDeviceDomain(lease.DomainLease);
