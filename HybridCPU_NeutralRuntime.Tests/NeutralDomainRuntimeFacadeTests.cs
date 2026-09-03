@@ -207,13 +207,29 @@ public sealed class NeutralDomainRuntimeFacadeTests
             "Capability",
             "Vmcs",
             "Vmx",
-            "Dma",
             "Iommu",
+            "BusAddress",
+            "Physical",
+            "PageTable",
+            "Pte",
+            "Descriptor",
+            "ScatterGather",
+            "Queue",
+            "Vector",
+            "Controller",
             "Lane",
             "Opcode",
             "Bundle",
             "Slot",
             "Smt",
+        };
+        var allowedDmaSignatureTypes = new HashSet<string>(StringComparer.Ordinal)
+        {
+            typeof(NeutralDmaRange).FullName!,
+            typeof(NeutralDmaDirection).FullName!,
+            typeof(NeutralDmaGrant).FullName!,
+            typeof(NeutralDmaGrantResult).FullName!,
+            typeof(NeutralDmaGrantCloseResult).FullName!,
         };
 
         var publicMethods = typeof(NeutralDomainRuntimeFacade)
@@ -236,7 +252,29 @@ public sealed class NeutralDomainRuntimeFacadeTests
                         signatureType,
                         StringComparison.OrdinalIgnoreCase);
                 }
+
+                if (signatureType.Contains("Dma", StringComparison.OrdinalIgnoreCase))
+                    Assert.Contains(signatureType, allowedDmaSignatureTypes);
             }
         }
+
+        var dmaMethods = publicMethods
+            .Select(static method => method.Name)
+            .Where(static name => name.Contains("Dma", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(static name => name, StringComparer.Ordinal)
+            .ToArray();
+        Assert.Equal(
+            new[]
+            {
+                nameof(NeutralDomainRuntimeFacade.BindDmaGrant),
+                nameof(NeutralDomainRuntimeFacade.CloseDmaGrant),
+                "get_" + nameof(NeutralDomainRuntimeFacade.ActiveDmaGrantCount),
+            }.OrderBy(static name => name, StringComparer.Ordinal),
+            dmaMethods);
+        Assert.DoesNotContain(publicMethods, static method =>
+            method.Name.Contains("Submit", StringComparison.OrdinalIgnoreCase) ||
+            method.Name.Contains("CompleteDma", StringComparison.OrdinalIgnoreCase) ||
+            method.Name.Contains("Iommu", StringComparison.OrdinalIgnoreCase) ||
+            method.Name.Contains("BusAddress", StringComparison.OrdinalIgnoreCase));
     }
 }

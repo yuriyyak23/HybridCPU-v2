@@ -107,6 +107,7 @@ public enum NeutralOwnedRegionCloseDecision : byte
     Stale,
     Revoked,
     Faulted,
+    ActiveDependents,
 }
 
 public readonly record struct NeutralOwnedRegionCloseResult(
@@ -285,6 +286,14 @@ public sealed partial class NeutralDomainRuntimeFacade
                 NeutralOwnedRegionCloseDecision.Revoked,
                 record.Lease,
                 "Neutral owned-region mapping has already been closed.");
+        }
+
+        if (HasActiveDmaGrantsForMapping(record.Lease))
+        {
+            return new NeutralOwnedRegionCloseResult(
+                NeutralOwnedRegionCloseDecision.ActiveDependents,
+                record.Lease,
+                "Neutral DMA grants must close before the owning region mapping.");
         }
 
         record.Revoked = true;
