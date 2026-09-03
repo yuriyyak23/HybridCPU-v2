@@ -42,6 +42,41 @@ public readonly record struct NeutralDomainBindResult(
         new(decision, default, reason);
 }
 
+public enum NeutralExecutionState : byte
+{
+    Ready = 0,
+    Running,
+    Parked,
+}
+
+public enum NeutralExecutionTransition : byte
+{
+    Start = 0,
+    Park,
+    Resume,
+}
+
+public enum NeutralExecutionTransitionDecision : byte
+{
+    Transitioned = 0,
+    InvalidTransition,
+    NotFound,
+    Stale,
+    Revoked,
+    Faulted,
+}
+
+public readonly record struct NeutralExecutionTransitionResult(
+    NeutralExecutionTransitionDecision Decision,
+    NeutralDomainBindingLease Lease,
+    NeutralExecutionTransition Transition,
+    NeutralExecutionState State,
+    string Reason)
+{
+    public bool IsTransitioned =>
+        Decision == NeutralExecutionTransitionDecision.Transitioned;
+}
+
 public enum NeutralDomainCloseDecision : byte
 {
     Closed = 0,
@@ -85,6 +120,7 @@ internal sealed record NeutralDomainRuntimeContext(
 /// Provider-facing owner for the minimal neutral HybridCPU runtime-domain lifecycle.
 /// The returned lease is opaque integration identity: it is not a domain tag,
 /// address-space tag, typed capability grant, completion receipt, or compatibility artifact.
+/// Execution transitions are semantic lifecycle decisions and expose no scheduler/lane/ISA state.
 /// </summary>
 public sealed class NeutralDomainRuntimeFacade
 {
@@ -94,6 +130,7 @@ public sealed class NeutralDomainRuntimeFacade
     {
         public NeutralDomainBindingLease Lease { get; } = lease;
         public NeutralDomainRuntimeContext Context { get; } = context;
+        public NeutralExecutionState ExecutionState { get; set; } = NeutralExecutionState.Ready;
         public bool Revoked { get; set; }
     }
 
@@ -150,6 +187,90 @@ public sealed class NeutralDomainRuntimeFacade
         }
     }
 
+    public NeutralExecutionTransitionResult TransitionExecution(
+        NeutralDomainBindingLease lease,
+        NeutralExecutionTransition transition)
+    {
+        if (!lease.IsMaterialized)
+        {
+            return TransitionDenied(
+                NeutralExecutionTransitionDecision.NotFound,
+                lease,
+                transition,
+                NeutralExecutionState.Ready,
+                "Neutral runtime domain lease is not materialized.");
+        }
+
+        if (!_bindings.TryGetValue(lease.Handle, out var record))
+        {
+            return TransitionDenied(
+                NeutralExecutionTransitionDecision.NotFound,
+                lease,
+                transition,
+                NeutralExecutionState.Ready,
+                "Neutral runtime domain binding was not found.");
+        }
+
+        if (record.Lease.Epoch != lease.Epoch)
+        {
+            return TransitionDenied(
+                NeutralExecutionTransitionDecision.Stale,
+                lease,
+                transition,
+                record.ExecutionState,
+                "Neutral runtime domain lease epoch is stale.");
+        }
+
+        if (record.Revoked)
+        {
+            return TransitionDenied(
+                NeutralExecutionTransitionDecision.Revoked,
+                lease,
+                transition,
+                record.ExecutionState,
+                "Neutral runtime domain binding has already been closed.");
+        }
+
+        if (!Enum.IsDefined(transition))
+        {
+            return TransitionDenied(
+                NeutralExecutionTransitionDecision.Faulted,
+                lease,
+                transition,
+                record.ExecutionState,
+                "The neutral execution transition is undefined.");
+        }
+
+        var nextState = (record.ExecutionState, transition) switch
+        {
+            (NeutralExecutionState.Ready, NeutralExecutionTransition.Start) =>
+                NeutralExecutionState.Running,
+            (NeutralExecutionState.Running, NeutralExecutionTransition.Park) =>
+                NeutralExecutionState.Parked,
+            (NeutralExecutionState.Parked, NeutralExecutionTransition.Resume) =>
+                NeutralExecutionState.Running,
+            _ => (NeutralExecutionState?)null,
+        };
+
+        if (nextState is null)
+        {
+            return TransitionDenied(
+                NeutralExecutionTransitionDecision.InvalidTransition,
+                lease,
+                transition,
+                record.ExecutionState,
+                $"Cannot apply {transition} while neutral execution is {record.ExecutionState}.");
+        }
+
+        record.ExecutionState = nextState.Value;
+        return new NeutralExecutionTransitionResult(
+            NeutralExecutionTransitionDecision.Transitioned,
+            record.Lease,
+            transition,
+            record.ExecutionState,
+            $"Neutral execution transitioned to {record.ExecutionState}.");
+    }
+
     public NeutralDomainCloseResult Close(NeutralDomainBindingLease lease)
     {
         if (!lease.IsMaterialized)
@@ -198,6 +319,14 @@ public sealed class NeutralDomainRuntimeFacade
 
         return record.Context;
     }
+
+    private static NeutralExecutionTransitionResult TransitionDenied(
+        NeutralExecutionTransitionDecision decision,
+        NeutralDomainBindingLease lease,
+        NeutralExecutionTransition transition,
+        NeutralExecutionState state,
+        string reason) =>
+        new(decision, lease, transition, state, reason);
 
     private static ulong NextNonZero(ref ulong next)
     {
