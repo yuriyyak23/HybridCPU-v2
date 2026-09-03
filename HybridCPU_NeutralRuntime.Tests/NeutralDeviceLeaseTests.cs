@@ -155,7 +155,7 @@ public sealed class NeutralDeviceLeaseTests
     }
 
     [Fact]
-    public void PublicDeviceLeaseSurfaceContainsNoHardwareShapedOrLaterPhaseAuthority()
+    public void PublicDeviceLeaseSurfaceContainsNoHardwareShapedOrUnimplementedAuthority()
     {
         var surface = new[]
         {
@@ -175,7 +175,6 @@ public sealed class NeutralDeviceLeaseTests
             "PageTable",
             "Iommu",
             "Dma",
-            "Mmio",
             "Irq",
             "InterruptVector",
             "Vmx",
@@ -202,9 +201,11 @@ public sealed class NeutralDeviceLeaseTests
             .ToArray();
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.BindDevice), publicFacadeMethods);
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseDevice), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.MapMmio), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseMmio), publicFacadeMethods);
         Assert.DoesNotContain(publicFacadeMethods, static name =>
             name.Contains("Dma", StringComparison.OrdinalIgnoreCase) ||
-            name.Contains("Mmio", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Irq", StringComparison.OrdinalIgnoreCase) ||
             name.Contains("Interrupt", StringComparison.OrdinalIgnoreCase));
     }
 
