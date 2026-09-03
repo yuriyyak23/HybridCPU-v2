@@ -210,6 +210,14 @@ public sealed partial class NeutralDomainRuntimeFacade
                 "Neutral MMIO leases must close before the owning device lease.");
         }
 
+        if (HasActiveInterruptLeasesForDevice(record.Lease))
+        {
+            return new NeutralDeviceCloseResult(
+                NeutralDeviceCloseDecision.ActiveDependents,
+                record.Lease,
+                "Neutral interrupt routes must close before the owning device lease.");
+        }
+
         var domainDecision = ValidateDeviceDomain(lease.DomainLease);
         if (domainDecision == NeutralDeviceBindDecision.Revoked)
         {
