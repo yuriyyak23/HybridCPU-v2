@@ -135,6 +135,94 @@ public sealed partial class NeutralDomainRuntimeFacade
             "Neutral non-coherent acquisition fence satisfied after exact mapping closure.");
     }
 
+    internal NeutralOwnedRegionAcquireResult AcquireOwnedRegionVisibilityWhileMapped(
+        NeutralOwnedRegionMappingLease mapping,
+        NeutralMemoryAcquireRequirement requirement)
+    {
+        if (!mapping.IsMaterialized ||
+            !_ownedRegionMappings.TryGetValue(mapping.Handle, out var record))
+        {
+            return AcquireDenied(
+                NeutralOwnedRegionAcquireDecision.NotFound,
+                mapping,
+                requirement,
+                "Neutral owned-region mapping was not found for DMA-scoped acquire.");
+        }
+
+        if (record.Lease.Epoch != mapping.Epoch)
+        {
+            return AcquireDenied(
+                NeutralOwnedRegionAcquireDecision.Stale,
+                mapping,
+                requirement,
+                "Neutral owned-region mapping epoch is stale for DMA-scoped acquire.");
+        }
+
+        if (record.Lease != mapping)
+        {
+            return AcquireDenied(
+                NeutralOwnedRegionAcquireDecision.Faulted,
+                mapping,
+                requirement,
+                "Neutral owned-region mapping identity is malformed for DMA-scoped acquire.");
+        }
+
+        if (record.Revoked)
+        {
+            return AcquireDenied(
+                NeutralOwnedRegionAcquireDecision.Faulted,
+                mapping,
+                requirement,
+                "DMA-scoped acquire requires the exact mapped-region authority to remain live.");
+        }
+
+        if (!Enum.IsDefined(requirement) ||
+            requirement != NeutralMemoryAcquireRequirement.AcquisitionFence)
+        {
+            return AcquireDenied(
+                Enum.IsDefined(requirement)
+                    ? NeutralOwnedRegionAcquireDecision.Unsupported
+                    : NeutralOwnedRegionAcquireDecision.Faulted,
+                mapping,
+                requirement,
+                "DMA-scoped acquire supports only the explicit acquisition-fence requirement.");
+        }
+
+        var domainDecision = ValidateLiveDomainForMapping(mapping.DomainLease);
+        if (domainDecision != NeutralOwnedRegionMapDecision.Mapped)
+        {
+            return AcquireDenied(
+                domainDecision switch
+                {
+                    NeutralOwnedRegionMapDecision.NotFound => NeutralOwnedRegionAcquireDecision.NotFound,
+                    NeutralOwnedRegionMapDecision.Stale => NeutralOwnedRegionAcquireDecision.Stale,
+                    NeutralOwnedRegionMapDecision.Revoked => NeutralOwnedRegionAcquireDecision.RevokedDomain,
+                    _ => NeutralOwnedRegionAcquireDecision.Faulted,
+                },
+                mapping,
+                requirement,
+                "The neutral runtime domain is not live for DMA-scoped acquire.");
+        }
+
+        if (mapping.Coherence != NeutralMemoryCoherenceModel.NonCoherent)
+        {
+            return AcquireDenied(
+                NeutralOwnedRegionAcquireDecision.Faulted,
+                mapping,
+                requirement,
+                "The neutral mapping coherence model is undefined for DMA-scoped acquire.");
+        }
+
+        _ownedRegionAcquireSequences.TryGetValue(mapping.Handle, out var sequence);
+        _ownedRegionAcquireSequences[mapping.Handle] = sequence + 1;
+        return new NeutralOwnedRegionAcquireResult(
+            NeutralOwnedRegionAcquireDecision.Satisfied,
+            record.Lease,
+            requirement,
+            NeutralMemoryAcquireOutcome.AcquisitionFenceSatisfied,
+            "Neutral non-coherent DMA-scoped acquisition fence satisfied while the exact mapping remains live.");
+    }
+
     internal ulong AcquisitionSequenceForTesting(
         NeutralOwnedRegionMappingLease mapping) =>
         _ownedRegionAcquireSequences.TryGetValue(mapping.Handle, out var sequence) &&

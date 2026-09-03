@@ -176,7 +176,6 @@ public sealed class NeutralOwnedRegionMappingTests
             "PageTable",
             "Pte",
             "CacheLine",
-            "Dma",
             "Iommu",
             "Vmcs",
             "Vmx",

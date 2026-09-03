@@ -230,6 +230,8 @@ public sealed class NeutralDomainRuntimeFacadeTests
             typeof(NeutralDmaGrant).FullName!,
             typeof(NeutralDmaGrantResult).FullName!,
             typeof(NeutralDmaGrantCloseResult).FullName!,
+            typeof(NeutralDmaPrepareResult).FullName!,
+            typeof(NeutralDmaAcquireResult).FullName!,
         };
 
         var publicMethods = typeof(NeutralDomainRuntimeFacade)
@@ -268,6 +270,8 @@ public sealed class NeutralDomainRuntimeFacadeTests
             {
                 nameof(NeutralDomainRuntimeFacade.BindDmaGrant),
                 nameof(NeutralDomainRuntimeFacade.CloseDmaGrant),
+                nameof(NeutralDomainRuntimeFacade.PrepareDmaVisibility),
+                nameof(NeutralDomainRuntimeFacade.AcquireDmaVisibility),
                 "get_" + nameof(NeutralDomainRuntimeFacade.ActiveDmaGrantCount),
             }.OrderBy(static name => name, StringComparer.Ordinal),
             dmaMethods);
