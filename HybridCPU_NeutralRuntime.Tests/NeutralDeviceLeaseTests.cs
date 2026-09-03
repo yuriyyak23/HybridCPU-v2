@@ -155,7 +155,7 @@ public sealed class NeutralDeviceLeaseTests
     }
 
     [Fact]
-    public void PublicDeviceLeaseSurfaceContainsNoHardwareShapedOrUnimplementedAuthority()
+    public void PublicDeviceLeaseSurfaceContainsNoHardwareShapedAuthority()
     {
         var surface = new[]
         {
@@ -208,10 +208,13 @@ public sealed class NeutralDeviceLeaseTests
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.PollInterrupt), publicFacadeMethods);
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.CompleteInterruptDelivery), publicFacadeMethods);
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseInterrupt), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.BindDmaGrant), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseDmaGrant), publicFacadeMethods);
         Assert.DoesNotContain(publicFacadeMethods, static name =>
-            name.Contains("Dma", StringComparison.OrdinalIgnoreCase) ||
             name.Contains("Iommu", StringComparison.OrdinalIgnoreCase) ||
-            name.Contains("Vector", StringComparison.OrdinalIgnoreCase));
+            name.Contains("Vector", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Submit", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("CompleteDma", StringComparison.OrdinalIgnoreCase));
     }
 
     private static NeutralDomainBindingLease AssertBound(NeutralDomainBindResult result)
