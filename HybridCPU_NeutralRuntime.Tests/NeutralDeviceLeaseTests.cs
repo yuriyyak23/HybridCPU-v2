@@ -203,10 +203,15 @@ public sealed class NeutralDeviceLeaseTests
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseDevice), publicFacadeMethods);
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.MapMmio), publicFacadeMethods);
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseMmio), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.BindInterrupt), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.SignalInterrupt), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.PollInterrupt), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.CompleteInterruptDelivery), publicFacadeMethods);
+        Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseInterrupt), publicFacadeMethods);
         Assert.DoesNotContain(publicFacadeMethods, static name =>
             name.Contains("Dma", StringComparison.OrdinalIgnoreCase) ||
-            name.Contains("Irq", StringComparison.OrdinalIgnoreCase) ||
-            name.Contains("Interrupt", StringComparison.OrdinalIgnoreCase));
+            name.Contains("Iommu", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Vector", StringComparison.OrdinalIgnoreCase));
     }
 
     private static NeutralDomainBindingLease AssertBound(NeutralDomainBindResult result)
