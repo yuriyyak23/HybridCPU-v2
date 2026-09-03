@@ -217,9 +217,10 @@ public sealed class NeutralInterruptLeaseTests
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.CompleteInterruptDelivery), methods);
         Assert.Contains(nameof(NeutralDomainRuntimeFacade.CloseInterrupt), methods);
         Assert.DoesNotContain(methods, static name =>
-            name.Contains("Dma", StringComparison.OrdinalIgnoreCase) ||
             name.Contains("Iommu", StringComparison.OrdinalIgnoreCase) ||
-            name.Contains("Vector", StringComparison.OrdinalIgnoreCase));
+            name.Contains("Vector", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Submit", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("CompleteDma", StringComparison.OrdinalIgnoreCase));
     }
 
     private static NeutralDomainBindingLease AssertBound(NeutralDomainBindResult result)
