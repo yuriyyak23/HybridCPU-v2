@@ -10,15 +10,12 @@ public sealed class NeutralInterruptLeaseTests
     {
         var runtime = new NeutralDomainRuntimeFacade();
         var domain = AssertBound(runtime.Bind(NeutralDomainProfile.OrdinaryService));
-        var device = Assert.True(runtime.BindDevice(
+        var deviceResult = runtime.BindDevice(
             domain,
             new NeutralDeviceIdentity("device/net0"),
-            NeutralDeviceRights.Configure).IsBound);
-        var deviceLease = runtime.BindDevice(
-            domain,
-            new NeutralDeviceIdentity("device/net1"),
-            NeutralDeviceRights.Configure).Lease;
-        Assert.True(deviceLease.IsMaterialized);
+            NeutralDeviceRights.Configure);
+        Assert.True(deviceResult.IsBound, deviceResult.Reason);
+        var deviceLease = deviceResult.Lease;
 
         var source = new NeutralInterruptSourceIdentity(
             "rx-ready",
