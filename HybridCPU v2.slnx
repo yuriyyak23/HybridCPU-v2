@@ -1,0 +1,49 @@
+<Solution>
+  <Folder Name="/External Runtime/">
+    <Project Path="HybridCPU_ExternalRuntime.Contracts/HybridCPU_ExternalRuntime.Contracts.csproj" />
+    <Project Path="HybridCPU_ExternalRuntime/HybridCPU_ExternalRuntime.csproj" />
+    <Project Path="HybridCPU_ExternalRuntime.Tests/HybridCPU_ExternalRuntime.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Compilers/">
+    <Project Path="Compilers/CpuInterfaceBridge/HybridCpu_InterfaceBridge.csproj" Id="733f2e53-d3ee-460c-814b-9c3784171d66" />
+    <Project Path="Compilers/HybridCPU_Compiler/HybridCPU_Compiler.csproj" Id="c4dc5e95-942e-455b-be5d-e90bfa048cfc" />
+    <Project Path="Compilers/HybridCPU_Compiler/Core/HybridCPU.Compiler.Core.csproj" />
+    <Project Path="Compilers/HybridCPU_Compiler/Cil/HybridCPU.Compiler.Cil.csproj" />
+    <Project Path="Compilers/HybridCPU_Compiler/Native/HybridCPU.Compiler.Native.csproj" />
+    <Project Path="Compilers/HybridCPU_Compiler/NativeAot/HybridCPU.Compiler.NativeAot.Adapter.csproj" />
+    <Project Path="Compilers/HybridCPU_Compiler/LLVM/HybridCPU.Compiler.Llvm.csproj" />
+    <Project Path="Compilers/HybridCPU_Compiler/Oracle/HybridCPU.Compiler.Oracle.csproj" />
+    <Project Path="Compilers/HybridCPU_Compiler/ReleaseQualification/HybridCPU.Compiler.Release.csproj" />
+    <Project Path="corpus/ScalarControlFlowV2.Corpus/ScalarControlFlowV2.Corpus.csproj" />
+    <Project Path="corpus/corpus/Phase00.Conformance.Corpus/Phase00.Conformance.Corpus.csproj" />
+    <Project Path="Compilers/HybridCPU_Compiler/Analyzers/HybridCPU.Compiler.Analyzers.csproj" />
+    <Project Path="Compilers/HybridCPU_ManagedRuntime/HybridCPU.ManagedRuntime.csproj" />
+    <Project Path="Compilers/HybridCPU_Platform.Contracts/HybridCPU.Platform.Contracts.csproj" />
+    <Project Path="Compilers/HybridCPU_RuntimeKernel/HybridCPU.RuntimeKernel.csproj" />
+  </Folder>
+  <Folder Name="/Diagntostics/">
+    <Project Path="Diagnostics/HybridCPU.IsaGen/HybridCPU.IsaGen.csproj" />
+    <Project Path="Diagnostics/HybridCpuAotAddDemo/HybridCpuAotAddDemo.csproj" />
+    <Project Path="Diagnostics/MinimalAsmApp/MinimalAsmApp.csproj" Id="207defb7-a35e-4222-8f06-bcb06f187159" />
+    <Project Path="Diagnostics/SecureComputeDiagnosticsConsole/SecureComputeDiagnosticsConsole.csproj" />
+    <Project Path="Diagnostics/TestAssemblerConsoleApps/TestAssemblerConsoleApps.csproj" Id="446a3a19-1946-4bf3-9384-cf25f536e218" />
+    <Project Path="Diagnostics/VirtualizationDiagnosticsConsole/VirtualizationDiagnosticsConsole.csproj" />
+  </Folder>
+  <Folder Name="/DoomPort/">
+    <Project Path="DoomSharpHybridCPU/benchmarks/DoomSharp.Benchmarks.Runner/DoomSharp.Benchmarks.Runner.csproj" />
+    <Project Path="DoomSharpHybridCPU/src/DoomSharp.Core/DoomSharp.Core.csproj" />
+    <Project Path="DoomSharpHybridCPU/src/DoomSharp.HybridCpu.Guest/DoomSharp.HybridCpu.Guest.csproj" />
+    <Project Path="DoomSharpHybridCPU/src/DoomSharp.HybridCpu.Windows/DoomSharp.HybridCpu.Windows.csproj" />
+    <Project Path="DoomSharpHybridCPU/src/DoomSharp.Tests/DoomSharp.Tests.csproj" />
+    <Project Path="DoomSharpHybridCPU/src/DoomSharp.Windows/DoomSharp.Windows.csproj" />
+    <Project Path="DoomSharpHybridCPU/tools/DoomSharp.AotClosure/DoomSharp.AotClosure.csproj" />
+  </Folder>
+
+  <Folder Name="/Элементы решения/">
+    <File Path="clean.bat" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Documentation/Documentation.csproj" />
+  <Project Path="HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj" />
+  <Project Path="HybridCPU_ISE/HybridCPU_ISE.csproj" />
+</Solution>

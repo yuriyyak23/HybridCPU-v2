@@ -1,0 +1,9 @@
+{
+  "Source": "C:\\Users\\Yuriy Kurnosov\\Desktop\\HybridCPU ISE\\TempEnv\\doom-continuation-20260905\\diagnostic37-runtime-result-evidence\\DoomSharp.HybridCpu.Guest.unqualified.hcexe",
+  "Sha256": "4A0F6886F9A9220A4CD0396F61230FEB57394249665FE57808309AA5A6991092",
+  "Bytes": 122618004,
+  "NewPublish": false,
+  "Qualified": false,
+  "Patch": "Explicit Windows retired GC evidence mode",
+  "CpuRunStarted": false
+}

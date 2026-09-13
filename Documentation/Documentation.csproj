@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsTestProject>false</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Documentation\Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+	  <EmbeddedResource Remove="Documentation\Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+	  <None Remove="Documentation\Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ActualRefactoring\DeepResearch\Plan1\" />
+	  <Folder Include="ActualRefactoring\Lane7 Refactor\" />
+	  <Folder Include="Compilers\NaiveAOT_1\" />
+	  <Folder Include="Documentation\Manuals\" />
+	  <Folder Include="Refactoring\Phases Base Plan\" />
+	  <Folder Include="Refactoring\Phases Ex1\" />
+	  <Folder Include="ActualRefactoring\InstructionsRefactor\" />
+	  <Folder Include="ActualRefactoring\CompilerRefactor\" />
+	  <Folder Include="ActualRefactoring\Lane6 Refactor\" />
+	  <Folder Include="Documentation\Virtualization WhiteBook\" />
+	  <Folder Include="Documentation\SecureCompute WhiteBook\" />
+	  <Folder Include="prompts\" />
+	</ItemGroup>
+
+</Project>

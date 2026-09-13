@@ -1,0 +1,29 @@
+<Project TreatAsLocalProperty="PublishAot">
+  <PropertyGroup>
+    <HybridCpuSdkPackRoot Condition="'$(HybridCpuSdkPackRoot)' == ''">..\..\..\Compilers\HybridCPU_Compiler\NativeAot\Packaging\</HybridCpuSdkPackRoot>
+    <HybridCpuDotNetHostPath Condition="'$(HybridCpuDotNetHostPath)' == '' and Exists('C:\Program Files\dotnet\dotnet.exe')">C:\Program Files\dotnet\dotnet.exe</HybridCpuDotNetHostPath>
+    <HybridCpuProfile Condition="'$(HybridCpuProfile)' == ''">HybridCPU.DotNetAot.ScalarControlFlowV2</HybridCpuProfile>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+
+  <Import Project="$(HybridCpuSdkPackRoot)HybridCPU.Sdk.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <HybridCpuEntryType>DoomSharp.HybridCpu.Guest.EntryPoint</HybridCpuEntryType>
+    <HybridCpuEntryMethod>Run</HybridCpuEntryMethod>
+    <HybridCpuPresentedMethods>DoomSharp.HybridCpu.Guest.EntryPoint::Run</HybridCpuPresentedMethods>
+    <HybridCpuManagedRequirements>type-layout-object-references;szarray-core;utf16-string-literals;static-type-initialization;gc-maps-safepoints;virtual-interface-dispatch;exact-aot-generics;eh-unwind</HybridCpuManagedRequirements>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DoomSharp.Core\DoomSharp.Core.csproj" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(HybridCpuSdkPackRoot)HybridCPU.Sdk.targets" />
+</Project>

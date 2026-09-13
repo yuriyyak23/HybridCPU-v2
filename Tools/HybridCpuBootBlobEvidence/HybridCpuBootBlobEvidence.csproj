@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Compilers/CpuInterfaceBridge/HybridCpu_InterfaceBridge.csproj" />
+    <ProjectReference Include="../../HybridCPU_ISE/HybridCPU_ISE.csproj" />
+    <ProjectReference Include="../../Compilers/HybridCPU_Compiler/Core/HybridCPU.Compiler.Core.csproj" />
+    <Compile Include="../../DoomSharpHybridCPU/src/DoomSharp.HybridCpu.Windows/DoomGuestExecutionService.cs" Link="DoomGuestExecutionService.cs" />
+    <Compile Include="../../DoomSharpHybridCPU/src/DoomSharp.HybridCpu.Windows/DoomFramebufferProvider.cs" Link="DoomFramebufferProvider.cs" />
+    <Compile Include="../../DoomSharpHybridCPU/src/DoomSharp.HybridCpu.Windows/ImageAdmission.cs" Link="ImageAdmission.cs" />
+  </ItemGroup>
+</Project>

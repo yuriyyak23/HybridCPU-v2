@@ -1,0 +1,9 @@
+.git
+.idea
+.vs
+TestResults
+bin
+coverage
+node_modules
+obj
+packages

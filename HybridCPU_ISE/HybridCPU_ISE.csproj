@@ -1,0 +1,231 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Compilers\HybridCPU_ManagedRuntime\HybridCPU.ManagedRuntime.csproj" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<EnableInternalTestHooks Condition="'$(EnableInternalTestHooks)' == ''">$(DefineTestSupport)</EnableInternalTestHooks>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(EnableInternalTestHooks)' == 'true'">
+		<DefineConstants>$(DefineConstants);TESTING</DefineConstants>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		<OutputPath Condition="'$(HybridCpuTestArtifactsRoot)' == ''">bin\$(Configuration)\testsupport\</OutputPath>
+		<OutputPath Condition="'$(HybridCpuTestArtifactsRoot)' != ''">$(HybridCpuTestArtifactsRoot)\ise-bin\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<EnableVmxProjectionLineageCheck Condition="'$(EnableVmxProjectionLineageCheck)' == '' and Exists('docs\VMXRefactoring\schemas\vmcs-field-projection-schema.v1.json') and Exists('docs\VMXRefactoring\schemas\compat-alias-schema.v1.json') and Exists('docs\VMXRefactoring\schemas\vmxcaps-capability-bit-schema.v1.json') and Exists('docs\VMXRefactoring\schemas\compat-spec-artifact-schema.v1.json')">true</EnableVmxProjectionLineageCheck>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(EnableInternalTestHooks)' == 'true'">
+		<Compile Remove="obj\**\*.cs" />
+		<Compile Remove="$(BaseIntermediateOutputPath)**\*.cs" />
+		<EmbeddedResource Remove="obj\**\*" />
+		<EmbeddedResource Remove="$(BaseIntermediateOutputPath)**\*" />
+		<None Remove="obj\**\*" />
+		<None Remove="$(BaseIntermediateOutputPath)**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Legacy\VMX\**" />
+	  <Compile Remove="NonRTL\Core\**" />
+	  <!-- Diagnostic lineage output must never become a second source tree when a caller
+	       supplies a project-relative output path from the repository root. -->
+	  <Compile Remove="HybridCPU_ISE\obj\**\*.cs" />
+	  <EmbeddedResource Remove="Legacy\VMX\**" />
+	  <EmbeddedResource Remove="NonRTL\Core\**" />
+	  <EmbeddedResource Remove="HybridCPU_ISE\obj\**\*" />
+	  <None Remove="Legacy\VMX\**" />
+	  <None Remove="NonRTL\Core\**" />
+	  <None Remove="HybridCPU_ISE\obj\**\*" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Folder Include="CloseToHSL\Core\Architecture\BinaryFormat\Bundle2048\" />
+		<Folder Include="CloseToHSL\Core\Architecture\BinaryFormat\InstructionWords\" />
+		<Folder Include="CloseToHSL\Core\Architecture\BinaryFormat\NativeCarrier256Byte\" />
+		<Folder Include="CloseToHSL\Core\Architecture\BinaryFormat\Versioning\" />
+		<Folder Include="CloseToHSL\Core\Architecture\MemoryModel\Atomicity\" />
+		<Folder Include="CloseToHSL\Core\Architecture\MemoryModel\CacheCoherency\" />
+		<Folder Include="CloseToHSL\Core\Architecture\MemoryModel\Ordering\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\DecoderEncoder\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\Frontend\Decode\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\Frontend\Frozen\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\Frontend\Handlers\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\Frontend\Projection\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\Frontend\Retire\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\FrozenAbi\CsrAliases\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\FrozenAbi\DescriptorAliases\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\FrozenAbi\Opcodes\" />
+		<Folder Include="CloseToHSL\Core\Compatibility\FrozenAbi\OperandForms\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Bundling\Bundle2048\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Bundling\Certificates\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Bundling\NativeCarrier256Byte\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\DescriptorSideband\Evidence\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\DescriptorSideband\Normalization\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\DescriptorSideband\Transport\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Facade\Aliases\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Facade\HelperAbi\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Facade\NoEmission\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\IR\Canonical\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\IR\DescriptorBacked\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\IR\Lane6\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\IR\Lane7\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\IR\Vector\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\IR\VmxAware\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\LaneBinding\Lane06\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\LaneBinding\Lane07\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\LaneBinding\Lanes00_03\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\LaneBinding\Lanes04_05\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Lowering\Descriptor\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Lowering\Memory\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Lowering\Scalar\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Lowering\System\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Lowering\Vector\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\RegressionGates\AbiFreeze\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\RegressionGates\GoldenArtifacts\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\RegressionGates\NoEmission\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Scheduling\DeterministicLaneChoice\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Scheduling\ReplayAware\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Scheduling\SmtPacking\" />
+		<Folder Include="CloseToHSL\Core\CompilerBoundary\Scheduling\TypedSlots\" />
+		<Folder Include="CloseToHSL\Core\Conformance\AbiFreeze\" />
+		<Folder Include="CloseToHSL\Core\Conformance\DecoderEncoderParity\" />
+		<Folder Include="CloseToHSL\Core\Conformance\DescriptorTransport\" />
+		<Folder Include="CloseToHSL\Core\Conformance\GoldenArtifacts\" />
+		<Folder Include="CloseToHSL\Core\Conformance\Lane6DmaStream\" />
+		<Folder Include="CloseToHSL\Core\Conformance\Lane7Accelerator\" />
+		<Folder Include="CloseToHSL\Core\Conformance\LaneBinding\" />
+		<Folder Include="CloseToHSL\Core\Conformance\NoEmission\" />
+		<Folder Include="CloseToHSL\Core\Conformance\NonVmxMissingInstructions\" />
+		<Folder Include="CloseToHSL\Core\Conformance\ReplayRollback\" />
+		<Folder Include="CloseToHSL\Core\Conformance\RuntimeEvidence\" />
+		<Folder Include="CloseToHSL\Core\Conformance\TypedSlot\" />
+		<Folder Include="CloseToHSL\Core\Conformance\VectorLegality\" />
+		<Folder Include="CloseToHSL\Core\Diagnostics\Telemetry\" />
+		<Folder Include="CloseToHSL\Core\Diagnostics\Trace\" />
+		<Folder Include="CloseToHSL\Core\Diagnostics\Validation\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane6DmaStream\Backends\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane6DmaStream\Completion\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane6DmaStream\DescriptorAdmission\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane6DmaStream\Evidence\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane6DmaStream\FenceCommit\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane6DmaStream\QueueRuntime\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane6DmaStream\TokenLifecycle\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane7Accelerator\BackendBinding\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane7Accelerator\Completion\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane7Accelerator\ControlPlane\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane7Accelerator\Evidence\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane7Accelerator\QueueLifecycle\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane7Accelerator\TokenLifecycle\" />
+		<Folder Include="CloseToHSL\Core\Execution\Lane7Accelerator\Topology\" />
+		<Folder Include="CloseToHSL\Core\Execution\Memory\AddressGeneration\" />
+		<Folder Include="CloseToHSL\Core\Execution\Scalar\Atomic\" />
+		<Folder Include="CloseToHSL\Core\Execution\Scalar\BitManipulation\" />
+		<Folder Include="CloseToHSL\Core\Execution\Scalar\CSR\" />
+		<Folder Include="CloseToHSL\Core\Execution\Scalar\MultiPrecision\" />
+		<Folder Include="CloseToHSL\Core\Execution\Vector\Dot\" />
+		<Folder Include="CloseToHSL\Core\Execution\Vector\Mask\" />
+		<Folder Include="CloseToHSL\Core\Execution\Vector\Permute\" />
+		<Folder Include="CloseToHSL\Core\Execution\Vector\Transpose\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Decode\Classifier\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Decode\CompatibilityAbi\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Encode\BundleWriter\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Encode\CompatibilityAbi\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Encode\NativeCarrier\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Projection\InstructionIR\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Projection\MicroOpMaterialization\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Projection\SidebandExtraction\" />
+		<Folder Include="CloseToHSL\Core\Frontend\Validation\" />
+		<Folder Include="CloseToHSL\Core\ISA\Catalog\Aliases\" />
+		<Folder Include="CloseToHSL\Core\ISA\Catalog\DescriptorOpTypes\" />
+		<Folder Include="CloseToHSL\Core\ISA\Catalog\EvidenceStatus\" />
+		<Folder Include="CloseToHSL\Core\ISA\Catalog\OpcodeAllocation\" />
+		<Folder Include="CloseToHSL\Core\ISA\Catalog\ReservedRows\" />
+		<Folder Include="CloseToHSL\Core\ISA\Catalog\SupportStatus\" />
+		<Folder Include="CloseToHSL\Core\ISA\Encoding\ClassifierAbi\" />
+		<Folder Include="CloseToHSL\Core\ISA\Encoding\Compatibility\" />
+		<Folder Include="CloseToHSL\Core\ISA\Encoding\DecoderAbi\" />
+		<Folder Include="CloseToHSL\Core\ISA\Encoding\EncoderAbi\" />
+		<Folder Include="CloseToHSL\Core\ISA\Encoding\NativeCarrier\" />
+		<Folder Include="CloseToHSL\Core\ISA\Legality\FailClosedContours\" />
+		<Folder Include="CloseToHSL\Core\ISA\Legality\RejectTaxonomy\" />
+		<Folder Include="CloseToHSL\Core\ISA\Legality\RuntimeOwnedEvidence\" />
+		<Folder Include="CloseToHSL\Core\ISA\Legality\TypedSlot\" />
+		<Folder Include="CloseToHSL\Core\ISA\Legality\VectorLegalityMatrix\" />
+		<Folder Include="CloseToHSL\Core\ISA\Operands\DescriptorSideband\" />
+		<Folder Include="CloseToHSL\Core\ISA\Operands\ImmediateForms\" />
+		<Folder Include="CloseToHSL\Core\ISA\Operands\Scalar\" />
+		<Folder Include="CloseToHSL\Core\ISA\Operands\Vector\" />
+		<Folder Include="CloseToHSL\Core\Pipeline\Assist\DonorCarriers\" />
+		<Folder Include="CloseToHSL\Core\Pipeline\Assist\Safety\" />
+		<Folder Include="CloseToHSL\Core\Pipeline\Certificates\ReplayKeys\" />
+		<Folder Include="CloseToHSL\Core\Pipeline\MicroOps\Scalar\" />
+		<Folder Include="CloseToHSL\Core\Pipeline\Scheduling\Hazards\" />
+		<Folder Include="CloseToHSL\Core\Pipeline\Stages\Rename\" />
+		<Folder Include="CloseToHSL\Core\Pipeline\Stages\Retire\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Authority\Capability\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Authority\Commit\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Authority\Domain\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Authority\Evidence\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Authority\Root\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Domains\Descriptors\Capability\" />
+		<Folder Include="docs\securecompute prv\Plan\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Events\Intercepts\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Evidence\Replay\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Evidence\RetireEvidence\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Evidence\Telemetry\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Lanes\Lane7\Queues\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Legality\Certificates\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Legality\DomainGuards\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Legality\RuntimeOwned\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Legality\TypedSlot\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Legality\VectorContours\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Nested\CompletionMapping\" />
+		<Folder Include="CloseToHSL\Core\Runtime\Nested\TrapTranslation\" />
+		<Folder Include="CloseToHSL\Core\Sideband\BundleMetadata\" />
+		<Folder Include="CloseToHSL\Core\Sideband\CompilerRuntime\" />
+		<Folder Include="CloseToHSL\Core\Sideband\CompletionTransport\" />
+		<Folder Include="CloseToHSL\Core\Sideband\DescriptorTransport\" />
+		<Folder Include="CloseToHSL\Core\Sideband\EvidenceTransport\" />
+		<Folder Include="CloseToHSL\Core\Tooling\Generators\" />
+		<Folder Include="CloseToHSL\Core\Tooling\Manifests\" />
+		<Folder Include="CloseToHSL\Core\Tooling\Schemas\" />
+		<Folder Include="CloseToHSL\Core\Virtualization\Compatibility\Adapters\MemoryInvalidation\" />
+		<Folder Include="docs\ref2\Old\VirtualiztionRefactoringNew\" />
+		<Folder Include="docs\ref2\Old\SecureComputerefactoringNew\" />
+		<Folder Include="docs\ref2\SecureComputeActivationPlan\" />
+		<Folder Include="docs\ref2\VirtualizationActivationPlan\" />
+		<Folder Include="docs\VMXRefactoring\SuccessClosed\" />
+		<Folder Include="Legacy\Obsolete\" />
+		<Folder Include="NonRTL\Arch\Compat\" />
+		<Folder Include="NonRTL\Legacy\" />
+		<Folder Include="NonRTL\Processor\Configuration\" />
+		<Folder Include="NonRTL\Processor\Core\" />
+		<Folder Include="NonRTL\Processor\Devices\" />
+		<Folder Include="NonRTL\Processor\Execution\" />
+		<Folder Include="NonRTL\Processor\Performance\" />
+		<Folder Include="NonRTL\Processor\Verification\" />
+	</ItemGroup>
+
+	<Target Name="RejectReleaseBuildWithInternalTestHooks" BeforeTargets="CoreCompile">
+		<Error Condition="'$(Configuration)' == 'Release' and '$(EnableInternalTestHooks)' == 'true'" Text="Release build cannot enable internal test hooks. Build Debug testsupport artifacts instead or disable EnableInternalTestHooks/DefineTestSupport." />
+	</Target>
+
+	<Target Name="VerifyVmxProjectionLineage" BeforeTargets="CoreCompile" Condition="'$(EnableVmxProjectionLineageCheck)' == 'true'">
+		<Exec Command="&quot;$(SystemRoot)\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\tools\VMXProjectionLineage\VerifyProjectionLineage.ps1&quot; -ProjectRoot &quot;$(MSBuildProjectDirectory)&quot; -OutputRoot &quot;$(IntermediateOutputPath)VmxProjectionLineage&quot;" />
+	</Target>
+
+</Project>

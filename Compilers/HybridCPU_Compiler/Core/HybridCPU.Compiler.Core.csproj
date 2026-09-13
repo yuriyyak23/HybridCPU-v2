@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>HybridCPU.Compiler.Core</AssemblyName>
+    <RootNamespace>HybridCPU.Compiler.Core</RootNamespace>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\API\Compilation\HybridCpuCanonicalCompiler.cs" Link="Compilation\HybridCpuCanonicalCompiler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\HybridCPU_Platform.Contracts\HybridCPU.Platform.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="IR\Decomposition\**\*.cs" />
+    <Compile Remove="IR\Lowering\Production\**\*.cs" />
+    <Compile Include="IR\Lowering\Production\CompilerProductionProviderContracts.cs" />
+    <Compile Remove="IR\Model\AdmissibilityRuntimeVocabulary.cs" />
+    <Compile Remove="IR\Model\IrAcceleratorModels.cs" />
+    <Compile Remove="IR\Model\HybridCpuOpcodeRuntimeMapping.cs" />
+    <Compile Remove="IR\Telemetry\CompilerPhase00BaselineCaptureV1.cs" />
+    <Compile Remove="IR\Telemetry\CompilerPhase00CorpusV1.cs" />
+    <Compile Remove="IR\Telemetry\CompilerPhase00RepresentativeInputsV1.cs" />
+    <Compile Remove="IR\Telemetry\CompilerPhase00RuntimeControlEvidenceV1.cs" />
+    <Compile Remove="obj\**\*.cs" />
+    <Compile Remove="$(BaseIntermediateOutputPath)**\*.cs" />
+    <EmbeddedResource Remove="obj\**\*" />
+    <EmbeddedResource Remove="$(BaseIntermediateOutputPath)**\*" />
+    <None Remove="obj\**\*" />
+    <None Remove="$(BaseIntermediateOutputPath)**\*" />
+  </ItemGroup>
+
+</Project>

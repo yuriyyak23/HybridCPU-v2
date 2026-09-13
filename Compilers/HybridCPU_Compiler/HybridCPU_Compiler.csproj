@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<HybridCpuIseProjectReferenceProperties>DefineTestSupport=$(DefineTestSupport)</HybridCpuIseProjectReferenceProperties>
+		<HybridCpuIseProjectReferenceProperties Condition="'$(DefineTestSupport)' == 'true'">DefineTestSupport=$(DefineTestSupport);BaseIntermediateOutputPath=obj\testsupport\;MSBuildProjectExtensionsPath=obj\;OutputPath=bin\$(Configuration)\testsupport\</HybridCpuIseProjectReferenceProperties>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\HybridCPU_ISE\HybridCPU_ISE.csproj">
+			<AdditionalProperties>$(HybridCpuIseProjectReferenceProperties)</AdditionalProperties>
+		</ProjectReference>
+		<ProjectReference Include="Core\HybridCPU.Compiler.Core.csproj"
+		                  GlobalPropertiesToRemove="DefineTestSupport;BuildRuntimeDiagnosticConsole;HybridCpuIseProjectReferenceProperties">
+		</ProjectReference>
+	</ItemGroup>
+
+	<ItemGroup>
+    <Compile Remove="API\**\*.cs" />
+    <Compile Remove="API\Compilation\HybridCpuCanonicalCompiler.cs" />
+    <Compile Include="API\**\*.cs" Exclude="API\Compilation\HybridCpuCanonicalCompiler.cs" />
+    <Compile Remove="Core\**\*.cs" />
+    <Compile Remove="Native\**\*.cs" />
+    <Compile Remove="LLVM\**\*.cs" />
+    <Compile Remove="Oracle\**\*.cs" />
+    <Compile Remove="Cil\**\*.cs" />
+    <Compile Remove="NativeAot\**\*.cs" />
+    <Compile Remove="Release\**\*.cs" />
+    <Compile Remove="ReleaseQualification\**\*.cs" />
+    <Compile Remove="Analyzers\**\*.cs" />
+    <Compile Remove="Generators\**\*.cs" />
+    <Compile Remove="Profiles\**\*.cs" />
+    <Compile Remove="OldDocs\**\*.cs" />
+    <Compile Include="Core\IR\Decomposition\**\*.cs" />
+    <Compile Include="Core\IR\Lowering\Production\**\*.cs" Exclude="Core\IR\Lowering\Production\CompilerProductionProviderContracts.cs" />
+    <Compile Include="Core\IR\Model\AdmissibilityRuntimeVocabulary.cs" />
+    <Compile Include="Core\IR\Model\IrAcceleratorModels.cs" />
+    <Compile Include="Core\IR\Model\HybridCpuOpcodeRuntimeMapping.cs" />
+    <Compile Include="Core\IR\Telemetry\CompilerPhase00BaselineCaptureV1.cs" />
+    <Compile Include="Core\IR\Telemetry\CompilerPhase00CorpusV1.cs" />
+    <Compile Include="Core\IR\Telemetry\CompilerPhase00RepresentativeInputsV1.cs" />
+    <Compile Include="Core\IR\Telemetry\CompilerPhase00RuntimeControlEvidenceV1.cs" />
+		<Compile Remove="Tools\**\*.cs" />
+		<Compile Remove="RefPlan6\**\*.cs" />
+		<Compile Remove="RefPlan7\**\*.cs" />
+		<None Include="API\**\*.cs" />
+		<None Include="Core\**\*.cs" />
+		<None Include="Native\**\*.cs" />
+		<None Include="LLVM\**\*.cs" />
+		<None Include="Oracle\**\*.cs" />
+		<None Include="Cil\**\*.cs" />
+		<None Include="NativeAot\**\*.cs" />
+		<None Include="Release\**\*.cs" />
+		<None Include="ReleaseQualification\**\*.cs" />
+		<None Include="Tools\**\*.cs" />
+		<None Include="RefPlan6\**\*.cs" />
+		<None Include="RefPlan7\**\*.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Legacy\VMX-1\" />
+	  <Folder Include="OldDocs\RefPlan1\CompilerRefDocs\" />
+	</ItemGroup>
+
+</Project>

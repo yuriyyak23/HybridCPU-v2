@@ -1,0 +1,41 @@
+{
+  "root": "C:\\Users\\Yuriy Kurnosov\\Desktop\\HybridCPU ISE",
+  "total_files": 3034,
+  "by_category": {
+    "other": 202,
+    "doc": 929,
+    "source": 1463,
+    "project": 31,
+    "config": 6,
+    "generated": 14,
+    "test": 389
+  },
+  "by_ext": {
+    "": 3,
+    ".md": 929,
+    ".bat": 1,
+    ".cs": 1864,
+    ".csproj": 29,
+    ".props": 2,
+    ".ps1": 6,
+    ".zip": 1,
+    ".user": 21,
+    ".resx": 21,
+    ".json": 6,
+    ".slnx": 1,
+    ".asm": 1,
+    ".fsproj": 1,
+    ".fs": 1,
+    ".txt": 1,
+    ".tex": 139,
+    ".aux": 1,
+    ".out": 1,
+    ".pdf": 1,
+    ".200": 1,
+    ".aspnetcertificatesentinel": 1,
+    ".dotnetfirstusesentinel": 1,
+    ".sentinel": 1
+  },
+  "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0"
+}

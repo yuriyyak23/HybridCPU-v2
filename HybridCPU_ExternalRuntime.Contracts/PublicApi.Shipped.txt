@@ -1,0 +1,22 @@
+# HybridCPU.ExternalRuntime.Contracts 1.0.0 public API baseline
+# The authoritative machine-checkable ABI is the compiled reference assembly.
+# Breaking changes require a new contract major version; additive feature slices
+# require their own feature version and a monotonically increased manifest generation.
+
+# 1.1.0 additive child-domain surface
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult<TReceipt>

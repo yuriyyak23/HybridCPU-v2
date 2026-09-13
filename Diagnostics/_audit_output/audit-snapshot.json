@@ -1,0 +1,110 @@
+{
+  "generated_at_utc": "2026-06-10T17:32:32.972147+00:00",
+  "root": "C:\\Users\\Yuriy Kurnosov\\Desktop\\HybridCPU ISE",
+  "authority": "Local filesystem state; git history intentionally not used as source authority.",
+  "scan_summary": {
+    "root": "C:\\Users\\Yuriy Kurnosov\\Desktop\\HybridCPU ISE",
+    "total_files": 3034,
+    "by_category": {
+      "other": 202,
+      "doc": 929,
+      "source": 1463,
+      "project": 31,
+      "config": 6,
+      "generated": 14,
+      "test": 389
+    },
+    "by_ext": {
+      "": 3,
+      ".md": 929,
+      ".bat": 1,
+      ".cs": 1864,
+      ".csproj": 29,
+      ".props": 2,
+      ".ps1": 6,
+      ".zip": 1,
+      ".user": 21,
+      ".resx": 21,
+      ".json": 6,
+      ".slnx": 1,
+      ".asm": 1,
+      ".fsproj": 1,
+      ".fs": 1,
+      ".txt": 1,
+      ".tex": 139,
+      ".aux": 1,
+      ".out": 1,
+      ".pdf": 1,
+      ".200": 1,
+      ".aspnetcertificatesentinel": 1,
+      ".dotnetfirstusesentinel": 1,
+      ".sentinel": 1
+    },
+    "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "baseline": {
+    "build": {
+      "command": "dotnet build \"HybridCPU v2.slnx\" -v minimal --no-restore -m:1 /p:UseSharedCompilation=false",
+      "observed_result": "PASS",
+      "observed_errors": 0,
+      "observed_warnings": 73,
+      "observed_elapsed": "36.32s",
+      "note": "A prior parallel build/test attempt produced CSC CS2012 due shared compiler/output locking and is not treated as the baseline."
+    },
+    "test": {
+      "command": "dotnet test \"HybridCPU_ISE.Tests\\HybridCPU_ISE.Tests.csproj\" -v minimal --no-build",
+      "observed_result": "FAIL",
+      "total": 7875,
+      "passed": 7862,
+      "failed": 11,
+      "skipped": 2,
+      "duration": "3m54s"
+    },
+    "sdk_drift": {
+      "global_json": "10.0.201",
+      "observed_dotnet_version": "10.0.204",
+      "risk": "Reproducibility drift: local CLI selected a newer SDK than global.json pins."
+    }
+  },
+  "failed_tests": [
+    "CompilerFacadeAbiPhase01Tests.AppFacadePublicAbi_StaysAtPhase01CompatibilityInventory",
+    "Phase12FacadeFamilyDeprecationTests.FacadeInterfaces_NoNewProductionMentionsOutsideFacadeBoundary",
+    "Phase09VectorPermute2ExecutableTests.Vperm2_CompilerSurfaceRemainsNoEmissionForDeltaHelpers",
+    "Phase09VectorTransposeExecutableTests.Vtranspose_CompilerSurfaceRemainsNoEmissionForDeltaHelpers",
+    "Phase09VectorSlideOneDownExecutableTests.Vslide1Down_CompilerSurfaceRemainsNoEmissionForDeltaHelpers",
+    "Phase09VectorSlideOneUpExecutableTests.Vslide1Up_CompilerSurfaceRemainsNoEmissionForDeltaHelpers",
+    "Phase03ScalarCarryLessClmulExecutableTests.Clmul_CompilerEmission_OpensCarryLessRowsWhileAdjacentContoursRemainClosed",
+    "Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixMemoryContours_FailClosedAsDecodeFaultTrap(MTILE_LOAD)",
+    "Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixMemoryContours_FailClosedAsDecodeFaultTrap(MTILE_STORE)",
+    "Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixContours_FailClosedAsDecodeFaultTrap(MTILE_MACC)",
+    "Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixContours_FailClosedAsDecodeFaultTrap(MTRANSPOSE)"
+  ],
+  "skipped_tests": [
+    "Phase03CarrierProjectionTransportTailTests.LegacySlotCarrierMaterializer_VectorLoadProjection_PublishesTwoSurfaceTransferMemoryShape",
+    "Phase03CarrierProjectionTransportTailTests.LegacySlotCarrierMaterializer_VectorStoreProjection_PublishesTwoSurfaceTransferMemoryShape"
+  ],
+  "finding_counts": {
+    "total": 10,
+    "high_active": 3,
+    "medium_active": 3,
+    "latent": 2,
+    "confirmed_good": 1
+  },
+  "dotnet": {
+    "version_exit_code": 0,
+    "version": "10.0.204",
+    "info_exit_code": 0
+  },
+  "artifacts": [
+    "audit-report.md",
+    "audit-snapshot.json",
+    "environment.txt",
+    "findings.csv",
+    "reachability-matrix.csv",
+    "test-coverage-matrix.csv",
+    "file-change-map.csv",
+    "refactoring-phases.md",
+    "open-evidence-gaps.md"
+  ]
+}

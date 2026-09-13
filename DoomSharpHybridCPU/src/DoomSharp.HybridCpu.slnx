@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DoomSharp.HybridCpu.Windows/DoomSharp.HybridCpu.Windows.csproj" />
+  <Project Path="DoomSharp.HybridCpu.HostTests/DoomSharp.HybridCpu.HostTests.csproj" />
+</Solution>

@@ -1,0 +1,179 @@
+# Environment
+
+Repo root: C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE
+Audit output: C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE\_audit_output
+Plan output: C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE\Documentation\ActualRefactoring\DeepResearch\Plan1
+Authority: local filesystem state; git history was not used as source authority.
+
+## dotnet --version
+Exit code: 0
+10.0.204
+
+## SDK Drift
+global.json pins: 10.0.201
+observed dotnet --version: 10.0.204
+
+## Baseline Build
+Command: dotnet build "HybridCPU v2.slnx" -v minimal --no-restore -m:1 /p:UseSharedCompilation=false
+Observed result: PASS, 0 errors, 73 warnings, elapsed 36.32s.
+Note: a prior parallel build/test attempt failed with CSC CS2012 because output/compiler files were locked; it is not the baseline.
+
+## Baseline Test
+Command: dotnet test "HybridCPU_ISE.Tests\HybridCPU_ISE.Tests.csproj" -v minimal --no-build
+Observed result: FAIL, total 7875, passed 7862, failed 11, skipped 2, duration 3m54s.
+
+Failed tests:
+- CompilerFacadeAbiPhase01Tests.AppFacadePublicAbi_StaysAtPhase01CompatibilityInventory
+- Phase12FacadeFamilyDeprecationTests.FacadeInterfaces_NoNewProductionMentionsOutsideFacadeBoundary
+- Phase09VectorPermute2ExecutableTests.Vperm2_CompilerSurfaceRemainsNoEmissionForDeltaHelpers
+- Phase09VectorTransposeExecutableTests.Vtranspose_CompilerSurfaceRemainsNoEmissionForDeltaHelpers
+- Phase09VectorSlideOneDownExecutableTests.Vslide1Down_CompilerSurfaceRemainsNoEmissionForDeltaHelpers
+- Phase09VectorSlideOneUpExecutableTests.Vslide1Up_CompilerSurfaceRemainsNoEmissionForDeltaHelpers
+- Phase03ScalarCarryLessClmulExecutableTests.Clmul_CompilerEmission_OpensCarryLessRowsWhileAdjacentContoursRemainClosed
+- Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixMemoryContours_FailClosedAsDecodeFaultTrap(MTILE_LOAD)
+- Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixMemoryContours_FailClosedAsDecodeFaultTrap(MTILE_STORE)
+- Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixContours_FailClosedAsDecodeFaultTrap(MTILE_MACC)
+- Phase03FallbackTransportSummaryTailTests.DecodeFullBundle_UnsupportedOptionalMatrixContours_FailClosedAsDecodeFaultTrap(MTRANSPOSE)
+
+Skipped tests:
+- Phase03CarrierProjectionTransportTailTests.LegacySlotCarrierMaterializer_VectorLoadProjection_PublishesTwoSurfaceTransferMemoryShape
+- Phase03CarrierProjectionTransportTailTests.LegacySlotCarrierMaterializer_VectorStoreProjection_PublishesTwoSurfaceTransferMemoryShape
+
+## dotnet --info
+Exit code: 0
+.NET SDK:
+ Version:           10.0.204
+ Commit:            e7aa4b537d
+ Workload version:  10.0.200-manifests.8c7d7c03
+ MSBuild version:   18.3.3+e7aa4b537
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.26200
+ OS Platform: Windows
+ RID:         win-x64
+ Base Path:   C:\Program Files\dotnet\sdk\10.0.204\
+
+.NET workloads installed:
+ [tvos]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    26.5.10284/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.tvos\26.5.10284\WorkloadManifest.json
+   Install Type:              Msi
+
+ [macos]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    26.5.10284/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.macos\26.5.10284\WorkloadManifest.json
+   Install Type:              Msi
+
+ [wasm-tools]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    10.0.109/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.workload.mono.toolchain.current\10.0.109\WorkloadManifest.json
+   Install Type:              Msi
+
+ [maui-windows]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    10.0.20/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.maui\10.0.20\WorkloadManifest.json
+   Install Type:              Msi
+
+ [maccatalyst]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    26.5.10284/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.maccatalyst\26.5.10284\WorkloadManifest.json
+   Install Type:              Msi
+
+ [ios]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    26.5.10284/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.ios\26.5.10284\WorkloadManifest.json
+   Install Type:              Msi
+
+ [wasm-tools-net7]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    10.0.109/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.workload.mono.toolchain.net7\10.0.109\WorkloadManifest.json
+   Install Type:              Msi
+
+ [android]
+   Installation Source: VS 18.8.11904.113
+   Manifest Version:    36.1.43/10.0.100
+   Manifest Path:       C:\Program Files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.android\36.1.43\WorkloadManifest.json
+   Install Type:              Msi
+
+Configured to use workload sets when installing new manifests.
+No workload sets are installed. Run "dotnet workload restore" to install a workload set.
+
+Host:
+  Version:      11.0.0-preview.1.26104.118
+  Architecture: x64
+  Commit:       87bc0b04e2
+
+.NET SDKs installed:
+  7.0.410 [C:\Program Files\dotnet\sdk]
+  8.0.128 [C:\Program Files\dotnet\sdk]
+  8.0.319 [C:\Program Files\dotnet\sdk]
+  8.0.422 [C:\Program Files\dotnet\sdk]
+  9.0.118 [C:\Program Files\dotnet\sdk]
+  10.0.109 [C:\Program Files\dotnet\sdk]
+  10.0.204 [C:\Program Files\dotnet\sdk]
+  10.0.301 [C:\Program Files\dotnet\sdk]
+  11.0.100-preview.1.26104.118 [C:\Program Files\dotnet\sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.All 2.1.30 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.App 2.1.30 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 6.0.36 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 7.0.20 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 8.0.0-rc.2.23480.2 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 8.0.22 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 8.0.23 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 8.0.28 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 9.0.0-preview.3.24172.13 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 9.0.12 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 9.0.17 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.0-preview.1.25120.3 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.8 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.9 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-preview.1.26104.118 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 2.1.30 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 6.0.36 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 7.0.20 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 8.0.0-rc.1.23419.4 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 8.0.22 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 8.0.23 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 8.0.28 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 9.0.0-preview.3.24172.9 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 9.0.12 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 9.0.17 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.8 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.9 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-preview.1.26104.118 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.WindowsDesktop.App 6.0.36 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 7.0.20 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 8.0.22 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 8.0.23 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 8.0.28 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 9.0.12 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 9.0.17 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 10.0.8 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 10.0.9 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 11.0.0-preview.1.26104.118 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+Other architectures found:
+  x86   [C:\Program Files (x86)\dotnet]
+    registered at [HKLM\SOFTWARE\dotnet\Setup\InstalledVersions\x86\InstallLocation]
+
+Environment variables:
+  Not set
+
+global.json file:
+  C:\Users\Yuriy Kurnosov\Desktop\HybridCPU ISE\global.json
+
+Learn more:
+  https://aka.ms/dotnet/info
+
+Download .NET:
+  https://aka.ms/dotnet/download

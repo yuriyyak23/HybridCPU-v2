@@ -1,0 +1,9 @@
+area,baseline,evidence,gap
+Build,PASS,dotnet build observed 0 errors / 73 warnings,Warnings not classified in this audit.
+Full test project,FAIL,7875 total; 7862 passed; 11 failed; 2 skipped,Failing rows split between real contract drift and stale tests.
+VLOAD/VSTORE,SKIPPED/STale,"Phase03CarrierProjectionTransportTailTests.cs:611,640 vs registry rows at OpcodeInfo.Registry.Data.Vector.cs:69-70",Need active placement/memory metadata assertions.
+VGATHER/VSCATTER,Covered,Factories and LSU placement present in InstructionRegistry.Helpers.Vector.cs and VectorMicroOps.Memory.cs,Use as reference for VLOAD/VSTORE normalization.
+Matrix tile,Mixed,"Positive retire/golden tests exist, while fail-closed and facade ABI tests fail",Need one authoritative open/closed contract.
+Lane6 DSC,Covered,Hard-pinned lane6 and guarded parser evidence,Keep regression tests when refactoring taxonomy.
+Lane7 SDC,Covered,Hard-pinned lane7 and fail-closed descriptorless submit paths,Keep regression tests when refactoring taxonomy.
+VMX,Covered,VmxInstructionMetadataConsistencyTests and Vmx8AbiSnapshotTests,No production change requested.

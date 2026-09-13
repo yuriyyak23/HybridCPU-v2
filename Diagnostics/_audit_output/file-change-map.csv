@@ -1,0 +1,8 @@
+phase,file_or_area,change_type,purpose,risk
+P0,"_audit_output/*, Documentation/ActualRefactoring/DeepResearch/Plan1/*",audit-only,"Snapshot, evidence, manifests, report, phase plan.",None to production source.
+P1,MicroOp taxonomy/admission helpers,planned,Introduce authoritative memory/placement invariant checks.,Medium: shared scheduler contract.
+P2,"VectorMicroOps.cs, VectorMicroOps.Memory.cs, VectorMicroOps.Data.cs, InstructionRegistry.Helpers.Vector.cs",planned,"Normalize VLOAD/VSTORE and segment/2D memory placement, remove silent store success/fallback ambiguity.",High: runtime-visible behavior.
+P3,"InstructionClassifier.cs, InstructionRegistry.Types.cs, MicroOpAdmissionMetadata.cs",planned,Split memory footprint/effects/ordering/slot-class semantics.,Medium: broad consumers.
+P4,"MatrixTileMicroOps.cs, InstructionRegistry.Helpers.MatrixTile.cs, matrix tile tests",planned,Choose and enforce matrix/tile physical slot authority.,High: current tests disagree.
+P5,"HybridCPU_Compiler/API/Facade/*, ThreadCompilerContext.MatrixTile.cs, compiler ABI tests",planned,Resolve facade deprecation vs positive matrix emission handoff.,Medium: public API.
+P6,HybridCPU_ISE.Tests/*,planned,Replace stale skips/negative tests with active authority assertions.,Low/Medium: test-only but defines architecture truth.

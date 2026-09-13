@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <AssemblyName>HybridCPU_ExternalRuntime</AssemblyName>
+    <PackageId>HybridCPU.ExternalRuntime</PackageId>
+    <Version>1.3.0</Version>
+    <PackageVersion>1.3.0</PackageVersion>
+    <Authors>HybridCPU</Authors>
+    <Description>Fail-closed implementation of the HybridCPU external runtime facade.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PackageReleaseNotes>Adds V3 exact artifact-child-mapping-start correlation, independently receipted retired work, and bounded child virtual-I/O closure.</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeHybridCpuRuntimeDependencies</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  <ItemGroup><None Include="README.md" Pack="true" PackagePath="\" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HybridCPU_ExternalRuntime.Contracts\HybridCPU_ExternalRuntime.Contracts.csproj" />
+    <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj"
+                      AdditionalProperties="DefineTestSupport=false;EnableInternalTestHooks=false"
+                      PrivateAssets="all"
+                      ReferenceOutputAssembly="true" />
+    <ProjectReference Include="..\Compilers\HybridCPU_Compiler\Core\HybridCPU.Compiler.Core.csproj" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="HybridCPU_ExternalRuntime.Tests" />
+  </ItemGroup>
+  <Target Name="IncludeHybridCpuRuntimeDependencies" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths)"
+        Condition="'%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU_ISE' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.ManagedRuntime' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.RuntimeKernel' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.Platform.Contracts' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.Compiler.Core'">
+        <TargetPath>%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)</TargetPath>
+      </BuildOutputInPackage>
+    </ItemGroup>
+  </Target>
+</Project>
