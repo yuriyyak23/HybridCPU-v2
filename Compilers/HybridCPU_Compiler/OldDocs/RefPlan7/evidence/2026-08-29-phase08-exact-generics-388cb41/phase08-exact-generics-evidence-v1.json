@@ -1,0 +1,201 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase08.ExactAotGenericsEvidenceV1",
+  "phase": "08",
+  "date": "2026-08-29",
+  "disposition": "EvidenceClosed",
+  "defaultEnabled": false,
+  "implementation": {
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "primaryCommit": "50abfe4452d4c8968f63efbfcf636fb98f259d04",
+    "correctiveCommit": "388cb41eda4b3bbc00ada8b08bfaa4eefea9e22d",
+    "commit": "388cb41eda4b3bbc00ada8b08bfaa4eefea9e22d",
+    "tree": "1ba84d59f4bae83f030548ceba8666bbd1a1d4c4",
+    "compilerSha": "388cb41eda4b3bbc00ada8b08bfaa4eefea9e22d",
+    "platformContractsSha": "388cb41eda4b3bbc00ada8b08bfaa4eefea9e22d",
+    "managedRuntimeSha": "388cb41eda4b3bbc00ada8b08bfaa4eefea9e22d",
+    "runtimeKernelSha": "388cb41eda4b3bbc00ada8b08bfaa4eefea9e22d",
+    "iseSha": "388cb41eda4b3bbc00ada8b08bfaa4eefea9e22d",
+    "repositoryModel": "single monorepo commit; component SHAs intentionally coincide",
+    "worktreeStatusAtEvidenceStart": [
+      "unstaged M HybridCPU_Compiler/Core/IR/Scheduling/HybridCpuLocalListScheduler.cs (zero content diff; line-ending/stat-cache noise; excluded)",
+      "unstaged M HybridCPU_ISE/docs/PerfTests/PerftestResults.md (zero content diff; generated line-ending/stat-cache noise; excluded)"
+    ],
+    "foreignWipIncluded": false
+  },
+  "planHashes": {
+    "README.md": "3531e14bcdbb976dd1104bf75b8801e1c843adeab12a2f95f4660b55f32a819b",
+    "00-conformance-gate.md": "3bf536021bbd6ca14a094d8775272c7c95ab82dc440b03162e17bd31d944476e",
+    "01-managed-abi-runtime-contracts.md": "470fd01f7624d48b23ba6047af17eb6302e63d7dd1340ef0726cc0fc24e5dfa8",
+    "02-managed-references-object-layout.md": "33447d330d857987dbeb2353af05ca6a8ef7b2e84bb2bc857d9d9bc765bb89f5",
+    "03-heap-allocator.md": "0683bddb2c7ba068e51c7940cec12a4f36912886ef79be4c922e083fbb7ae3f9",
+    "04-arrays-strings-value-types.md": "bc06610c17af45b28d08d7b4089b50ee3af6df39d0ad434e243b457d93bbb3a6",
+    "05-gc-v1.md": "534be4c17500eb02ab470b0974fed81e3f3c9781eba5752c217cd78c02b16ae5",
+    "06-virtual-interface-dispatch.md": "f830b2b6e0bfdb2ed1e52ebeb3cc371986b4ed274e860db1db862286c433944a",
+    "07-delegates-function-pointers.md": "49f931008ffcf619fe5158713dbfa43ef9a338452262c133b52ea98535cefe93",
+    "08-generics-core.md": "e15f14a428876f5c4558f785b425ef8ae37603b660a2d820e9ab06a8dbf47336",
+    "09-managed-eh-core.md": "60e1ca7ca9774edb7e6da449abb86c79b1a7964d46c6ab29aa7b0096716c48a2",
+    "10-fault-trap-integration.md": "0bfea348ac81995fbee176b298eb792b8cb8f236d356c845241d0f11998f75d9",
+    "11-runtime-kernel-threading-tls.md": "bd6544d770749d81222ecd134406f85046b85bf99364d7a82675d912e93b2743",
+    "12-synchronization-memory-model.md": "c65d6fe4663b7ecb659f67415ce2231b647969114348e1e5843f90926e066d73",
+    "13-interop-host-services.md": "18f44c0b5f2b3d1c68131e99a9c9a09e56b01f45b8fd39601e878d2da8e28fb0",
+    "14-reflection-runtime-metadata.md": "2df5d5cfa363092628612b7d1da658ca6fd064e877b82b3bfc3f5cbb58537770",
+    "15-async-runtime-libraries.md": "ed25019bb1dab761d3778f22a62c87cb154659b8d8798fc6fe4bb31df33e0154",
+    "16-release-determinism-qualification.md": "62e1e9980293cdb5d28229631e4bec323867ddfe3e91e78b5b40df13f6a969b3"
+  },
+  "tools": {
+    "dotnetSdk": "10.0.204",
+    "dotnetSdkCommit": "e7aa4b537d",
+    "msbuild": "18.3.3+e7aa4b537",
+    "hostRid": "win-x64",
+    "os": "Windows 10.0.26200"
+  },
+  "contracts": {
+    "exactAotGenericsSchema": "hybridcpu.exact-aot-generics/v1",
+    "exactAotGenericsDigest": "33f585e8da685617dfa7830c6a323bc7925a377bf2ecfa21d8f3d543239bc756",
+    "restrictedCilSupportMatrixDigest": "8d328808b755602f609eefd43d284bb86c82329d7544a794b38c5b8950a06190",
+    "managedAbiSchema": "hybridcpu.managed-abi-family@1.7",
+    "managedAbiDigest": "adb8b263c2f39854aeafef9e8075935ef82503764cdc7f79c17e9e0a3d114ae7",
+    "managedFeatureSetDigest": "c0a5f2f05dbfe048fb9a747b326a3571560819dff6cc25c0e842cb19bbde96cd",
+    "runtimePackVersion": "1.8.0-refplan7-phase08",
+    "runtimePackDigest": "6ccfb96a7b234ca4bd1f3b32c92770c5c3c1893b8cd0cef62d10d4a2363c06c7",
+    "runtimePackFileSha256": "36270d491bcea9c7f888b0acbaf26e06247c2444dedd9de5e649a47a5e3b6f6d",
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "objectFormatDigest": "17befa1c95512c2f014087580f3431e84a64c161cf361562166692f01bf4b927",
+    "linkOptionsDigest": "271469721660e4c9fe3f2ebc1ed117f45aface6803623556d07bd69f7408b26d",
+    "startupOptionsDigest": "f04ccbdae459554fb93474b6fe735b766eab4b4a2229739a0e27f9dd626cd92f"
+  },
+  "supportMatrix": {
+    "qualifiedDefaultOff": [
+      "blittable-value-boxing", "delegates-function-pointers", "deterministic-allocation",
+      "exact-aot-generics", "gc-maps-safepoints", "metadata-runtime-lookup",
+      "static-type-initialization", "szarray-core", "type-layout-object-references",
+      "utf16-string-literals", "virtual-interface-dispatch"
+    ],
+    "publishQualified": [],
+    "phase08DefaultEnableDisposition": "QualifiedDefaultOff",
+    "dotNetAotManagedReleaseDisposition": "Unsupported"
+  },
+  "deterministicBudgets": {
+    "maximumReachableExactInstantiations": 256,
+    "maximumArgumentsPerMethod": 4,
+    "maximumMetadataResolutionSteps": 65536,
+    "identity": "generic definition + exact ordered type arguments + exact ordered method arguments",
+    "ordering": "ordinal stable identity",
+    "budgetSelectionUsesWallClock": false
+  },
+  "qualification": {
+    "focusedPhase08": {
+      "configuration": "Debug testsupport",
+      "filter": "CompilerRefPlan7Phase08ExactAotGenericsTests",
+      "passed": 11, "failed": 0, "skipped": 0,
+      "coverage": "exact int64/int32/reference method bodies, nested substitution, constructed TypeSpec, virtual/interface exact candidates, open/constraint negatives, deterministic budget, runtime statics/dispatch, HCO/link/image, loader/bootstrap/ISE and NativeAOT adapter"
+    },
+    "cumulativePhase00Through08": {"passed": 94, "failed": 0, "skipped": 0},
+    "affectedRegression": {"passed": 115, "failed": 0, "skipped": 0},
+    "correctiveFocusedRegression": {"passed": 34, "failed": 0, "skipped": 0},
+    "compilerRegressionFinal": {
+      "configuration": "Debug testsupport",
+      "filter": "FullyQualifiedName~CompilerTests",
+      "passed": 1453, "failed": 0, "skipped": 0,
+      "duration": "00:05:32"
+    },
+    "closureAuditRemediation": {
+      "initialFullSuitePassed": 1447,
+      "initialFullSuiteFailed": 6,
+      "cause": "five release-qualification assertions still accepted the Phase07 runtime-pack digest and one historical Phase06 test classified every MethodSpec as missing instead of preserving the Phase08 constrained-generic rejection",
+      "resolution": "added an exact Phase08 release pin while preserving Phase07 historical identity; updated the constrained generic negative to HCCIL1702; final full suite is green"
+    },
+    "releaseBuilds": {
+      "runs": 2, "projectsPerRun": 8, "allSucceeded": true, "errors": 0,
+      "artifactHashMatches": "8/8",
+      "releaseDllSha256": {
+        "platformContracts": "679ef70dff6f52902644a2d06ad5977dca56004d7fecc1d6542a2f3974431ef2",
+        "compilerCore": "e87715bcbd3322397c9b2d04505875fc24cc7935c79633a9a39298114a893206",
+        "compilerCil": "0cdfcc9a1cd670dd8acfff8f3da6b81c8bd44c4289158350fe61e1c3efe30ed5",
+        "managedRuntime": "9de0ea7edd2fc21ff56bcb7c89b319ceddc85afc245deb46ac2973bd81d92437",
+        "runtimeKernel": "451344f8cf72131b5714e9c38586058a7a38a1e06d95c19e3d179ac14c9c22ea",
+        "nativeAotAdapter": "12c6aaca7a8cde5688a95000d539933dedd932a5b31a7075c35babfafb6a0831",
+        "releaseQualification": "6c9e6a2f7e9d755f1521e357ba483acb9e337f1f110ed70fdb0aba0a473b18dc",
+        "ise": "9e1dea2b78489317cf41c5c1e37001a5ed8432c7210ae72ff4f0f8667bf1f59e"
+      }
+    },
+    "runtimeVisibleEvidence": {
+      "tests": [
+        "ExactGenericImage_IsDeterministicAndExecutesThroughLoaderAndIse",
+        "NativeAotAdapter_PresentsExactGenericWorldAndEmitsDeterministicExecutableImage"
+      ],
+      "path": "checked-in C# corpus -> exact MethodSpec/TypeSpec graph -> Canonical IR -> scheduler/RA/frame -> HCO -> static link -> HCEXE -> loader/bootstrap -> ordinary ISE execution",
+      "managedSpecificIsaAdded": false
+    },
+    "determinism": {
+      "rootPermutationGraphDigestEqual": true,
+      "repeatedLinkedImageByteEqual": true,
+      "nativeAotExecutablePackageByteEqual": true,
+      "releaseDllPairsByteEqual": "8/8",
+      "packManifestThreeGeneratedAndCheckedInByteEqual": true,
+      "packManifestSha256": "36270d491bcea9c7f888b0acbaf26e06247c2444dedd9de5e649a47a5e3b6f6d"
+    },
+    "gitDiffCheck": "clean"
+  },
+  "sourceDigests": {
+    "exactAotGenericsContract": "63fb131fcc8fad4a3ad9a76cd6e23465b5be11d3f6fab8e76d9bcc293e19f271",
+    "restrictedCilContracts": "3022ece53b3b8a948931125b9441b8511fd06da6b52f86c9d8c8839db8dcc1ef",
+    "callGraphImporter": "ca01e7b2c102bbc1af8b0b1e82e1f025039f2f07e690610f75cf56c66f5417a2",
+    "cilImporter": "ad663fcee86e08242478dedfc99056e2c284defd35bf29018fcccda21988affb",
+    "scalarProfile": "41af53b68ef00622e131d03d87ab9f2720163fa3f29ac39ceb17844c20efc55e",
+    "managedFeatureSet": "f75707a48ac59598df008848aa5bdd3180025df3ac24df8df182db5ea1234916",
+    "sdkPackContract": "2b80ce6ec5dd1fd2cc97e81d150b8304f89a73d62a163f490030ad0790e2cf7d",
+    "releaseQualification": "db7a8f875ab7e3cf2e22b3470be6dcc4cbd8b6ab5bf299fdc2b9059b74518a77",
+    "checkedInGenericCorpus": "4ef310d81a7676027aa5e11a9b3804242a75f28d0074cf3964efae00110dca0c",
+    "phase08Tests": "41d2fa2f935cd00ba1f9a94793e04186e34bdf9c6269bac50b3fecc7cfb1ed03"
+  },
+  "dependencyAndAuthority": {
+    "compiler": "owns exact closed generic admission, MethodSpec/TypeSpec substitution, exact graph identities/bodies and existing Canonical IR through final HCO/link/image lowering",
+    "managedRuntime": "reuses constructed type identity, per-instantiation static storage and existing exact virtual/interface dispatch tables; owns object/type validity",
+    "runtimeKernel": "unchanged; existing language-neutral bootstrap/context substrate is reused",
+    "platformContracts": "unchanged; no generic execution authority or compiler IR crosses the boundary",
+    "hcoLinkImage": "existing object, relocation, linker and executable-image path is reused without generic-specific object format",
+    "ise": "unchanged; executes ordinary machine values and JALR without generic semantic identity",
+    "nativeAotAdapter": "presents exact body world and emits the existing deterministic package; it does not own reachability or runtime code generation",
+    "forbiddenEdgesPreserved": true
+  },
+  "changedPathAudit": {
+    "pathCount": 16,
+    "implementationInsertions": 1021,
+    "implementationDeletions": 87,
+    "runtimeKernelChanges": 0,
+    "iseProductionChanges": 0,
+    "isaChanges": 0,
+    "foreignWipIncluded": false
+  },
+  "claimClassifications": [
+    {"claim": "Closed generic methods over int32, int64 and references receive separate exact identities and bodies, including nested calls", "classification": "Proven", "evidence": ["GenericCorpus.cs", "ExactClosedMethodSpecs_CreateDistinctBodiesAndNestedReachability"]},
+    {"claim": "Constructed reference TypeSpec methods compile through the same Canonical IR/HCO/image path and execute on ISE", "classification": "Proven", "evidence": ["ConstructedGenericTypeSpec_IsAnExactCompiledTypeInstantiation", "ExactGenericImage_IsDeterministicAndExecutesThroughLoaderAndIse"]},
+    {"claim": "Constructed runtime types have independent static storage and exact virtual/interface dispatch identity", "classification": "Proven", "evidence": ["ConstructedGenericRuntimeIdentities_HaveIndependentStaticsAndExactDispatchTypes", "GenericVirtualAndInterfaceCalls_UseExactConstructedSignatureAndCandidateBody"]},
+    {"claim": "Adapter-presented exact generic bodies can produce a deterministic executable package", "classification": "Proven", "evidence": ["NativeAotAdapter_PresentsExactGenericWorldAndEmitsDeterministicExecutableImage"]},
+    {"claim": "Open generic instantiations or generic constraints are admitted", "classification": "Contradicted", "evidence": ["HCCIL1012", "HCCIL1702", "OpenAndConstrainedGenericBodies_FailClosedWithDistinctDiagnostics"]},
+    {"claim": "Generic sharing, dictionaries or runtime generic code generation are present", "classification": "Contradicted", "evidence": ["ExactAotGenericsContractV1", "ExactAotContract_ForbidsSharingDictionariesRuntimeCodegenAndAuthorityExpansion"]},
+    {"claim": "Arbitrary constructed generic value-type layout is supported", "classification": "Not implemented", "evidence": ["Phase08 scope admits constructed reference types; aggregate/value-type generic arguments fail closed"]},
+    {"claim": "Reflection-driven generic construction is supported", "classification": "Not implemented", "evidence": ["SupportsRuntimeCodeGeneration=false", "Phase14 remains owner"]},
+    {"claim": "Exact generics require a managed-specific ISA extension", "classification": "Contradicted", "evidence": ["ISE production delta zero", "real images execute existing instructions"]},
+    {"claim": "Phase08 evidence authorizes general managed publish or default enablement", "classification": "Contradicted", "evidence": ["PublishQualifiedWorkstreams=[]", "QualifiedDefaultOff"]}
+  ],
+  "knownBaselineFailures": [],
+  "knownBuildObservations": [
+    "Compiler.Cil has one pre-existing obsolete LegalSlots warning on non-incremental Release builds.",
+    "ISE has 43 pre-existing warnings on non-incremental Release builds and zero errors.",
+    "One focused build attempt encountered a transient VBCSCompiler output lock; build-server shutdown and the serial rerun passed 34/34.",
+    "Debug testsupport is required for ISE execution tests; production Release projects build independently."
+  ],
+  "releaseDisposition": {
+    "component": "QualifiedDefaultOff",
+    "managedPublish": "Unsupported",
+    "fullLanguageSupport": "Not claimed"
+  },
+  "nextGate": {
+    "phase": "09",
+    "status": "Eligible",
+    "scope": "managed EH and unwinding",
+    "prerequisite": "Phase 08 EvidenceClosed"
+  }
+}

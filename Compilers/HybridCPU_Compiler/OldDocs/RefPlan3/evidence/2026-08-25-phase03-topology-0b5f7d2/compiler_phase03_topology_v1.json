@@ -1,0 +1,129 @@
+{
+  "schema": "CompilerPhase03TopologyEvidenceV1",
+  "capturedAtUtc": "2026-08-25",
+  "implementationSha": "0b5f7d2e444dbc7b2658c200bf3bcdaffa874e18",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "subjectDisposition": "DirtyAttributed",
+  "excludedForeignPaths": [
+    "HybridCPU_Compiler/RefPlan1.zip",
+    "HybridCPU_Compiler/ChatGPT-compiler-upd.md",
+    "HybridCPU_Compiler/RefPlan3.zip"
+  ],
+  "auditedRuntimeContract": {
+    "registerGroups": {
+      "disposition": "StableArchitecturalLayout",
+      "virtualThreads": 4,
+      "groups": 16,
+      "registersPerGroup": 4,
+      "readBits": "0-15",
+      "writeBits": "16-31",
+      "rarAllowed": true,
+      "conflicts": ["RAW", "WAR", "WAW"]
+    },
+    "prfPortCapacity": {
+      "disposition": "Unknown",
+      "reason": "No immutable architectural capacity contract was found; live PRF/rename state is runtime-owned."
+    },
+    "memoryBanks": {
+      "schedulerVisibleIdentityCount": 16,
+      "defaultCompilerMappingDisposition": "Unknown",
+      "reason": "Runtime routing consumes live Processor.Memory NumBanks and BankWidthBytes geometry."
+    },
+    "memoryChannels": {
+      "disposition": "Unknown",
+      "reason": "No immutable scheduler-visible channel mapping contract was found."
+    },
+    "certificateClasses": {
+      "disposition": "StableStructuralMappingOnly",
+      "lane6": ["DmaStreamClass", "MatrixTileStreamClass"],
+      "lane7": ["BranchControl", "SystemSingleton"],
+      "runtimeCertificateImported": false
+    }
+  },
+  "topology": {
+    "schema": "HybridCpuMachineTopologyV1",
+    "version": 1,
+    "key": "HybridCpuMachineTopologyV1:1:3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+    "digest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+    "maximumFiniteAddressSet": 8,
+    "staleDigestDisposition": "ConservativeUnknownFallback"
+  },
+  "productionSemantics": {
+    "defaultEnabled": false,
+    "featureFamiliesIndependentlyDefaultOff": true,
+    "explicitEntryPoint": "HybridCpuCanonicalCompiler.CompileProgramWithTopologyShadow",
+    "existingPathCompiledBeforeObservation": true,
+    "schedulingPolicyChanged": false,
+    "emittedArtifactsChanged": false,
+    "maximumCycleDecisions": 256,
+    "wallClockSelectsCode": false,
+    "profileSelectsKnownFeasibility": false,
+    "runtimeAuthorityChanged": false
+  },
+  "verification": {
+    "focused": {"passed":14,"failed":0,"skipped":0},
+    "phase00Through03Cumulative": {"passed":67,"failed":0,"skipped":0},
+    "compilerFocusedSuite": {"passed":762,"failed":0,"skipped":0},
+    "releaseCompilerBuild": {"errors":0,"warnings":49},
+    "generatedRegisterDifferential": {
+      "cases": 308,
+      "knownConflicts": 30,
+      "knownConflictFalseNegatives": 0
+    },
+    "scopedFormatVerification": "Pass",
+    "gitDiffCheck": "Pass",
+    "changedPathAudit": "Pass"
+  },
+  "representativeShadow": [
+    {"profile":"alu","cycles":75,"bundles":60,"artifactParity":true,"decisions":60,"predictedConflicts":19,"unknownFallbacks":17,"registerExact":149,"registerUnknown":36,"bankExact":149,"bankUnknown":36,"peakPrfReads":2,"peakPrfWrites":1},
+    {"profile":"novt","cycles":75,"bundles":61,"artifactParity":true,"decisions":61,"predictedConflicts":19,"unknownFallbacks":17,"registerExact":150,"registerUnknown":36,"bankExact":149,"bankUnknown":37,"peakPrfReads":2,"peakPrfWrites":1},
+    {"profile":"vt","cycles":48,"bundles":36,"artifactParity":true,"decisions":36,"predictedConflicts":32,"unknownFallbacks":0,"registerExact":132,"registerUnknown":32,"bankExact":132,"bankUnknown":32,"peakPrfReads":2,"peakPrfWrites":1},
+    {"profile":"max","cycles":49,"bundles":37,"artifactParity":true,"decisions":37,"predictedConflicts":32,"unknownFallbacks":0,"registerExact":133,"registerUnknown":32,"bankExact":132,"bankUnknown":33,"peakPrfReads":2,"peakPrfWrites":1},
+    {"profile":"lk","cycles":48,"bundles":36,"artifactParity":true,"decisions":36,"predictedConflicts":20,"unknownFallbacks":12,"registerExact":132,"registerUnknown":32,"bankExact":132,"bankUnknown":32,"peakPrfReads":2,"peakPrfWrites":1},
+    {"profile":"bnmcz","cycles":48,"bundles":36,"artifactParity":true,"decisions":36,"predictedConflicts":20,"unknownFallbacks":12,"registerExact":132,"registerUnknown":32,"bankExact":132,"bankUnknown":32,"peakPrfReads":2,"peakPrfWrites":1}
+  ],
+  "representativeTotals": {
+    "profiles": 6,
+    "artifactParityFailures": 0,
+    "decisions": 266,
+    "predictedConflicts": 142,
+    "unknownFallbacks": 58,
+    "registerExact": 828,
+    "registerUnknown": 200,
+    "bankExact": 826,
+    "bankFinite": 0,
+    "bankAll": 0,
+    "bankUnknown": 202
+  },
+  "releaseBudgetDiagnostic": {
+    "alternatingRepetitions": 6,
+    "baselineP95ElapsedTicks": 11190886,
+    "shadowP95ElapsedTicks": 11359531,
+    "elapsedP95DeltaPercent": 1.51,
+    "baselineP95AllocatedBytes": 2083465776,
+    "shadowP95AllocatedBytes": 2085061896,
+    "allocatedP95DeltaPercent": 0.08,
+    "phaseLimitsPercent": {"elapsed":5.0,"allocated":8.0},
+    "wallClockRole": "diagnostic telemetry only; never production code selection"
+  },
+  "gateDisposition": {
+    "topologySchemaAndDigest": "Pass",
+    "registerRuntimeParity": "Pass",
+    "knownFactFalseNegatives": "Pass",
+    "addressEvidenceLattice": "Pass",
+    "determinism": "Pass",
+    "artifactParity": "Pass",
+    "compileBudget": "Pass",
+    "authorityBoundary": "Pass",
+    "defaultEnable": "NotAuthorized"
+  },
+  "externalBaselines": {
+    "releaseTestProject": "NotRunKnownConfigurationGuard: test support is intentionally rejected by the runtime Release project",
+    "repositoryWideFormat": "NotRunKnownPreExistingWhitespaceDebt; scoped changed-file verification passed"
+  },
+  "nextGate": {
+    "phase": "04",
+    "description": "BB-only SchedulingRegion abstraction with byte parity and no cross-block motion",
+    "disposition": "PlannedNotOpenedPerUserScope"
+  }
+}

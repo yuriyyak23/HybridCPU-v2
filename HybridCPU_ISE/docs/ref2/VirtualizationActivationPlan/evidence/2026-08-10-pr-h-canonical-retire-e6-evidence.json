@@ -1,0 +1,68 @@
+{
+  "schema": "hybridcpu.virtualization-pr-h-canonical-retire-e6-evidence.v1",
+  "reviewed_at": "2026-08-10T00:00:00+03:00",
+  "local_only": true,
+  "subject_head_before_pr_h": "2dfd76b38c9b9470c3e476c43ec0fc60544e9c22",
+  "worktree_contains_uncommitted_pr_h": true,
+  "decision_id": "D2-HV-VMCALL-RUNTIME-V1-PROBE-0001",
+  "scope": "one live E5 through the existing canonical CPU WB retire-window/head/order contour to opaque consume-once no-state E6",
+  "source_contracts": [
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Records/DomainHypercallRetireOwner.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Records/DomainHypercallCompletionOwner.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.PipelineExecution.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs"
+  ],
+  "tests": [
+    "VmxPrHCanonicalRetireE6Tests",
+    "VmxPrGCompletionOwnerE5Tests",
+    "VmxPrFCanonicalHypercallCompositionTests",
+    "VirtualizationActivationPlanAuditGuardTests",
+    "FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring"
+  ],
+  "diagnostic": {
+    "scenario": "prh-canonical-retire-e6",
+    "initial_10_iteration_pass_artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_212938_943_prh-canonical-retire-e6",
+    "final_50_iteration_pass_artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_213826_526_prh-canonical-retire-e6",
+    "evidence_class": "canonical-retire-owner/e6/no-state",
+    "required_zero_counters": [
+      "register_writes",
+      "memory_writes",
+      "vm_state_writes",
+      "compatibility_success_effects"
+    ]
+  },
+  "verification_results": {
+    "focused_pr_f_through_pr_h_and_plan_guards": "74/74 passed",
+    "full_vmx_refactoring": "276/276 passed",
+    "release_no_test_support": "passed with 0 errors and 43 existing warnings",
+    "diagnostic_scenarios_50_iterations_each": "7/7 passed",
+    "diagnostic_artifacts": [
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_213826_526_prh-canonical-retire-e6",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_213828_161_prg-atomic-completion-e5",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_213829_804_prf-canonical-hypercall-composition",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_213831_584_pre-exact-probe-executor-no-publication",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_213833_163_prd-e2-admission-fault-only",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_213834_781_vmcall-denied",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_213836_310_e1-fault-transport"
+    ],
+    "forbidden_source_scans": "passed: compatibility/compiler/nested/SecureCompute contain no E6 owner/grant; sole BackendExecutionAuthorized true remains neutral completion owner; no backend Allowed decision, positive compatibility effect, parallel retire API, memory/VM-state write or retire-authorized boolean shortcut",
+    "git_diff_check": "passed"
+  },
+  "plan_corpus": {
+    "file_count": 39,
+    "algorithm": "sha256(utf8(join(sorted filename:sha256, LF)))",
+    "aggregate_sha256": "d74d623e2667a287ef86bb0d6880831de5b62f2cde96df7a6a3fa51b3aa75c5b"
+  },
+  "claims": {
+    "architecture_policy_values": "unchanged-phase-38",
+    "machine_d2": "accepted-pr-b",
+    "atomic_completion_record_and_e5": "closed-pr-g",
+    "canonical_no_state_e6": true,
+    "architectural_writes": 0,
+    "compatibility_retire_authority": false,
+    "e7_drain_restore_determinism": false,
+    "limited_release": false,
+    "next_conditional_pool": "PR-I"
+  }
+}

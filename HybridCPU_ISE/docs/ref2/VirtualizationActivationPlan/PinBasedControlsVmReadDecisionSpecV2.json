@@ -1,0 +1,30 @@
+{
+  "Schema": "hybridcpu.virtualization-decision-spec/v2",
+  "DecisionId": "D2-HV-VMREAD-PIN-BASED-CONTROLS-0005",
+  "Operation": "ExactReadOnlyVmReadProjection",
+  "ExactFieldSet": ["VmcsField.PinBasedControls"],
+  "OwnerMap": [
+    {
+      "FieldOperation": "VmcsField.PinBasedControls",
+      "Owner": "CompatibilityControlPolicyOwner",
+      "ValueSource": "CurrentOwnerIssuedCompatibilityControlPolicySnapshot.EventRoutingPolicy",
+      "CapabilityPolicy": "ExactFieldOnlyDefaultDisabled",
+      "EvidenceClass": "OwnerIdentityEpochDomainIdentityPolicyGenerationAndFrozenHybridCpuVmx8BitDecision",
+      "MigrationClass": "RecomputedAfterRestoreRebindOrOwnerReplacement",
+      "DenialReason": "MissingStaleForeignCrossDomainOrSemanticMismatchNoZeroFallback"
+    }
+  ],
+  "BitMapping": {
+    "0": "CompatibilityEventRoutingPolicy.RuntimeTrapPolicyRequired",
+    "1": "CompatibilityEventRoutingPolicy.NeutralTrapResultRequired",
+    "2": "CompatibilityEventRoutingPolicy.PublicationFenceRequired",
+    "3..63": "UnsupportedMustReadZero"
+  },
+  "AbsentVsZero": "DeniedResultCarriesNoValue;GrantedZeroWouldCarryPresentZero",
+  "Projection": "ReadOnlyRecomputed",
+  "RuntimeAuthority": "None",
+  "ProductionComposition": "DeniedPendingSeparateScalarDeliveryAuthorization",
+  "Activation": "DefaultDisabledNoProfile",
+  "AdjacentFields": "Denied",
+  "Vmwrite": "Denied"
+}

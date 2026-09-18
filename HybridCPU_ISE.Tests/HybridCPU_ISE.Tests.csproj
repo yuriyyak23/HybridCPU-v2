@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net11.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -46,7 +46,7 @@
 						  GlobalPropertiesToRemove="DefineTestSupport;BuildRuntimeDiagnosticConsole;HybridCpuIseProjectReferenceProperties" />
 		<ProjectReference Include="..\corpus\ScalarControlFlowV2.Corpus\ScalarControlFlowV2.Corpus.csproj"
 						  GlobalPropertiesToRemove="DefineTestSupport;BuildRuntimeDiagnosticConsole;HybridCpuIseProjectReferenceProperties" />
-		<ProjectReference Include="..\corpus\corpus\Phase00.Conformance.Corpus\Phase00.Conformance.Corpus.csproj"
+		<ProjectReference Include="..\Compilers\HybridCPU_Compiler\OldDocs\RefPlan7\corpus\Phase00.Conformance.Corpus\Phase00.Conformance.Corpus.csproj"
 						  GlobalPropertiesToRemove="DefineTestSupport;BuildRuntimeDiagnosticConsole;HybridCpuIseProjectReferenceProperties" />
 		<ProjectReference Include="..\Compilers\HybridCPU_Compiler\NativeAot\HybridCPU.Compiler.NativeAot.Adapter.csproj"
 						  GlobalPropertiesToRemove="DefineTestSupport;BuildRuntimeDiagnosticConsole;HybridCpuIseProjectReferenceProperties" />

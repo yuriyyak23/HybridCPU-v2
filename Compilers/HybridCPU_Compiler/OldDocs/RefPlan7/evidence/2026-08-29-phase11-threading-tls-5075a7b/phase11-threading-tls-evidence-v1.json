@@ -1,0 +1,146 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase11.ThreadingTlsEvidenceV1",
+  "phase": "11",
+  "date": "2026-08-29",
+  "disposition": "EvidenceClosed",
+  "defaultEnabled": false,
+  "implementation": {
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "baselineCommit": "36dfa488b21d0c2c09dd90879066f81ac4d9d47a",
+    "primaryCommit": "5075a7bc73220911229cb2346e5fc68dd0697fd8",
+    "tree": "11533fc47d6bedb20b1a8a0fd9d9dfb1937c379a",
+    "repositoryModel": "single monorepo; evidence commit changes status and evidence only",
+    "worktreeStatusAtEvidenceStart": [
+      "unstaged M HybridCPU_Compiler/Core/IR/Scheduling/HybridCpuLocalListScheduler.cs (foreign WIP; excluded)",
+      "unstaged M HybridCPU_ISE/docs/PerfTests/PerftestResults.md (foreign WIP; excluded)",
+      "unstaged D tmp/rf09.2-write-inventory.txt (foreign deletion; excluded)"
+    ],
+    "foreignWipIncluded": false
+  },
+  "planHashes": {
+    "README.md": "3531e14bcdbb976dd1104bf75b8801e1c843adeab12a2f95f4660b55f32a819b",
+    "11-runtime-kernel-threading-tls.md": "bd6544d770749d81222ecd134406f85046b85bf99364d7a82675d912e93b2743"
+  },
+  "tools": {
+    "dotnetSdk": "10.0.204",
+    "dotnetSdkCommit": "e7aa4b537d",
+    "hostRid": "win-x64",
+    "os": "Windows 10.0.26200"
+  },
+  "contracts": {
+    "platformSchema": "hybridcpu.platform-contracts/v1@1.9",
+    "platformContractDigest": "e999ea32d8153262cf3fe9d80724659442df80debbe6186f5cd91b02a234fa73",
+    "kernelThreadingSchema": "hybridcpu.kernel-threading/v1@1",
+    "kernelThreadingContractDigest": "6126eff0075667f7fe9274f574dc45e32eab5bfadf02b68adbd205bc1f3b5b17",
+    "managedThreadingSchema": "hybridcpu.managed-threading/v1",
+    "managedAbiSchema": "hybridcpu.managed-abi-family@1.10",
+    "managedAbiDigest": "bf204f72c5c54274315fcc6f591436cd0a1cf26361cf2e014e9e06fb7cb5a13d",
+    "managedFeatureSetDigest": "1e450252e9a0d2fd2ebdc1e3b7bfcd45ee47bd8cf2def3477ccdd22b46f234a0",
+    "runtimePackRevision": "hybridcpu.runtime-pack/managed-contract-v1.10",
+    "runtimePackVersion": "1.11.0-refplan7-phase11",
+    "runtimePackDigest": "3c4104b27c48c4e605d386230e89bc4ba3e75dda1c9075e1138cbf678ce71e35",
+    "runtimePackFileSha256": "7f4c4435868bc09a7096b78491d4b6afa14920cb97a8e92e239d0f92c46dd154"
+  },
+  "boundedModel": {
+    "maximumExecutionContexts": 4,
+    "maximumManagedTlsBytesPerContext": 65536,
+    "managedThreadIdentity": "distinct from VT execution carrier",
+    "scheduling": "deterministic cooperative round robin",
+    "stackSafety": "per-context stack plus no-access guard page",
+    "rendezvous": "bounded epoch, all live contexts stopped, exact prior states restored",
+    "gcRoots": "all published thread frames plus managed TLS object-reference slots"
+  },
+  "qualification": {
+    "prerequisitePhase00Phase01Phase05": {"passed": 19, "failed": 0, "skipped": 0},
+    "focusedPhase11": {"passed": 9, "failed": 0, "skipped": 0},
+    "affectedContractRegression": {"passed": 100, "failed": 0, "skipped": 0},
+    "cumulativePhase00Through11": {"passed": 123, "failed": 0, "skipped": 0},
+    "packFeatureReleaseBaselines": {"passed": 39, "failed": 0, "skipped": 0},
+    "compilerRegressionFinal": {
+      "configuration": "Debug testsupport",
+      "filter": "FullyQualifiedName~CompilerTests",
+      "passed": 1479,
+      "failed": 0,
+      "skipped": 0,
+      "duration": "00:05:11"
+    },
+    "releaseBuilds": {
+      "allSucceeded": true,
+      "errors": 0,
+      "warningCounts": {"platformContracts": 0, "runtimeKernel": 0, "managedRuntime": 0, "compilerCore": 0, "compilerCil": 1, "nativeAotAdapter": 1, "releaseQualification": 1, "ise": 43}
+    },
+    "determinism": {
+      "releaseRebuildRuns": 3,
+      "releaseDllPairsByteEqual": "4/4 across all runs",
+      "releaseDllSha256": {
+        "platformContracts": "f468693e9f8dcf83e16fb49067bbfb5d65b8068d6072431107780b07106828cc",
+        "runtimeKernel": "4e0dffcd2bc4dc2bc337ef2d025b5b496cf3ef80b6080ca409e4023b93b7fc62",
+        "managedRuntime": "091bda0f261e773ccfba753aa20782586e0186b93246cfd583485512d7e066a8",
+        "compilerCore": "1ab014b812917f658f24947590b2e9d68013b80951d5fc90c64ad36874e6e1a5"
+      }
+    },
+    "runtimeVisibleEvidence": {
+      "test": "RealImageBootstrapKernelManagedThread_UsesExistingVtIsolatedX4Carrier",
+      "path": "real image inspect/bootstrap -> RuntimeKernel context -> ManagedRuntime thread -> existing ISE per-VT x4 carrier",
+      "prerequisiteTest": "ThreadPointerCarrier_IsVtIsolatedAcrossActiveVtAndTrapFlushTransitions",
+      "managedSpecificIsaAdded": false
+    },
+    "gitDiffCheck": "clean"
+  },
+  "sourceDigests": {
+    "kernelThreadingContracts": "9d1f004ab040f6a5c47642205198e7994eb80b4524157f84e7e38f0d86c18bfc",
+    "platformContracts": "e211bb7fb1ed20eb0759c06fd9226d9730ff72d3f8e53f69d08815f2835d218c",
+    "runtimeKernel": "1bfea20fd90caf10beff74c5688db4bbf245dfec59a0bd9cde0a2f6398a1b1b7",
+    "runtimeKernelThreading": "3aad73e534bf716c3c3bbb02b28dfe8374435ba6d9697a42fe6f4d899a906889",
+    "managedThreadingRuntime": "ae2d93031050950e1c155fcf9b74b07d3cc01a716bb29dbc784a2a82d4ae0151",
+    "managedGc": "7dba214ed1dc460ffc6572d79317ce823d201616674dbaf8bef0a8a5ece0066a",
+    "managedAbi": "e83d4e82939616653e6bf79ad2a6f2c5937422eed445bedbbd0063ea09d11473",
+    "managedFeatureSet": "8d7b58be9eba43d5a4426eda5251873c186a52162c2c46bba748155e77b0ebad",
+    "sdkPack": "ad3ab6c2cf1285f6f2020072a9b8e33045bad53215d8d0573a741e37ef430034",
+    "releaseQualification": "034da73c50acd76ef87b25e23e4069ddb9a30f316ecc35fcd44c3038d36ba76e",
+    "phase11Tests": "6789a731e4a6ed2c35b6fd229f8f8c8319545cd23fe434d19f509edc7f3a2a4f"
+  },
+  "authority": {
+    "ise": "unchanged; owns VT execution and the existing per-VT architectural x4 carrier",
+    "runtimeKernel": "owns language-neutral execution contexts, VT binding, wait states, scheduling and rendezvous",
+    "managedRuntime": "owns managed Thread identity, TLS layout/storage, lifecycle and root enumeration",
+    "compiler": "emits the versioned TLS/threading ABI and explicit poll-helper contract only",
+    "platformContracts": "POD/enums/constants/digests only; no scheduler, managed identity or ISE implementation authority",
+    "isaChanges": 0,
+    "iseProductionChanges": 0,
+    "forbiddenEdgesPreserved": true
+  },
+  "changedPathAudit": {
+    "pathCount": 22,
+    "insertions": 1122,
+    "deletions": 53,
+    "isaChanges": 0,
+    "iseProductionChanges": 0,
+    "foreignWipIncluded": false
+  },
+  "claimClassifications": [
+    {"claim": "Bounded managed threads have identities distinct from VTs and deterministic lifecycle/scheduling", "classification": "Proven", "evidence": ["CreateStartTls_UsesUniqueManagedIdentityAndGuardedStacks", "Scheduler_IsDeterministicRoundRobinAcrossRunnableContexts"]},
+    {"claim": "TLS is per managed thread and object-reference TLS slots participate in precise GC roots", "classification": "Proven", "evidence": ["AllThreadTlsRoots_DriveRealNonMovingCollection"]},
+    {"claim": "GC rendezvous stops live contexts and restores exact prior states", "classification": "Proven", "evidence": ["Rendezvous_StopsAllLiveContextsAndRestoresExactPriorStates"]},
+    {"claim": "Thread failure necessarily terminates the process", "classification": "Contradicted", "evidence": ["ParkUnparkJoinExitAndUnhandledException_ArePerThread"]},
+    {"claim": "Threading requires a managed-specific ISA or ISE production change", "classification": "Contradicted", "evidence": ["existing per-VT x4 proof", "ISE/ISA production delta zero"]},
+    {"claim": "Phase 11 authorizes managed publish or default enablement", "classification": "Contradicted", "evidence": ["PublishQualifiedWorkstreams=[]", "Production.EnableManagedThreading=false"]}
+  ],
+  "knownBaselineFailures": [],
+  "knownBuildObservations": [
+    "Compiler.Cil, NativeAOT adapter and release qualification each retain one pre-existing obsolete LegalSlots warning on Release builds.",
+    "ISE retains 43 pre-existing warnings on its Release build and has zero Phase 11 production changes."
+  ],
+  "releaseDisposition": {
+    "component": "QualifiedDefaultOff",
+    "managedThreading": "Disabled in production options",
+    "managedPublish": "Unsupported",
+    "fullLanguageSupport": "Not claimed"
+  },
+  "nextGate": {
+    "phase": "12",
+    "status": "Eligible",
+    "scope": "synchronization and managed memory model",
+    "prerequisite": "Phase 11 EvidenceClosed"
+  }
+}

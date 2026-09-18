@@ -33,6 +33,8 @@ namespace HybridCPU.Compiler.Core.Threading
         private const int MAX_INSTRUCTIONS_PER_THREAD = 1024;
         private readonly VLIW_Instruction[] _instructions = new VLIW_Instruction[MAX_INSTRUCTIONS_PER_THREAD];
         private readonly InstructionSlotMetadata[] _instructionSlotMetadata = new InstructionSlotMetadata[MAX_INSTRUCTIONS_PER_THREAD];
+        private readonly IrExternalOperationIntent?[] _externalOperationIntents = new IrExternalOperationIntent?[MAX_INSTRUCTIONS_PER_THREAD];
+        private readonly IrExternalOperationDescriptorIdentity?[] _externalOperationDescriptorIdentities = new IrExternalOperationDescriptorIdentity?[MAX_INSTRUCTIONS_PER_THREAD];
         private int _instructionCount = 0;
 
         /// <summary>
@@ -219,6 +221,11 @@ namespace HybridCPU.Compiler.Core.Threading
             {
                 AcceleratorCommandDescriptor = command.DescriptorSideband.CommandDescriptor
             };
+            _externalOperationIntents[_instructionCount] = command.ExternalOperation;
+            _externalOperationDescriptorIdentities[_instructionCount] =
+                IrExternalOperationDescriptorIdentity.Require(
+                    command.DescriptorSideband.DescriptorReference.DescriptorIdentityHash,
+                    nameof(command));
             _instructionCount++;
             InvalidateCanonicalCompileCache();
         }
@@ -308,6 +315,36 @@ namespace HybridCPU.Compiler.Core.Threading
             var slotMetadata = new InstructionSlotMetadata[_instructionCount];
             Array.Copy(_instructionSlotMetadata, slotMetadata, _instructionCount);
             return new VliwBundleAnnotations(slotMetadata);
+        }
+
+        internal IReadOnlyList<IrExternalOperationIntent?> GetExternalOperationIntents()
+        {
+            var intents = new IrExternalOperationIntent?[_instructionCount];
+            Array.Copy(_externalOperationIntents, intents, _instructionCount);
+            return Array.AsReadOnly(intents);
+        }
+
+        internal IReadOnlyList<IrExternalOperationLoweringMetadata?> GetExternalOperationLoweringMetadata()
+        {
+            var metadata = new IrExternalOperationLoweringMetadata?[_instructionCount];
+            for (int index = 0; index < metadata.Length; index++)
+            {
+                if (_externalOperationIntents[index] is not { } intent ||
+                    _externalOperationDescriptorIdentities[index] is not { } descriptorIdentity)
+                {
+                    continue;
+                }
+
+                metadata[index] = new IrExternalOperationLoweringMetadata
+                {
+                    SemanticContractVersion = IrExternalOperationSemanticContract.Version,
+                    SourceInstructionIndex = index,
+                    DescriptorIdentity = descriptorIdentity,
+                    Intent = intent
+                };
+            }
+
+            return Array.AsReadOnly(metadata);
         }
 
         private static SlotMetadata BuildSlotMetadata(
@@ -670,6 +707,8 @@ namespace HybridCPU.Compiler.Core.Threading
         {
             _instructionCount = 0;
             Array.Clear(_instructionSlotMetadata, 0, _instructionSlotMetadata.Length);
+            Array.Clear(_externalOperationIntents, 0, _externalOperationIntents.Length);
+            Array.Clear(_externalOperationDescriptorIdentities, 0, _externalOperationDescriptorIdentities.Length);
 
             ResetIrMetadataDeclarations();
             InvalidateCanonicalCompileCache();

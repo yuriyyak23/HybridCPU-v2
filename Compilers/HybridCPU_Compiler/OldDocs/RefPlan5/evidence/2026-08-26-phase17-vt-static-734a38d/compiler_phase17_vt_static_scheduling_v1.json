@@ -1,0 +1,106 @@
+{
+  "schema": "CompilerRefPlan5Phase17VtStaticSchedulingEvidenceV1",
+  "phase": "17",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "734a38d735d8666fd36488a582d5e8e38040b2b9",
+  "implementationTree": "54bac1a4ed2d141bd4df0400ecb74e100ddbaeff",
+  "implementationCommits": ["734a38d735d8666fd36488a582d5e8e38040b2b9"],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5 and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 03 topology, Phase 07 VT-local value/pressure, Phase 12 region, Phase 13-16 schedule/placement/transform evidence and exact VT-local schedules.",
+    "output": "Core-only deterministic static composition of whole VT-local cycle groups for one-to-four explicitly related VTs, with exact W=8 structural placement, topology evidence, bounded work units and the exact original local-schedule baseline.",
+    "authorityBoundary": "Static VT assignment, class compatibility and slot compatibility are compiler evidence only. Runtime Stage A admission, Stage B lane materialization, execution, replay, publication, commit and retire remain required and authoritative.",
+    "deterministicFallback": "Production planning is disabled. Missing/stale relationship proof, unknown resource facts, unsupported memory/synchronization/effects, topology rejection or deterministic budget exhaustion retains every exact VT-local schedule and discards partial joint plans.",
+    "runtimeAuthorityChanged": false,
+    "productionSchedulePolicyChanged": false,
+    "emittedArtifactsChanged": false,
+    "wallClockSelectsCode": false,
+    "runtimeFreshnessSerialized": false
+  },
+  "vtStaticSchedulingContract": {
+    "schema": "hybridcpu.vt-static-scheduling/v1",
+    "relationshipProofSchema": "hybridcpu.cross-vt-relationship-proof/v1",
+    "contractDigest": "71424c03759953fead971b3a8cbfedc21d617ce46cd40014447791fa1cd9d6f0",
+    "productionOptionsDigest": "11c1d870d772e2d248db25c39c9e73352d11c8f4714798d13b218c39d532c404",
+    "qualificationOptionsDigest": "bdb6293f2bfc95b7d12dd9683bbda6d3ca01b1bc0f98effd38516ecd61152db3",
+    "targetContractDigest": "ae6ee979176be7f21dc396fe0ddb5d7023d8b6de1722eb4d4652647dd3e99232",
+    "machineDescriptionDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+    "machineTopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+    "productionBudgets": {
+      "maximumStreams": 4,
+      "maximumLocalCarriers": 256,
+      "maximumOperations": 1024,
+      "maximumSubsetEvaluations": 4096
+    },
+    "wholeLocalCycleGroupsPreserved": true,
+    "exactW8PlacementReused": true,
+    "perVtRegisterGroupsSeparated": true,
+    "sharedResourcesRevalidated": true,
+    "runtimeStageAAndBRequired": true,
+    "productionOutputChanged": false
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "phasePlanSha256": "cb2ca9dca0dd74805cd357636e131da68bfa088932a677d907b6670f11d69b81",
+    "contractSourceSha256": "16d42d301efbf5306c484e2d058dfaad50dced6e8a7ff856e69a5b6ccbbbbc42",
+    "plannerSourceSha256": "841b2edc47d878e95bbd416aea839e04d6b7ed5b26032292064599d9b1bfe499",
+    "phase17TestSourceSha256": "518f26fbcd9e2d7c4713282393628b852a45c6514d288e58d85913e06a9ae411",
+    "implementationSourceManifest": "HybridCpuVtSchedulingContractsV1.cs=16d42d301efbf5306c484e2d058dfaad50dced6e8a7ff856e69a5b6ccbbbbc42|HybridCpuVtStaticPlannerV1.cs=841b2edc47d878e95bbd416aea839e04d6b7ed5b26032292064599d9b1bfe499|CompilerRefPlan5Phase17VtStaticSchedulingTests.cs=518f26fbcd9e2d7c4713282393628b852a45c6514d288e58d85913e06a9ae411",
+    "implementationSourceManifestSha256": "3c734c9182ee30fc90fff4c0fd2309d42e13b7b47979269dc31aa70db31d14ee",
+    "qualificationOptions": "configuration=Debug-testsupport,Release-production|sharedCompilation=false|maxCpuCount=1|llvmRid=win-x64|nuGetAudit=false|focused=Phase17|direct=Phase03,07,12,13,14,15,16,17|cumulative=RefPlan3Phase,RefPlan5Phase|compilerFocused=CompilerTests",
+    "qualificationOptionsSha256": "f6b277e7dbaf301f0bf8175faa1804adb1dfc12a8ffad410058f4d78fb31ced1"
+  },
+  "qualification": {
+    "phase17Focused": {"passed": 17, "failed": 0, "skipped": 0},
+    "phase03Phase07Phase12Through17Integration": {"passed": 117, "failed": 0, "skipped": 0},
+    "phase00Through17": {"passed": 307, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 1002, "failed": 0, "skipped": 0},
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "oracleReleaseBuild": {"errors": 0, "warnings": 0},
+    "llvmAdapterReleaseBuild": {"runtime": "win-x64", "errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43, "codeWarnings": 43, "environmentWarnings": 0},
+    "restoreOptions": {"nuGetAudit": false, "reason": "Deterministic local qualification using pinned dependencies; vulnerability-service network state does not participate in the gate."},
+    "coreCompiledSources": 185,
+    "nativeCompiledSources": 2,
+    "oracleCompiledSources": 2,
+    "productionPlannerCallers": 0,
+    "coreFrontendOracleOrRuntimeReferences": false,
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "predictiveValueEvidence": {
+    "scope": "Static carrier opportunity only; no runtime KPI or execution claim.",
+    "activeVtCases": [1, 2, 3, 4],
+    "maxQualifiedStaticCarriersSavedPerSingleCarrierSet": 3,
+    "sharedBankCollisionSeparated": true,
+    "lane6Lane7DistinctContourComposed": true,
+    "collidingSpecialContourSeparated": true
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false,
+    "postImplementationForeignStatusEntries": 250
+  },
+  "releaseDisposition": {
+    "defaultEnabled": false,
+    "defaultEnabledScope": "Cross-VT static planning remains disabled in production; explicit qualification API only.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Verified as bounded static evidence for Phase 18 consumption. Runtime Stage A/B and dynamic VT behavior remain unchanged.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "18",
+    "dependenciesSatisfied": true,
+    "dependencies": ["03", "05", "07", "12", "17"],
+    "gate": "Add versioned, precision-tagged compiler-only FSP donor-quality evidence over existing stealability, typed-slot, post-FSP scoring and topology facts, with no runtime donor reservation or freshness/authority fields and exact prior-scheduling fallback."
+  }
+}

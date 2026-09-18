@@ -16,6 +16,42 @@ namespace HybridCPU_ISE.Tests.MemoryAccelerators;
 public sealed class L7SdcCommitTests
 {
     [Fact]
+    public void L7SdcCommit_RequiredExternalPublicationEvidenceFailsClosedBeforeMemoryWrite()
+    {
+        Processor.MainMemoryArea previousMemory = Processor.MainMemory;
+        try
+        {
+            L7SdcPhase07TestFactory.InitializeMainMemory(0x10000);
+            byte[] original = L7SdcPhase07TestFactory.Fill(0xC1, 0x40);
+            L7SdcPhase07TestFactory.WriteMainMemory(0x9000, original);
+            L7SdcPhase07Fixture fixture = L7SdcPhase07TestFactory.CreateAcceptedToken();
+            var staging = new AcceleratorStagingBuffer();
+            StageAndCompleteDefault(fixture, staging, 0xA1);
+
+            AcceleratorCommitResult commit = new AcceleratorCommitCoordinator().TryCommit(
+                fixture.Token,
+                fixture.Descriptor,
+                staging,
+                Processor.MainMemory,
+                fixture.Evidence,
+                AcceleratorCommitInvalidationPlan.None,
+                commitConflictPlaceholderAccepted: true,
+                externalPublicationEvidence: null,
+                externalPublicationEvidenceRequired: true);
+
+            Assert.True(commit.IsRejected);
+            Assert.Equal(AcceleratorTokenFaultCode.BackendRejected, commit.FaultCode);
+            Assert.Equal(AcceleratorTokenState.DeviceComplete, fixture.Token.State);
+            Assert.Equal(original, L7SdcPhase07TestFactory.ReadMainMemory(0x9000, original.Length));
+        }
+        finally
+        {
+            Processor.MainMemory = previousMemory;
+            Processor.Memory = null;
+        }
+    }
+
+    [Fact]
     public void L7SdcCommit_StagedWritesInvisibleUntilGuardedCoordinatorCommit()
     {
         Processor.MainMemoryArea previousMemory = Processor.MainMemory;

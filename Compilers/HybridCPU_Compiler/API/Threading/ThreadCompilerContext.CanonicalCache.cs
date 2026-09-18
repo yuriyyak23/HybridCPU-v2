@@ -17,7 +17,8 @@ namespace HybridCPU.Compiler.Core.Threading
                 (HybridCPU.Compiler.Core.IR.NativeFrontendMode)(byte)FrontendMode,
                 bundleAnnotations: NativeTransportRuntimeAdapter.ToCore(GetBundleAnnotations()),
                 domainTag: DomainTag,
-                controlFlowTargetReferences: GetControlFlowTargetReferences());
+                controlFlowTargetReferences: GetControlFlowTargetReferences())
+                .WithExternalOperationMetadata(GetExternalOperationLoweringMetadata());
             return _canonicalCompiledProgram;
         }
 

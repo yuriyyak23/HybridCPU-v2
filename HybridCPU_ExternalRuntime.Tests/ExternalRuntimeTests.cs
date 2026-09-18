@@ -20,6 +20,8 @@ public sealed class ExternalRuntimeTests
             manifest.GetFeature(HybridCpuExternalFeatureFamily.DomainLifecycle).Availability);
         Assert.Equal(HybridCpuExternalFeatureDescriptor.Unavailable(HybridCpuExternalFeatureFamily.DeviceBinding),
             manifest.GetFeature(HybridCpuExternalFeatureFamily.DeviceBinding));
+        Assert.Equal(HybridCpuExternalFeatureDescriptor.Unavailable(HybridCpuExternalFeatureFamily.SecureDomains),
+            manifest.GetFeature(HybridCpuExternalFeatureFamily.SecureDomains));
         Assert.Throws<ArgumentException>(() => new HybridCpuExternalFeatureManifest(
             HybridCpuExternalContractVersion.V1, 1,
             [new(HybridCpuExternalFeatureFamily.DomainLifecycle, HybridCpuExternalFeatureAvailability.RuntimeAdmission, 1),
@@ -46,6 +48,8 @@ public sealed class ExternalRuntimeTests
             features.GetFeature(HybridCpuExternalFeatureFamily.ChildExecutableImage).Availability);
         Assert.Equal(HybridCpuExternalFeatureAvailability.Unavailable,
             features.GetFeature(HybridCpuExternalFeatureFamily.DmaAdmission).Availability);
+        Assert.Equal(HybridCpuExternalFeatureAvailability.Unavailable,
+            features.GetFeature(HybridCpuExternalFeatureFamily.SecureDomains).Availability);
 
         ExternalDomainBindResult bind = runtime.BindDomain(Request(Op(1)));
         Assert.Equal(ExternalRuntimeOutcome.Bound, bind.Outcome);

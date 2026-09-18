@@ -1,0 +1,116 @@
+{
+  "schema": "CompilerRefPlan6Phase07BoundedRecursionEvidenceV1",
+  "phase": "07",
+  "status": "Verified",
+  "qualificationDate": "2026-08-28",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baselineSha": "38a200d4871522e7682217fed117289442b0fc9d",
+  "implementationSha": "f516f8e08fcdf55b95ca529f7fa2dd552825cd1f",
+  "implementationTree": "d8e39258c8c1229fe35df7dae277e88b207ebc22",
+  "implementationCommits": ["f516f8e08fcdf55b95ca529f7fa2dd552825cd1f"],
+  "subjectDisposition": "Clean",
+  "contract": {
+    "profileId": "HybridCPU.DotNetAot.ScalarControlFlowV2",
+    "profileVersion": "1.0",
+    "extensionSchema": "hybridcpu.scalar-control-flow-v2.bounded-recursion/v1",
+    "extensionVersion": 1,
+    "extensionDigest": "71ade65001e769851986e3a75944e1d85fe7d821c26812827f109dd10aabca06",
+    "profileDigest": "2ce7fb4f1cfd0fcab6fbca15fd1287613e1aefc6faff6558962355926e2621de",
+    "releaseContractDigest": "cd02908d988fd5424b5d1ca0c84783e14d3755d86328ff86774d546cf12e40d6",
+    "model": "static Int32 countdown proof with constant non-negative ingress",
+    "maximumRecursiveSccs": 1,
+    "maximumMethodsPerRecursiveScc": 8,
+    "maximumDynamicDepth": 64,
+    "maximumStackBytes": 1048576,
+    "overflowDisposition": "deterministic compile/link rejection",
+    "runtimeGuard": false,
+    "runtimeAuthority": false,
+    "extendsV1": true,
+    "introducesV2": false
+  },
+  "admission": {
+    "supported": [
+      "static non-generic Int32(Int32) direct and mutual countdown recursion",
+      "exactly one recursive edge per SCC method",
+      "recursive transition exactly arg0 minus one",
+      "arg0 zero terminating path dominates recursive edge",
+      "non-negative compile-time Int32 ingress",
+      "live caller values, locals, RA spills and nested nonrecursive helpers"
+    ],
+    "rejected": [
+      "recursion without explicit paired V1 depth/stack options",
+      "unguarded, non-decrementing, negative or dynamic-ingress recursion",
+      "recursive bodies with backedges or multiple recursive edges",
+      "multiple recursive SCCs, unsupported signatures and unsupported managed features",
+      "depth or post-RA conservative stack bound overflow"
+    ]
+  },
+  "qualification": {
+    "phase07Focused": {"passed": 13, "failed": 0, "skipped": 0, "duration": "00:00:06"},
+    "cumulativeRefPlan6Phase00To07": {"passed": 111, "failed": 0, "skipped": 0, "duration": "00:00:15"},
+    "compilerFocused": {"filter": "FullyQualifiedName~Compiler", "passed": 1515, "failed": 0, "skipped": 0, "duration": "00:07:26"},
+    "positiveExecution": "Direct, mutual, live-value, spill-bearing and nested-helper recursive programs execute to exact results on ISE and restore SP.",
+    "negativeQualification": "Default-off, invalid proof shapes and exact one-below depth/stack boundaries reject with stable HCSCF-RECURSION diagnostics.",
+    "determinism": "Presented-body permutations produce identical graph/proof/order/object/link/HCEXE outputs; two clean installed-pack publishes are byte-identical.",
+    "nativeAot": "Adapter-presented roots/bodies traverse the pinned ILCompiler graph and the single canonical CIL/Core/HCO backend; proof/stack evidence is bound into image and publish provenance.",
+    "releaseBuilds": {
+      "cil": "0 errors/1 existing obsolete-annotation warning",
+      "native": "0 errors/0 warnings",
+      "nativeAotAdapter": "0 errors/0 warnings",
+      "releaseQualification": "0 errors/0 warnings"
+    },
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed; compiler CIL/NativeAOT packaging/sample, RefPlan6 plan/evidence and compiler tests only; no ISE/runtime/loader/ISA implementation source changed."
+  },
+  "cleanPublishEvidence": {
+    "publishSdk": "10.0.204",
+    "targetRid": "hybridcpu",
+    "hostRid": "win-x64",
+    "nativeAotSourceCommit": "94ea82652cdd4e0f8046b5bd5becbd11461482ca",
+    "installedPackFiles": 216,
+    "deterministicRuns": 2,
+    "compiledMethods": 2,
+    "inputAssemblySha256": "59e267c9799721fde367723097b37d770f159f1c569ecbd6c123ad09cc906aff",
+    "imageSha256": "1a94e6c44e4b8ea1ce3293a18e79068d59fb6f0a16c68726b8f7f6f4d6e1dbc7",
+    "imageManifestSha256": "76b48f3b61435d11557332abb8a769c4fd9e86952d7deba89389fe040e594d73",
+    "provenanceSha256": "bdd44175b72d47752c7644678336fd083d9d6ef41ce33af7c5004c7076ced87e",
+    "imageBytes": 11520,
+    "managedGraphDigest": "1652fc95185e0253087130b5bd02157f01bf162fc72a52ba798dd8e8dfd64889",
+    "bodyPresentationDigest": "4f4ccbfed97d5c3201c3f54d8043a3848e87e7f4da6fea95984ece785b9f1142",
+    "recursionProofDigest": "06cd33a049b6c940e4209a2fed32cf7ba17e360f87b9a5ba6d806829a117c14e",
+    "recursionStackEvidenceDigest": "a266f6178e95be91e6fd82c7e4ecc1468b611cf5536d4b518f12ce29976663ce",
+    "orderedObjectDigest": "0e8d54a75f949fd5dc0544a8b711f779e1781964d7ce0902beb807266410310b",
+    "backendProvenanceDigest": "6da1a16176b028718b63b36d72908935bed655007b1ed696fa00dac018e8e401",
+    "provenDynamicDepth": 7,
+    "requiredStackBytes": 112,
+    "traversedIlCompilerGraph": true,
+    "llvmRequired": false,
+    "hostJitFallback": false,
+    "hostNativeFallback": false
+  },
+  "artifacts": {
+    "boundedRecursionContractSourceSha256": "16d5258f762ef3c3883029f67cd9587b49db4046261779d543a13be1769ffa9b",
+    "phase07TestsSha256": "457c7e5fea15df60a96cdf3d1e9a9860121ddb5cc6a855c4515e3dfde555b8e0",
+    "profileContractSourceSha256": "eddf68572bacff41f8db0ca788e0b584f5bd14db37c2f1c8280e113d89bfb495",
+    "releaseContractSourceSha256": "7661bc385efe0fd0554a6f21990d3962414468a9ff465bfde2ef72c0299e5b1a"
+  },
+  "releaseDisposition": {
+    "profileFeatureDisposition": "VerifiedOptInPreviewV1Extension",
+    "defaultEnabled": false,
+    "releaseAuthorized": true,
+    "boundedRecursionEnabledOnlyWithExplicitOptions": true,
+    "unprovedRecursionRejected": true,
+    "defaultEnablementRequiresSeparateDecision": true,
+    "generalCSharpSupportClaim": false
+  },
+  "externalBaselineFailures": [
+    "global.json requests SDK 10.0.201; local deterministic roll-forward resolves SDK 10.0.204 as frozen in Phase 00.",
+    "The CIL Release build retains its pre-existing obsolete IrInstructionAnnotation.LegalSlots warning.",
+    "HybridCPU_ISE.Tests intentionally forbids Release builds with internal test hooks; qualification tests run in Debug test-support configuration while production compiler projects are built Release."
+  ],
+  "nextDependencyGate": {
+    "phase": "RefPlan6 complete",
+    "status": "Closed",
+    "gate": "Any broader recursion shape or default enablement requires a new explicit decision and contract; it is not inferred from this V1 extension."
+  }
+}

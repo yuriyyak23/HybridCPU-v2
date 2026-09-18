@@ -1,0 +1,62 @@
+{
+  "Controls": [
+    {
+      "Scenario": "mismatch owner/context",
+      "Rejected": true,
+      "ExpectedRejectKind": "OwnerMismatch",
+      "ActualRejectKind": "OwnerMismatch",
+      "ExpectedAuthoritySource": "GuardPlane",
+      "ActualAuthoritySource": "GuardPlane",
+      "CounterValue": 1,
+      "Passed": true
+    },
+    {
+      "Scenario": "mismatch domains",
+      "Rejected": true,
+      "ExpectedRejectKind": "DomainMismatch",
+      "ActualRejectKind": "DomainMismatch",
+      "ExpectedAuthoritySource": "GuardPlane",
+      "ActualAuthoritySource": "GuardPlane",
+      "CounterValue": 1,
+      "Passed": true
+    },
+    {
+      "Scenario": "closed serialization boundary",
+      "Rejected": true,
+      "ExpectedRejectKind": "Boundary",
+      "ActualRejectKind": "Boundary",
+      "ExpectedAuthoritySource": "GuardPlane",
+      "ActualAuthoritySource": "GuardPlane",
+      "CounterValue": 1,
+      "Passed": true
+    },
+    {
+      "Scenario": "invalid replay boundary",
+      "Rejected": true,
+      "ExpectedRejectKind": "InvalidReplayBoundary",
+      "ActualRejectKind": "InvalidReplayBoundary",
+      "ExpectedAuthoritySource": "ReplayTemplateBoundary",
+      "ActualAuthoritySource": "ReplayTemplateWitness",
+      "CounterValue": 1,
+      "Passed": true
+    },
+    {
+      "Scenario": "stale witness/template rejection",
+      "Rejected": true,
+      "ExpectedRejectKind": "StaleStructuralIdentity",
+      "ActualRejectKind": "StaleStructuralIdentity",
+      "ExpectedAuthoritySource": "ReplayTemplateWitness",
+      "ActualAuthoritySource": "ReplayTemplateWitness",
+      "CounterValue": 1,
+      "Passed": true
+    }
+  ],
+  "Counters": {
+    "OwnerContextRejects": 1,
+    "DomainRejects": 1,
+    "BoundaryRejects": 1,
+    "InvalidReplayBoundaryRejects": 1,
+    "StaleWitnessTemplateRejects": 1
+  },
+  "Succeeded": true
+}

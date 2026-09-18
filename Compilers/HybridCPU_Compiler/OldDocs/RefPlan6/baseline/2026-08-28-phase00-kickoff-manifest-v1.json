@@ -1,0 +1,86 @@
+{
+  "schema": "HybridCPU.RefPlan6.BaselineManifestV1",
+  "capturedAtLocal": "2026-08-28T02:01:33+03:00",
+  "sourcePolicy": "Local monorepository, local Git history and checked-in evidence only; remote baseline SHAs from the plan were unavailable locally.",
+  "repository": {
+    "path": "C:/Users/Yuriy Kurnosov/Desktop/HybridCPU ISE",
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "head": "ccfa88c0857f681074a480f65e50559395c590eb",
+    "tree": "94f06044497dac7f5966e3e067f645aacc7bc651",
+    "compilerAndIseAreOneMonorepository": true
+  },
+  "startObservation": {
+    "head": "a500aa8fa5292b218c2cdd711e983f552a687c8d",
+    "tree": "77a8da6c546ba7d91bb2b745eb727a329037a472",
+    "disposition": "DirtyAttributed",
+    "staged": [],
+    "trackedUnstaged": [
+      "HybridCPU v2.slnx",
+      "HybridCPU_ISE/docs/PerfTests/PerftestResults.md"
+    ],
+    "untrackedGroups": [
+      "HybridCPU_Compiler/RefPlan6 (task input)",
+      "HybridCPU_Compiler/RefPlan7 (unrelated future plan)",
+      "HybridCpuAotAddDemo (pre-existing generated SDK/publish artifacts)"
+    ],
+    "concurrentChange": "During the read-only audit an external process committed the observed WIP as ccfa88c0857f681074a480f65e50559395c590eb. Phase 00 re-baselined to that commit and did not rewrite it."
+  },
+  "supersededPlanBaseline": {
+    "compilerHead": "be9295ea3b167d442512d7d4caab5e18888e7271",
+    "compilerTree": "7864aed67346e0fca778c8784449a72c23da212e",
+    "iseHead": "38bf0614d8a58e2543b4a956ccc23bb22e1a8170",
+    "iseTree": "c3f4d92caff802fd6fe48f0b4a341111506b320e",
+    "localObjectAvailability": "Both commits unavailable in the local Git object database; no equivalence claim made."
+  },
+  "refPlan6Sha256": {
+    "README.md": "e997f421989ae68b121678ddaf3ada8b4a7b18415655b5113576de80f38aa356",
+    "00-baseline-profile-diagnostics-and-budgets.md": "70bbbf449c74a631ac43afe576d1877310ec1c97cb21a46aa14e8137e71df21b",
+    "01-cil-cfg-ssa-phi-and-loops.md": "ccd9d7ea32e4a067ade9d0b20580674cb7224d2a098751960322808aaa4e8215",
+    "02-deterministic-managed-call-graph.md": "a2beb80d00d369b9c1038dcf586aac3efb413904fe4ff5dcb67ea661139ad089",
+    "03-native-call-abi-and-frame-lowering.md": "6e81b4df73fee646adde2657bb6a751a75e32904ea178ef1b470fbea1234de8b",
+    "04-multi-method-object-symbols-relocations-and-link.md": "d5a2d59996924d5b7e8b4698771572434f95ee3a10fbb88ee8ea4aebfcfbdbf4",
+    "05-nativeaot-adapter-and-dotnet-publish.md": "f89888006f006a1770e460757ab6767601c3f95aae3b2378c7fbd44dbeb350b0",
+    "06-qualification-determinism-parity-and-release.md": "8886407b81af5f8c30b91f527aec5d7a65a0ad335b6aa76b04ec770cdd00a750",
+    "07-deferred-bounded-recursion-and-scc.md": "b4c747773bef6f2d883a24879341db1c52ca95d38d1cd3746984f8cc16ad1ec2"
+  },
+  "toolchain": {
+    "globalJsonRequestedSdk": "10.0.201",
+    "resolvedSdk": "10.0.204",
+    "sdkCommit": "e7aa4b537d",
+    "roslynCSharpCompiler": "5.3.0-2.26230.114+e7aa4b537d95ae955b5c98c25fa9b9220e7eb71e",
+    "targetFramework": "net10.0",
+    "hostRid": "win-x64"
+  },
+  "profile": {
+    "id": "HybridCPU.DotNetAot.ScalarControlFlowV2",
+    "version": "1.0",
+    "defaultEnabled": false,
+    "targetTriple": "hybridcpuv2-unknown-none"
+  },
+  "contracts": {
+    "targetMachine": {"schema": "hybridcpu.target-machine-core/1.0", "sourceSha256": "6f4db3f451d615c10fe2528479f6d7aeff390ad1693c59f766e588bf81842886"},
+    "targetPlatform": {"schema": "hybridcpu.target-platform/1.0", "digest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431", "sourceSha256": "0b2b4ef778ac20341dd0183bb764d10e130499d5e6ea22261bcb9d8a6bf9d7be"},
+    "nativeAbi": {"schema": "hybridcpu.native-abi/2.0", "digest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4", "sourceSha256": "560d028a5f99f067a8fdd4682e86884b93fa2a9d72cdffb071fd330f35ea343c"},
+    "managedAbi": {"schema": "hybridcpu.managed-abi-family/1.0", "digest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792"},
+    "object": {"schema": "hybridcpu.object/hco-v1@1.0", "digest": "4f2a1c9372dcb5c7bbd735791e1d744708a7736152a2c567ab5a5ae2cabcbc5", "sourceSha256": "dc4af417cc09a7a3af0ae6c5453a5a60375967dff0ad706fce524f6aec722522"},
+    "staticLink": {"schema": "hybridcpu.static-link/v1", "optionsDigest": "8d27a9941c2e53bd057fae1ca6633615b6a8225baa92316a290db4d09ddd79ee", "sourceSha256": "904a826e7c9a23f8e03b00d6776d8d69daa7d6370c673a22204c7841e39bed42"},
+    "image": {"schema": "hybridcpu.restricted-startup/v1", "magic": "HCEXE001", "optionsDigest": "e38479b6167e44d98e2c0fa95cc79c4ab26cba322d8eb7688fdeac364e4ca2c6", "sourceSha256": "25ae3aa054cb5c9221bbd0558dc4ae9922882a4bcaf1e6132591db10a96f9ef8"},
+    "compilerIseBoundary": {"source": "HybridCPU_ISE/CloseToHSL/Core/Contracts/CompilerContract.cs", "sourceSha256": "4e935a782913b2cc96cc3b5d48138f6c7fd4711eb019ac51519fc18234c5e38f", "scalarControlFlowV2Fingerprint": "UNVERIFIED: Phase 6 blocker"}
+  },
+  "refPlan5": {
+    "statusSchema": "RefPlan5StatusV1",
+    "phases00Through27Present": true,
+    "phase21Through27ImplementationCommitsExistAndAreAncestors": true,
+    "allCheckedEvidenceJsonParsed": true,
+    "phase27EvidenceSha256": "2ae07dc908861f0677c6e6876740ec9816ede72fd7d826b8ca6a5df9b8756dd0",
+    "reDeclarationPolicy": "Inherited evidence is provenance only; RefPlan6 capabilities require new phase-specific qualification."
+  },
+  "contractRediff": {
+    "fromRefPlan5Phase27Implementation": "2d559409462945c01573d5667f586052f3e9c3ff",
+    "toBaseline": "ccfa88c0857f681074a480f65e50559395c590eb",
+    "coreCilNativeNativeAotLlvmContractChanges": [],
+    "iseContractOrSourceChanges": [],
+    "nonContractIseChange": "HybridCPU_ISE/docs/PerfTests/PerftestResults.md timestamp only",
+    "conclusion": "RefPlan5 compiler/ISE contracts remain the factual predecessor baseline; the external two-repository SHAs remain unverified and are not used."
+  }
+}

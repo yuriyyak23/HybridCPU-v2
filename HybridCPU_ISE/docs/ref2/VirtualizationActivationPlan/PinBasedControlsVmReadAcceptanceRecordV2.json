@@ -1,0 +1,14 @@
+{
+  "Schema": "hybridcpu.virtualization-acceptance-record/v2",
+  "DecisionId": "D2-HV-VMREAD-PIN-BASED-CONTROLS-0005",
+  "DecisionSpec": "PinBasedControlsVmReadDecisionSpecV2.json",
+  "DecisionSpecCanonicalLfSha256": "813ba3b738feedac1ea298c7deb222e541da11f18eb5dbfdac13e6a4e893f218",
+  "E0": "GreenRepeatedFromPhase62ProductionGraphAfterPhase63FrozenAbiDecision",
+  "D2": "AcceptedExactReadOnlyProjectionMapping",
+  "ExactField": "VmcsField.PinBasedControls",
+  "ProductionComposition": "NotAuthorized",
+  "ScalarDelivery": "NotAuthorized",
+  "Activation": "NotAuthorizedDefaultDisabled",
+  "RuntimeAuthority": "None",
+  "AdjacentFields": "Denied"
+}

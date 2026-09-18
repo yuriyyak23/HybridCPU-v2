@@ -1,0 +1,140 @@
+{
+  "schema": "CompilerRefPlan6Phase05NativeAotPublishEvidenceV1",
+  "phase": "05",
+  "status": "Verified",
+  "qualificationDate": "2026-08-28",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baselineSha": "ccfa88c0857f681074a480f65e50559395c590eb",
+  "implementationSha": "12683dbd46d59b01c4fb11d386204369bf08b6fc",
+  "implementationTree": "2d4698c91347ba7513436f5154c75334c3f29ef6",
+  "implementationCommits": [
+    "12683dbd46d59b01c4fb11d386204369bf08b6fc"
+  ],
+  "subjectDisposition": "Clean",
+  "boundary": {
+    "presentationOwner": "SDK/pinned ILCompiler invokes the adapter with one explicit root and an exact versioned available-body manifest.",
+    "semanticAdmissionOwner": "RestrictedCilImporterV1 AdapterPresented mode validates the body world and owns method identity, exact direct-call admission, deterministic graph order and SCC rejection.",
+    "backendOwner": "Every admitted method follows the existing CIL -> Canonical/Core -> scheduling -> allocation -> one HCO per method -> static linker -> restricted HCEXE path.",
+    "ilCompilerIsSecondBackend": false,
+    "compilerMetadataHasRuntimeAuthority": false,
+    "arbitraryPeWholeProgramScan": false,
+    "llvmFallback": false,
+    "hostJitFallback": false,
+    "hostNativeFallback": false
+  },
+  "contracts": {
+    "profileId": "HybridCPU.DotNetAot.ScalarControlFlowV2",
+    "profileVersion": "1.0",
+    "profileDigest": "36b19c1e9161f40815f2c8f328f58e03746c7e5e24ec0fda796873d6a0a09291",
+    "bodyPresentationSchema": "hybridcpu.nativeaot-body-presentation/v1",
+    "bodyPresentationVersion": 1,
+    "restrictedImageSchema": "hybridcpu.nativeaot-restricted-image/v2",
+    "nativeAotSourceCommit": "94ea82652cdd4e0f8046b5bd5becbd11461482ca",
+    "phase23PatchSha256": "e03a61674d5feae6bb56c19f368b44c6c3348b5798a2187f776a58f613dbdf32",
+    "phase26PublishPatchSha256": "28567486e7287499030d70a5e42635bdf802ec64395ee273e118b10bfc5767ad",
+    "patchSetSha256": "08a6ab21735aeb76b23e5e4f14be87007320475d3aaa14a513a8a713f3dbe7de",
+    "runtimePackContractDigest": "f3b20021acb92fd17fc843245f9dfad66ba0eb8a591643f1491693387318bf16",
+    "publishOptionsDigest": "45db65efb166351de077145c7d78b1e7041a124a24cf98c12cedbc33330dd4a3",
+    "legacyNativeAotOptionsDigest": "55fb86656beadda685933604140c240aa19cf739a0dce53c5e7a1190d14bbcbf",
+    "entryContract": "static parameterless System.Void or System.Int32 only",
+    "legacyRouteDefault": "LegacyRestrictedSingleMethod",
+    "scalarControlFlowV2OptIn": true
+  },
+  "implementation": {
+    "bodyWorldTransport": "A canonical SHA-256-bound presentation manifest is passed through the pinned ILCompiler process environment to its adapter subprocess; the temporary manifest is removed after the process exits.",
+    "manifestValidation": "Exact schema/version/profile/PE hash/root, canonical unique sorted bodies, root membership and contract digest are validated before import.",
+    "graphCompilation": "AdapterPresented body world feeds the Phase 02 graph and Phase 04 object linker; graph/object/backend digests and method count are projected into image and publish provenance.",
+    "sdkSelection": "HybridCpuProfile=HybridCPU.DotNetAot.ScalarControlFlowV2 and an explicit HybridCpuPresentedMethods list are required; legacy projects omit the option and keep their original route.",
+    "constantCallArgumentCorrection": "A prerequisite execution gap found by the Phase 05 ISE test was closed in the common CIL lowering: constant managed-call arguments now materialize as ADDI x0, immediate instead of selecting a trailing zero immediate.",
+    "oldImageProjectionChanged": false,
+    "iseRuntimeLoaderIsaChanged": false
+  },
+  "cleanPublishEvidence": {
+    "schema": "hybridcpu.refplan6-phase05-publish-verification/v1",
+    "publishSdk": "10.0.204",
+    "targetRid": "hybridcpu",
+    "hostRid": "win-x64",
+    "installedPackFiles": 203,
+    "deterministicRuns": 2,
+    "compiledMethods": 5,
+    "inputAssemblySha256": "5f5d4f5dcd1e960a8151b173e617e547e2607fa81f9b0164e5a3a13cb093f5c7",
+    "imageSha256": "865449e142ae53cbe8300901f007ab4aef52853d18ffa6c57a029ae67c56ea7b",
+    "imageManifestSha256": "25b843c6dc38ffce1693d0b5ec2f5d98522d8815e4acd0022d472944af7a1448",
+    "provenanceSha256": "80a2eb44dd19f87400d42536d2ad06475a826ef2239138402dd68c7a445ce1ec",
+    "imageBytes": 18432,
+    "managedGraphDigest": "001342d93f9a2d76840b27f664b6d0b60e6e094a90267b2126ab5abca9118feb",
+    "bodyPresentationDigest": "b225e6cf0aaa029a2995aab7b2afedd9d4f6a0313041476d4d7e24dd8247ce79",
+    "orderedObjectDigest": "11b59d03affdec7d548f37fc7bbb4cb04b2bec85e46a91edad8291a07900333e",
+    "backendProvenanceDigest": "a398a643b86df884787d86128657abb305911e0dbb15fce8c29b5010e412e7b5",
+    "traversedIlCompilerGraph": true,
+    "llvmRequired": false,
+    "hostJitFallback": false,
+    "hostNativeFallback": false,
+    "cleanProcedure": "Adapter/Core/CIL Release outputs cleaned, exact projects restored, two fresh immutable packs installed from the pinned ILCompiler/reference inputs, sample cleaned/restored, then two dotnet publish -c Release -r hybridcpu runs compared."
+  },
+  "executionEvidence": {
+    "path": "C# -> Release CIL -> pinned ILCompiler -> adapter-presented body world -> Canonical/Core -> HCO/link/HCEXE -> existing ISE decode/execute/memory/writeback",
+    "program": "parameterless root -> loop helper plus two callers sharing one leaf",
+    "methodCount": 5,
+    "expectedReturn": 30,
+    "actualReturn": 30,
+    "stackPointerRestored": true,
+    "boundedRetirement": true,
+    "authority": "ISE retained execution/fault/retire authority; compiler image and publish provenance retain all runtime/publication authority flags false."
+  },
+  "negativeEvidence": [
+    "missing presented direct callee HCSCF-BODYWORLD1003",
+    "recursive SCC HCSCF-RECURSION1001",
+    "tampered presentation HCNAOT3002",
+    "parameterized managed entry HCNAOT3004",
+    "invalid/unknown SDK profile HCPUB1111",
+    "missing explicit ScalarControlFlowV2 body world HCPUB1112"
+  ],
+  "qualification": {
+    "phase05Focused": {"passed": 7, "failed": 0, "skipped": 0},
+    "cumulativeRefPlan6Phase00To05": {"passed": 94, "failed": 0, "skipped": 0},
+    "phase26And27PackReleaseCompatibility": {"passed": 30, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~HybridCPU_ISE.Tests.CompilerTests", "passed": 1340, "failed": 0, "skipped": 0, "duration": "00:05:22"},
+    "releaseBuilds": {
+      "core": "0 errors/0 warnings",
+      "cil": "0 errors/1 existing obsolete-annotation warning",
+      "native": "0 errors/0 warnings",
+      "nativeAotAdapter": "0 errors/0 warnings",
+      "releaseQualification": "0 errors/0 warnings",
+      "ise": "0 errors/43 existing warnings"
+    },
+    "cleanDeterministicPublish": "Passed: 2/2",
+    "scopedFormatVerification": "Passed; workspace-load warning only.",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "artifacts": {
+    "adapterProgramSourceSha256": "bfbed702da9513ec3d99254851148ab2f9bbdaa85bf895fc5aaf872b88d26715",
+    "nativeAotContractsSourceSha256": "652e50d1d6827a9b5ce6359fa39f0ab95a5ca6ba07a2bc6d98fed734d1e8a11d",
+    "sdkContractsSourceSha256": "ce1c7401e18b29218c3410777ba41716635f83cbcb4af9bda0462207a9b9197e",
+    "sdkPropsSha256": "dc28a1b3d2faa59005a6c57211bcd5488b60f7644ee2f6e6f3428ee42c39c4fa",
+    "sdkTargetsSha256": "0d20b98527a9f153fd6344a3f235a0038d7687242e519267096f8834acff19e1",
+    "publishVerifierSha256": "2bbc669be762e73275a517822adb1d19634005f535b7a0822c66a5c3bd0353d8",
+    "cilLoweringSourceSha256": "11e1b4549591eab19c1ed31a96db638506134bcdc64572c90d3bdee7d97b8c9d",
+    "phase05TestsSha256": "16db4d9f6684fdcbcd0cc3c1fb1bf907d8c332a83a19e2656a2f948aacc34503",
+    "sampleProjectSha256": "37ce73ff126fc12cfc7c48e825806761f38309a77315ed0c1ca5807cd2f3223a",
+    "sampleSourceSha256": "76c1967a1dcd06f2757a3fc78f7f0a61c5e653ede352c445e84f518cfa56667d"
+  },
+  "releaseDisposition": {
+    "profileFeatureDisposition": "OptInPreview",
+    "defaultEnabled": false,
+    "releaseAuthorized": false,
+    "runtimeBehaviorClaim": "The exact restricted ScalarControlFlowV2 sample is clean-publishable through pinned ILCompiler and executes its five-method acyclic loop/call graph correctly on ISE.",
+    "excludedClaims": ["default enablement", "production release authorization", "ordinary managed console startup", "recursion", "general C# language support"]
+  },
+  "externalBaselineFailures": [
+    "global.json requests SDK 10.0.201; local deterministic roll-forward resolves SDK 10.0.204 as frozen in Phase 00.",
+    "The CIL Release build and ISE Release build retain their pre-existing warning inventories.",
+    "Pinned ILCompiler and runtime reference inputs were reused from the previously qualified immutable local Phase 26 pack; the adapter/compiler pack itself was cleaned and rebuilt twice."
+  ],
+  "nextDependencyGate": {
+    "phase": "06",
+    "dependenciesSatisfied": true,
+    "gate": "Qualify the full source-to-ISE release corpus, compiler/ISE fingerprints, stale-fact properties, loader/ABI parity, exact provenance and final language support matrix without default enablement."
+  }
+}

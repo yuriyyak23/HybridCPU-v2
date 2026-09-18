@@ -1,0 +1,103 @@
+{
+  "schema": "CompilerRefPlan5Phase11LlvmOptimizationEvidenceV1",
+  "phase": "11",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "6883398dc4543835ecd1028284cbee4fcbb843a3",
+  "implementationTree": "3f960e6a1224adb5f0a7ae5971e079431886d4bf",
+  "implementationCommits": [
+    "0d8258d52b953fef03cac0f93669ac49becf2257",
+    "6883398dc4543835ecd1028284cbee4fcbb843a3"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5, local Git history and the exact Phase 09 package runtime only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 10 handle-free semantic mapping and Phase 06/07/08 Canonical IR, value-flow and target contracts.",
+    "output": "An exact default-off LLVM function(instcombine,dce) pipeline with explicit pass options, pre/post verification, Phase 10 firewall re-entry, deterministic provenance and downstream non-regression gates.",
+    "authorityBoundary": "LLVM may transform only validated frontend IR. Core remaps and revalidates Canonical IR and independently recomputes scheduling/bundle metrics. LLVM has no legality, placement, backend, runtime, publication, commit or retire authority.",
+    "deterministicFallback": "Disabled is the direct Phase 10 path. Any recipe/profile mismatch, unavailable runtime, verification/pass/remap failure, unsupported semantics or metric regression rejects deterministically; no wall-clock or host-default selection is permitted.",
+    "runtimeAuthorityChanged": false,
+    "schedulePolicyChanged": false,
+    "carrierBytesChanged": false,
+    "preTransformFactsInvalidatedAfterExecution": true,
+    "wallClockSelectsCode": false
+  },
+  "optimizationContract": {
+    "schema": "hybridcpu.llvm-optimization-pipeline/v1",
+    "recipe": "function(instcombine,dce)",
+    "recipeSha256": "1941492fdfd0d19064a3c560dbda39390af84360ec78b3c5354e0fe53e096458",
+    "contractDigest": "205865f758ef074d131243b1bd5e52da02b88d312cd486c7815823a2f2dbfdf2",
+    "optionsDigest": "75d651f8628b4580f00e64020e4e1071f3457444dabf142eb363978b4c5149b6",
+    "toolchainContractDigest": "1c38512d87553cfb0b96feb27375e09fd6ec83dd374f773610b651d25dd165cf",
+    "semanticMappingContractDigest": "1c0b9e7e90adc43fd9b6f46f45abe01733fe1502926a594627b6a30aec980ee2",
+    "nativeLibrarySha256": "1369ddbef3d965397138e892953d3b34053bd70a95d7c03ddbbda77f33199cf1",
+    "verifyEach": true,
+    "debugLogging": false,
+    "loopInterleaving": false,
+    "loopUnrolling": false,
+    "loopVectorization": false,
+    "slpVectorization": false,
+    "mergeFunctions": false,
+    "callGraphProfile": false,
+    "profileIdentity": "absent",
+    "hasBackendAuthority": false,
+    "hasRuntimeAuthority": false
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "optimizationPipelineSourceSha256": "20ec384e433c6862016eacdac469d991c529b1d513b897eb5794bacdbf3c604d",
+    "toolchainContractSourceSha256": "55c45a8b0bfdb89c890b0500f73e48da22d156e6667bff974502fcf15a6641a6",
+    "phase09ContractTestSourceSha256": "cb773fac5d8cd920cd83fe5a5bacfc9ac0f9dfb6568219a31bb4e39d02daa434",
+    "phase10ContractTestSourceSha256": "b4b9f853a2fe1a4522bc36a4bf0a9f1de79db706fdd2c39469d69f78d7e21507",
+    "phase11TestSourceSha256": "a62a1b57679ec20ee33bebf23fc908f6f33b567bdda7a2b6def7002f8274f8d1",
+    "implementationSourceManifestSha256": "2a530f2a69124b14f19193bd190daeb9f4adab84fd5d0c31197c6b7988727526",
+    "qualificationOptionsSha256": "69df1082552c7ad16903d2a957d07533bbb8f62db71eefccf52f07be7626d911"
+  },
+  "qualification": {
+    "phase11Focused": {"passed": 6, "failed": 0, "skipped": 0},
+    "phase09Through11Integration": {"passed": 61, "failed": 0, "skipped": 0},
+    "phase00Through11": {"passed": 220, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 915, "failed": 0, "skipped": 0},
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "llvmAdapterReleaseBuild": {"runtime": "win-x64", "errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43},
+    "coreNativeReleaseArtifactsContainLlvmReference": false,
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "qualificationDiagnostics": [
+    {
+      "status": "CorrectedBeforeEvidence",
+      "cause": "The first compiler-focused run found a public raw-bool recipe predicate via the existing authority-boundary scanner.",
+      "resolution": "Corrective implementation 6883398d removed the public predicate; the final compiler-focused run on that SHA passed 915/915."
+    },
+    {
+      "status": "InfrastructureRestoreCorrected",
+      "cause": "The first LLVM Release attempt lacked a net10.0/win-x64 assets target after a non-RID restore.",
+      "resolution": "Exact win-x64 restore followed by the qualified no-restore build passed 0 errors / 0 warnings; no production source changed."
+    }
+  ],
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false
+  },
+  "releaseDisposition": {
+    "defaultEnabled": false,
+    "defaultEnabledScope": "The optional LLVM optimization pipeline is explicit-only; disabled mode is the direct Phase 10 path and native compilation remains unchanged.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Qualified as an optional Phase 11 frontend transform and Phase 12 prerequisite only. Backend emission and final release authorization remain disabled.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "12",
+    "dependenciesSatisfied": true,
+    "gate": "Form deterministic default-off EBB candidates, preserve conservative memory/control/guard/fault witnesses, rebuild all derived facts after region changes, and permit motion only under explicit target capabilities with byte-identical BB fallback."
+  }
+}

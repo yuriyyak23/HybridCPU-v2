@@ -1,0 +1,56 @@
+{
+  "Schema": "hybridcpu.virtualization-exact-production-release-record/v1",
+  "RecordRole": "ImmutableReleaseEvidenceOnlyNeverRuntimeAuthority",
+  "StatusDate": "2026-08-13",
+  "Claim": "LimitedProductionReleaseOfProbeNoStateV1Only",
+  "VerificationMode": "ProductionExactDefaultDisabled",
+  "ReleasedRuntimeSubjectSha": "e29d6b2150bf10c136ba3897eb17a9cab03c9967",
+  "ReleasedRuntimeSubjectTree": "b3cd41275e548dc39fc7c0c7c5d411c339a0f29e",
+  "ReviewedContourSubjectSha": "bcd2d7f4654d4dab17c7a6705cb885fdd572510d",
+  "ExactIdentity": {
+    "DecisionId": "D2-HV-VMCALL-RUNTIME-V1-PROBE-0001",
+    "SpecDigest": "33076e430fcbc05cf0774d08baadc6d7840f88029fcfb28a458558af82f93ca8",
+    "OwnerId": "HCOWNR",
+    "OwnerPolicyVersion": 1,
+    "OwnerEpoch": 1,
+    "OperationNamespace": "HybridCPU.VMCALL.Runtime.v1",
+    "NumericLeaf": "0x0001",
+    "OperationId": "PROBE_NO_STATE_V1",
+    "CapabilityBit": 41,
+    "Effect": "NoStateNoPayloadNoResult"
+  },
+  "Construction": {
+    "ProductionCaller": "CPUCoreInitializePipelineToExistingCanonicalMicroOpScheduler",
+    "Configuration": "ExplicitImmutableCpuExactProbeRuntimeConstructionProfile",
+    "Default": "DisabledAbsentProfile",
+    "ActivationLinearization": "ExistingDomainHypercallExactRuntimeProfileActivation",
+    "RuntimeAuthority": "ExistingNeutralDomainCapabilityAdmissionExecutionCompletionRetireOwnersOnly"
+  },
+  "Rollback": {
+    "EntryPoint": "CPU_Core.DisableConfiguredExactProbeRuntimeProfile",
+    "Order": "CloseE2ThenDrainTransitionsE2E3E5E6ThenRevokeBindingAndGrantThenFaultOnly",
+    "ImplicitReactivation": "Denied",
+    "Migration": "DrainOnly"
+  },
+  "Compiler": {
+    "RequiredForRuntime": false,
+    "ReleaseAuthorized": false,
+    "Default": "Disabled"
+  },
+  "CompatibilityAuthority": {
+    "VmxVmcs": false,
+    "FrontendTrap": false,
+    "VmRead": false,
+    "VmWrite": false,
+    "CallerCreatedCompletion": false
+  },
+  "Excluded": [
+    "release of any read-only VMREAD profile",
+    "new VMREAD field group or VMCALL operation",
+    "compiler emission activation",
+    "nested virtualization",
+    "VMWRITE",
+    "SecureCompute or memory/IOMMU/DMA/device/lane/stream expansion",
+    "broad virtualization claim"
+  ]
+}

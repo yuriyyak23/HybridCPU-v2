@@ -1,0 +1,27 @@
+{
+  "schemaName": "vmxcaps-capability-bit-schema",
+  "schemaVersion": 1,
+  "canonicalSourceHash": "0x6A4D2C781B90E317",
+  "generatedArtifactHash": "0xB781C25E9D4A603F",
+  "generator": "VmxCapsCapabilityBitGenerator",
+  "generatedAtBuild": true,
+  "requiresConformanceParity": true,
+  "requiresAbiFreeze": true,
+  "entryPolicy": {
+    "required": [ "name", "capabilityMask", "typedGrantSource", "frontendProjectionPolicy", "evidenceVisibility" ],
+    "requiredScope": "CompatibilityProjection",
+    "requiredProjectionPolicy": "ProjectIfCompatible",
+    "requiredEvidenceVisibility": "GuestVisibleProjection"
+  },
+  "entries": [
+    { "name": "VmPtrSt", "capabilityMask": "VmxV2InstructionCaps.VmPtrSt", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "VmCall", "capabilityMask": "VmxV2InstructionCaps.VmCall", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "Invept", "capabilityMask": "VmxV2InstructionCaps.Invept", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "Invvpid", "capabilityMask": "VmxV2InstructionCaps.Invvpid", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "VmFunc", "capabilityMask": "VmxV2InstructionCaps.VmFunc", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "RootDescriptorOperand", "capabilityMask": "VmxV2InstructionCaps.RootDescriptorOperand", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "VmSaveX", "capabilityMask": "VmxV2InstructionCaps.VmSaveX", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "VmRestX", "capabilityMask": "VmxV2InstructionCaps.VmRestX", "projectionScope": "CompatibilityProjection", "typedGrantSource": "CapabilityGrantCollection.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" },
+    { "name": "NestedVmx", "capabilityMask": "VmxV2InstructionCaps.NestedVmx", "projectionScope": "CompatibilityProjection", "typedGrantSource": "NestedDomainCapability.TypedGrant", "frontendProjectionPolicy": "ProjectIfCompatible", "evidenceVisibility": "GuestVisibleProjection" }
+  ]
+}

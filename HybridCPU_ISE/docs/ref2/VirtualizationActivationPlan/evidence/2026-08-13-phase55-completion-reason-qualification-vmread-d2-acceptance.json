@@ -1,0 +1,16 @@
+{
+  "schema": "hybridcpu.phase55-completion-reason-qualification-vmread-d2-acceptance/v1",
+  "record_kind": "later_non_self_referential_d2_acceptance",
+  "status_date": "2026-08-13",
+  "spec_commit_sha": "9497d6152bee14e3743e99edc6c4c451b869ee8a",
+  "spec_tree_sha": "60d9d11f8ef783466d7d05e03a52ccdb43ecb007",
+  "spec_digest_sha256": "649f576e09ca0168ba60be3f632a4d8c93f6fabaa8571c22a5445f438dcda6d2",
+  "acceptance_digest_sha256": "4954b25a5e3c91e2d4c54f0d4e75f83c87e495773889b94e4fd6e98f5617f5be",
+  "non_self_referential": true,
+  "exact_fields": ["ExitReason", "ExitQualification"],
+  "explicitly_denied_fields": ["GuestPhysicalAddress", "EptViolationQualification"],
+  "runtime_authority_granted": false,
+  "completion_creation_authorized": false,
+  "production_composition_activated": false,
+  "next_pool_automatically_opened": false
+}

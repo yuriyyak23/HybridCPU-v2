@@ -1,0 +1,149 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase15.ManagedAsyncEvidenceV1",
+  "phase": "15",
+  "date": "2026-08-29",
+  "disposition": "EvidenceClosed",
+  "defaultEnabled": false,
+  "implementation": {
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "baselineCommit": "941f29dd57cfea85d1f1d048ad14fe867454ddab",
+    "primaryCommit": "e1b6c5acaee3e6afc348b92169de00aa74e6d4d8",
+    "finalImplementationCommit": "96a5a8b2907e36c1d5638fc00eb5994defde5542",
+    "tree": "8c02ca9743ac6491797b188352fb12af141cd3bc",
+    "repositoryModel": "single monorepo; evidence commit changes status and evidence only",
+    "worktreeStatusAtEvidenceStart": [
+      "unstaged M HybridCPU_Compiler/Core/IR/Scheduling/HybridCpuLocalListScheduler.cs (foreign WIP; excluded)",
+      "unstaged M HybridCPU_ISE/docs/PerfTests/PerftestResults.md (foreign WIP; excluded)",
+      "unstaged D tmp/rf09.2-write-inventory.txt (foreign deletion; excluded)"
+    ],
+    "foreignWipIncluded": false
+  },
+  "planHashes": {
+    "README.md": "3531e14bcdbb976dd1104bf75b8801e1c843adeab12a2f95f4660b55f32a819b",
+    "15-async-runtime-libraries.md": "ed25019bb1dab761d3778f22a62c87cb154659b8d8798fc6fe4bb31df33e0154"
+  },
+  "tools": {
+    "dotnetSdk": "10.0.204",
+    "dotnetSdkCommit": "e7aa4b537d",
+    "hostRid": "win-x64",
+    "os": "Windows 10.0.26200"
+  },
+  "contracts": {
+    "platformSchema": "hybridcpu.platform-contracts/v1@1.13",
+    "platformContractDigest": "40d5c03506f22e427e274323f5fc3787d882ed02303fe4de50eaf575f8647a97",
+    "asyncRuntimeSchema": "hybridcpu.async-runtime/v1@1",
+    "asyncRuntimeContractDigest": "4d50dea939e23102e56c6f4bb1f0a1e7ab3bcd5912b4bb449c2bb867e5a79507",
+    "targetPlatformContractDigest": "e2b369dc58e0100e72c58b43a386ab612c39e266f6cfb5f97160f6925b2481dd",
+    "managedAbiSchema": "hybridcpu.managed-abi-family@1.14",
+    "managedAbiDigest": "3f008c3f2424d0a5ffae74a27c65cb6fed75cffdee66355386eba2be9aed8468",
+    "managedFeatureSetDigest": "16648e967b409fa0774b13934877bb6bf70a44dd6b670249319c735c319945f4",
+    "runtimePackRevision": "hybridcpu.runtime-pack/managed-contract-v1.14",
+    "runtimePackVersion": "1.15.0-refplan7-phase15",
+    "runtimePackDigest": "b8a51798657ee28fa58709bd6a9cbd76117360d6d3241bca41d15373aeab8cd9",
+    "runtimePackFileSha256": "bf3a90ca5f99d3a7ecf90adc5d83c0ffc127ff64596a12411bf13084676c88a6",
+    "linkContractDigest": "286dce13e924df3062f5758898dcc190a81e44724ffa3bf655f4abec9025f1df",
+    "startupContractDigest": "4f04e44009dd63af552d4b6d3a5e6f52f86e3fea0bbe4aa4296bfd668bf7545a"
+  },
+  "qualifiedScope": {
+    "managedRuntime": "opt-in bounded Task state, continuations, cooperative workers, cancellation, execution-context policy, deterministic queues, timer delays and real GC roots",
+    "runtimeKernel": "generic deterministic monotonic ticks, ordered sleep-until deadlines, cancellation and park/unpark only",
+    "compiler": "ordinary scalar CIL state-transition admission plus bounded managed-EH metadata admission for the actual Roslyn async MoveNext catch region",
+    "ise": "unchanged and has no async-library, Task, continuation or state-machine authority",
+    "deferred": "architectural preemption, async-specific ISA/backend work, unrestricted Task/BCL surface and managed publish"
+  },
+  "qualification": {
+    "focusedPhase15": {"passed": 10, "failed": 0, "skipped": 0},
+    "exactCommitPhase09And15Regression": {"passed": 20, "failed": 0, "skipped": 0},
+    "affectedContractRegressionBeforeEhStrengthening": {"passed": 197, "failed": 0, "skipped": 0},
+    "cumulativePhase00Through15BeforeEhStrengthening": {"passed": 163, "failed": 0, "skipped": 0},
+    "compilerRegressionFinal": {
+      "configuration": "Debug testsupport",
+      "filter": "FullyQualifiedName~CompilerTests",
+      "passed": 1520,
+      "failed": 0,
+      "skipped": 0,
+      "duration": "00:05:18",
+      "commit": "96a5a8b2907e36c1d5638fc00eb5994defde5542"
+    },
+    "releaseBuilds": {
+      "allSucceeded": true,
+      "errors": 0,
+      "warningCounts": {"platformContracts": 0, "runtimeKernel": 0, "managedRuntime": 0, "compilerCore": 0, "compilerCil": 1, "nativeAotAdapter": 1, "releaseQualification": 1, "ise": 43}
+    },
+    "determinism": {
+      "releaseRebuildRuns": 3,
+      "releaseDllPairsByteEqual": "7/7 across all runs",
+      "releaseDllSha256": {
+        "platformContracts": "1dcdf0078660cce94bc6176edef9d257ac8f627ae0728288f38af2348b714bdb",
+        "runtimeKernel": "4555abf853c26508c1a9ff43f6f02baf24975cec79d9a990f09047aeae9b181d",
+        "managedRuntime": "d5512b5e6ceba2ba752566dfaeb6761108ec2580d26ba5ec30fed2c21fe5dbfd",
+        "compilerCore": "e817d4e9464553fc3f0b50795e06e79559b95e39bba067df2412e1ac59bddc10",
+        "compilerCil": "ae9e396c49f63cda29d1e303d83eb0a2a0c4f1d5811e77555eca63e25e639f5b",
+        "nativeAotAdapter": "f501fb03f6fd7de187863931eac7c244415674b6baa800aa1c7920f3257abe62",
+        "releaseQualification": "063e7bd08ceb5f4d032b7dd95644b27af4a4d44de01fa5abd426b89e1c9e34b4"
+      }
+    },
+    "gitDiffCheck": "clean for committed Phase 15 paths; only line-ending warning concerns excluded foreign WIP"
+  },
+  "sourceDigests": {
+    "asyncRuntimeContracts": "b3fe22a6102af6ac124da7529fc1394d468a83a002c402ffe7534fbca4a0dcf9",
+    "platformContracts": "f15f84f641d317220c27ed4f90647a281b07d88d10700cbb9611b5407675a4c2",
+    "runtimeKernelTimers": "8b8b18c065e7dc8bc65326fa26f32b1ca1b5c23ed7f80b00ca2c1e168df6ee57",
+    "runtimeKernel": "1577d61f42936a01da6bf9daeeacd8b620616f3730a368185fbc039a0578f5c4",
+    "managedAsyncRuntime": "87680c405950b770f07fb65abb30502d94b0af58e9a7dab10278e60509dd2cb6",
+    "managedEhImporter": "307b86240b303626f769eb1ca3c422807b0164219718ee3be0e33dd2a77a4932",
+    "restrictedCil": "f0516f7cde0620f3dd5bb246a96eb08e9b9d5edd55aa0378eafab2abe845ddf3",
+    "managedAbi": "0ce7dba7729922a1495b3d3df63a0c0db55d7f60802c084393f6a3b88d67c5d5",
+    "managedFeatureSet": "edfa56c68322fe57e866053164d3f6724756a13ad5fea2462a7e9fd73f2d8520",
+    "sdkPack": "b0f6cf7d09ec74748ec2ade6ffe651a3a82c6dab5d01c12e6211660e2db3f48c",
+    "releaseQualification": "8d0d3faa2cdccc8d9e887e0fb6daab2f893be3f460544e1b14ab1df963d2c8f6",
+    "phase15Tests": "073a79fe05559f965f03ff159283a8894dee78803379fe78f8cf473a7e0f1948"
+  },
+  "authority": {
+    "ise": "unchanged; owns existing execution only and contains no managed-async authority reference",
+    "runtimeKernel": "owns language-neutral monotonic time, deadlines and context park/wakeup",
+    "managedRuntime": "owns Task state, queues, continuation execution, cancellation, execution context and async GC roots",
+    "compiler": "owns ordinary CIL and managed-EH metadata admission; contains no async-specific backend path",
+    "platformContracts": "owns POD/enums/constants/digests for the bounded async runtime contract",
+    "isaChanges": 0,
+    "iseProductionChanges": 0,
+    "asyncOpcodesAdded": 0,
+    "asyncBackendPathsAdded": 0,
+    "forbiddenEdgesPreserved": true
+  },
+  "changedPathAudit": {
+    "pathCount": 25,
+    "insertions": 869,
+    "deletions": 43,
+    "isaChanges": 0,
+    "iseProductionChanges": 0,
+    "foreignWipIncluded": false
+  },
+  "claimClassifications": [
+    {"claim": "Bounded Task, continuation, worker, cancellation and execution-context semantics are deterministic", "classification": "Proven", "evidence": ["focused Phase 15 tests 10/10", "three exact-commit Release rebuilds"]},
+    {"claim": "Timers use generic monotonic deadline and park/wakeup kernel mechanisms", "classification": "Proven", "evidence": ["KernelMonotonicDeadlineQueue_IsOrderedVirtualAndRejectsBackwardTime", "VirtualTimer_CompletesTaskOnlyAtDeadline"]},
+    {"claim": "Queued Task, continuation and execution-context objects remain GC roots", "classification": "Proven", "evidence": ["QueuedTasksContinuationsAndExecutionContext_AreRealGcRoots"]},
+    {"claim": "Roslyn async requires an async opcode or phase-specific backend", "classification": "Contradicted", "evidence": ["actual AddOneAsync execution", "actual generated MoveNext managed-EH plan", "ordinary scalar state-transition import", "zero ISA/backend delta"]},
+    {"claim": "The ordinary scalar importer silently accepts unqualified byref or EH execution", "classification": "Contradicted", "evidence": ["managed-EH metadata uses a separate bounded decoder", "closed scalar executable-code matrix remains unchanged"]},
+    {"claim": "Phase 15 enables architectural preemption, unrestricted BCL async or managed publish", "classification": "Contradicted", "evidence": ["async-preemption remains unsupported", "Production options disabled", "PublishQualifiedWorkstreams=[]"]}
+  ],
+  "knownBaselineFailures": [],
+  "knownBuildObservations": [
+    "Compiler.Cil, NativeAOT adapter and release qualification each retain one pre-existing obsolete LegalSlots warning on clean Release rebuilds.",
+    "ISE retains 43 pre-existing warnings and has zero Phase 15 production changes.",
+    "The scalar executable importer deliberately remains closed for unqualified byref and EH bodies; managed-EH metadata admission is a separate bounded general compiler path."
+  ],
+  "releaseDisposition": {
+    "component": "QualifiedDefaultOff",
+    "managedAsyncLibraries": "Disabled in production options",
+    "asyncPreemption": "Unsupported",
+    "managedPublish": "Unsupported",
+    "fullBclAsyncSupport": "Not claimed"
+  },
+  "nextGate": {
+    "phase": "16",
+    "status": "Eligible",
+    "scope": "release, determinism and product qualification",
+    "prerequisite": "Phase 15 EvidenceClosed"
+  }
+}

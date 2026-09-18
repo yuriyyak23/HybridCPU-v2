@@ -1,0 +1,116 @@
+{
+  "schema": "CompilerRefPlan6Phase06QualificationReleaseEvidenceV1",
+  "phase": "06",
+  "status": "Verified",
+  "qualificationDate": "2026-08-28",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baselineSha": "ccfa88c0857f681074a480f65e50559395c590eb",
+  "implementationSha": "cf08002ea8dfd83614db6d25e8f37d4a368faa9a",
+  "implementationTree": "f4bf350c8f4111cbc8272ef5104bbe2a130aaabb",
+  "implementationCommits": ["cf08002ea8dfd83614db6d25e8f37d4a368faa9a"],
+  "subjectDisposition": "Clean",
+  "contracts": {
+    "profileId": "HybridCPU.DotNetAot.ScalarControlFlowV2",
+    "profileVersion": "1.0",
+    "profileDigest": "f4e3274301cc71a02599ef27e84661ec1634dade150a1cf3989b7cafc6053bc6",
+    "compatibilityFingerprintSchema": "hybridcpu.scalar-control-flow-v2.compatibility-fingerprint/v1",
+    "compatibilityFingerprint": "f073ee4e9b23118f1ccf8b6961218dc01fa10d46782153e15a7b0ce77e5f2ab7",
+    "releaseSchema": "hybridcpu.scalar-control-flow-v2.release/v1",
+    "releaseContractDigest": "52de8914090a54d41c4aedeec558912a81ea4b571cab36bd0e02fbe1bcbd53af",
+    "compilerIseContractVersion": 6,
+    "targetTriple": "hybridcpuv2-unknown-none",
+    "registers": "32 architectural x 64 bits",
+    "bundle": "8 slots x 32 bytes = 256 bytes",
+    "callControl": "link PC+4; managed return adjustment 252 bytes",
+    "typedSlotAuthority": "structural compatibility evidence only",
+    "runtimeAuthority": "ISE/loader owns legality, execution, faults, freshness, publication, commit and retire"
+  },
+  "languageSupport": {
+    "guaranteedScalars": ["Void", "Int32"],
+    "conditionalScalars": ["Boolean", "Int8", "UInt8", "Int16", "UInt16", "UInt32", "Int64", "UInt64"],
+    "missingScalars": ["NativeInt", "NativeUInt"],
+    "rejectedScalars": ["UnsupportedManaged"],
+    "guaranteedConstructs": [
+      "static non-generic int32 methods", "signed int32 arithmetic/comparisons", "nested if/else",
+      "forward/backward branches", "verified reducible for/while/do-while", "nested reducible loops",
+      "break/continue/multiple loop exits in the admitted corpus", "scalar int32 locals and loop-carried phis",
+      "direct static calls, bounded acyclic chains, shared callees", "helpers containing branches/loops",
+      "up to four admitted register arguments", "int32 and void returns", "one HCO per method",
+      "deterministic symbols/relocations/link/HCEXE", "explicit dotnet publish -r hybridcpu profile"
+    ],
+    "conditionalConstructs": ["unsigned comparisons"],
+    "explicitlyRejected": [
+      "switch", "recursion and recursive SCC", "references/heap/GC/arrays", "EH",
+      "virtual/interface calls", "delegates/calli/function pointers", "reflection/dynamic",
+      "async/threading/TLS", "P/Invoke", "unsupported generics/layouts",
+      "host JIT/native fallback", "LLVM fallback"
+    ]
+  },
+  "qualification": {
+    "phase06FocusedAndPhase00Contract": {"passed": 14, "failed": 0, "skipped": 0},
+    "cumulativeRefPlan6Phase00To06": {"passed": 98, "failed": 0, "skipped": 0},
+    "phase26And27PackReleaseCompatibility": {"passed": 30, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~Compiler", "passed": 1502, "failed": 0, "skipped": 0, "duration": "00:06:14"},
+    "positiveExecution": "CIL loop/phi corpus plus nested calls/shared callee/helper loop/live-across-call/callee-save/frame/spill/cross-object/startup execute on ISE in cumulative tests.",
+    "negativeQualification": "Malformed CFG/joins, irreducibility, unsupported opcode/type/call/ABI, SCC recursion, body-world absence, symbol/relocation/frame/image budgets, loader/version skew, stale facts and fallback absence are covered cumulatively.",
+    "determinism": "Canonical identities/order, graph/SCC/block/phi/loop/object/symbol/relocation/link order, diagnostics, two clean installed-pack publishes and emitted HCEXE/provenance are deterministic.",
+    "staleFacts": "Generation-bound CIL analysis plus Core stale proof/witness/fact consumers and prior mutation property suites remain qualified.",
+    "releaseBuilds": {
+      "core": "0 errors/0 warnings",
+      "cil": "0 errors/1 existing obsolete-annotation warning",
+      "native": "0 errors/0 warnings",
+      "nativeAotAdapter": "0 errors/0 warnings",
+      "releaseQualification": "0 errors/0 warnings",
+      "ise": "0 errors/43 existing warnings"
+    },
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed; compiler CIL contract/tests and RefPlan6 evidence/status only; no ISE/runtime/loader/ISA implementation source changed."
+  },
+  "cleanPublishEvidence": {
+    "publishSdk": "10.0.204",
+    "targetRid": "hybridcpu",
+    "hostRid": "win-x64",
+    "nativeAotSourceCommit": "94ea82652cdd4e0f8046b5bd5becbd11461482ca",
+    "installedPackFiles": 203,
+    "deterministicRuns": 2,
+    "compiledMethods": 5,
+    "inputAssemblySha256": "fffb4f2134c703e8c62fbf76b1600d5335c2c5e3b4bda9d177c066aacd62ddb6",
+    "imageSha256": "865449e142ae53cbe8300901f007ab4aef52853d18ffa6c57a029ae67c56ea7b",
+    "imageManifestSha256": "9b3382f464e64705c089e3b0e57742a724c7006f6f71e6af9130f8f09f19d801",
+    "provenanceSha256": "86533da41646032c0dbc96a78de68505574f90a84b3e6af4acabca80be6b3609",
+    "managedGraphDigest": "001342d93f9a2d76840b27f664b6d0b60e6e094a90267b2126ab5abca9118feb",
+    "bodyPresentationDigest": "88baf29f6d6e3653b41a547e791bd6f2ee2a5682ace70f6beb8762f8c494e283",
+    "orderedObjectDigest": "11b59d03affdec7d548f37fc7bbb4cb04b2bec85e46a91edad8291a07900333e",
+    "backendProvenanceDigest": "2efe3b1ffcc5a90f073f40cf208ffe6639eb0b8ea9d9bd1cfd7e819d528c3a91",
+    "traversedIlCompilerGraph": true,
+    "llvmRequired": false,
+    "hostJitFallback": false,
+    "hostNativeFallback": false
+  },
+  "artifacts": {
+    "profileContractSourceSha256": "aba734e3bdf134abab9feb27b9e65188902b14836b4c64588d2b999067333493",
+    "releaseContractSourceSha256": "ef6225c877861b3f1b817b21bc4c3406716dd0db40a70848124c026b2aa71e65",
+    "phase06TestsSha256": "440657006ae0dbadb447cdb1833d2d04010e00e12eda3b1e273b88b4ab7ed076",
+    "iseCompilerContractSourceSha256": "4e935a782913b2cc96cc3b5d48138f6c7fd4711eb019ac51519fc18234c5e38f",
+    "restrictedLoaderSourceSha256": "bef3b355ea6f4ce7e6ecad7b4622244f2a80b42d1d171b64be23437b2b3f9222"
+  },
+  "releaseDisposition": {
+    "profileFeatureDisposition": "VerifiedOptInPreview",
+    "defaultEnabled": false,
+    "releaseAuthorized": true,
+    "recursionEnabled": false,
+    "defaultEnablementRequiresSeparateDecision": true,
+    "generalCSharpSupportClaim": false
+  },
+  "externalBaselineFailures": [
+    "global.json requests SDK 10.0.201; local deterministic roll-forward resolves SDK 10.0.204 as frozen in Phase 00.",
+    "The CIL Release build and ISE Release build retain their pre-existing warning inventories.",
+    "HybridCPU_ISE.Tests intentionally forbids Release builds with internal test hooks; qualification tests run in the repository's Debug test-support configuration while all production projects are built Release.",
+    "Pinned ILCompiler and runtime reference inputs are the previously qualified immutable local Phase 26 pack."
+  ],
+  "nextDependencyGate": {
+    "phase": "07",
+    "status": "Deferred",
+    "gate": "Recursion is not part of V1; no work starts without a separate versioned dynamic-depth/stack-overflow authority contract."
+  }
+}

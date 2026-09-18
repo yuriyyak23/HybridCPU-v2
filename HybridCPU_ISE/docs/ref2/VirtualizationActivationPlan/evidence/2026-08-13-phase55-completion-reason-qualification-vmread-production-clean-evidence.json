@@ -1,0 +1,61 @@
+{
+  "schema": "hybridcpu.phase55-completion-reason-qualification-vmread-production-evidence/v1",
+  "record_kind": "later_non_self_referential_implementation_evidence",
+  "status_date": "2026-08-13",
+  "local_only": true,
+  "non_self_referential": true,
+  "implementation_subject": {
+    "commit_sha": "f5fbdcb16b5fe5859311448dacf7a98e17217b20",
+    "tree_sha": "2573f9a9a02f51d919e61b3358030ec199109fb3",
+    "spec_commit_sha": "9497d6152bee14e3743e99edc6c4c451b869ee8a",
+    "acceptance_commit_sha": "64be30f53188d69d5af98019919c95dec0ddd854"
+  },
+  "production_callers": {
+    "construction": "CpuCorePlatformContext -> CPU_Core per-core composition",
+    "materialization": "CPU_Core.ResolveMaterializedIssuePacketLane -> MicroOpScheduler exact completion method",
+    "delivery": "VmReadScalarResultReceipt -> VmxMicroOp writeback -> RetireRecord.RegisterWrite -> RetireCoordinator"
+  },
+  "exact_mapping": {
+    "source": "DomainCompletionObservationOwner exact committed snapshot",
+    "producer": "CanonicalCpuInstructionTranslationFaultProducer only",
+    "reasons": "AccessDenied and OwnerScopeMismatch to frozen SecurityPolicyViolation",
+    "qualification": "exact reason/access-kind/access-size encoding returned unchanged",
+    "guest_physical_address": "explicitly denied: source semantic is VirtualAddress",
+    "ept_violation_qualification": "explicitly denied: no SecondStageTranslationViolation facts"
+  },
+  "lifecycle": {
+    "receipt": "single-use exact snapshot binding",
+    "freshness": "completion generation, restore generation, producer, scope, attempt/event, identity, digest and order",
+    "restore_owner_replacement": "old observation owner or snapshot fails live validation",
+    "activation_default": "disabled; explicit CpuCorePlatformContext opt-in only"
+  },
+  "source_hashes_sha256_clean_subject_bytes": {
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/VmRead/CompletionReasonQualificationVmReadScalarDeliveryCanonicalComposition.cs": "4af518c55e62c41e43da6a499f2b8cf85490a5c260c48e15dd36f208537c486b",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/Materialization/CPU_Core.PipelineExecution.Materialization.cs": "c8c0929985acfa2bf9a47cf6c1c16c2229f6b844ed4993781ccadd3a1e282127",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/VmRead/VmReadScalarDeliveryCanonicalComposition.cs": "a0eb0de7e85b3b0f617bd86030e5abd0ca7c7bba275d048552237869fd071904",
+    "HybridCPU_ISE/CloseToHSL/Core/State/CpuCorePlatformContext.cs": "815c3fdce272420a86be4ed8edf860e279b0e79922608671f01d6ab482ed2e58",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase55CompletionReasonQualificationVmReadE0D2Tests.cs": "24a9223e177bfee398525c5de6482a39a18207b3f1872c6c8b39d3b91449110b",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/55_completion_reason_qualification_vmread_projection_e0_d2.md": "302ce8c974cb277a9fb541c2b7c4c95d0b54e648132ec21688bb7f4720a90770"
+  },
+  "commands_and_results": [
+    { "command": "focused Phase 55 plus plan/status guards", "result": "passed 71/71" },
+    { "command": "full VMX matrix", "result": "passed 532/532" },
+    { "command": "full SecureCompute matrix", "result": "passed 406/406" },
+    { "command": "lifecycle/restore races in five processes", "result": "passed five runs of 9/9" },
+    { "command": "Release without TESTING/internal hooks", "result": "0 warnings / 0 errors" },
+    { "command": "forbidden and ignored/untracked canonical source scans", "result": "no foreign canonical source dependency" }
+  ],
+  "verified_denials": {
+    "vmx_vmcs_runtime_authority": false,
+    "vmcs_backing_state_authority": false,
+    "trap_or_vmcall_surrogate_authority": false,
+    "caller_created_completion": false,
+    "vmread_specific_completion_registry": false,
+    "broad_completion_class_admission": false,
+    "guest_physical_address": false,
+    "ept_violation_qualification": false,
+    "vmwrite": false,
+    "compiler_securecompute_nested_iommu_device_expansion": false
+  },
+  "next_candidate": "none until a canonical neutral second-stage translation-fault producer and separate GPA/EPT field authorization"
+}

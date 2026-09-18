@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -17,9 +17,7 @@
   <ItemGroup><Using Include="Xunit" /></ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HybridCPU_ExternalRuntime.Contracts\HybridCPU_ExternalRuntime.Contracts.csproj" />
-    <ProjectReference Include="..\HybridCPU_ExternalRuntime\HybridCPU_ExternalRuntime.csproj"
-                      AdditionalProperties="ProduceReferenceAssembly=true"
-                      ReferenceOutputAssembly="true" />
+    <ProjectReference Include="..\HybridCPU_ExternalRuntime\HybridCPU_ExternalRuntime.csproj" />
     <ProjectReference Include="..\Compilers\HybridCPU_Compiler\NativeAot\HybridCPU.Compiler.NativeAot.Adapter.csproj" />
   </ItemGroup>
 </Project>

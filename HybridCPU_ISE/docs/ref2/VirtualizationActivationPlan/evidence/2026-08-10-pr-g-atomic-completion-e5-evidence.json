@@ -1,0 +1,68 @@
+{
+  "schema": "hybridcpu.virtualization-pr-g-atomic-completion-e5-evidence.v1",
+  "reviewed_at": "2026-08-10T00:00:00+03:00",
+  "local_only": true,
+  "subject_head_before_pr_g": "7f529cd4f9699701b0b2bfdcc8bd90eaf82af781",
+  "worktree_contains_uncommitted_pr_g": true,
+  "decision_id": "D2-HV-VMCALL-RUNTIME-V1-PROBE-0001",
+  "scope": "live exact E3 through split route and pure fence policy to atomic neutral CompletionRecord plus opaque E5; retire denied",
+  "source_contracts": [
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Records/DomainHypercallCompletionOwner.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/Hypercalls/DomainHypercallRuntimeExecutor.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/Hypercalls/DomainHypercallCanonicalComposition.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs"
+  ],
+  "tests": [
+    "VmxPrGCompletionOwnerE5Tests",
+    "VmxPrFCanonicalHypercallCompositionTests",
+    "VmxPrEExactProbeExecutorTests",
+    "VirtualizationActivationPlanAuditGuardTests",
+    "FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring"
+  ],
+  "diagnostic": {
+    "scenario": "prg-atomic-completion-e5",
+    "initial_10_iteration_pass_artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_210509_313_prg-atomic-completion-e5",
+    "final_50_iteration_pass_artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_211313_406_prg-atomic-completion-e5",
+    "evidence_class": "neutral-completion-owner/e5/retire-denied",
+    "required_zero_counters": [
+      "retire_publications",
+      "compatibility_completion_publications",
+      "frontend_record_constructions"
+    ]
+  },
+  "verification_results": {
+    "focused_pr_c_through_pr_g_and_plan_guards": "86/86 passed",
+    "final_pr_g_and_plan_guards_after_owner_binding_hardening": "59/59 passed",
+    "full_vmx_refactoring": "269/269 passed",
+    "release_no_test_support": "passed with 0 errors and 43 existing warnings in final rebuild",
+    "diagnostic_scenarios_50_iterations_each": "6/6 passed",
+    "diagnostic_artifacts": [
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_211313_406_prg-atomic-completion-e5",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_211315_424_prf-canonical-hypercall-composition",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_211317_479_pre-exact-probe-executor-no-publication",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_211319_486_prd-e2-admission-fault-only",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_211321_519_vmcall-denied",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_211323_501_e1-fault-transport"
+    ],
+    "forbidden_source_scans": "passed: sole positive backend-route boolean is inside neutral completion owner after live E3; sole executor caller remains canonical composition; compatibility has no completion owner/E5 caller; no backend Allowed decision, E6 or positive retire shortcut",
+    "git_diff_check": "passed"
+  },
+  "plan_corpus": {
+    "file_count": 39,
+    "algorithm": "sha256(utf8(join(sorted filename:sha256, LF)))",
+    "aggregate_sha256": "413416b8f76673733a276dc142d664e5effce741cafbd33d44e4c70b62dcfd79"
+  },
+  "claims": {
+    "architecture_policy_values": "unchanged-phase-38",
+    "machine_d2": "accepted-pr-b",
+    "exact_e3_e4": "closed-pr-e-pr-f",
+    "atomic_completion_record_and_e5": true,
+    "legacy_boolean_fence_authoritative": false,
+    "compatibility_completion_caller": false,
+    "e6_authorized": false,
+    "retire_publication_authorized": false,
+    "vmx_retire_fault_only": true,
+    "next_conditional_pool": "PR-H"
+  }
+}

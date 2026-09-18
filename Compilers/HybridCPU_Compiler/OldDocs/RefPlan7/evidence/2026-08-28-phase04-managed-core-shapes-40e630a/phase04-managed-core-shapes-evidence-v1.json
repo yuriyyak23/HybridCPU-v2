@@ -1,0 +1,301 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase04.ManagedCoreShapesEvidenceV1",
+  "phase": "04",
+  "date": "2026-08-28",
+  "disposition": "EvidenceClosed",
+  "defaultEnabled": false,
+  "implementation": {
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "commit": "40e630a7bb899e269c4d109800d8f1d43d178605",
+    "tree": "d5256d93289b828cccfe3f2fb279e2b307588c25",
+    "commits": [
+      "b6a0b6866bd343b269df77254ebb941b1c586777",
+      "40e630a7bb899e269c4d109800d8f1d43d178605"
+    ],
+    "worktreeStatusAtEvidenceStart": "clean",
+    "compilerSha": "40e630a7bb899e269c4d109800d8f1d43d178605",
+    "platformContractsSha": "40e630a7bb899e269c4d109800d8f1d43d178605",
+    "managedRuntimeSha": "40e630a7bb899e269c4d109800d8f1d43d178605",
+    "runtimeKernelSha": "40e630a7bb899e269c4d109800d8f1d43d178605",
+    "iseSha": "40e630a7bb899e269c4d109800d8f1d43d178605",
+    "repositoryModel": "single monorepo commit; component SHAs intentionally coincide"
+  },
+  "planHashes": {
+    "README.md": "3531e14bcdbb976dd1104bf75b8801e1c843adeab12a2f95f4660b55f32a819b",
+    "00-conformance-gate.md": "3bf536021bbd6ca14a094d8775272c7c95ab82dc440b03162e17bd31d944476e",
+    "01-managed-abi-runtime-contracts.md": "470fd01f7624d48b23ba6047af17eb6302e63d7dd1340ef0726cc0fc24e5dfa8",
+    "02-managed-references-object-layout.md": "33447d330d857987dbeb2353af05ca6a8ef7b2e84bb2bc857d9d9bc765bb89f5",
+    "03-heap-allocator.md": "0683bddb2c7ba068e51c7940cec12a4f36912886ef79be4c922e083fbb7ae3f9",
+    "04-arrays-strings-value-types.md": "bc06610c17af45b28d08d7b4089b50ee3af6df39d0ad434e243b457d93bbb3a6",
+    "05-gc-v1.md": "534be4c17500eb02ab470b0974fed81e3f3c9781eba5752c217cd78c02b16ae5",
+    "06-virtual-interface-dispatch.md": "f830b2b6e0bfdb2ed1e52ebeb3cc371986b4ed274e860db1db862286c433944a",
+    "07-delegates-function-pointers.md": "49f931008ffcf619fe5158713dbfa43ef9a338452262c133b52ea98535cefe93",
+    "08-generics-core.md": "e15f14a428876f5c4558f785b425ef8ae37603b660a2d820e9ab06a8dbf47336",
+    "09-managed-eh-core.md": "60e1ca7ca9774edb7e6da449abb86c79b1a7964d46c6ab29aa7b0096716c48a2",
+    "10-fault-trap-integration.md": "0bfea348ac81995fbee176b298eb792b8cb8f236d356c845241d0f11998f75d9",
+    "11-runtime-kernel-threading-tls.md": "bd6544d770749d81222ecd134406f85046b85bf99364d7a82675d912e93b2743",
+    "12-synchronization-memory-model.md": "c65d6fe4663b7ecb659f67415ce2231b647969114348e1e5843f90926e066d73",
+    "13-interop-host-services.md": "18f44c0b5f2b3d1c68131e99a9c9a09e56b01f45b8fd39601e878d2da8e28fb0",
+    "14-reflection-runtime-metadata.md": "2df5d5cfa363092628612b7d1da658ca6fd064e877b82b3bfc3f5cbb58537770",
+    "15-async-runtime-libraries.md": "ed25019bb1dab761d3778f22a62c87cb154659b8d8798fc6fe4bb31df33e0154",
+    "16-release-determinism-qualification.md": "62e1e9980293cdb5d28229631e4bec323867ddfe3e91e78b5b40df13f6a969b3"
+  },
+  "tools": {
+    "dotnetSdk": "10.0.204",
+    "dotnetSdkCommit": "e7aa4b537d",
+    "msbuild": "18.3.3+e7aa4b537",
+    "hostRid": "win-x64",
+    "os": "Windows 10.0.26200",
+    "globalJsonResolution": "10.0.204"
+  },
+  "contracts": {
+    "platformSchema": "hybridcpu.platform-contracts/v1@1.2",
+    "platformDigest": "eff6dfced17bbbc36b03a959f7024e58450d36e6001ebf0a69ba79412b71f5c0",
+    "managedTypeDescriptorSchema": "hybridcpu.managed-type-descriptor/v1@1.1",
+    "managedBootstrapSchema": "hybridcpu.managed-bootstrap/v1@1.2",
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "nativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+    "managedAbiSchema": "hybridcpu.managed-abi-family@1.4",
+    "managedAbiDigest": "fedca7448393c5a3cb5ff9db144fd8436558df1fb635693186efcd9c9cfb1c28",
+    "managedFeatureSetDigest": "3523e73585e3f385f5fc876af4f1e87f2e07bdbdf4513bcf8cfed9478324e592",
+    "runtimePackVersion": "1.4.0-refplan7-phase04",
+    "runtimePackDigest": "9d726bee108d236cbc45d2d90032f4e82376965d9c08142d14e05fad3a1454f3",
+    "runtimePackFileSha256": "ba9e183d9cbf1141f377758e287ec44dee17097743ef054a20358dde7d9a7fb4",
+    "objectFormatDigest": "17befa1c95512c2f014087580f3431e84a64c161cf361562166692f01bf4b927",
+    "linkOptionsDigest": "71f871b41cf815216ab8f712efaf57055ccb071ebd212ee440bfc6b9984c9bf6",
+    "startupOptionsDigest": "2a61a21935a0168df4002ec04c7e846be259017e64fe3f76478dc71b1ff9a689"
+  },
+  "supportMatrix": {
+    "qualifiedDefaultOff": [
+      "blittable-value-boxing",
+      "deterministic-allocation",
+      "gc-maps-safepoints",
+      "metadata-runtime-lookup",
+      "static-type-initialization",
+      "szarray-core",
+      "type-layout-object-references",
+      "utf16-string-literals"
+    ],
+    "unsupported": [
+      "debug-source-mapping",
+      "eh-unwind",
+      "managed-unmanaged-interop",
+      "read-write-barriers",
+      "tls-thread-runtime-state"
+    ],
+    "cilExplicitlyUnsupported": ["ldelema", "managed-byref", "interior-reference"],
+    "publishQualified": [],
+    "phase04DefaultEnableDisposition": "QualifiedDefaultOff",
+    "dotNetAotManagedReleaseDisposition": "Unsupported"
+  },
+  "deterministicBudgets": {
+    "maximumManagedTypes": 4096,
+    "maximumManagedFieldsPerType": 1024,
+    "maximumManagedInterfacesPerType": 256,
+    "maximumManagedStringLiterals": 4096,
+    "maximumManagedStringLiteralCodeUnits": 1048576,
+    "maximumCilCallsPerMethod": 256,
+    "objectHeaderBytes": 16,
+    "objectAlignmentBytes": 8,
+    "arrayLengthBytes": 4,
+    "stringCharacterBytes": 2,
+    "valueTypeCilPayloadBytes": [4, 8],
+    "typeInitializationContextModel": "single-context",
+    "budgetSelectionUsesWallClock": false
+  },
+  "qualification": {
+    "focusedPhase04": {
+      "configuration": "Debug testsupport",
+      "filter": "CompilerRefPlan7Phase04ManagedCoreShapesTests",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "includesIseExecution": true
+    },
+    "cumulativeContracts": {
+      "passed": 133,
+      "failed": 0,
+      "skipped": 0
+    },
+    "focusedFailClosedRegression": {
+      "passed": 53,
+      "failed": 0,
+      "skipped": 0
+    },
+    "compilerRegressionFinal": {
+      "configuration": "Debug testsupport",
+      "filter": "FullyQualifiedName~CompilerTests",
+      "passed": 1409,
+      "failed": 0,
+      "skipped": 0,
+      "duration": "00:04:59"
+    },
+    "closureAuditRemediation": {
+      "initialRunPassed": 1402,
+      "initialRunFailed": 7,
+      "remediationCommit": "40e630a7bb899e269c4d109800d8f1d43d178605",
+      "finalRunPassed": 1409,
+      "finalRunFailed": 0
+    },
+    "releaseBuilds": {
+      "runs": 2,
+      "Platform.Contracts": {"warnings": 0, "errors": 0},
+      "Compiler.Core": {"warnings": 0, "errors": 0},
+      "Compiler.Cil": {"warningsFirstRun": 1, "warningsSecondRun": 0, "errors": 0},
+      "NativeAotAdapter": {"warnings": 0, "errors": 0},
+      "ReleaseQualification": {"warnings": 0, "errors": 0},
+      "RuntimeKernel": {"warnings": 0, "errors": 0},
+      "ManagedRuntime": {"warnings": 0, "errors": 0},
+      "ISE": {"warningsFirstRun": 43, "warningsSecondRun": 0, "errors": 0}
+    },
+    "releaseTestHarness": {
+      "status": "NotApplicable",
+      "reason": "HybridCPU_ISE.Tests deliberately rejects Release when internal test hooks are enabled; production Release projects were built independently."
+    },
+    "runtimeVisibleEvidence": "A versioned HCEXE image was produced through HCO and the static linker, inspected by the loader, bootstrapped through RuntimeKernel and ManagedRuntime, and executed on ISE using generic ADDI/JAL/JALR/LW. The runtime-owned checked SZARRAY load returned 73; no managed-specific ISA operation was introduced.",
+    "determinism": {
+      "utf16LiteralPoolAndBytesRepeat": true,
+      "runtimePackRegeneratedDeterministically": true,
+      "releaseBuildRuns": 2,
+      "dllsByteIdentical": true,
+      "dllSha256": {
+        "platformContracts": "70611774309d0b24945fa530c2a7ef1c4d6e68e7061a1ae908e133d72dc1b88d",
+        "compilerCore": "44e15dcc24d7504624540f93dac769ffd42561c84db8c36c518dd1b931e73ac1",
+        "compilerCil": "7e8d42e345d0134b4bc934db7a7dfa452fd4015ad2412ec1b3ccf89ee6665f43",
+        "nativeAotAdapter": "8387fb510364400039e062c8446caf89271b76b07571019e20cf20606c0aa5b5",
+        "releaseQualification": "d33e3912ae3bfb03b94821f7889df9680f64f2314e14c049347f00c34c68da04",
+        "runtimeKernel": "bdfe1835b313f3ead5f0d0a3961a9ebd73a9d3e68ac1174a86458ff1612dbb1e",
+        "managedRuntime": "b5a5f1af83e5003de857a11fea030471c50d8e16dffdd9c720b777f7a069c1ab",
+        "ise": "36b8f0be81a286f455128590c45a2441a768a2fe043ad36b1925a574fe42b735"
+      }
+    },
+    "gitDiffCheck": "clean"
+  },
+  "sourceDigests": {
+    "platformContracts": "80bcc8757898fe87379386570bc0cd45ceac162f14778c72dc42ca937044ae1a",
+    "managedTypeSystem": "fc6b0c6b59c34de9545de56134063c96510eecd294e8005892efa993e92d5bfc",
+    "managedHeapAllocator": "1ab2d76359800a984ff777aefd9727b74a132ed494b2ceb349dd5e28b0150920",
+    "managedCoreShapesRuntime": "aab99d091d7024bf0c84f1d8e4fb550f3614ad4ef4e78f147882148abb76ad2c",
+    "managedBootstrapRuntime": "cf7a980e426ade0097381aebdf07ca7a904319dfb7df1635217e2d8e1fa8a0c2",
+    "cilContracts": "c7a2db1407b79c8113e737580e8a38591fc99f9512818d36a35fdde8e1ac0f23",
+    "cilImporter": "ad14d49f688cdfac2739ecd3912b495e52b3587fabba7ee14b03f8a4d5bc5530",
+    "cilCfgSsaImporter": "eaaef3cec9fa7f2563769e9c54eb20f7d38d08e30d540a20279c3bb79de7a557",
+    "cilCallGraph": "6738fe55fab3bb71362a7687f1619eb36c7e5945be0b0e2426bda3196b6202b5",
+    "managedAbi": "275ec57cf1b111fbad6480e7ede5c69834f65b158eb3b8ad6039b948798fd9d6",
+    "managedFeatureSet": "815c9236fe0e982618c9f50859c61f6cb5ecb9bd59c6aba576df14bdda0ed169",
+    "phase04Tests": "de3fcc1a881d352b9e8f7fde92fe3d75484a87703dff6ac4591479cc34d86601",
+    "checkedInRuntimePack": "ba9e183d9cbf1141f377758e287ec44dee17097743ef054a20358dde7d9a7fb4"
+  },
+  "dependencyAndAuthority": {
+    "compiler": [
+      "CIL newarr/ldlen/ldelem/stelem, ldstr, box/unbox.any and static accesses require exact runtime descriptor bindings",
+      "ScalarControlFlowV2 emits versioned runtime-helper calls through the existing Canonical/Core scheduler, ABI, HCO, linker and image path",
+      "legacy restricted mode and non-allowlisted callvirt remain fail-closed"
+    ],
+    "managedRuntime": [
+      "ManagedRuntime owns checked SZARRAY shape/access/covariance, immutable UTF-16 objects, fixed blittable boxing, static storage and exactly-once initialization",
+      "literal handles are exact, collision-checked and registered during bootstrap for Phase 05 root discovery",
+      "reference-bearing value-type boxing remains unsupported"
+    ],
+    "runtimeKernel": [
+      "existing language-neutral VM ownership and single execution context are reused",
+      "no RuntimeKernel source, managed threading, TLS or multi-context semantics changed"
+    ],
+    "ise": [
+      "existing generic ADDI/JAL/JALR/LW mechanisms execute the qualified image",
+      "no managed-specific instruction, ISA extension, legality, fault, publication or retire rule was added",
+      "the only ISE-tree source delta is an exact ABI/revision pin in the historical managed-GC consumer contract"
+    ],
+    "forbiddenEdgesPreserved": [
+      "Compiler Core -/-> RuntimeKernel, ManagedRuntime, ISE",
+      "RuntimeKernel -/-> Compiler, ManagedRuntime, ISE",
+      "ManagedRuntime -/-> Compiler, ISE",
+      "Platform.Contracts -/-> Compiler, RuntimeKernel, ManagedRuntime, ISE"
+    ]
+  },
+  "claimClassifications": [
+    {
+      "claim": "Exact SZARRAY allocation, length, int32/reference access and covariance checks are runtime-owned and qualified default-off",
+      "classification": "Proven",
+      "evidence": [
+        "ManagedCoreShapesRuntimeV1.cs:HybridCpuManagedArrayRuntimeV1",
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.SzArray_PrimitiveRoundTripLengthBoundsAndOverflowAreRuntimeOwned",
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.SzArray_ReferenceStoreChecksExactRuntimeAssignability"
+      ]
+    },
+    {
+      "claim": "Immutable UTF-16 literals have deterministic materialization, exact handles and bootstrap registration",
+      "classification": "Proven",
+      "evidence": [
+        "ManagedCoreShapesRuntimeV1.cs:HybridCpuManagedStringRuntimeV1",
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.Strings_AreUtf16ImmutableAndLiteralMaterializationIsDeterministic",
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.Bootstrap_RegistersCanonicalStringLiteralsAsStaticRootsAndRejectsMissingRuntime"
+      ]
+    },
+    {
+      "claim": "Fixed 4/8-byte blittable scalar boxing and unboxing use width-exact managed ABI helpers",
+      "classification": "Proven",
+      "evidence": [
+        "HybridCpuManagedAbiContractsV1.cs:__hybridcpu_managed_box_i4/i8 and unbox_i4/i8",
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.BlittableValueType_BoxesRoundTripsAndReferenceBearingShapeFailsClosed",
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.Cil_BoxUnboxAndStaticInitializationLowerWithExactBindings"
+      ]
+    },
+    {
+      "claim": "Single-context static/type initialization is ordered, exactly-once, recursive-safe and sticky-failure",
+      "classification": "Proven",
+      "evidence": [
+        "ManagedCoreShapesRuntimeV1.cs:HybridCpuManagedTypeInitializerRuntimeV1",
+        "ManagedBootstrapRuntimeV1.cs:Bootstrap",
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.TypeInitialization_IsExactlyOnceRecursiveAndStickyOnFailure"
+      ]
+    },
+    {
+      "claim": "Runtime-visible array behavior requires a managed-specific ISA extension",
+      "classification": "Contradicted",
+      "evidence": [
+        "CompilerRefPlan7Phase04ManagedCoreShapesTests.RealImage_LoaderBootstrapAndIseExecuteCheckedSzArrayLoadThroughGenericIsa",
+        "generic ADDI/JAL/JALR/LW only"
+      ]
+    },
+    {
+      "claim": "ldelema/interior references, multidimensional arrays, reference-bearing value boxing, string interning or multi-context initialization are supported",
+      "classification": "Not implemented",
+      "evidence": [
+        "RestrictedCilSupportMatrixV1 ldelema=Unsupported/HCCIL1408",
+        "blittable value runtime rejects non-empty object-reference maps",
+        "Phase 04 workstream reasons explicitly retain these exclusions"
+      ]
+    },
+    {
+      "claim": "Phase 04 component evidence enables general NativeAOT managed publish",
+      "classification": "Contradicted",
+      "evidence": [
+        "PublishQualifiedWorkstreams=[]",
+        "DotNetAotManaged release disposition remains Unsupported",
+        "all Phase 04 workstreams are QualifiedDefaultOff"
+      ]
+    },
+    {
+      "claim": "A write barrier is required before the Phase 05 non-moving collector design is proven",
+      "classification": "Hypothesis",
+      "evidence": [
+        "read-write-barriers remains Unsupported",
+        "Phase 04 introduces no collector or moving/generational policy"
+      ]
+    }
+  ],
+  "knownBaselineFailures": [],
+  "knownBuildObservations": [
+    "HybridCPU_ISE.Tests Release test host intentionally rejects internal test hooks; production Release projects were built separately.",
+    "Compiler.Cil has one pre-existing obsolete LegalSlots warning on a non-incremental Release build.",
+    "ISE has 43 pre-existing warnings on a non-incremental Release build and zero errors.",
+    "global.json resolves deterministically to installed SDK 10.0.204."
+  ],
+  "nextGate": {
+    "phase": "05",
+    "status": "Eligible",
+    "scope": "precise single-thread STW non-moving mark-sweep GC V1",
+    "prerequisite": "Phase 04 EvidenceClosed"
+  }
+}

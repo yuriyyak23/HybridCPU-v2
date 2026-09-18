@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Deterministic>true</Deterministic>
     <AssemblyName>HybridCPU_ExternalRuntime.Contracts</AssemblyName>
     <PackageId>HybridCPU.ExternalRuntime.Contracts</PackageId>
-    <Version>1.3.0</Version>
-    <PackageVersion>1.3.0</PackageVersion>
+    <Version>1.14.0</Version>
+    <PackageVersion>1.14.0</PackageVersion>
     <Authors>HybridCPU</Authors>
     <Description>Stable semantic contracts for the HybridCPU external runtime facade.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -16,9 +16,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Additive H15 exact secure virtual-I/O composition over existing bounded child I/O receipt; no production-security claim.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
     <None Include="PublicApi.Shipped.txt" Pack="true" PackagePath="build\" />
+    <None Include="PublicApi.1.3.0.txt" Pack="true" PackagePath="build\" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,191 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase06.ManagedDispatchEvidenceV1",
+  "phase": "06",
+  "date": "2026-08-29",
+  "disposition": "EvidenceClosed",
+  "defaultEnabled": false,
+  "implementation": {
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "commit": "19da72e61598ac8a117817cc4296e3c21f4cc93d",
+    "tree": "7d9c992d95c42751acb04c1e2749db84b935fe94",
+    "worktreeStatusAtEvidenceStart": "clean",
+    "compilerSha": "19da72e61598ac8a117817cc4296e3c21f4cc93d",
+    "platformContractsSha": "19da72e61598ac8a117817cc4296e3c21f4cc93d",
+    "managedRuntimeSha": "19da72e61598ac8a117817cc4296e3c21f4cc93d",
+    "runtimeKernelSha": "19da72e61598ac8a117817cc4296e3c21f4cc93d",
+    "iseSha": "19da72e61598ac8a117817cc4296e3c21f4cc93d",
+    "repositoryModel": "single monorepo commit; component SHAs intentionally coincide"
+  },
+  "planHashes": {
+    "README.md": "3531e14bcdbb976dd1104bf75b8801e1c843adeab12a2f95f4660b55f32a819b",
+    "00-conformance-gate.md": "3bf536021bbd6ca14a094d8775272c7c95ab82dc440b03162e17bd31d944476e",
+    "01-managed-abi-runtime-contracts.md": "470fd01f7624d48b23ba6047af17eb6302e63d7dd1340ef0726cc0fc24e5dfa8",
+    "02-managed-references-object-layout.md": "33447d330d857987dbeb2353af05ca6a8ef7b2e84bb2bc857d9d9bc765bb89f5",
+    "03-heap-allocator.md": "0683bddb2c7ba068e51c7940cec12a4f36912886ef79be4c922e083fbb7ae3f9",
+    "04-arrays-strings-value-types.md": "bc06610c17af45b28d08d7b4089b50ee3af6df39d0ad434e243b457d93bbb3a6",
+    "05-gc-v1.md": "534be4c17500eb02ab470b0974fed81e3f3c9781eba5752c217cd78c02b16ae5",
+    "06-virtual-interface-dispatch.md": "f830b2b6e0bfdb2ed1e52ebeb3cc371986b4ed274e860db1db862286c433944a",
+    "07-delegates-function-pointers.md": "49f931008ffcf619fe5158713dbfa43ef9a338452262c133b52ea98535cefe93",
+    "08-generics-core.md": "e15f14a428876f5c4558f785b425ef8ae37603b660a2d820e9ab06a8dbf47336",
+    "09-managed-eh-core.md": "60e1ca7ca9774edb7e6da449abb86c79b1a7964d46c6ab29aa7b0096716c48a2",
+    "10-fault-trap-integration.md": "0bfea348ac81995fbee176b298eb792b8cb8f236d356c845241d0f11998f75d9",
+    "11-runtime-kernel-threading-tls.md": "bd6544d770749d81222ecd134406f85046b85bf99364d7a82675d912e93b2743",
+    "12-synchronization-memory-model.md": "c65d6fe4663b7ecb659f67415ce2231b647969114348e1e5843f90926e066d73",
+    "13-interop-host-services.md": "18f44c0b5f2b3d1c68131e99a9c9a09e56b01f45b8fd39601e878d2da8e28fb0",
+    "14-reflection-runtime-metadata.md": "2df5d5cfa363092628612b7d1da658ca6fd064e877b82b3bfc3f5cbb58537770",
+    "15-async-runtime-libraries.md": "ed25019bb1dab761d3778f22a62c87cb154659b8d8798fc6fe4bb31df33e0154",
+    "16-release-determinism-qualification.md": "62e1e9980293cdb5d28229631e4bec323867ddfe3e91e78b5b40df13f6a969b3"
+  },
+  "tools": {
+    "dotnetSdk": "10.0.204",
+    "dotnetSdkCommit": "e7aa4b537d",
+    "msbuild": "18.3.3+e7aa4b537",
+    "hostRid": "win-x64",
+    "os": "Windows 10.0.26200"
+  },
+  "contracts": {
+    "platformSchema": "hybridcpu.platform-contracts/v1@1.4",
+    "platformDigest": "5624b5fe861167148da95ee227c59045375409225e7d246e19d30787e68cf251",
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "managedAbiSchema": "hybridcpu.managed-abi-family@1.6",
+    "managedAbiDigest": "90898b1154add8f5f6e8126803508e9e713fac90af3841a3946c2c2998e0ab5c",
+    "managedFeatureSetDigest": "df36b73daf4fc199a8f3ef7016eee4d65f8efe6463dc7684ecf5f0a6f0ebdfb3",
+    "dispatchTableSchema": "hybridcpu.managed-dispatch-table/v1",
+    "dispatchMetadataSchema": "hybridcpu.managed-dispatch-metadata/v1:HCDP0001",
+    "runtimePackRevision": "hybridcpu.runtime-pack/managed-contract-v1.6",
+    "runtimePackVersion": "1.6.0-refplan7-phase06",
+    "runtimePackDigest": "3ecf97210c9378ae7983a787c098a5c55b8f1c4940ec102569e4850f4463dcf3",
+    "runtimePackFileSha256": "839fb8b99fec9905ce70c87a10ca6ed024d47f855b4c5b13b2a6cf7cb4821917",
+    "objectFormatDigest": "17befa1c95512c2f014087580f3431e84a64c161cf361562166692f01bf4b927",
+    "linkOptionsDigest": "b0187a54a3386d1b274df878005a3103640b0002c4ae440cf6fc93495496a425",
+    "startupOptionsDigest": "bb5529f249a970d22ea1ff11b596e7332b426258adb54b30b344e33aa178883b"
+  },
+  "supportMatrix": {
+    "qualifiedDefaultOff": [
+      "blittable-value-boxing", "deterministic-allocation", "gc-maps-safepoints",
+      "metadata-runtime-lookup", "static-type-initialization", "szarray-core",
+      "type-layout-object-references", "utf16-string-literals", "virtual-interface-dispatch"
+    ],
+    "publishQualified": [],
+    "phase06DefaultEnableDisposition": "QualifiedDefaultOff",
+    "dotNetAotManagedReleaseDisposition": "Unsupported"
+  },
+  "deterministicBudgets": {
+    "maximumManagedMethods": 16384,
+    "maximumManagedTypes": 4096,
+    "maximumVirtualSlotsPerType": 1024,
+    "maximumInterfaceSlotsPerType": 4096,
+    "methodOrdering": "declaring type id, metadata ordinal, stable identity",
+    "virtualOrdering": "runtime type id, slot id",
+    "interfaceOrdering": "runtime type id, interface type id, slot id",
+    "budgetSelectionUsesWallClock": false
+  },
+  "qualification": {
+    "focusedPhase06": {
+      "configuration": "Debug testsupport",
+      "filter": "CompilerRefPlan7Phase06ManagedDispatchTests",
+      "passed": 13, "failed": 0, "skipped": 0,
+      "coverage": "positive, negative, property/order determinism, dependency, authority, final lowering, spill pressure, image/bootstrap/ISE"
+    },
+    "affectedCumulative": {
+      "configuration": "Debug testsupport",
+      "passed": 218, "failed": 0, "skipped": 0
+    },
+    "compilerRegressionFinal": {
+      "configuration": "Debug testsupport",
+      "filter": "FullyQualifiedName~CompilerTests",
+      "passed": 1431, "failed": 0, "skipped": 0,
+      "duration": "00:04:48"
+    },
+    "closureAuditRemediation": {
+      "initialFullSuitePassed": 1419,
+      "initialFullSuiteFailed": 12,
+      "cause": "historical tests encoded pre-Phase06 callvirt rejection, exact support-row counts, or attempted to combine current HCMM output with the immutable Phase05 moving-GC v1.5 digest",
+      "resolution": "updated exact Phase06 expectations while retaining the historical moving-GC runtime's independent v1.5 ABI pin and fail-closed skew behavior"
+    },
+    "releaseBuilds": {
+      "runs": 2,
+      "projectsPerRun": 8,
+      "allSucceeded": true,
+      "errors": 0,
+      "artifactHashMatches": "8/8"
+    },
+    "runtimeVisibleEvidence": {
+      "test": "CompilerRefPlan7Phase06ManagedDispatchTests.LinkedDispatchMetadata_BootstrapRuntimeAndIseUseOrdinaryAbsolute64AndJalr",
+      "path": "HCO .hcmd Absolute64 relocations -> static link -> HCEXE image -> loader/bootstrap helper import -> runtime-owned virtual lookup -> ISE direct resolver carrier -> x5 generic JALR -> derived method",
+      "managedSpecificIsaAdded": false
+    },
+    "determinism": {
+      "runtimeTablePermutationDigestEqual": true,
+      "metadataPermutationBytesAndDigestEqual": true,
+      "packManifestThreeWayByteEqual": true,
+      "packManifestSha256": "839fb8b99fec9905ce70c87a10ca6ed024d47f855b4c5b13b2a6cf7cb4821917",
+      "releaseDllSha256": {
+        "platformContracts": "8e2de88f9d8e609fbbee7d690500d958775ad54e2aef4b30740ecc0bcfb85ba4",
+        "compilerCore": "4b6f3ec422b6440529bfc4df18fa9d7966444d5eacbd4c91ce368ec13e58d0c0",
+        "compilerCil": "07f41a742157a7e370178a4d5d1f0bc161ce3a3fff08598c8fd891829f553328",
+        "managedRuntime": "ede8b01024d892ab27d9e702b931185255995cab8782c78683e1495a06c1acfc",
+        "runtimeKernel": "b11b2012895a7acbf58681e3c429e2e8af0896dffa6fe86f9f4a7e60145923d1",
+        "nativeAotAdapter": "a5577ca85587f5d34f3a6bc95514a81851f2b662e9e1c6ec7b533d16568324eb",
+        "releaseQualification": "251b69798c5eae66c0268bd03629f6f1bb10925dbf84f8c3c1bc84f086feaeaa",
+        "ise": "bba13e73824d303ab5acd3c1df39ee525b10956d18e2c588bbee21125d4883d2"
+      }
+    },
+    "gitDiffCheck": "clean"
+  },
+  "sourceDigests": {
+    "platformContracts": "f489040e551c9defd98cb09f872743e2cd3739ed1589c24a94a0a96cfbe22961",
+    "managedAbi": "337c37f6639f61c84136c23d2bd71f64bd30cf12dabaf166d39aa77164c70778",
+    "managedFeatureSet": "b758eb21c000ed3b1d3caef796ca6650e7a0354df040e030181dad8ae7db2c22",
+    "dispatchMetadataEmitter": "caba5fb90bca21cce41a75f4c246495d930179504e4f06d1f5cf27c914f54241",
+    "managedDispatchRuntime": "23c0ef500d1fd678ef6d116966e540d69686fc9fa04e603b83a8302a712f7aa6",
+    "cilDispatchLowering": "7cf0aab28591cdc480b88c87f9872bd5de6add6c656480df5f752fd5a80e4c98",
+    "callGraphAdmission": "bcb3dadf653a45aba115f5fd9fe54325fcbe72ca0d7d15d7009fd4942c8608f1",
+    "phase06Tests": "cff39363a65fa0fab269ddd8a02c8662882a5ae899a7e4b0966900b63e37be0e"
+  },
+  "dependencyAndAuthority": {
+    "compiler": "exact bounded dispatch candidates are admitted in the CIL body world; Canonical IR uses the existing call annotation, scheduler, allocator, frame and bundle path; x5 is the ordinary indirect-call carrier",
+    "managedRuntime": "owns type assignability, null/cast/isinst semantics, slot inheritance/override/interface lookup and code-address selection",
+    "runtimeKernel": "unchanged; existing language-neutral boot, context and VM substrate is reused",
+    "platformContracts": "contains versioned POD dispatch rows and deterministic constants only",
+    "hcoLinkImage": "compiler emits .hcmd with ordinary Absolute64 relocations; linker alone resolves symbols and image layout",
+    "ise": "unchanged; executes ordinary JAL/JALR and machine values without managed semantic authority",
+    "nativeAotAdapter": "pack advertises component qualification default-off; managed publish remains unsupported",
+    "forbiddenEdgesPreserved": true
+  },
+  "changedPathAudit": {
+    "pathCount": 28,
+    "implementationInsertions": 1464,
+    "implementationDeletions": 87,
+    "runtimeKernelChanges": 0,
+    "iseProductionChanges": 0,
+    "isaChanges": 0,
+    "foreignWipIncluded": false
+  },
+  "claimClassifications": [
+    {"claim": "Exact bounded instance, virtual and interface dispatch uses runtime-owned semantic lookup and generic indirect transfer", "classification": "Proven", "evidence": ["ManagedDispatchRuntimeV1.cs", "RestrictedCilImporterV1.ControlFlowV2.cs", "CompilerRefPlan7Phase06ManagedDispatchTests"]},
+    {"claim": "Dispatch metadata addresses come from ordinary final HCO/link relocation", "classification": "Proven", "evidence": ["HybridCpuManagedDispatchMetadataEmitterV1.cs", "LinkedDispatchMetadata_BootstrapRuntimeAndIseUseOrdinaryAbsolute64AndJalr"]},
+    {"claim": "Open-world or unbounded virtual targets are accepted", "classification": "Contradicted", "evidence": ["HCSCF-DISPATCH1003 exact candidate validation", "empty and mismatched candidate negative tests"]},
+    {"claim": "Delegates and managed function pointers are implemented by Phase06", "classification": "Not implemented", "evidence": ["Phase07 remains next gate"]},
+    {"claim": "Dispatch requires a managed-specific ISA instruction", "classification": "Contradicted", "evidence": ["ISE production delta zero", "real image uses JAL and x5 JALR"]},
+    {"claim": "Phase06 component evidence authorizes general managed publish", "classification": "Contradicted", "evidence": ["PublishQualifiedWorkstreams=[]", "managed release disposition Unsupported"]},
+    {"claim": "Phase07 can reuse the same x5 indirect transfer and final call metadata path", "classification": "Hypothesis", "evidence": ["Phase07 audit required before implementation"]}
+  ],
+  "knownBaselineFailures": [],
+  "knownBuildObservations": [
+    "Compiler.Cil has one pre-existing obsolete LegalSlots warning on a non-incremental Release build.",
+    "ISE has 43 pre-existing warnings on a non-incremental Release build and zero errors.",
+    "Debug testsupport is required for ISE execution tests; production Release projects build independently."
+  ],
+  "releaseDisposition": {
+    "component": "QualifiedDefaultOff",
+    "managedPublish": "Unsupported",
+    "fullLanguageSupport": "Not claimed"
+  },
+  "nextGate": {
+    "phase": "07",
+    "status": "Eligible",
+    "scope": "delegates and managed function pointers",
+    "prerequisite": "Phase 06 EvidenceClosed"
+  }
+}

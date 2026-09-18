@@ -1,0 +1,514 @@
+{
+  "Aggregate": {
+    "CompilerEmissionCount": 34,
+    "FailClosedRejectionCount": 53,
+    "MeetsSmokeThroughputBaseline": true,
+    "PassedScenarioCount": 17,
+    "ReplayRoundTripCount": 4018,
+    "ResultChecksum": 17588030958249760693,
+    "RetirePublicationCount": 6016,
+    "RuntimeInstructionCount": 6026,
+    "ScenarioCount": 17,
+    "StreamBytesTransferred": 24032,
+    "StreamInvalidationCount": 6002
+  },
+  "ArchitectureKeys": [
+    "MTILE_LOAD and MTILE_STORE use typed MatrixTile stream transport on lane6; DmaStreamClass is an aliased capacity conflict.",
+    "MTILE_MACC owns explicit runtime numeric/layout policies; MTRANSPOSE owns explicit runtime layout policy without a MACC numeric policy.",
+    "Numeric/layout conformance spans signed integer widening/overflow, binary32/binary64 software IEEE results, and operation-specific layout validation.",
+    "Execute captures are invisible until retire; rollback/replay use policy-bound core-owned identity and checkpoints.",
+    "Tampered numeric/layout or typed-transfer identity is rejected before publication; compiler metadata is not runtime authority."
+  ],
+  "Iterations": 500,
+  "RuntimeClosureDecision": "ClosedCompilerMatrixTileLoweredAnnotationsCarryNumericLayoutPolicySidebands",
+  "Scenarios": [
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTileMemory / MatrixTileStreamClass / lane6",
+      "FailClosedRejectionCount": 0,
+      "FailureMessage": "",
+      "Id": "mtile-memory-lane6-roundtrip-pressure",
+      "Iterations": 500,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 1000,
+      "ResourceEvidence": [
+        "resource=MatrixTileMemory",
+        "slot=MatrixTileStreamClass",
+        "lane=6",
+        "channel=0",
+        "DmaStreamClass capacity conflict verified by runtime lane map"
+      ],
+      "ResultChecksum": 18191991073564986689,
+      "RetirePublicationCount": 1000,
+      "RuntimeInstructionCount": 1000,
+      "StreamBytesTransferred": 4000,
+      "StreamInvalidationCount": 1000,
+      "WorkloadShape": "Repeated 2x2 typed ingress and egress with retire-only publication, all-or-none store rollback/replay, and SRF invalidation."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTileMemory / varied descriptor shapes and SRF row windows",
+      "FailClosedRejectionCount": 0,
+      "FailureMessage": "",
+      "Id": "mtile-memory-contour-varied-shape-pressure",
+      "Iterations": 2000,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 2000,
+      "ResourceEvidence": [
+        "shape=1x4/2x3/3x2/4x1",
+        "stride=canonical and padded row windows",
+        "publication=load retire only",
+        "store=all-or-none commit plus SRF invalidation"
+      ],
+      "ResultChecksum": 3784189458208015805,
+      "RetirePublicationCount": 4000,
+      "RuntimeInstructionCount": 4000,
+      "StreamBytesTransferred": 20000,
+      "StreamInvalidationCount": 5000,
+      "WorkloadShape": "1x4, 2x3, 3x2, and 4x1 typed MatrixTile load/store pressure with non-square row-window identities, row strides, overlap invalidation, and retire-only publication."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "Scheduler / lane6 MatrixTileStreamClass capacity pressure",
+      "FailClosedRejectionCount": 6,
+      "FailureMessage": "",
+      "Id": "mtile-lane6-scheduler-conflict-pressure",
+      "Iterations": 12,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "TEST_SLOT_CLASS_CLAIM"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 0,
+      "ResourceEvidence": [
+        "foreground=MatrixTileStreamClass/lane6",
+        "candidate=DmaStreamClass/lane6 rejected",
+        "candidate=MatrixTileStreamClass/lane6 rejected",
+        "candidate=AluClass/LsuClass admitted on independent capacity"
+      ],
+      "ResultChecksum": 5082854327183132183,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 0,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Repeated real MicroOpScheduler SMT pack attempts keep foreground MatrixTile memory on lane6, reject lane6 stream aliases, and still admit independent ALU/LSU competitors."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTileCompute / AluClass",
+      "FailClosedRejectionCount": 0,
+      "FailureMessage": "",
+      "Id": "mtile-macc-numeric-policy-replay-pressure",
+      "Iterations": 500,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_MACC"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 500,
+      "ResourceEvidence": [
+        "resource=MatrixTileCompute",
+        "slot=AluClass",
+        "numeric=SignedInt8ToInt32",
+        "layout=MaccCanonicalRowMajorAscendingK",
+        "publication=Accumulator"
+      ],
+      "ResultChecksum": 1319203195195052334,
+      "RetirePublicationCount": 500,
+      "RuntimeInstructionCount": 500,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Repeated INT8-to-INT32 row-major MACC with explicit numeric/layout sidebands and policy-bound retire/rollback/replay identity."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTileNumericLayoutAbi / formal runtime arithmetic",
+      "FailClosedRejectionCount": 3,
+      "FailureMessage": "",
+      "Id": "mtile-numeric-layout-abi-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 0,
+      "ResourceEvidence": [
+        "numeric=all supported MatrixTileNumericPolicyAbi profiles byte-exact",
+        "numeric=signed/unsigned integer widening and final little-endian encoding",
+        "numeric=SignedInt64ToInt64 overflow traps before publication",
+        "numeric=Binary32ToBinary32 separate software IEEE rounding",
+        "numeric=Binary64ToBinary64 byte-exact software IEEE result",
+        "layout=Transpose non-square in-place and tampered destination addressing reject"
+      ],
+      "ResultChecksum": 4062164748657879672,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 0,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Signed integer widening/overflow, binary32/binary64 software IEEE arithmetic, and operation-specific transpose layout rejection."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTile golden manifest / runtime-owned corpus coverage",
+      "FailClosedRejectionCount": 10,
+      "FailureMessage": "",
+      "Id": "mtile-golden-manifest-coverage-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE",
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 0,
+      "ResourceEvidence": [
+        "golden=positive executable vectors for all canonical opcodes",
+        "golden=memory fault vectors for load/store identity",
+        "golden=descriptor and reserved carrier negatives fail closed",
+        "golden=no compiler-generated inputs and no fallback path",
+        "no-fallback=typed carrier, runtime memory, IL call target, and compiler boundary audit advertised"
+      ],
+      "ResultChecksum": 15731233693871046350,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 0,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Production positive and negative golden vectors cover four canonical opcodes, retire/replay expectations, memory faults, descriptor faults, and reserved carrier rejection without compiler-generated authority or fallback."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTile WhiteBook golden JSON / production-path loader",
+      "FailClosedRejectionCount": 3,
+      "FailureMessage": "",
+      "Id": "mtile-golden-json-corpus-loader-pressure",
+      "Iterations": 10,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 0,
+      "ResourceEvidence": [
+        "json=schema v1 and runtime ABI version binding",
+        "json=no compiler output and no private arithmetic oracle",
+        "json=positive MACC/transpose vectors validated against runtime ABI",
+        "json=execute/projection fault vectors fail closed"
+      ],
+      "ResultChecksum": 685628107880284625,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 7,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Machine-readable MatrixTile golden corpus is loaded read-only, schema/ABI/boundary flags are checked, and positive/fault vectors are replayed against runtime numeric/layout ABI helpers."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTileCompute / AluClass",
+      "FailClosedRejectionCount": 0,
+      "FailureMessage": "",
+      "Id": "mtranspose-layout-policy-replay-pressure",
+      "Iterations": 500,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 500,
+      "ResourceEvidence": [
+        "resource=MatrixTileCompute",
+        "slot=AluClass",
+        "numeric=absent by operation contract",
+        "layout=TransposeCanonicalRowMajor",
+        "publication=TileState"
+      ],
+      "ResultChecksum": 15611500560694441059,
+      "RetirePublicationCount": 500,
+      "RuntimeInstructionCount": 500,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Repeated row-major coordinate permutation with layout-only sideband and destination tile rollback/replay."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTileMemory / retire fault all-or-none",
+      "FailClosedRejectionCount": 1,
+      "FailureMessage": "",
+      "Id": "mtile-store-memory-fault-all-or-none-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_STORE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 1,
+      "ResourceEvidence": [
+        "execute capture remains side-effect-free",
+        "retire reports MemoryCommitFault",
+        "all-or-none rollback preserves original memory",
+        "fault-only rollback/replay preserves deterministic fault identity"
+      ],
+      "ResultChecksum": 18118082562195157594,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 1,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 2,
+      "WorkloadShape": "A staged MTILE_STORE whose second row write fails at retire must roll back the first row and replay the same fault without partial memory visibility."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTileMemory / load partial-row fault no-publication",
+      "FailClosedRejectionCount": 1,
+      "FailureMessage": "",
+      "Id": "mtile-load-memory-fault-no-publication-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 1,
+      "ResourceEvidence": [
+        "execute captures PartialMemoryFault with precise row/address",
+        "retire reports CapturedExecutionFault",
+        "no partial tile publication before or after retire",
+        "fault-only rollback/replay preserves deterministic fault identity"
+      ],
+      "ResultChecksum": 16288499610384076236,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 1,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "A faulting MTILE_LOAD captures a precise partial-row memory fault, retires fault-only, and never publishes partial tile state across rollback/replay."
+    },
+    {
+      "CompilerEmissionCount": 4,
+      "Contour": "Compiler transport conformance",
+      "FailClosedRejectionCount": 0,
+      "FailureMessage": "",
+      "Id": "mtile-compiler-sideband-lowering-conformance",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE",
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 0,
+      "ResourceEvidence": [
+        "MTILE_LOAD/STORE carry no compute numeric/layout sideband",
+        "MTILE_MACC preserves explicit numeric and layout sidebands in source and lowered InstructionSlotMetadata",
+        "MTRANSPOSE preserves layout-only sideband in source and lowered InstructionSlotMetadata",
+        "lowered MatrixTile memory transport is physically placed on lane6"
+      ],
+      "ResultChecksum": 7155591467479615532,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 0,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "One typed emission of every canonical MatrixTile opcode; source and lowered metadata must preserve runtime-owned policy identities."
+    },
+    {
+      "CompilerEmissionCount": 4,
+      "Contour": "Compiler lowered bundle / runtime carrier execution",
+      "FailClosedRejectionCount": 0,
+      "FailureMessage": "",
+      "Id": "mtile-compiler-lowered-runtime-execution-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE",
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 4,
+      "ResourceEvidence": [
+        "lowered MTILE_LOAD materializes as runtime MatrixTileMicroOp and retires tile state",
+        "lowered MTILE_STORE materializes as runtime MatrixTileMicroOp and commits memory at retire",
+        "lowered MTILE_MACC executes runtime-owned numeric/layout arithmetic",
+        "lowered MTRANSPOSE executes runtime-owned layout permutation"
+      ],
+      "ResultChecksum": 8265421979759542470,
+      "RetirePublicationCount": 4,
+      "RuntimeInstructionCount": 4,
+      "StreamBytesTransferred": 8,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Compiler-positive MatrixTile emissions are lowered, decoded through canonical bundle transport, materialized as MatrixTileMicroOp carriers, and executed through runtime capture/retire/replay."
+    },
+    {
+      "CompilerEmissionCount": 12,
+      "Contour": "Full pipeline E2E / compiler lowered MatrixTile fetch-decode-schedule-retire",
+      "FailClosedRejectionCount": 8,
+      "FailureMessage": "",
+      "Id": "mtile-full-pipeline-e2e-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE",
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 4,
+      "ResourceEvidence": [
+        "compiler-emissions=positive canonical four-op program plus targeted negative compiler emissions",
+        "fetch/decode=VliwDecoderV4 with lowered VliwBundleAnnotations",
+        "schedule=MicroOpScheduler.PackBundleIntraCoreSmt carrier placement",
+        "lane6=MTILE_LOAD/STORE scheduled as MatrixTileStreamClass on lane6",
+        "retire-only=load tile, store memory, MACC accumulator, transpose destination tile",
+        "replay=all four positive operations rollback and replay through retire-owned journal",
+        "sideband-preservation=source and decoded InstructionSlotMetadata policy identities match",
+        "fail-closed=missing/tampered/mismatched sidebands and wrong memory resource identity reject before publication"
+      ],
+      "ResultChecksum": 12496668246563001644,
+      "RetirePublicationCount": 4,
+      "RuntimeInstructionCount": 5,
+      "StreamBytesTransferred": 8,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Compiler-positive MatrixTile program traverses lowered bundles, lowered InstructionSlotMetadata, fetch/decode, scheduler placement, execute capture, retire publication, replay/rollback, and fail-closed E2E negatives."
+    },
+    {
+      "CompilerEmissionCount": 4,
+      "Contour": "Production CPU stage flow / fetched compiler bundles to WB-retire",
+      "FailClosedRejectionCount": 0,
+      "FailureMessage": "",
+      "Id": "mtile-production-stageflow-e2e-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE",
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 4,
+      "ResourceEvidence": [
+        "fetch-ingress=test-support stages serialized compiler-produced bundle bytes and lowered annotations into pipeIF",
+        "decode=production PipelineStage_Decode and canonical scheduler/materializer path",
+        "dispatch=production PipelineStage_Execute calls MatrixTileMicroOp.Execute",
+        "writeback-retire=production PipelineStage_WriteBack calls MatrixTileMicroOp.EmitWriteBackRetireRecords",
+        "retire-only=tile state and store memory remain unchanged until WB-retire",
+        "dataflow=MTILE_LOAD tile feeds MTILE_STORE, MTILE_MACC, and MTRANSPOSE",
+        "replay=all four WB-retired operations complete rollback and deterministic replay"
+      ],
+      "ResultChecksum": 4412506910758500172,
+      "RetirePublicationCount": 4,
+      "RuntimeInstructionCount": 4,
+      "StreamBytesTransferred": 8,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Compiler-produced MatrixTile bundles enter the production decode stage and traverse production execute, memory, and writeback-retire stages; load output feeds store, MACC, and transpose."
+    },
+    {
+      "CompilerEmissionCount": 10,
+      "Contour": "Production PC fetch / canonical compiler annotation ingress",
+      "FailClosedRejectionCount": 6,
+      "FailureMessage": "",
+      "Id": "mtile-production-pc-fetch-e2e-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_LOAD",
+        "MTILE_STORE",
+        "MTILE_MACC",
+        "MTRANSPOSE"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 4,
+      "ResourceEvidence": [
+        "ingress=EmitProgram only",
+        "transport=MainMemory -\u003E L2 -\u003E L1 -\u003E pipeIF -\u003E production decode",
+        "dataflow=loaded tile feeds store/MACC/transpose",
+        "retire-only=production WB-retire",
+        "replay=retired results rollback and replay",
+        "negatives=missing/tampered/mismatched sidebands fail before execute/retire",
+        "coherence=re-emission drops stale L1/L2 carriers and raw byte overwrite without republish rejects"
+      ],
+      "ResultChecksum": 14695981039346656037,
+      "RetirePublicationCount": 4,
+      "RuntimeInstructionCount": 4,
+      "StreamBytesTransferred": 8,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Four compiler-positive MatrixTile stages use canonical EmitProgram and real PC-driven fetch; targeted PC-fetch negatives fail closed without test-support carrier injection."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "Fail-closed runtime validation",
+      "FailClosedRejectionCount": 7,
+      "FailureMessage": "",
+      "Id": "mtile-fail-closed-policy-and-resource-pressure",
+      "Iterations": 1,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_MACC",
+        "MTILE_LOAD"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 0,
+      "ResourceEvidence": [
+        "retire rejects tampered policy before publication",
+        "retire rejects wrong-owner capture identity before publication",
+        "retire rejects cross-core capture identity before publication",
+        "retire rejects stale epoch capture identity before publication",
+        "retire rejects wrong MatrixTile stream resource class",
+        "retire rejects wrong MatrixTile stream direction",
+        "MatrixTileStreamClass aliases DmaStreamClass capacity on lane6"
+      ],
+      "ResultChecksum": 12638149817160282822,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 0,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Tampered policy, wrong-owner/cross-core capture, stale epoch, typed-transfer identity rejection, and physical lane6 capacity conflict with DmaStreamClass."
+    },
+    {
+      "CompilerEmissionCount": 0,
+      "Contour": "MatrixTile fault fuzz / policy identity and descriptor negatives",
+      "FailClosedRejectionCount": 8,
+      "FailureMessage": "",
+      "Id": "mtile-fault-fuzz-policy-identity-pressure",
+      "Iterations": 8,
+      "MeetsSmokeThroughputBaseline": true,
+      "Opcodes": [
+        "MTILE_MACC",
+        "MTILE_LOAD"
+      ],
+      "Passed": true,
+      "ReplayRoundTripCount": 0,
+      "ResourceEvidence": [
+        "fuzz=missing/tampered numeric-layout policy identity",
+        "fuzz=wrong operation/opcode and zero ordinal identity",
+        "fuzz=load owner/channel/operation transfer identity",
+        "fuzz=no publication after rejected mutations"
+      ],
+      "ResultChecksum": 7969124946739871592,
+      "RetirePublicationCount": 0,
+      "RuntimeInstructionCount": 0,
+      "StreamBytesTransferred": 0,
+      "StreamInvalidationCount": 0,
+      "WorkloadShape": "Table-driven negative MatrixTile capture mutations cover missing numeric policy, tampered layout, wrong operation/opcode identity, zero capture ordinal, and load owner/channel/operation tamper."
+    }
+  ],
+  "Succeeded": true,
+  "SuiteId": "matrix-tile-spec-pressure-suite"
+}

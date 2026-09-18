@@ -1,0 +1,25 @@
+{
+  "SchemaVersion": "diagnostic-run-manifest/v1",
+  "RunKind": "single",
+  "CommandId": "replay",
+  "DisplayName": "Replay Phase Pair (SPEC-like scheduler certificate slice)",
+  "Status": "Succeeded",
+  "ArtifactDirectory": "C:\\Users\\Yuriy Kurnosov\\Desktop\\HybridCPU ISE\\HybridCPU_Compiler\\RefPlan3\\evidence\\2026-08-19-phase00-runtime-controls-dirty-attributed\\raw\\replay\\run-002",
+  "WorkerProfileId": "replay",
+  "WorkloadKind": "ReplayPhasePair",
+  "FrontendProfile": "NativeVLIW",
+  "ProcessId": 31208,
+  "ExitCode": 0,
+  "FailureMessage": null,
+  "CreatedUtc": "2026-08-19T04:20:28.5054403+00:00",
+  "StartedUtc": "2026-08-19T04:02:33.4222908+00:00",
+  "FinishedUtc": "2026-08-19T04:20:28.5053947+00:00",
+  "ElapsedSeconds": 49.547412,
+  "GeneratedFiles": {
+    "profile": "profile.json",
+    "stdout": "stdout.log",
+    "stderr": "stderr.log",
+    "replay_report": "replay_report.json"
+  },
+  "ChildArtifacts": null
+}

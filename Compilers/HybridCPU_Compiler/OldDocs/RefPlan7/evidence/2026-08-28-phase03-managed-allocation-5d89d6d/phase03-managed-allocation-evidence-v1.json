@@ -1,0 +1,276 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase03.ManagedAllocationEvidenceV1",
+  "phase": "03",
+  "date": "2026-08-28",
+  "disposition": "EvidenceClosed",
+  "defaultEnabled": false,
+  "implementation": {
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "commit": "5d89d6dccd2f1a72c927a00983de7b1b31b7904b",
+    "tree": "6de7b2cc15f0e4eee3a72d0e548928a5d7676a42",
+    "worktreeStatusAtEvidenceStart": "clean",
+    "compilerSha": "5d89d6dccd2f1a72c927a00983de7b1b31b7904b",
+    "platformContractsSha": "5d89d6dccd2f1a72c927a00983de7b1b31b7904b",
+    "managedRuntimeSha": "5d89d6dccd2f1a72c927a00983de7b1b31b7904b",
+    "runtimeKernelSha": "5d89d6dccd2f1a72c927a00983de7b1b31b7904b",
+    "iseSha": "5d89d6dccd2f1a72c927a00983de7b1b31b7904b",
+    "repositoryModel": "single monorepo commit; component SHAs intentionally coincide"
+  },
+  "planHashes": {
+    "README.md": "3531e14bcdbb976dd1104bf75b8801e1c843adeab12a2f95f4660b55f32a819b",
+    "00-conformance-gate.md": "3bf536021bbd6ca14a094d8775272c7c95ab82dc440b03162e17bd31d944476e",
+    "01-managed-abi-runtime-contracts.md": "470fd01f7624d48b23ba6047af17eb6302e63d7dd1340ef0726cc0fc24e5dfa8",
+    "02-managed-references-object-layout.md": "33447d330d857987dbeb2353af05ca6a8ef7b2e84bb2bc857d9d9bc765bb89f5",
+    "03-heap-allocator.md": "0683bddb2c7ba068e51c7940cec12a4f36912886ef79be4c922e083fbb7ae3f9",
+    "04-arrays-strings-value-types.md": "bc06610c17af45b28d08d7b4089b50ee3af6df39d0ad434e243b457d93bbb3a6",
+    "05-gc-v1.md": "534be4c17500eb02ab470b0974fed81e3f3c9781eba5752c217cd78c02b16ae5",
+    "06-virtual-interface-dispatch.md": "f830b2b6e0bfdb2ed1e52ebeb3cc371986b4ed274e860db1db862286c433944a",
+    "07-delegates-function-pointers.md": "49f931008ffcf819fe5158713dbfa43ef9a338452262c133b52ea98535cefe93",
+    "08-generics-core.md": "e15f14a428876f5c4558f785b425ef8ae37603b660a2d820e9ab06a8dbf47336",
+    "09-managed-eh-core.md": "60e1ca7ca9774edb7e6da449abb86c79b1a7964d46c6ab29aa7b0096716c48a2",
+    "10-fault-trap-integration.md": "0bfea348ac81995fbee176b298eb792b8cb8f236d356c845241d0f11998f75d9",
+    "11-runtime-kernel-threading-tls.md": "bd6544d770749d81222ecd134406f85046b85bf99364d7a82675d912e93b2743",
+    "12-synchronization-memory-model.md": "c65d6fe4663b7ecb659f67415ce2231b647969114348e1e5843f90926e066d73",
+    "13-interop-host-services.md": "18f44c0b5f2b3d1c68131e99a9c9a09e56b01f45b8fd39601e878d2da8e28fb0",
+    "14-reflection-runtime-metadata.md": "2df5d5cfa363092628612b7d1da658ca6fd064e877b82b3bfc3f5cbb58537770",
+    "15-async-runtime-libraries.md": "ed25019bb1dab761d3778f22a62c87cb154659b8d8798fc6fe4bb31df33e0154",
+    "16-release-determinism-qualification.md": "62e1e9980293cdb5d28229631e4bec323867ddfe3e91e78b5b40df13f6a969b3"
+  },
+  "tools": {
+    "dotnetSdk": "10.0.204",
+    "dotnetSdkCommit": "e7aa4b537d",
+    "msbuild": "18.3.3+e7aa4b537",
+    "hostRid": "win-x64",
+    "os": "Windows 10.0.26200",
+    "globalJsonResolution": "10.0.204"
+  },
+  "contracts": {
+    "platformSchema": "hybridcpu.platform-contracts/v1@1.1",
+    "platformDigest": "c12b6251d3e830b0a03c1cd075a267dd5f5d70502740f7f223a7dd458fa34f49",
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "nativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+    "managedAbiSchema": "hybridcpu.managed-abi-family@1.3",
+    "managedAbiDigest": "14ccb69d9f94d8d96c808f6246c54c1d5147f68c83079f627561a7b170386421",
+    "managedFeatureSetDigest": "f53fc5725372779c18f9a7732c20104a3b4cb0fd8b194d4db867b531bd6e7aad",
+    "runtimePackVersion": "1.3.0-refplan7-phase03",
+    "runtimePackDigest": "e1248374cd33f3031fc44244e86f5b9575dc3e71740577d22641ffa262b9e48a",
+    "objectFormatDigest": "17befa1c95512c2f014087580f3431e84a64c161cf361562166692f01bf4b927",
+    "linkOptionsDigest": "0d8ee5d794364cffc5a1c0973eabad3944a57827f44cab17bfdbb53654d8ef4a",
+    "startupOptionsDigest": "faf47405120b4ab848130816e06de44d17659c8ff5892de8456fcc9273fc12e7",
+    "allocationHelper": "__hybridcpu_managed_alloc:object-ref(type-handle:nuint):Supported:RequiredSafepoint:MemoryWrite",
+    "systemObjectConstructorIntrinsic": "System.Object..ctor(System.Object):System.Void:intrinsic-noop"
+  },
+  "supportMatrix": {
+    "qualifiedDefaultOff": [
+      "deterministic-allocation",
+      "gc-maps-safepoints",
+      "metadata-runtime-lookup",
+      "type-layout-object-references"
+    ],
+    "unsupported": [
+      "debug-source-mapping",
+      "eh-unwind",
+      "managed-unmanaged-interop",
+      "read-write-barriers",
+      "tls-thread-runtime-state"
+    ],
+    "publishQualified": [],
+    "phase03DefaultEnableDisposition": "QualifiedDefaultOff",
+    "dotNetAotManagedReleaseDisposition": "Unsupported"
+  },
+  "deterministicBudgets": {
+    "heapBaseAddress": 1073741824,
+    "heapSizeBytes": 16777216,
+    "maximumObjectSizeBytes": 1048576,
+    "objectHeaderBytes": 16,
+    "objectAlignmentBytes": 8,
+    "outOfMemoryExitCode": -3,
+    "maximumManagedTypes": 4096,
+    "maximumCilCallsPerMethod": 256,
+    "allocationAlgorithm": "single-context aligned bump; checked arithmetic; no reclamation",
+    "budgetSelectionUsesWallClock": false
+  },
+  "qualification": {
+    "focusedPhase03": {
+      "configuration": "Debug testsupport",
+      "filter": "CompilerRefPlan7Phase03ManagedHeapAllocatorTests",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "includesIseExecution": true
+    },
+    "crossContractFocused": {
+      "passed": 93,
+      "failed": 0,
+      "skipped": 0
+    },
+    "stalePinRemediationFocused": {
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0
+    },
+    "negativePrecedenceFocused": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "compilerRegressionFinal": {
+      "configuration": "Debug testsupport",
+      "filter": "FullyQualifiedName~HybridCPU_ISE.Tests.CompilerTests",
+      "passed": 1396,
+      "failed": 0,
+      "skipped": 0,
+      "duration": "00:05:11"
+    },
+    "releaseBuilds": {
+      "Platform.Contracts": {"warnings": 0, "errors": 0},
+      "Compiler.Core": {"warnings": 0, "errors": 0},
+      "Compiler.Cil": {"warnings": 1, "errors": 0},
+      "NativeAotAdapter": {"warnings": 0, "errors": 0},
+      "ReleaseQualification": {"warnings": 0, "errors": 0},
+      "RuntimeKernel": {"warnings": 0, "errors": 0},
+      "ManagedRuntime": {"warnings": 0, "errors": 0},
+      "ISE": {"warnings": 43, "errors": 0}
+    },
+    "releaseTestHarness": {
+      "status": "NotApplicable",
+      "reason": "HybridCPU_ISE.Tests deliberately rejects Release when internal test hooks are enabled; production Release projects were built independently."
+    },
+    "runtimeVisibleEvidence": "A versioned HCEXE image was built from HCO objects, statically linked with the supported allocation helper and constructor symbols, inspected, bootstrapped through RuntimeKernel/ManagedRuntime, then executed through ISE generic ADDI/JAL/JALR/SW. The runtime-allocated object retained its TypeDescriptor handle, the constructor stored the expected field value, and the opaque VT context carrier remained unchanged.",
+    "determinism": {
+      "freshRuntimeAllocationTracesIdentical": true,
+      "publisherByteAndProvenanceRepeatCoveredByCrossContractFocused": true,
+      "releaseBuildRuns": 2,
+      "dllsByteIdentical": true,
+      "dllSha256": {
+        "platformContracts": "3d490ce85fa8cf72f8cd8846896a75fc090f22f6cbf062e4d35d3358fa9b3c3b",
+        "compilerCore": "969f06c8b0ee88dbb4362df34dc24803660ec88177282ac6fd8930d1ccb33cec",
+        "compilerCil": "a9c2dbdc00f097edc3d9978ec8c3ae4045e8e4bcc789a1018efd64cdcf30fe50",
+        "nativeAotAdapter": "55f26e4d421f6090d7a4f78135ad68e0652df222f055ca4b75d38deeb49dc798",
+        "releaseQualification": "e9ba68030ec1e667833fc0809622adddc71bc7a0b465f134d072494f8be3f007",
+        "runtimeKernel": "ba7ca1b9a157a492ec2ae90a6533f541da960acf0ed3550304c531dd3decb0a4",
+        "managedRuntime": "6d729219ccf0d3a2a4e9955f681b36331577c4b255e46e35649f08fcc10c8312",
+        "ise": "f622ca9d7793618b3242ac1f7e581a270175b1f8137161e4eb7f7cc0374844f0"
+      }
+    },
+    "gitDiffCheck": "clean"
+  },
+  "sourceDigests": {
+    "managedHeapAllocator": "72f2fa27ee8344bed83def27469d6b5ff7db438d0c90bab7086aa43024943423",
+    "managedTypeSystem": "fc5b79fc8599ff083ddb2856fd9165e2d94380c73cef9e4a67c81bf36dc7422c",
+    "managedBootstrapRuntime": "32f592d1e99f2fd12657c1207462f861ecf01227e21bef2dd61f825cd8a18151",
+    "cilContracts": "8ab261ae5893734584ea1687dda7c146ce5c26d23e4ccf52fad811d6c6c6ff98",
+    "cilImporter": "d447006baaa5186d11792ff0ab63892a9fa04b7bd5ddee424be49a0bcb90f3e3",
+    "cilCfgSsaImporter": "97156d4fd42757b743f62572fa4b7ea692b7a3539826a803b426e4b446d6a2b1",
+    "cilCallGraph": "774a6b03ed4cb554d8682d6554aad480e8b3bee7118653601b9cefc29e73d4f8",
+    "managedAbi": "2ded5312b322e3d2f608381f2087776faa0ea3bfcc14c5c4bdbce6110acaca80",
+    "managedFeatureSet": "03f37f99770e98cdce8a803350851c21ecf7a001e79308040b636b0dfc59f9b9",
+    "phase03Tests": "0f373d2649c3d26de21be137b4c918795ab4e31b6d6dc999f2fb18da0500c0ff",
+    "legacyMovingGcPin": "2c7f9b9ae305762095de535ea2b5e5099626aa95e139dc2c02bdd6fa1b2d5daa",
+    "checkedInRuntimePack": "c6102af1a7db37b8850e5eb4a6f2393721e775af10933a6b5988431063e14657"
+  },
+  "dependencyAndAuthority": {
+    "compiler": [
+      "CIL newobj -> exact runtime TypeDescriptor binding -> Canonical IR allocation helper call -> ordinary constructor call",
+      "Canonical/Core scheduling, bundling, register allocation, ABI lowering, HCO, static linker and HCEXE paths are reused",
+      "allocated managed reference is a generation-tracked semantic value live across the constructor call"
+    ],
+    "managedRuntime": [
+      "ManagedRuntime owns type-handle lookup, object size/layout validation, zeroing, header initialization, bump state, exhaustion and lifetime",
+      "Operational helpers are bound during bootstrap but are not incorrectly invoked with the bootstrap execution-context signature",
+      "Historical moving-GC preview remains default-disabled; only its current ABI/revision compatibility pin changed"
+    ],
+    "runtimeKernel": [
+      "Existing language-neutral ReserveVm/CommitVm/ReleaseVm and ProcessExit mechanisms are reused",
+      "No RuntimeKernel source or managed threading/TLS semantics changed"
+    ],
+    "ise": [
+      "Existing generic ADDI/JAL/JALR/SW mechanisms execute the image",
+      "No managed-specific instruction, ISA extension, legality rule, fault rule, publication rule or retire authority was added",
+      "The sole ISE-tree source change is under historical ManagedRuntime placement and updates only an ABI compatibility pin"
+    ],
+    "forbiddenEdgesPreserved": [
+      "Compiler Core -/-> RuntimeKernel, ManagedRuntime, ISE",
+      "RuntimeKernel -/-> Compiler, ManagedRuntime, ISE",
+      "ManagedRuntime -/-> Compiler, ISE",
+      "Platform.Contracts -/-> Compiler, RuntimeKernel, ManagedRuntime, ISE"
+    ]
+  },
+  "claimClassifications": [
+    {
+      "claim": "Phase 03 has a deterministic runtime-owned single-context heap allocator over generic RuntimeKernel VM ownership",
+      "classification": "Proven",
+      "evidence": [
+        "HybridCPU_ManagedRuntime/ManagedHeapAllocatorV1.cs:HybridCpuManagedHeapAllocatorV1.Initialize/Allocate",
+        "CompilerRefPlan7Phase03ManagedHeapAllocatorTests.BumpAllocator_AlignsDoesNotOverlapZerosAndInitializesExactHeader",
+        "CompilerRefPlan7Phase03ManagedHeapAllocatorTests.FreshRuntimesProduceIdenticalAllocationTrace"
+      ]
+    },
+    {
+      "claim": "newobj lowers through the existing Canonical/Core backend to allocation helper then ordinary managed constructor call",
+      "classification": "Proven",
+      "evidence": [
+        "RestrictedCilImporterV1.ResolveAllocation",
+        "RestrictedCilImporterV1.ControlFlowV2.cs case 0x73",
+        "CompilerRefPlan7Phase03ManagedHeapAllocatorTests.Newobj_LowersToAllocationThenConstructorAndPreservesReferenceAcrossCall"
+      ]
+    },
+    {
+      "claim": "Runtime-visible allocation and constructor behavior executes through image/bootstrap/ISE without a managed-specific ISA extension",
+      "classification": "Proven",
+      "evidence": [
+        "CompilerRefPlan7Phase03ManagedHeapAllocatorTests.RealImage_BootstrapAllocationHelperAndConstructorExecuteOnIse",
+        "HybridCpuNativeCallControlContractV1 pc+4/JALR+252 contract",
+        "generic ADDI/JAL/JALR/SW only"
+      ]
+    },
+    {
+      "claim": "Out-of-memory silently returns null or falls back to host allocation",
+      "classification": "Contradicted",
+      "evidence": [
+        "Allocate returns OutOfMemory and invokes RuntimeKernel.ProcessExit with deterministic exit code -3",
+        "CompilerRefPlan7Phase03ManagedHeapAllocatorTests.ExhaustionIsDeterministicNonReturningPolicyAndDoesNotAdvanceBump"
+      ]
+    },
+    {
+      "claim": "Phase 03 supports reclamation, collection, generations, concurrency or managed multi-thread allocation",
+      "classification": "Not implemented",
+      "evidence": [
+        "HybridCpuManagedHeapAllocatorV1.HasGcAuthority=false",
+        "HybridCpuManagedHeapAllocatorV1.HasReclamation=false",
+        "HybridCpuManagedHeapAllocatorV1.IsThreadSafe=false",
+        "read-write-barriers remains Unsupported"
+      ]
+    },
+    {
+      "claim": "General NativeAOT managed publish is enabled by Phase 03 component evidence",
+      "classification": "Contradicted",
+      "evidence": [
+        "PublishQualifiedWorkstreams=[]",
+        "DotNetAotManaged release disposition remains Unsupported",
+        "deterministic-allocation is QualifiedDefaultOff"
+      ]
+    },
+    {
+      "claim": "A write barrier is required for the Phase 03 non-moving no-GC allocator",
+      "classification": "Hypothesis",
+      "evidence": [
+        "No collector exists in Phase 03",
+        "read-write-barriers remains Unsupported pending a later proven design need"
+      ]
+    }
+  ],
+  "knownBaselineFailures": [],
+  "knownBuildObservations": [
+    "HybridCPU_ISE.Tests Release test host intentionally rejects internal test hooks; production Release projects were built separately.",
+    "Compiler.Cil has one pre-existing obsolete LegalSlots warning.",
+    "ISE Release has 43 pre-existing warnings and zero errors.",
+    "global.json resolves deterministically to installed SDK 10.0.204."
+  ],
+  "nextGate": {
+    "phase": "04",
+    "status": "Eligible",
+    "scope": "arrays, strings, value types and type initialization",
+    "prerequisite": "Phase 03 EvidenceClosed"
+  }
+}

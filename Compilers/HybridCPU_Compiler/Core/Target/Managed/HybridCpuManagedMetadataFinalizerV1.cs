@@ -133,7 +133,7 @@ public sealed class HybridCpuManagedMetadataFinalizerV1
                 "A final allocation is required to derive mandatory call safepoints.");
         Dictionary<string, (int CodeOffset, int ScheduledPosition, int InstructionIndex)> sites =
             BuildSites(allocation.OriginalSchedule, allocation.FinalBundles);
-        Dictionary<string, (int Start, int End)> intervals = BuildValueIntervals(allocation.OriginalSchedule);
+        Dictionary<int, HashSet<string>> liveBefore = BuildLiveValuesBeforeInstruction(allocation.OriginalSchedule);
         HashSet<string> managedValues = allocation.Witness.SemanticValues.Where(static value =>
                 value.VirtualClass == IrVirtualValueClass.ManagedObjectReference &&
                 value.ValueKind.Kind == IrCanonicalValueKind.ManagedObjectReference)
@@ -145,9 +145,8 @@ public sealed class HybridCpuManagedMetadataFinalizerV1
             .Select(instruction => new HybridCpuManagedSafepointRequestV1(
                 instruction.StableIdentity,
                 HybridCpuSafepointCategoryV1.CallSite,
-                managedValues.Where(identity => intervals.TryGetValue(identity, out (int Start, int End) interval) &&
-                        sites.TryGetValue(instruction.StableIdentity, out var site) &&
-                        site.ScheduledPosition >= interval.Start && site.ScheduledPosition < interval.End)
+                managedValues.Where(identity => liveBefore.TryGetValue(instruction.Index, out HashSet<string>? live) &&
+                        live.Contains(identity))
                     .Order(StringComparer.Ordinal)
                     .Select(static identity => new HybridCpuManagedLiveReferenceRequestV1(
                         identity, HybridCpuGcReferenceKindV1.ObjectReference)).ToArray()))
@@ -223,7 +222,7 @@ public sealed class HybridCpuManagedMetadataFinalizerV1
             .Select(value => originalValues[value.ValueId])
             .Where(static value => value.Allocation.LegalContours.Contains("managed-object-reference", StringComparer.Ordinal))
             .ToDictionary(static value => value.StableId, StringComparer.Ordinal);
-        Dictionary<string, (int Start, int End)> valueIntervals = BuildValueIntervals(allocation.OriginalSchedule);
+        Dictionary<int, HashSet<string>> liveBefore = BuildLiveValuesBeforeInstruction(allocation.OriginalSchedule);
         Dictionary<string, IrSpillDecisionV1> spills = witness.Spills
             .ToDictionary(static item => item.ValueId, StringComparer.Ordinal);
         Dictionary<string, HybridCpuFrameSlotV2> frameSlots = witness.Frame.Slots
@@ -256,8 +255,7 @@ public sealed class HybridCpuManagedMetadataFinalizerV1
                 return Failure(HybridCpuManagedMetadataStatusV1.InvalidInput,
                     "Live reference identities must be unique at each safepoint.");
             string[] requiredReferences = managedValues.Keys.Where(identity =>
-                    valueIntervals.TryGetValue(identity, out (int Start, int End) interval) &&
-                    site.ScheduledPosition >= interval.Start && site.ScheduledPosition < interval.End)
+                    liveBefore.TryGetValue(site.InstructionIndex, out HashSet<string>? live) && live.Contains(identity))
                 .Order(StringComparer.Ordinal).ToArray();
             string[] requestedReferences = point.LiveReferences.Select(static item => item.ValueIdentity)
                 .Order(StringComparer.Ordinal).ToArray();
@@ -339,6 +337,10 @@ public sealed class HybridCpuManagedMetadataFinalizerV1
             static instruction => instruction.StableIdentity,
             instruction => positions[instruction.Index],
             StringComparer.Ordinal);
+        Dictionary<string, int> originalInstructionIndices = originalSchedule.Program.Instructions.ToDictionary(
+            static instruction => instruction.StableIdentity,
+            static instruction => instruction.Index,
+            StringComparer.Ordinal);
         var result = new Dictionary<string, (int, int, int)>(StringComparer.Ordinal);
         int bundleIndex = 0;
         foreach (IrBasicBlockBundlingResult block in bundles.BlockResults.OrderBy(static item => item.Block.StartInstructionIndex))
@@ -350,7 +352,8 @@ public sealed class HybridCpuManagedMetadataFinalizerV1
                 {
                     if (originalPositions.TryGetValue(instruction.StableIdentity, out int originalPosition))
                         result[instruction.StableIdentity] = (checked(bundleIndex *
-                            HybridCpuManagedMetadataContractV1.EncodedBundleBytes), originalPosition, instruction.Index);
+                            HybridCpuManagedMetadataContractV1.EncodedBundleBytes), originalPosition,
+                            originalInstructionIndices[instruction.StableIdentity]);
                 }
                 bundleIndex++;
             }
@@ -439,6 +442,37 @@ public sealed class HybridCpuManagedMetadataFinalizerV1
             intervals[value.StableId] = (start, end);
         }
         return intervals;
+    }
+
+    private static Dictionary<int, HashSet<string>> BuildLiveValuesBeforeInstruction(IrProgramSchedule schedule)
+    {
+        Dictionary<int, IrBlockLivenessV1> blockLiveness = schedule.ValueAnalysis.Blocks
+            .ToDictionary(static block => block.BlockId);
+        Dictionary<int, IrValueAccessV1[]> accesses = schedule.Program.ValueFlow.Accesses
+            .Where(static access => access.Kind != IrValueAccessKind.PhiEdgeUse)
+            .GroupBy(static access => access.InstructionIndex)
+            .ToDictionary(static group => group.Key, static group => group.ToArray());
+        var result = new Dictionary<int, HashSet<string>>();
+        foreach (IrBasicBlockSchedule blockSchedule in schedule.BlockSchedules)
+        {
+            if (!blockLiveness.TryGetValue(blockSchedule.BlockId, out IrBlockLivenessV1? block))
+                throw new InvalidOperationException($"Missing liveness for basic block {blockSchedule.BlockId}.");
+            var live = new HashSet<string>(block.LiveOut, StringComparer.Ordinal);
+            foreach (IrInstruction instruction in blockSchedule.Block.Instructions.OrderByDescending(static item => item.Index))
+            {
+                if (accesses.TryGetValue(instruction.Index, out IrValueAccessV1[]? instructionAccesses))
+                {
+                    foreach (IrValueAccessV1 definition in instructionAccesses.Where(static access =>
+                                 access.Kind == IrValueAccessKind.Def))
+                        live.Remove(definition.ValueId);
+                    foreach (IrValueAccessV1 use in instructionAccesses.Where(static access =>
+                                 access.Kind == IrValueAccessKind.Use))
+                        live.Add(use.ValueId);
+                }
+                result[instruction.Index] = new HashSet<string>(live, StringComparer.Ordinal);
+            }
+        }
+        return result;
     }
 
     private static bool IsCall(IrInstruction instruction) =>

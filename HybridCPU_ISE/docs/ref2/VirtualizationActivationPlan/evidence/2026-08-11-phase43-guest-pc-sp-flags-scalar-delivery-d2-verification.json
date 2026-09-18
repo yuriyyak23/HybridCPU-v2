@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "phase": 43,
+  "record_kind": "later_clean_subject_and_acceptance_verification_evidence",
+  "status_date": "2026-08-11",
+  "decision_id": "D2-HV-VMREAD-SCALAR-DELIVERY-V1-GUEST-PC-SP-FLAGS-0002",
+  "spec_subject": {
+    "commit_sha": "46fc02c26e54aea5d5a905e953c490340b1e338a",
+    "tree_sha": "3df2dd90c043e44d30bf4d5ed42113d41814703f",
+    "spec_digest_sha256": "e67ff2620ff6a1fd193b8303c5b6ae1d532e51241e6b3e405f3c6cedefe2d754"
+  },
+  "later_acceptance": {
+    "commit_sha": "cf0a634f94e5d13c67cc4499635b66994abd57d9",
+    "tree_sha": "c9b1f0b7ad07bc121c238db7be8e95228a8d3fab",
+    "acceptance_digest_sha256": "1bc7ccf0df814538ff531572fa9e8872e61f081dd0fae25dfc4337d50d94b96a",
+    "non_self_referential": true,
+    "spec_bytes_match_subject": true
+  },
+  "e0": {
+    "canonical_ingress": "VmxCompatibilityAdmissionService.AdmitVmReadProjection",
+    "runtime_operation": "ReadCompatibilityProjection",
+    "runtime_domain_boundary": "FullDomainRuntime unchanged",
+    "source_owner": "ExecutionDomainDescriptor",
+    "value_source": "materialized ExecutionDomainReadOnlyStateView GuestPc/GuestSp/GuestFlags",
+    "capability": "None",
+    "evidence": "CompatibilityAlias plus GuestArchitecturalState plus future materialized field/source-state proof",
+    "known_production_gate": "future composition must atomically validate source StateEpoch because the existing projection does not compare it with a separate current epoch"
+  },
+  "commands_and_results": [
+    {
+      "command": "focused Phase 43 E0/spec/acceptance/provenance tests",
+      "result": "passed 10/10"
+    },
+    {
+      "command": "focused existing execution-owned VMREAD projection tests",
+      "result": "passed 19/19 combined focused gate"
+    },
+    {
+      "command": "full FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring matrix",
+      "initial_result": "359/360; documentation audit contract header missing",
+      "remediation": "added the required Phase 43 audit contract fields without changing policy",
+      "final_result": "passed 360/360"
+    },
+    {
+      "command": "full FullyQualifiedName~HybridCPU_ISE.Tests.SecureComputeRefactoring matrix",
+      "result": "passed 313/313"
+    },
+    {
+      "command": "dotnet build HybridCPU_ISE/HybridCPU_ISE.csproj -c Release --no-restore -p:EnableInternalTestHooks=false -p:DefineTestSupport=false",
+      "result": "passed; 0 errors; 43 pre-existing warnings"
+    },
+    {
+      "command": "git diff --check and JSON parse gates",
+      "result": "passed"
+    },
+    {
+      "command": "Phase 43 production-authority/VMCS fallback/direct-write/VmxRetireEffect/backend/completion/retire/broad-activation scans plus production caller reachability review",
+      "result": "passed; no Phase 43 runtime composition exists; existing production scalar composition remains exact GuestCr0/GuestCr4 only"
+    },
+    {
+      "command": "compiler diff and ignored/untracked side-load scans",
+      "result": "passed; no compiler change and no ignored source dependency"
+    }
+  ],
+  "verification_source_hashes_sha256": {
+    "VmxPhase43GuestPcSpFlagsVmReadScalarDeliveryD2VerificationTests.cs": "3ed424500d5c7ce46803e279ecce460376941ff98944fafc6c8a3c1fb3e65cae",
+    "43_guest_pc_sp_flags_vmread_scalar_delivery_e0_d2_governance.md": "2f1630e684bb1d49aefea7012d3919e4c6cd3611c4a244d4ad4c061bd147d752",
+    "VirtualizationActivationStatusV1.json": "09ddd64d37c955a3fdb27f9598cdbf90b9c814b80fb8c67249c5621886872bba"
+  },
+  "toolchain": {
+    "dotnet_sdk": "10.0.204",
+    "git": "2.55.0.windows.3",
+    "powershell": "5.1.26100.8972"
+  },
+  "activation_and_authority": {
+    "activation_default": "disabled",
+    "rollback": "DisableBindingAndInvalidateOutstandingReceipts",
+    "production_composition_authorized": false,
+    "runtime_authority_granted_by_d2": false,
+    "receipt_implemented_or_issued": false,
+    "register_writeback_authorized": false,
+    "retire_commit_authorized": false,
+    "backend_execution_authorized": false,
+    "completion_publication_authorized": false,
+    "vmwrite_authorized": false,
+    "vmcall_or_probe_authority_reused": false,
+    "adjacent_field_delivery_authorized": false
+  },
+  "verdict": "exact GuestPc/GuestSp/GuestFlags scalar-delivery E0 and machine D2 governance accepted; production composition remains a separate unauthorized pool"
+}

@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net11.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Compilers\HybridCPU_ManagedRuntime\HybridCPU.ManagedRuntime.csproj" />
+	  <ProjectReference Include="..\HybridCPU_ExternalRuntime.Contracts\HybridCPU_ExternalRuntime.Contracts.csproj"
+						GlobalPropertiesToRemove="DefineTestSupport;BaseIntermediateOutputPath;MSBuildProjectExtensionsPath;OutputPath;HybridCpuTestArtifactsRoot" />
 	</ItemGroup>
 
 	<PropertyGroup>
@@ -25,7 +27,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<EnableVmxProjectionLineageCheck Condition="'$(EnableVmxProjectionLineageCheck)' == '' and Exists('docs\VMXRefactoring\schemas\vmcs-field-projection-schema.v1.json') and Exists('docs\VMXRefactoring\schemas\compat-alias-schema.v1.json') and Exists('docs\VMXRefactoring\schemas\vmxcaps-capability-bit-schema.v1.json') and Exists('docs\VMXRefactoring\schemas\compat-spec-artifact-schema.v1.json')">true</EnableVmxProjectionLineageCheck>
+		<EnableVmxProjectionLineageCheck Condition="'$(EnableVmxProjectionLineageCheck)' == ''">true</EnableVmxProjectionLineageCheck>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(EnableInternalTestHooks)' == 'true'">

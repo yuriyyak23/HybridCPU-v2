@@ -327,6 +327,10 @@ public sealed partial class RestrictedCilImporterV1
                             }
                             metadataDispatch[(caller.Module.AssemblyName, call.Token)] = ExceptionMessageBinding(call.Token, exceptionMessagePlan);
                         }
+                        if (!_dispatchBindings.ContainsKey(call.Token) &&
+                            TryCreateTestOnlyClosedWorldIConsoleBinding(modules, metadataModules, caller.Module, call.Token,
+                                metadataBindings, out RestrictedCilDispatchBindingV1 testOnlyBinding))
+                            metadataDispatch[(caller.Module.AssemblyName, call.Token)] = testOnlyBinding;
                         HelperResolution dispatch = metadataDispatch.TryGetValue((caller.Module.AssemblyName, call.Token), out var automaticBinding)
                             ? ResolveDispatch(callerMetadata, call.Token, automaticBinding)
                             : ResolveCallvirt(callerMetadata, call.Token);
@@ -645,6 +649,8 @@ public sealed partial class RestrictedCilImporterV1
                         !edge.IsFunctionPointerTarget)
                     .Select(static edge => edge.CalleeIdentity).Concat(runtimeHelperTargets)
                     .Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray()));
+                TestOnlyGcCorrelationV1.ObserveImportedMethod(compiled[^1]);
+                TestOnlyCheckNumCallerEdgeCorrelationV1.ObserveImportedMethod(compiled[^1]);
             }
 
             string[] rootIdentities = roots.Select(static root => root.Identity.StableIdentity).Distinct(StringComparer.Ordinal)

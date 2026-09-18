@@ -1,0 +1,145 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase12.SynchronizationEvidenceV1",
+  "phase": "12",
+  "date": "2026-08-29",
+  "disposition": "EvidenceClosed",
+  "defaultEnabled": false,
+  "implementation": {
+    "branch": "refactor/compiler-core-authority-boundaries",
+    "baselineCommit": "f580e5cc950edd1652ba6a27aa4534725640b2f2",
+    "primaryCommit": "0a3754713e95003f2f8dfbfa6d6c336a9bf59c32",
+    "tree": "458810958955ada928e14114caa95b0db65ad507",
+    "repositoryModel": "single monorepo; evidence commit changes status and evidence only",
+    "worktreeStatusAtEvidenceStart": [
+      "unstaged M HybridCPU_Compiler/Core/IR/Scheduling/HybridCpuLocalListScheduler.cs (foreign WIP; excluded)",
+      "unstaged M HybridCPU_ISE/docs/PerfTests/PerftestResults.md (foreign WIP; excluded)",
+      "unstaged D tmp/rf09.2-write-inventory.txt (foreign deletion; excluded)"
+    ],
+    "foreignWipIncluded": false
+  },
+  "planHashes": {
+    "README.md": "3531e14bcdbb976dd1104bf75b8801e1c843adeab12a2f95f4660b55f32a819b",
+    "12-synchronization-memory-model.md": "c65d6fe4663b7ecb659f67415ce2231b647969114348e1e5843f90926e066d73"
+  },
+  "tools": {
+    "dotnetSdk": "10.0.204",
+    "dotnetSdkCommit": "e7aa4b537d",
+    "hostRid": "win-x64",
+    "os": "Windows 10.0.26200"
+  },
+  "contracts": {
+    "platformSchema": "hybridcpu.platform-contracts/v1@1.10",
+    "platformContractDigest": "b56e2208e0fd66458978a5b51af0d07a6b8110489ade8566bb1253376f0feaee",
+    "managedSynchronizationSchema": "hybridcpu.managed-synchronization/v1@1",
+    "managedSynchronizationContractDigest": "036e24c0439a57c183af9269fb0ba166766cd4a0e05c18d4530091617cf7d511",
+    "targetPlatformContractDigest": "e2b369dc58e0100e72c58b43a386ab612c39e266f6cfb5f97160f6925b2481dd",
+    "managedAbiSchema": "hybridcpu.managed-abi-family@1.11",
+    "managedAbiDigest": "ec4afafba20594620002f80741334403ceb43284553154763fa69790b65f28c0",
+    "managedFeatureSetDigest": "83ab407cb8d29af5db3900dcad917902b1fbffa1a10b54c86a3895ed7908ca1f",
+    "runtimePackRevision": "hybridcpu.runtime-pack/managed-contract-v1.11",
+    "runtimePackVersion": "1.12.0-refplan7-phase12",
+    "runtimePackDigest": "8f771fc6e04d3aae39513a697b9202c45cf0423e7fe1e59798d2d23621d254ec",
+    "runtimePackFileSha256": "bc1b89c15c629519fc504fa12cd91229c067e3e5a6e73183604cb6b09de598b7"
+  },
+  "normativeMapping": {
+    "ordinary": "8/16/32/64-bit load/store; cross-thread data races unspecified without synchronization",
+    "naturallyAtomic": "aligned 32-bit and 64-bit accesses",
+    "volatileRead": "LW/LD then FENCE (acquire)",
+    "volatileWrite": "FENCE then SW/SD (release)",
+    "compareExchange": "FENCE, LR.aq, SC.rl retry on reservation loss, FENCE; value-mismatch failure is full-fence",
+    "exchangeAndAdd": "FENCE, AMOSWAP/AMOADD.aqrl, FENCE",
+    "speculationReplay": "squashed effects are invisible; retired effects publish exactly once",
+    "waitWake": "value plus wake-epoch recheck; wake increments epoch before deterministic waiter selection",
+    "timeoutCancellation": "logical-tick timeout; cancellation and termination remove waiters"
+  },
+  "qualification": {
+    "focusedPhase12": {"passed": 10, "failed": 0, "skipped": 0},
+    "affectedContractRegression": {"passed": 118, "failed": 0, "skipped": 0},
+    "atomicFencePrerequisitesPlusPhase12": {"passed": 59, "failed": 0, "skipped": 0},
+    "cumulativePhase00Through12": {"passed": 133, "failed": 0, "skipped": 0},
+    "compilerRegressionFinal": {
+      "configuration": "Debug testsupport",
+      "filter": "FullyQualifiedName~CompilerTests",
+      "passed": 1491,
+      "failed": 0,
+      "skipped": 0,
+      "duration": "00:05:22"
+    },
+    "releaseBuilds": {
+      "allSucceeded": true,
+      "errors": 0,
+      "warningCounts": {"platformContracts": 0, "runtimeKernel": 0, "managedRuntime": 0, "compilerCore": 0, "compilerCil": 1, "nativeAotAdapter": 1, "releaseQualification": 1, "ise": 43}
+    },
+    "determinism": {
+      "releaseRebuildRuns": 3,
+      "releaseDllPairsByteEqual": "4/4 across all runs",
+      "releaseDllSha256": {
+        "platformContracts": "71a26996a5ebf56b5ed2b4220b03eb9bfe0cd0ebdb2dac2fdc911f71bee86620",
+        "runtimeKernel": "dd39771a3f1da18424dfb0433419b532bf725e3d9733211949ef46669e59bf2f",
+        "managedRuntime": "2450d75670f78844bcee4dc2e305329e126fae6a36b36fc27079a3683c62fbbd",
+        "compilerCore": "49be22c7703cfc3d116e78f42125645f0b0821c6f4e67eaa603af167459b0777"
+      }
+    },
+    "gitDiffCheck": "clean"
+  },
+  "sourceDigests": {
+    "managedSynchronizationContracts": "48fd6fe1aba9ba667ad3f28fa63ccdb00e8a2a21cd4fc29f0504e23a8b801cd5",
+    "platformContracts": "84701a37ce902b5906617c601ef013f7dc1ae2c2329c6e7e3d1adeeea14d2600",
+    "runtimeKernelSynchronization": "e34424c56ac79e075349aee37c69514dc05eedc8d794ac0b7a6b10f1c79bb939",
+    "runtimeKernel": "baf73cc55bda8b2b7194de7cc68543ee2cba2b8963f38e263bfb2c13999a1c0c",
+    "managedSynchronizationRuntime": "63e78f5d0b6861d9f370a26c0f754d0ca6a79e4f6c2b84f8b8a8d4cb62e25f86",
+    "managedThreadingRuntime": "d533616346239255fe4182235b0d26acd8a163849557d4072dac59c27b51965c",
+    "compilerSynchronizationLowering": "13d249da13de18ec47155596d7b79d90eddcc084cb5af92abd5a53aa4ff4ad21",
+    "targetPlatformContract": "65cee9755e5d1e2a224e98702a5f3368e313270adf73adedb836222c54689568",
+    "managedAbi": "ac7b30f4b5f3e68dcbc5a327ff4eda96a7f362f8f64d9b0d5c652d3405c0c45f",
+    "managedFeatureSet": "84fcb83bc8520c954ac7bcc89997738fa0ede243b497a3b9e6cc5d2c236dff8f",
+    "sdkPack": "0f591cd3aa35c6a609a8b6b282cae05ae6a5dcb6b75979c56c26a7b721cf2f27",
+    "releaseQualification": "0fbe183756e146a3f390a29a65a52a5caed357cffe3556fdb42548a79b850ca7",
+    "phase12Tests": "7a4aa3cb664f1443252fde953cb9678be8848647dcc9c4311d168590a92b03bb"
+  },
+  "authority": {
+    "ise": "unchanged; owns existing LR/SC, AMO, fence atomicity/order and VT execution",
+    "runtimeKernel": "owns only language-neutral address wait/wake, logical timeout, cancellation and waiter lifecycle",
+    "managedRuntime": "owns volatile/Interlocked observable semantics and Monitor ownership, recursion and object semantics",
+    "compiler": "chooses existing architecture primitives according to the normative mapping; adds no managed opcode",
+    "platformContracts": "owns POD/enums/constants/digests for the mapping and wait protocol only",
+    "isaChanges": 0,
+    "iseProductionChanges": 0,
+    "managedSynchronizationOpcodesAdded": 0,
+    "forbiddenEdgesPreserved": true
+  },
+  "changedPathAudit": {
+    "pathCount": 32,
+    "insertions": 1031,
+    "deletions": 55,
+    "isaChanges": 0,
+    "iseProductionChanges": 0,
+    "foreignWipIncluded": false
+  },
+  "claimClassifications": [
+    {"claim": "Volatile and Interlocked lower to an exact normative sequence of existing generic atomics and fences", "classification": "Proven", "evidence": ["VolatileLowering_GoldenSequenceUsesOrdinaryAccessAndExistingFence", "InterlockedLowering_MapsCasSuccessFailureAndRmwToExactExistingPrimitives"]},
+    {"claim": "Acquire/release publication and full fences provide cross-context visibility while ordinary races may buffer", "classification": "Proven", "evidence": ["CrossContextMessagePassing_ReleasePublishesAndAcquireObserves", "StoreBuffering_IsAllowedForOrdinaryRacesAndForbiddenAcrossFullFences"]},
+    {"claim": "CAS success and failure ordering, speculation flush/replay and deterministic publication are executable", "classification": "Proven", "evidence": ["InterlockedOperations_AreAtomicAndFailedCasStillPublishesPriorWrites", "SpeculationFlushReplay_NeverPublishesSquashedEffectsAndResultsAreDeterministic"]},
+    {"claim": "Address waits avoid lost wakeups and define timeout, cancellation and termination", "classification": "Proven", "evidence": ["KernelAddressWait_ClosesLostWakeTimeoutCancellationAndTerminationRaces"]},
+    {"claim": "Monitor recursion, contention, deterministic handoff and GC while blocked are runtime-owned and executable", "classification": "Proven", "evidence": ["Monitor_RecursesContendsAndHandsOffInStableContextOrder", "GcRendezvous_CollectsWhileMonitorWaiterIsBlockedAndRestoresWaitState"]},
+    {"claim": "Managed synchronization requires a new ISA opcode or ISE production change", "classification": "Contradicted", "evidence": ["NormativeContract_IsClosedDefaultOffAndAddsNoManagedOpcode", "ISE/ISA production delta zero"]},
+    {"claim": "Phase 12 authorizes managed publish or default enablement", "classification": "Contradicted", "evidence": ["PublishQualifiedWorkstreams=[]", "Production options remain disabled"]}
+  ],
+  "knownBaselineFailures": [],
+  "knownBuildObservations": [
+    "Compiler.Cil, NativeAOT adapter and release qualification each retain one pre-existing obsolete LegalSlots warning on Release rebuilds.",
+    "ISE retains 43 pre-existing warnings on its Release rebuild and has zero Phase 12 production changes."
+  ],
+  "releaseDisposition": {
+    "component": "QualifiedDefaultOff",
+    "managedSynchronization": "Disabled in production options",
+    "managedPublish": "Unsupported",
+    "fullLanguageSupport": "Not claimed"
+  },
+  "nextGate": {
+    "phase": "13",
+    "status": "Eligible",
+    "scope": "interop and host services",
+    "prerequisite": "Phase 12 EvidenceClosed"
+  }
+}

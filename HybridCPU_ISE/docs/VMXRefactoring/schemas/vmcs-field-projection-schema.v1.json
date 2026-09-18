@@ -1,0 +1,41 @@
+{
+  "schemaName": "vmcs-field-projection-schema",
+  "schemaVersion": 1,
+  "canonicalSourceHash": "0xC71D41B20A6F9E23",
+  "generatedArtifactHash": "0xA99E512C4F8073D1",
+  "generator": "VmcsFieldProjectionGenerator",
+  "generatedAtBuild": true,
+  "requiresConformanceParity": true,
+  "requiresAbiFreeze": true,
+  "entryPolicy": {
+    "required": [ "field", "owner", "evidenceClass", "accessPolicy", "migrationPolicy", "generatedAlias" ],
+    "forbiddenEvidenceClasses": [ "HostOwnedRuntimeEvidence", "SchedulerEvidence", "BackendBindingEvidence", "NativeTokenEvidence" ],
+    "completionFieldsWritable": false,
+    "hostAliasesWritable": false
+  },
+  "entries": [
+    { "field": "GuestPc", "owner": "ExecutionDomainDescriptor", "evidenceClass": "GuestArchitecturalState", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "GuestSp", "owner": "ExecutionDomainDescriptor", "evidenceClass": "GuestArchitecturalState", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "GuestFlags", "owner": "ExecutionDomainDescriptor", "evidenceClass": "GuestArchitecturalState", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "GuestCr0", "owner": "ExecutionDomainDescriptor", "evidenceClass": "GuestArchitecturalState", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "GuestCr3", "owner": "MemoryDomainDescriptor", "evidenceClass": "GuestArchitecturalState", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "GuestCr4", "owner": "ExecutionDomainDescriptor", "evidenceClass": "GuestArchitecturalState", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "HostPc", "owner": "ExecutionDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "HostSp", "owner": "ExecutionDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "HostFlags", "owner": "ExecutionDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "HostCr0", "owner": "ExecutionDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "HostCr3", "owner": "MemoryDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "PinBasedControls", "owner": "CompatibilityControlDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "ProcBasedControls", "owner": "CompatibilityControlDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "ExitControls", "owner": "CompatibilityControlDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "EntryControls", "owner": "CompatibilityControlDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "EptPointer", "owner": "MemoryDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "Vpid", "owner": "MemoryDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "SecondaryProcControls", "owner": "CompatibilityControlDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "ProjectionOnly", "generatedAlias": true },
+    { "field": "Cr3TargetCount", "owner": "MemoryDomainDescriptor", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "DescriptorOwned", "generatedAlias": true },
+    { "field": "ExitReason", "owner": "CompletionRecord", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "RecomputedCompletion", "generatedAlias": true },
+    { "field": "ExitQualification", "owner": "CompletionRecord", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "RecomputedCompletion", "generatedAlias": true },
+    { "field": "GuestPhysicalAddress", "owner": "CompletionRecord", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "RecomputedCompletion", "generatedAlias": true },
+    { "field": "EptViolationQualification", "owner": "CompletionRecord", "evidenceClass": "CompatibilityAlias", "accessPolicy": "ReadOnly", "migrationPolicy": "RecomputedCompletion", "generatedAlias": true }
+  ]
+}

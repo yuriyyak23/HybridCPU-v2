@@ -1,0 +1,69 @@
+{
+  "schema": "CompilerPhase02JointCycleEvidenceV1",
+  "capturedAtUtc": "2026-08-25",
+  "implementationSha": "f9cf700",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "subjectDisposition": "DirtyAttributed",
+  "excludedForeignPaths": [
+    "HybridCPU_Compiler/RefPlan1.zip",
+    "HybridCPU_Compiler/ChatGPT-compiler-upd.md",
+    "HybridCPU_Compiler/RefPlan3.zip"
+  ],
+  "productionSemantics": {
+    "defaultEnabled": false,
+    "existingPlacementBackend": "HybridCpuSlotModel.SearchStructuralAssignments",
+    "secondSlotPackerAdded": false,
+    "largeBlockFallback": "instruction count greater than TopK uses exact existing path",
+    "blockNoImprovementFallback": "latency-inclusive joint schedule length greater than or equal to existing uses exact existing path",
+    "wallClockSelectsCode": false,
+    "runtimeAuthorityChanged": false,
+    "limits": {
+      "topK": 12,
+      "maximumDepth": 8,
+      "maximumEvaluatedStates": 4096,
+      "beamWidth": 64,
+      "fingerprint": "e34a3ad8730db0aa5d96b5bcceaf51eba0293411f1dfa95395317e94e78a5db7"
+    }
+  },
+  "verification": {
+    "focused": {"passed":14,"failed":0,"skipped":0},
+    "phase00Through02Cumulative": {"passed":53,"failed":0,"skipped":0},
+    "releaseCompilerBuild": {"errors":0,"warnings":49},
+    "fullCompilerSuite": "DeferredByUserToEndOfCompletedPhase03",
+    "adversarialCycleGroups": {"existing":3,"joint":2},
+    "representative": [
+      {"profile":"alu","existingCycles":75,"jointCycles":75,"existingBundles":60,"jointBundles":60},
+      {"profile":"novt","existingCycles":75,"jointCycles":75,"existingBundles":61,"jointBundles":61},
+      {"profile":"vt","existingCycles":48,"jointCycles":48,"existingBundles":36,"jointBundles":36},
+      {"profile":"max","existingCycles":49,"jointCycles":49,"existingBundles":37,"jointBundles":37},
+      {"profile":"lk","existingCycles":48,"jointCycles":48,"existingBundles":36,"jointBundles":36},
+      {"profile":"bnmcz","existingCycles":48,"jointCycles":48,"existingBundles":36,"jointBundles":36}
+    ],
+    "representativeCycleGeomean": 1.0,
+    "representativeBundleGeomean": 1.0,
+    "representativeNoRegression": true,
+    "representativeImprovementTargetMet": false,
+    "defaultEnableQualification": "NotAuthorized"
+  },
+  "releaseBudgetDiagnostic": {
+    "alternatingRepetitions": 6,
+    "baselineP95ElapsedTicks": 11815930,
+    "jointP95ElapsedTicks": 11633953,
+    "elapsedP95DeltaPercent": -1.54,
+    "baselineP95AllocatedBytes": 2083470744,
+    "jointP95AllocatedBytes": 2083464696,
+    "allocatedP95DeltaPercent": 0.00,
+    "wallClockRole": "diagnostic telemetry only; never production code selection"
+  },
+  "gateDisposition": {
+    "boundedSearch": "Pass",
+    "determinism": "Pass",
+    "exactPackerReuse": "Pass",
+    "fallbackParity": "Pass",
+    "adversarialImprovement": "Pass",
+    "representativeNoRegression": "Pass",
+    "compileBudget": "Pass",
+    "authorityBoundary": "Pass",
+    "defaultEnable": "FailClosed"
+  }
+}

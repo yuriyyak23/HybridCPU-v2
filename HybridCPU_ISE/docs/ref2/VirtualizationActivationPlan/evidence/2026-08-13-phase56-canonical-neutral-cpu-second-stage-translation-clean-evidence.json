@@ -1,0 +1,61 @@
+{
+  "schema": "hybridcpu.phase56-canonical-neutral-cpu-second-stage-translation-evidence/v1",
+  "record_kind": "later_non_self_referential_implementation_evidence",
+  "status_date": "2026-08-13",
+  "local_only": true,
+  "non_self_referential": true,
+  "implementation_subject": {
+    "commit_sha": "eedc5379bf498ed109559faac8d221677d143904",
+    "tree_sha": "e0caf650b2c13dfeddd0de6af534250a75c4e0ab"
+  },
+  "production_callers": {
+    "construction": "MemoryDomainRuntime-issued two-stage binding -> immutable CpuInstructionTranslationPolicy -> CpuCorePlatformContext -> CPU_Core",
+    "fetch": "PipelineStage_Fetch -> TranslateInstructionFetch -> CpuInstructionTranslationOwner",
+    "scalar": "LoadMicroOp/StoreMicroOp -> TranslateScalarInstructionMemoryAddress -> CpuInstructionTranslationOwner",
+    "arbitration": "TryResolveStageAwareExceptionWinnerMetadata older-stage then ordered-lane winner",
+    "completion": "CanonicalCpuSecondStageTranslationFaultProducer -> existing ArchitecturalCompletionCommitOwner -> DomainCompletionObservationOwner"
+  },
+  "authority": {
+    "configuration": "MemoryDomainRuntime and MemoryDomainDescriptor only",
+    "address_model": "explicit VirtualAddress to GuestPhysicalAddress to CPU physical address",
+    "default": "identity and second stage disabled",
+    "vmx_vmcs_ept_runtime_authority": false,
+    "nested_iommu_dma_device_authority": false,
+    "vmread_opened_by_phase56": false,
+    "vmwrite_opened": false
+  },
+  "provenance": {
+    "identity": "domain/context/VT/attempt/event/memory-operation",
+    "epochs": "CPU translation owner, MemoryDomain owner, address-space generation and address-space identity",
+    "facts": "typed reason, neutral qualification, exact GPA and neutral second-stage auxiliary",
+    "absent_zero": "present GPA zero remains distinct from absent"
+  },
+  "lifecycle": {
+    "source_change": "replace/restore-rebind/unbind/new bind invalidates exact completion scope before changing MemoryDomain source",
+    "race": "post-walk freshness validation squashes stale result for replay without completion publication",
+    "restore_owner_replacement": "existing Phase 52 completion invalidation remains authoritative",
+    "speculation": "second-stage faults are silent-squashed before commit"
+  },
+  "source_hashes_sha256_clean_subject_bytes": {
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Memory/Translation/CpuInstructionTranslationContour.cs": "38769487db5f5fc489458a1300a867f5c1cd92ba0c200b34328bb13111683f2f",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Memory/Translation/CpuSecondStageTranslationMechanism.cs": "5038fac799ae8a5c776599a6118ff2444b45cdc2a2c2e2e5138c70ee00443ccd",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/Admission/Memory/MemoryDomainRuntime.CpuSecondStage.cs": "6c061d38a54e0590a60772ac276a80145fd544e97a144a26715ecf890959c009",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/Faults/CPU_Core.PipelineExecution.CpuTranslation.cs": "a7ac1a331b9185c6a8001c68469b9399280bd3a9123a78f27a7cbbf573b04f78",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Commit/ArchitecturalCompletionCommitOwner.cs": "83d4af39425ca5c76055c2145366a80729d82f98ee94e543d04e3d75d52692a5",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Observation/DomainCompletionObservationOwner.cs": "f97d13868124cb57cb304598e21c6e41f8494a032e23a965e3cab34963c3da52",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase56CanonicalCpuSecondStageTranslationContourTests.cs": "a1580764cc0f0a35632da20cf69ff787f46692b24bf017ee54e04662426827ed",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/56_canonical_neutral_cpu_second_stage_translation_contour_and_producer.md": "e1a9ddd7500b6b014d6e68d9c8cb3b7657d39b7b137d89f9555d695a3cb842af"
+  },
+  "commands_and_results": [
+    { "command": "Phase 54-56 focused and plan guards including evidence closure", "result": "passed 100/100" },
+    { "command": "Phase 56 focused including evidence closure", "result": "passed 15/15" },
+    { "command": "rebind-versus-walk race in five processes", "result": "passed five runs of 1/1" },
+    { "command": "worktree VMX matrix", "result": "passed 546/546" },
+    { "command": "worktree SecureCompute matrix", "result": "passed 406/406" },
+    { "command": "exact clean staged VMX matrix", "result": "passed 528/528" },
+    { "command": "exact clean staged SecureCompute matrix", "result": "passed 395/395" },
+    { "command": "Release without TESTING/internal hooks", "result": "0 warnings / 0 errors" },
+    { "command": "forbidden and ignored/untracked canonical source scans", "result": "no foreign canonical source dependency" }
+  ],
+  "next_candidate": "separate exact compatibility/read-only GPA and EPT-violation qualification VMREAD E0/D2 over the exact committed second-stage producer snapshot"
+}

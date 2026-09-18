@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HybridCPU.ExternalRuntime.Contracts;
 using YAKSys_Hybrid_CPU;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Auth;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Commit;
@@ -274,7 +275,8 @@ public sealed class AcceleratorFenceCoordinator
         Processor.MainMemoryArea? mainMemory = null,
         AcceleratorCommitCoordinator? commitCoordinator = null,
         AcceleratorCommitInvalidationPlan? invalidationPlan = null,
-        ExternalAcceleratorConflictManager? conflictManager = null)
+        ExternalAcceleratorConflictManager? conflictManager = null,
+        Func<AcceleratorToken, ExternalOperationPublicationEvidence?>? externalPublicationEvidenceFactory = null)
     {
         ArgumentNullException.ThrowIfNull(tokenStore);
         ArgumentNullException.ThrowIfNull(scope);
@@ -326,7 +328,9 @@ public sealed class AcceleratorFenceCoordinator
                             currentGuardEvidence,
                             invalidationPlan,
                             scope.CommitConflictPlaceholderAccepted,
-                            conflictManager: conflictManager);
+                            conflictManager: conflictManager,
+                            externalPublicationEvidence: externalPublicationEvidenceFactory?.Invoke(token),
+                            externalPublicationEvidenceRequired: externalPublicationEvidenceFactory is not null);
                     commitResults.Add(commit);
                     tokenResults.Add(
                         commit.Succeeded

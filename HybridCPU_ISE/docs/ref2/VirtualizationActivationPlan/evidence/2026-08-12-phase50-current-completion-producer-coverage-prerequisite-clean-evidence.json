@@ -1,0 +1,80 @@
+{
+  "schema": "hybridcpu.phase50-current-completion-producer-coverage-prerequisite-evidence/v1",
+  "record_kind": "later_non_self_referential_blocked_prerequisite_evidence",
+  "status_date": "2026-08-12",
+  "phase": "Phase50",
+  "local_only": true,
+  "runtime_authority": false,
+  "non_self_referential": true,
+  "subject": {
+    "commit_sha": "d76fe83ab45cbf6fa42c0fe0a6b116f9d413730d",
+    "tree_sha": "12670ab7a91a64119d1ac36ade4c64942bf4d681",
+    "parent_commit_sha": "5f5561824fca62d6939d27af6f988a6b94cbc5cc",
+    "verification_worktree": "clean_detached",
+    "untracked_csharp_under_close_to_hsl_before_build": 0,
+    "ignored_csharp_under_close_to_hsl_before_build": 0
+  },
+  "verdict": {
+    "state": "BLOCKED-PREREQUISITE",
+    "registered_production_producers": 1,
+    "registered_producer": "CanonicalPipelineTrapEntryProducer",
+    "cpu_retire_translation_fact_references": 0,
+    "external_translate_guest_access_callers": 0,
+    "nested_memory_composition_production_callers": 0,
+    "qualification_consumers": "NestedExitMapper compatibility frontend only",
+    "required_new_authority": "separately authorized neutral CPU translation-fault completion producer",
+    "d2_opened": false,
+    "production_composition": false
+  },
+  "source_hashes_sha256_clean_subject_git_bytes": {
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase50CurrentCompletionProducerCoveragePrerequisiteTests.cs": "b7ba8d6846cce39672b867125ee6e203790e099a702db08df82168cfd43c9147",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Governance/Virtualization/Phase50CurrentCompletionProducerCoveragePrerequisiteContract.cs": "832c60a4aea47eb6e7654679b4565aa351c54cc245057f1d2ae085950c2b01c3",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/50_current_completion_exact_producer_coverage_prerequisite_blocked.md": "12171d0bf2b26062353de6078ecf5684efa874c4590d9f5184cba67ddd7524c2",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/VirtualizationActivationStatusV1.json": "317a3f974ec6ae7b0ba4c800ba68438b81d50c8e4d5a0641c3959bd2c939d59b",
+    "HybridCPU_ISE/CloseToHSL/Memory/MMU/IOMMU.DomainBinding.cs": "a032dfd38228534df0ee1cd4e7f20f90a79d8b8187c789c8e55daf6e2c3e12c9",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Memory/Translation/NestedTranslationResult.cs": "9a9fbd30426b42dda1462dda2d932f05d4c43f17cf0984e8755d755f42bc9a48",
+    "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/Nested/NestedExitMapper.MemoryComposition.partial.cs": "6a80f1979f44c4494234c5f4e2654f9d6d4312a4d5318cb82f8a128fdd565732"
+  },
+  "commands_and_results": [
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --filter FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring",
+      "result": "passed 472/472 on clean detached subject"
+    },
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-build --filter FullyQualifiedName~SecureCompute",
+      "result": "passed 395/395 on clean detached subject"
+    },
+    {
+      "command": "dotnet build HybridCPU_ISE/HybridCPU_ISE.csproj -c Release --no-restore -p:DefineTestSupport=false -p:EnableInternalTestHooks=false -p:WarningLevel=0",
+      "result": "passed with 0 errors and 0 warnings"
+    },
+    {
+      "command": "caller and reachability audit",
+      "result": "one registered producer; zero retire translation facts; zero external TranslateGuestAccess callers; zero NestedMemoryCompositionService production callers"
+    },
+    {
+      "command": "git diff --check parent subject and staged forbidden-path scan",
+      "result": "passed; no memory, IOMMU, nested, compiler, SecureCompute, device, lane, or stream implementation file changed"
+    }
+  ],
+  "toolchain": {
+    "dotnet_sdk": "10.0.204",
+    "git": "2.55.0.windows.3",
+    "os": "Microsoft Windows 11 Pro for Workstations"
+  },
+  "verified_denials": {
+    "iommu_helper_as_completion_authority": false,
+    "nested_helper_as_completion_authority": false,
+    "compatibility_mapper_as_runtime_authority": false,
+    "vmread_specific_producer_or_registry": false,
+    "vmcall_or_trap_fence_surrogate": false,
+    "vmread_d2_or_spec": false,
+    "vmread_production_composition": false,
+    "vmwrite": false,
+    "compiler_change": false,
+    "securecompute_expansion": false,
+    "memory_iommu_nested_device_lane_stream_expansion": false
+  },
+  "next_pool": "none until a separate neutral CPU translation-fault completion producer contour is explicitly authorized",
+  "claim": "Phase50 blocked producer-coverage prerequisite only"
+}

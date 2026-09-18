@@ -30,6 +30,7 @@ public enum SecureDomainAdmissionDecision : byte
     DeniedMissingHypercallPolicy = 10,
     DeniedOrdinaryOverDenyGuard = 11,
     DeniedMemoryDomainBindingMismatch = 12,
+    DeniedUnsupportedOperationClass = 13,
 }
 
 public readonly record struct SecureDomainAdmissionResult(
@@ -63,6 +64,13 @@ public sealed partial class SecureDomainAdmissionPolicy
         if (operationClass == SecureDomainOperationClass.Ordinary)
         {
             return SecureDomainAdmissionResult.AllowedNoEffect;
+        }
+
+        if (!Enum.IsDefined(operationClass))
+        {
+            return SecureDomainAdmissionResult.Denied(
+                SecureDomainAdmissionDecision.DeniedUnsupportedOperationClass,
+                "Unknown secure-domain operation class is denied.");
         }
 
         if (descriptor is null)
@@ -116,6 +124,47 @@ public sealed partial class SecureDomainAdmissionPolicy
             return SecureDomainAdmissionResult.Denied(
                 SecureDomainAdmissionDecision.DeniedMemoryDomainBindingMismatch,
                 "Secure memory descriptor domain tag must match the secure domain descriptor.");
+        }
+
+        if (operationClass is SecureDomainOperationClass.CreateEvidence
+            or SecureDomainOperationClass.PublishCompletion
+            or SecureDomainOperationClass.PublishRetireSideEffect)
+        {
+            SecureEvidencePolicy evidence = descriptor.EvidenceVisibilityPolicy;
+            if (!evidence.AllowGuestVisibleEvidence &&
+                !evidence.AllowMigrationSerializableEvidence &&
+                !evidence.AllowCompatibilityAliasEvidence &&
+                !evidence.AllowDebugEvidence)
+            {
+                return SecureDomainAdmissionResult.Denied(
+                    SecureDomainAdmissionDecision.DeniedMissingEvidencePolicy,
+                    "Secure evidence operation requires an explicit evidence visibility policy.");
+            }
+        }
+
+        if (operationClass == SecureDomainOperationClass.SecureMigration &&
+            !descriptor.MigrationPolicy.AllowsMigration)
+        {
+            return SecureDomainAdmissionResult.Denied(
+                SecureDomainAdmissionDecision.DeniedMissingMigrationPolicy,
+                "Secure migration requires an explicit migration policy.");
+        }
+
+        if (operationClass == SecureDomainOperationClass.NestedSecureDomain)
+        {
+            return SecureDomainAdmissionResult.Denied(
+                SecureDomainAdmissionDecision.DeniedUnsupportedOperationClass,
+                "Nested secure-domain execution has no admitted policy in this runtime.");
+        }
+
+        if (operationClass == SecureDomainOperationClass.CompatibilityProjection &&
+            (!descriptor.CompatibilityProjectionPolicy.AllowReadOnlyAliases ||
+             !descriptor.EvidenceVisibilityPolicy.AllowCompatibilityAliasEvidence ||
+             !descriptor.MigrationPolicy.AllowCompatibilityProjectionMetadata))
+        {
+            return SecureDomainAdmissionResult.Denied(
+                SecureDomainAdmissionDecision.DeniedMissingEvidencePolicy,
+                "Compatibility projection requires explicit compatibility, evidence, and migration metadata policies.");
         }
 
         if (operationClass == SecureDomainOperationClass.SecureIo &&

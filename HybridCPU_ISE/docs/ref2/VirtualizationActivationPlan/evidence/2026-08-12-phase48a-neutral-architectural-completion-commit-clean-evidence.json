@@ -1,0 +1,117 @@
+{
+  "schema": "hybridcpu.phase48a-neutral-architectural-completion-commit-evidence/v1",
+  "record_kind": "later_non_self_referential_implementation_evidence",
+  "status_date": "2026-08-12",
+  "phase": "P48-A",
+  "local_only": true,
+  "runtime_authority": false,
+  "non_self_referential": true,
+  "implementation_subject": {
+    "commit_sha": "03ecefb3c155c161b9b7516bfa2fe2609628693c",
+    "tree_sha": "029b74560a014bc50b460e920444eeb6cbc4601d",
+    "parent_commit_sha": "8c1df83d39d151cf67fe161c895639b9e7c5b5a0",
+    "status_at_verification": "clean_detached_worktree",
+    "untracked_csharp_under_close_to_hsl": 0,
+    "ignored_csharp_under_close_to_hsl": 0
+  },
+  "canonical_commit_point": {
+    "method": "Processor.CPU_Core.FinalizeWriteBackRetireWindow",
+    "ordering": "after ApplyRetireBatchLateEffectsAndRedirect and before PublishRetireVisibilityContourCertificate",
+    "production_caller": "CommitArchitecturalCompletionAtCanonicalRetireBoundary",
+    "producer_route": "TrapMicroOp to TrapEntryEvent to live PostStageBIssuedAttempt to RetireWindowBatch to ArchitecturalCompletionCommitOwner",
+    "retire_coordinator_changed": false
+  },
+  "authority_model": {
+    "owner": "ArchitecturalCompletionCommitOwner",
+    "receipt": "ArchitecturalCompletionCommitReceipt",
+    "producer_registration": "CanonicalPipelineTrapEntryProducer exact live identity epoch and policy only",
+    "seal": "HMAC-SHA256 issuer-private key",
+    "registry": "issuer-live registry keyed by commit sequence and exact receipt reference",
+    "duplicate_identity": "producer/domain/context/VT/attempt/event independent of caller facts",
+    "binding": "completion identity, producer owner identity/epoch, domain/context/VT, attempt/event, class/digest, canonical order, commit sequence, restore generation",
+    "consumption": "exact once",
+    "restore": "shared runtime restore generation advance and registry invalidation"
+  },
+  "source_hashes_sha256_clean_worktree_bytes": {
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase40VmReadStatusTests.cs": "181a078b0fa165a2b582885535128fa97f1f315a8d928181691729f46db23bb8",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase42CurrentStatusAndEvidenceGuardTests.cs": "6af8f7818345b9926e2450dd318329e40ad2a3076a72e00f9ecf064f76310988",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase43CurrentStatusGuardTests.cs": "6959e2d3970f6ee0ef584e0f7829697b245b676b92417d2ba82d4c5e3cb55ff1",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase43ProductionStatusAndEvidenceGuardTests.cs": "c6424adfcba0ced34bfac5065819dd063127b1629d04c727777ba45eebbb8624",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase45MemoryOwnedVmReadScalarDeliveryD2VerificationTests.cs": "7fabfb7aeab445d44ef2b2caa786a5203ee280a9d988a3fdf72f83cc44511ab5",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase46ProductionStatusAndEvidenceGuardTests.cs": "063b495eede5de802269f221a75789a5a16dd15ec58459e11060f5755ad6edd6",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase47CurrentCompletionVmReadBlockedEvidenceGuardTests.cs": "2e4344a0ac6df15250210ba241508f3c89fb8a8fc13450800ae3a1b72eec0da4",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase48ArchitecturalCompletionCommitOwnerTests.cs": "2e6b84f9a5258f10a994ed6f9d2f54d08a3702f4b39fbd204d0ba5d1e668d948",
+    "HybridCPU_ISE/CloseToHSL/Core/Architecture/State/Architectural/CPU_Core.StateData.cs": "1a96d9521e1c735daaafb3290d462818df408a831b50215ce2b32e8dc7204d73",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.PipelineExecution.Types.cs": "02667f60d86da4f8150245ac9a69df87d6f79b46699676b1ce00318546b3b50d",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs": "bdf2fa64457a5e4c1afe12b46688ec21a8286d8a6cb21cfabf78affb951eabda",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/PipelineEvent.cs": "aab083592af9a3ff89c34998d3146dc6409640c93e7c461470f43d9c7432cd53",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.Retire.cs": "77e959d7e1c67ed9cf31826667a37f796ee6dec0d32d6e3f14503fbc23cd5b29",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Commit/ArchitecturalCompletionCommitOwner.cs": "e48a53100f933a6be14a7f06bbd5ff59348b6fcadd9cb0b26db03d57b0f68ec3",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Commit/NeutralArchitecturalCompletionFacts.cs": "e7a5fd4de9072bca7457ec8a32d2c2809c999b255a2f60c809cf59d874543cff",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/Hypercalls/VirtualizationOperandSnapshot.cs": "d27661b16cac62bf5d7eedf34218607089a86dad37313a8c761cf283405bafd1",
+    "HybridCPU_ISE/CloseToHSL/Core/State/CPU_Core.RuntimeState.cs": "7eba3c873efddb2cd939cd8771b6795664412a270caa5c6948780a2f5c01d77a",
+    "HybridCPU_ISE/CloseToHSL/Core/State/RetireState.cs": "d8276889d07eb9e137d1139bac0260a42771420d600c82cce62ad5cbf8ba1500",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/48_neutral_architectural_completion_commit_and_observation_foundation.md": "470ca251500da58be43d314f636d1194b02a438fa04d76e90d7ad206b97ef6c4",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/VirtualizationActivationStatusV1.json": "a9ea85ed38c032913b92bf6da5abfa0cb98e8a60e100d8d517c06ad8adae6e64"
+  },
+  "commands_and_results": [
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --filter FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring",
+      "result": "passed 450/450 on clean detached subject"
+    },
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-build --filter FullyQualifiedName~SecureCompute",
+      "result": "passed 395/395 on clean detached subject"
+    },
+    {
+      "command": "dotnet build HybridCPU_ISE/HybridCPU_ISE.csproj -c Release --no-restore -p:DefineTestSupport=false -p:EnableInternalTestHooks=false -p:WarningLevel=0",
+      "result": "passed with 0 errors and 0 reported warnings on clean detached subject"
+    },
+    {
+      "command": "P48-A duplicate commit and restore race test in 10 independent process runs",
+      "result": "passed 10/10 on clean detached subject; each run contains 20 repetitions and 64 parallel duplicate attempts"
+    },
+    {
+      "command": "git diff --check HEAD^ HEAD; production caller review; canonical ignored/untracked C# checks; forbidden owner scans",
+      "result": "passed; RetireCoordinator unchanged; 0 ignored/untracked canonical C# dependencies"
+    }
+  ],
+  "toolchain": {
+    "dotnet_sdk": "10.0.204",
+    "git": "2.55.0.windows.3",
+    "os": "Microsoft Windows 11 Pro for Workstations"
+  },
+  "activation_rollback_and_migration": {
+    "neutral_commit_owner": "constructed with the canonical core retire state",
+    "eligible_producer_scope": "exact trap-entry producer only",
+    "rollback": "remove exact producer registration and neutral boundary call",
+    "migration": "receipts, registry, seals and generation authority are not serialized; completion evidence is recomputed after restore",
+    "vmread_activation": false,
+    "vmwrite_activation": false,
+    "broad_vmx_activation": false
+  },
+  "verified_denials": {
+    "compatibility_frontend_authority": false,
+    "completion_record_authority": false,
+    "compatibility_exit_factory_authority": false,
+    "trap_fence_result_authority": false,
+    "vmcall_e5_e6_authority": false,
+    "vmcs_backing_store_authority": false,
+    "vmread_specific_registry": false,
+    "backend_completion_shortcut": false,
+    "test_object_authority": false,
+    "broad_completion_class_acceptance": false,
+    "compiler_change_in_subject": false,
+    "securecompute_expansion": false,
+    "nested_expansion": false,
+    "memory_iommu_io_device_lane_stream_expansion": false
+  },
+  "p48b": {
+    "authorized_after_this_provenance_closure": true,
+    "implemented": false,
+    "observation_owner_created": false,
+    "completion_generation_created": false
+  },
+  "next_field_group_opened": false,
+  "claim": "P48-A neutral architectural completion commit evidence only; no production completion-owned VMREAD"
+}

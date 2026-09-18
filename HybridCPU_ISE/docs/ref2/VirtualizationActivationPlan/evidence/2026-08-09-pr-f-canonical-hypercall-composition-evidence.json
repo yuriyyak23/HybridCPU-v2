@@ -1,0 +1,73 @@
+{
+  "schema": "hybridcpu.virtualization-pr-f-canonical-hypercall-composition-evidence.v1",
+  "reviewed_at": "2026-08-09T00:00:00+03:00",
+  "local_only": true,
+  "subject_head_before_pr_f": "8a36b89af279ec8f108d458621ad8e37d89a8c6d",
+  "worktree_contains_uncommitted_pr_f": true,
+  "decision_id": "D2-HV-VMCALL-RUNTIME-V1-PROBE-0001",
+  "scope": "exclusive canonical lane-7 E1/operand/E2 through neutral InvokeHypercall to execute-stage E3, with fault-only VMX retire",
+  "source_contracts": [
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/Hypercalls/DomainHypercallCanonicalComposition.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/Smt/MicroOpScheduler.ExactVirtualizationCanonicalComposition.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/Smt/MicroOpScheduler.SMT.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Domains/Services/DomainRuntimeOperation.cs"
+  ],
+  "tests": [
+    "VmxPrFCanonicalHypercallCompositionTests",
+    "VmxPrEExactProbeExecutorTests",
+    "VmxPrDProductionE2AdmissionTests",
+    "VirtualizationActivationPlanAuditGuardTests",
+    "FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring"
+  ],
+  "diagnostic": {
+    "scenario": "prf-canonical-hypercall-composition",
+    "final_50_iteration_pass_artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_205624_434_prf-canonical-hypercall-composition",
+    "evidence_class": "canonical-composition/negative/fault-only-retire/no-publication",
+    "positive_counters": [
+      "canonical_e4_compositions",
+      "exact_e3_executions",
+      "default_off_faults",
+      "adjacent_leaf_denials",
+      "rollback_revocation_denials"
+    ],
+    "required_zero_counters": [
+      "compatibility_direct_invocations",
+      "completion_publications",
+      "retire_publications"
+    ]
+  },
+  "verification_results": {
+    "focused_pr_c_through_pr_f_and_plan_guards": "80/80 passed",
+    "full_vmx_refactoring": "263/263 passed",
+    "release_no_test_support": "passed with 0 errors and 43 existing warnings",
+    "diagnostic_scenarios_50_iterations_each": "5/5 passed",
+    "diagnostic_artifacts": [
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_205624_434_prf-canonical-hypercall-composition",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_205626_636_pre-exact-probe-executor-no-publication",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_205628_622_prd-e2-admission-fault-only",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_205630_759_vmcall-denied",
+      "TestResults/VirtualizationDiagnosticsConsole/20260809_205632_722_e1-fault-transport"
+    ],
+    "forbidden_source_scans": "passed: sole production ExecuteExactProbe caller is canonical composition; no compatibility caller, allowed backend decision/flag, completion publication or positive retire shortcut",
+    "git_diff_check": "passed"
+  },
+  "plan_corpus": {
+    "file_count": 39,
+    "algorithm": "sha256(utf8(join(sorted filename:sha256, LF)))",
+    "aggregate_sha256": "5558f3392a3a44865568099b2f7b4424c1a313cfe377fcf7eb71e421afce6ef2"
+  },
+  "claims": {
+    "architecture_policy_values": "unchanged-phase-38",
+    "machine_d2": "accepted-pr-b",
+    "e2_admission": "closed-pr-d",
+    "exact_e3": "closed-committed-pr-e",
+    "exclusive_canonical_e4": true,
+    "default_binding_present": false,
+    "compatibility_direct_invocation": false,
+    "completion_publication_authorized": false,
+    "retire_publication_authorized": false,
+    "vmx_retire_fault_only": true,
+    "next_conditional_pool": "PR-G"
+  }
+}

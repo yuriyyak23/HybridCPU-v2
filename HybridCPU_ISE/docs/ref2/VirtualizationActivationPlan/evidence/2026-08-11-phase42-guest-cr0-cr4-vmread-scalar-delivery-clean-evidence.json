@@ -1,0 +1,107 @@
+{
+  "schema": "hybridcpu.vmread-scalar-delivery-clean-implementation-evidence.v1",
+  "record_kind": "later_non_self_referential_implementation_evidence",
+  "status_date": "2026-08-11",
+  "local_only": true,
+  "runtime_authority": false,
+  "decision_id": "D2-HV-VMREAD-SCALAR-DELIVERY-V1-GUEST-CR0-CR4-0001",
+  "operation_namespace": "HybridCPU.VMREAD.ScalarDelivery.v1",
+  "operation_id": "DELIVER_GUEST_CR0_CR4_SCALAR_V1",
+  "spec_provenance": {
+    "commit_sha": "bb2125226425eb341fd94cc67cc6bb26abf918fe",
+    "tree_sha": "e1c89c0132a3dbac8a20c3c5d4f385d27ba31322",
+    "digest_sha256": "ccda8698dbeb3f6eef1b4f13e22a3fb7607e939f493138fb7e3373674e234309"
+  },
+  "acceptance_provenance": {
+    "commit_sha": "44fc1c3daf7d9359ffb5e4b00ccfa35953670515",
+    "tree_sha": "202d937dda1d65789d2fe18fbc619ab52231a022",
+    "digest_sha256": "465a887c2918a762af6bf2039f98c294b2f601b1bb7b71512df3f95a9141b5d5"
+  },
+  "implementation_subject": {
+    "commit_sha": "253e33435b1500a04ecde9228631fb3fab547d15",
+    "tree_sha": "9868fc233bf1c394e3791068eac0f76e063ea623",
+    "parent_commit_sha": "ca7d6bd064a8e0135cca0ed76af190cf0c29e841",
+    "status_at_verification": "clean",
+    "ignored_csharp_under_close_to_hsl": 0,
+    "untracked_csharp_under_close_to_hsl": 0
+  },
+  "source_hashes_sha256": {
+    "HybridCPU_ISE.Tests/VmxRefactoring/VirtualizationActivationPlanAuditGuardTests.cs": "4f754913debfb5676be49d39c4715663dd88e32e46ef1b97be618135e243a5cc",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase41ScalarDeliveryProductionTests.cs": "6b8b1bf1eec20bac5315f8760c5db9cd6741884b5285814f023d871a67c805fc",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/Materialization/CPU_Core.PipelineExecution.Materialization.cs": "06119665e42ca990c636f4aab8469cde6be098ffa34ba604506870258392d6ff",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs": "87a0ba16abe9c8a5dbe0afb4f0179db23860ac576183fc018e121043cc6a6cc6",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs": "518abfad5733a0eb2477cc3656c446d311f44d920e7d3ee5b9c75e4ea1c0051d",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/Smt/MicroOpScheduler.ExactVmReadScalarDelivery.cs": "a184ba24248496018f10f8fba8e50d9c0842346787394077753a1b3dd9ade989",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Scheduling/Smt/MicroOpScheduler.SMT.cs": "ad06fde18612329961c45adbdf1bbae71f3395d4a6c20d6ae4b4fa1cfb4a7cb4",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/VmRead/VmReadScalarDeliveryCanonicalComposition.cs": "d194a7aa37e87d3aaa8ff3806484cefc63f89adfb7be8b5e7dc42b3d47ebd322",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Governance/Virtualization/VmReadScalarDeliveryAcceptedPolicyResolver.cs": "9036c8bf948bf43f36245c6c2c5a8d43f7c2d16a07c0905ed571510aa7a86872",
+    "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs": "22bf1212dae0b726adb86909cea20ae650323848b4d20f8505530bc6a2bdde8e",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/42_guest_cr0_cr4_vmread_scalar_delivery_production.md": "3d1e1ce301b877a402908e7c6563b75bc5b10458650224b162ba968477b650fb",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/Phase42VmReadScalarDeliveryImplementationStatusV1.json": "bbef25b175349810fa5b4401c5bad61447372a1528983734bb71012aae78d73b"
+  },
+  "commands_and_results": [
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-restore --filter Phase40/GuestCr0Cr4/PrivilegedExecutionState/Phase41ScalarDelivery",
+      "result": "passed 71/71 on clean implementation subject"
+    },
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-build --filter FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring",
+      "result": "passed 346/346 on clean implementation subject"
+    },
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-build --filter FullyQualifiedName~SecureCompute",
+      "result": "passed 395/395 on clean implementation subject"
+    },
+    {
+      "command": "race subset: projection versus disable, restore/epoch replacement, and independent domains",
+      "result": "passed in each of 10 consecutive runs; each test contains 64 concurrent iterations where applicable"
+    },
+    {
+      "command": "dotnet build HybridCPU_ISE/HybridCPU_ISE.csproj -c Release --no-restore -p:EnableInternalTestHooks=false -p:DefineTestSupport=false",
+      "result": "passed with 0 errors and 43 existing warnings"
+    },
+    {
+      "command": "git diff --check plus added-line forbidden scans and canonical caller reachability review",
+      "result": "passed"
+    }
+  ],
+  "toolchain": {
+    "dotnet_sdk": "10.0.204",
+    "git": "2.55.0.windows.3",
+    "os": "Microsoft Windows 11 Pro for Workstations"
+  },
+  "activation_and_rollback": {
+    "default": "Disabled",
+    "scope": "exact decision/namespace/operation/GuestCr0+GuestCr4/source-owner/result/effect/capability/migration profile only",
+    "broad_vmread_activation": false,
+    "disable_new_projections": true,
+    "disable_invalidates_outstanding_receipts": true,
+    "replay_change_invalidates_outstanding_receipts": true,
+    "restore_generation_change_without_revalidated_descriptor": "disables exact profile",
+    "replace_after_restore": "atomic descriptor/epoch/generation replacement and remains disabled until explicit exact reactivation",
+    "migration": "DrainOnly",
+    "squash_before_retire": "ZeroArchitecturalEffect"
+  },
+  "verified_authority_boundaries": {
+    "source_owner": "existing PrivilegedExecutionStateOwnerPolicy and PrivilegedExecutionStateDescriptor only",
+    "governance_policy_grants_runtime_authority": false,
+    "receipt_grants_source_authority": false,
+    "compatibility_frontend_authority": false,
+    "vmcs_value_or_backing_store_source": false,
+    "vmwrite": false,
+    "direct_architectural_register_write": false,
+    "canonical_prf_rename_writeback_only": true,
+    "canonical_retire_coordinator_commit_only": true,
+    "backend_execution": false,
+    "trap_completion_publication": false,
+    "vmx_retire_effect": false,
+    "underlying_virtualization_state_mutation": false,
+    "vmcall_e5_e6_reuse": false,
+    "probe_capability_bit_41_reuse": false,
+    "adjacent_fields": "deterministically denied"
+  },
+  "forbidden_scan_result": "No added frontend authority, VMCS/backing-store fallback, broad activation, HostCr/GuestCr3/control field path, probe D2/O1/E1-E7 reuse, backend/completion/VMX-retire publication, BackendExecutionAuthorized true, compiler emission, SecureCompute, nested, memory/IOMMU/I/O/device/lane/stream expansion.",
+  "compiler_files_changed": 0,
+  "claim": "GuestCr0/GuestCr4 exact read-only VMREAD production projection and scalar delivery implemented under accepted D2 and existing neutral privileged execution-state authority.",
+  "non_self_referential": true
+}

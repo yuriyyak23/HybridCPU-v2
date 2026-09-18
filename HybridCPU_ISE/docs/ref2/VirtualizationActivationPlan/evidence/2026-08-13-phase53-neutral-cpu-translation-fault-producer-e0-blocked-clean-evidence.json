@@ -1,0 +1,69 @@
+{
+  "schema": "hybridcpu.phase53-neutral-cpu-translation-fault-producer-e0-blocked-evidence/v1",
+  "record_kind": "later_non_self_referential_audit_evidence",
+  "status_date": "2026-08-13",
+  "phase": "P53-E0",
+  "local_only": true,
+  "runtime_authority": false,
+  "non_self_referential": true,
+  "implementation_subject": {
+    "commit_sha": "43a3125c3a1a37c2793ee71a37c361addc180919",
+    "tree_sha": "41d8a5dc234985ef9144bd5390bfb2acab38b311",
+    "parent_commit_sha": "48f720bda34385b98059b791b8a27cc3d02da19e",
+    "status_at_verification": "clean_detached_worktree",
+    "untracked_csharp_under_close_to_hsl": 0,
+    "ignored_csharp_under_close_to_hsl": 0
+  },
+  "e0_findings": {
+    "instruction_fetch": "direct bound-main-memory VLIW cache lookup by fetchPC; no CPU translation operation or typed translation fault",
+    "scalar_load_store": "direct physical-bank controller or bound-main-memory address; no CPU translation operation",
+    "page_fault_carrier": "address/isWrite only and shared by generic range/alignment/atomic/controller/memory failures",
+    "precise_arbitration": "deterministic older-stage-first and ordered-lane winner for generic materialized faults",
+    "lane_provenance": "domain/context/VT/post-Stage-B attempt available conditionally but no typed translation event",
+    "iommu_nested": "different subsystem authority and not a CPU production caller",
+    "producer": "not implemented because source semantics are absent"
+  },
+  "source_hashes_sha256_clean_subject_bytes": {
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.PipelineExecution.StageFlow.cs": "38a8e7821224266d49bd849fdeb2f840afada6b8273ae080ab22d53e5304f30c",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Memory/MicroOp.LoadStore.cs": "00e5d6e1c7bb3019acc49ba9f844ef9c7a8f2cb4d3fbed57d2c7ecb69e4196cc",
+    "HybridCPU_ISE/CloseToHSL/Memory/Timing/MemoryCycleController.cs": "3c4071d73445a67785282670c01e3f99038585e93906893119ed8eef38d56495",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.Exceptions.cs": "69d9a1892ef25e1db49a0786796e2b4635ffc72082ebe83b79e92b2fe601d701",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.Pipeline.Helpers.cs": "0ef11966c0cc4335415dcc0146f0768ffe082e98c6b7ff37e5826f02d7786760",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase53NeutralCpuTranslationFaultProducerE0Tests.cs": "e65253533d9522a4e09f3d2d7727bef10aa98b9d3438662e21bbe2eced216edf",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/53_neutral_cpu_translation_fault_producer_e0_blocked.md": "e84b7c00505d80e9205bc82121b2966de3b7ef4a5670989a58b57dfa6b85a208",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/VirtualizationActivationStatusV1.json": "f192546814a29d5a9627962d23a928ea8e9a3ecf8acd818bec3b00999b48623e"
+  },
+  "commands_and_results": [
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --filter FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring",
+      "result": "passed 486/486 on exact clean detached subject tree; 504/504 on current worktree"
+    },
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-build --filter FullyQualifiedName~SecureCompute",
+      "result": "passed 395/395 on exact clean detached subject tree; 404/404 on current worktree"
+    },
+    {
+      "command": "dotnet build HybridCPU_ISE/HybridCPU_ISE.csproj -c Release --no-restore -p:DefineTestSupport=false -p:WarningLevel=0",
+      "result": "passed with 0 errors and 0 reported warnings"
+    },
+    {
+      "command": "git diff --check; JSON parse; canonical ignored/untracked C# scan",
+      "result": "passed; zero ignored/untracked canonical C#"
+    }
+  ],
+  "verified_denials": {
+    "cpu_translation_owner_created": false,
+    "cpu_translation_fault_producer_created": false,
+    "memory_operation_identity_created": false,
+    "generic_page_fault_promoted_to_translation": false,
+    "iommu_dma_device_nested_authority_borrowed": false,
+    "vmx_vmcs_runtime_authority": false,
+    "vmread_d2_or_composition": false,
+    "vmwrite": false,
+    "compiler_change": false,
+    "securecompute_semantic_change": false
+  },
+  "verdict": "BLOCKED_E0_NO_CANONICAL_CPU_TRANSLATION_SOURCE_OR_TYPED_FAULT_CALLER",
+  "next_candidate": "none until separate canonical neutral CPU instruction translation contour authorization or a future typed production seam",
+  "completion_backed_vmread_opened": false
+}

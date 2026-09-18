@@ -1,0 +1,30 @@
+{
+  "Schema": "hybridcpu.virtualization-clean-evidence/v1",
+  "Phase": 57,
+  "RecordedDate": "2026-08-13",
+  "SubjectCommitSha": "875b472abe8286ad72c7157c075f2866e4e75f15",
+  "SubjectTreeSha": "5518800241ce3dd7697c9cf9d05a29cc748cbde8",
+  "SpecCommitSha": "0865929ae2ab5ee95b0912eebd63ae7af2494f4c",
+  "AcceptanceCommitSha": "890f8aab862fbf7520faae4642d36e58f871e9b3",
+  "NonSelfReferential": true,
+  "SourceBlobs": {
+    "CompletionSecondStageVmReadScalarDeliveryCanonicalComposition.cs": "21fdbb720f4277692d3377b0f217db87b87678cb",
+    "NeutralCompletionSecondStageProjection.cs": "79b2200c55a13125fe0fa5d239d24c12a931971d",
+    "CPU_Core.PipelineExecution.Materialization.cs": "6f6ebf6072b3b2f4a8050c6404eb903dc6703374",
+    "Phase57CompletionSecondStageVmReadDecisionSpecV2.cs": "bbf3c9c9e7ad3933fda3df5da248eb8f72f57a65",
+    "Phase57CompletionSecondStageVmReadDecisionAcceptanceV2.cs": "373e848d7c3dd623cedd0cf7c7ef5e4c4d9e5c38"
+  },
+  "Verification": {
+    "FocusedPhase55To57AndPlanGuards": "95/95",
+    "LifecycleRaceRuns": "5x 1/1",
+    "WorktreeVmx": "556/556",
+    "WorktreeSecureCompute": "406/406",
+    "CleanStagedVmx": "538/538",
+    "CleanStagedSecureCompute": "395/395",
+    "ReleaseNoTestingOrInternalHooks": "0 warnings / 0 errors",
+    "GitDiffCheck": "green",
+    "IgnoredCanonicalProductionCSharp": 0
+  },
+  "AuthorityVerdict": "CompatibilityReadOnlyExactTwoFieldProjectionNoRuntimeAuthority",
+  "NextCandidatePool": "NoneUntilSeparatePostPhase57Authorization"
+}

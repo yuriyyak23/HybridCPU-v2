@@ -1,0 +1,54 @@
+{
+  "Schema": "hybridcpu.virtualization-exact-read-only-vmread-production-release/v1",
+  "RecordRole": "ImmutableReleaseEvidenceOnlyNeverRuntimeAuthority",
+  "StatusDate": "2026-08-13",
+  "Claim": "LimitedProductionReleaseOfCompletionReasonQualificationVmReadOnly",
+  "VerificationMode": "ProductionExactReadOnlyDefaultDisabled",
+  "ExistingImplementationSubjectSha": "f5fbdcb16b5fe5859311448dacf7a98e17217b20",
+  "ExistingImplementationSubjectTree": "2573f9a9a02f51d919e61b3358030ec199109fb3",
+  "ExactIdentity": {
+    "DecisionId": "D2-HV-VMREAD-COMPLETION-REASON-QUALIFICATION-0004",
+    "OperationNamespace": "HybridCPU.VMREAD.ScalarDelivery.v1",
+    "OperationId": "DELIVER_COMPLETION_REASON_QUALIFICATION_SCALAR_V1",
+    "SpecDigest": "649f576e09ca0168ba60be3f632a4d8c93f6fabaa8571c22a5445f438dcda6d2",
+    "Fields": ["VmcsField.ExitReason", "VmcsField.ExitQualification"],
+    "MutationClass": "ReadOnly",
+    "ResultAbi": "ScalarU64ToDestinationRegister"
+  },
+  "Authority": {
+    "SourceOwner": "DomainCompletionObservationOwner",
+    "ExactProducer": "CanonicalCpuInstructionTranslationFaultProducer",
+    "NeutralReasons": "AccessDeniedAndOwnerScopeMismatchOnly",
+    "CompatibilityMapping": "FrozenSecurityPolicyViolationAndExactReasonBoundQualification",
+    "RuntimeAuthority": "ExistingNeutralCompletionOwnerOnly"
+  },
+  "Construction": {
+    "ProductionCaller": "CpuCorePlatformContextToCPUCoreConstructionToCanonicalMaterialization",
+    "Configuration": "ExplicitImmutableEnableCompletionReasonQualificationVmRead",
+    "Default": "Disabled",
+    "Delivery": "ExistingSingleUseReceiptToCanonicalPrfWritebackRetireRecordAndRetireCoordinator"
+  },
+  "Rollback": {
+    "EntryPoint": "CPU_Core.DisableCompletionReasonQualificationVmReadProfile",
+    "Linearization": "CompositionLockDisableThenAdvanceProfileGeneration",
+    "PreparedReceiptDisposition": "InvalidatedBeforeSpeculativeOrRetireValidation",
+    "ImplicitReactivation": "Denied",
+    "Migration": "DrainOnly"
+  },
+  "CompatibilityAuthority": {
+    "VmxVmcs": false,
+    "FrontendTrapOrVmCall": false,
+    "CompletionCreation": false,
+    "VmWrite": false,
+    "ReleaseRecord": false
+  },
+  "Excluded": [
+    "GuestPhysicalAddress and EptViolationQualification release",
+    "GuestCr0 GuestCr4 release",
+    "GuestPc GuestSp GuestFlags release",
+    "GuestCr3 EptPointer Vpid Cr3TargetCount release",
+    "new VMREAD fields or VMCALL operations",
+    "VMWRITE nested SecureCompute compiler IOMMU DMA device lane stream",
+    "broad VMREAD or virtualization claim"
+  ]
+}

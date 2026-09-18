@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HybridCPU.ExternalRuntime.Contracts;
 using YAKSys_Hybrid_CPU.Core;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Auth;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Conflicts;
@@ -574,13 +575,27 @@ public sealed class AcceleratorCommitCoordinator
         bool commitConflictPlaceholderAccepted,
         bool directWriteViolationDetected = false,
         ExternalAcceleratorConflictManager? conflictManager = null,
-        MemoryCoherencyObserver? coherencyObserver = null)
+        MemoryCoherencyObserver? coherencyObserver = null,
+        ExternalOperationPublicationEvidence? externalPublicationEvidence = null,
+        bool externalPublicationEvidenceRequired = false)
     {
         ArgumentNullException.ThrowIfNull(token);
         ArgumentNullException.ThrowIfNull(descriptor);
         ArgumentNullException.ThrowIfNull(stagingBuffer);
         ArgumentNullException.ThrowIfNull(mainMemory);
         invalidationPlan ??= AcceleratorCommitInvalidationPlan.None;
+
+        if (externalPublicationEvidenceRequired &&
+            ExternalOperationPublicationGate.Evaluate(externalPublicationEvidence) != ExternalOperationPublicationEligibility.Eligible)
+        {
+            return RecordCommitResult(
+                AcceleratorCommitResult.Rejected(
+                    token,
+                    new AcceleratorCommitFault(
+                        AcceleratorTokenFaultCode.BackendRejected,
+                        "External-operation publication evidence is missing, stale, mismatched, or not eligible for staged CPU publication.")),
+                token);
+        }
 
         if (!ValidateCommitPreconditions(
                 token,

@@ -1,0 +1,12 @@
+{
+  "Id": "replay",
+  "DisplayName": "Replay Phase Pair (SPEC-like scheduler certificate slice)",
+  "WorkloadKind": 1,
+  "FrontendMode": 0,
+  "WallClockTimeoutMs": 120000,
+  "SimpleAsmMode": null,
+  "HeartbeatIntervalMs": 1000,
+  "HeartbeatCycleStride": 2048,
+  "WorkloadIterations": 1000000,
+  "TelemetryLogMode": 0
+}

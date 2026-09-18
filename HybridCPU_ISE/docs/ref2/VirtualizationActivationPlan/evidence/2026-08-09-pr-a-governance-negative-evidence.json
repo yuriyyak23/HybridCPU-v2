@@ -1,0 +1,68 @@
+{
+  "schema": "hybridcpu-virtualization-pr-a-evidence/v1",
+  "observed_at": "2026-08-09",
+  "head": "ddfffa2d7b86fb3ece21f8d21c6447ae47ee3868",
+  "worktree_state": "dirty-user-worktree",
+  "network_operations_performed": false,
+  "commit_or_stage_performed": false,
+  "scope": "PR-A D2 v2 governance/negative substrate only",
+  "facts": {
+    "phase38_architecture_policy_values_decided": true,
+    "machine_structure_validator_tested": true,
+    "attributable_accepted_instance_present": false,
+    "repository_codeowners_present": false,
+    "completed_review_evidence_present": false,
+    "runtime_authority_present": false,
+    "pr_b_automatically_open": false
+  },
+  "tests": {
+    "focused_d2_plan": {
+      "filter": "VmxD2V2GovernanceNegativeSubstrateTests|VmxD2DecisionAndE2NegativeSubstrateTests|VirtualizationActivationPlanAuditGuardTests",
+      "passed": 93,
+      "failed": 0
+    },
+    "vmx_refactoring_namespace": {
+      "filter": "FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring",
+      "passed": 219,
+      "failed": 0
+    },
+    "release_no_internal_hooks": {
+      "configuration": "Release",
+      "EnableInternalTestHooks": false,
+      "DefineTestSupport": false,
+      "errors": 0,
+      "warnings": 43
+    }
+  },
+  "diagnostics": {
+    "pra_d2_governance_negative": {
+      "artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_121714_666_pra-d2-governance-negative",
+      "iterations": 100,
+      "assertions": 3600,
+      "trace_sha256": "bb4bb862445bdbd977fd4b3b95acce56b87659434ab671a5accbdd914870e175",
+      "accepted_policy_objects": 0,
+      "runtime_authority_objects": 0
+    },
+    "vmcall_denied": {
+      "artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_121720_158_vmcall-denied",
+      "iterations": 100,
+      "result": "passed"
+    },
+    "e1_fault_transport": {
+      "artifact": "TestResults/VirtualizationDiagnosticsConsole/20260809_121725_325_e1-fault-transport",
+      "iterations": 100,
+      "result": "passed"
+    }
+  },
+  "static_checks": {
+    "git_diff_check": "passed-with-line-ending-warnings-only",
+    "exact_profile_outside_governance": "no-match",
+    "populated_acceptance_or_accepted_registry": "no-match",
+    "executor_invoke_or_allowed_backend": "no-match",
+    "frontend_completion_shortcut": "no handler/pipeline/runtime caller; pre-existing isolated compatibility factory remains allowlisted and test-only",
+    "frontend_positive_retire_shortcut": "no-match",
+    "runtime_positive_route_descriptor": "pre-existing-policy-shape-only-not-used-by-frontend",
+    "codeowners": "absent"
+  },
+  "authority_boundary": "This aggregate is local dirty-worktree testing/governance evidence only. It is not an AcceptanceRecordV2, attributable machine D2, capability, owner registry, O1, E2, backend, completion, retire, activation or release proof."
+}

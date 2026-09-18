@@ -58,7 +58,7 @@ base installer does not yet carry forward: the Phase 15 pack-file identity and
 the `HybridCPU.Platform.Contracts.dll` adapter dependency.
 
 ```powershell
-$runtime = '\Documents\HybridCPU-ExternalSources\dotnet-94ea82652cdd4e0f8046b5bd5becbd11461482ca\src\runtime'
+$runtime = 'C:\Users\Yuriy Kurnosov\Documents\HybridCPU-ExternalSources\dotnet-94ea82652cdd4e0f8046b5bd5becbd11461482ca\src\runtime'
 .\HybridCpuAotAddDemo\Install-RefPlan7SdkPack.ps1 `
   -IlCompilerDirectory "$runtime\artifacts\bin\coreclr\windows.x64.Release\ilc" `
   -RuntimeReferenceDirectory "$runtime\.dotnet\shared\Microsoft.NETCore.App\10.0.5"

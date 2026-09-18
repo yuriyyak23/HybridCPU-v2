@@ -1,0 +1,12 @@
+{
+  "Id": "stream-vector",
+  "DisplayName": "Stream/Vector SPEC-like Suite",
+  "WorkloadKind": 5,
+  "FrontendMode": 0,
+  "WallClockTimeoutMs": 180000,
+  "SimpleAsmMode": null,
+  "HeartbeatIntervalMs": 1000,
+  "HeartbeatCycleStride": 2048,
+  "WorkloadIterations": 250,
+  "TelemetryLogMode": 0
+}

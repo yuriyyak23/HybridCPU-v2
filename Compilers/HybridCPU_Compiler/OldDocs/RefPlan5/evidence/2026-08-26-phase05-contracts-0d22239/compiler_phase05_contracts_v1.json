@@ -1,0 +1,90 @@
+{
+  "schema": "CompilerRefPlan5Phase05EvidenceV1",
+  "phase": "05",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "0d22239021baa8aa8ac6e9eee63f344d897b6483",
+  "implementationTree": "f6cbcf3072b2acadb4b06f3c52971d4eb32d00b5",
+  "implementationCommits": [
+    "0d22239021baa8aa8ac6e9eee63f344d897b6483"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5 and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Standalone Core/native boundary from verified Phase 04.",
+    "output": "Versioned capability, compatibility, provenance, cross-layer envelope and semantic cache-key contracts.",
+    "authorityBoundary": "Compiler products are immutable build-time evidence only; runtime legality, freshness, ownership, replay, execution, publication, commit and retire remain runtime-owned.",
+    "deterministicFallback": "Unknown/absent capability and unknown legality-relevant schema versions deterministically return Unsupported before artifact emission; no downstream permission is inferred.",
+    "runtimeAuthorityChanged": false,
+    "schedulePolicyChanged": false,
+    "carrierBytesChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "contracts": {
+    "capabilitySchema": "hybridcpu.compiler-capabilities/1.0",
+    "envelopeSchema": "hybridcpu.compiler-cross-layer-envelope/1.0",
+    "provenanceSchema": "hybridcpu.compiler-build-provenance/1.0",
+    "compatibilityDispositions": ["Compatible", "NeedsMigration", "Unsupported", "Unknown"],
+    "featureDispositions": ["Supported", "Unsupported", "ExperimentalDefaultOff", "RequiredByInput", "Unknown"],
+    "unknownMajorDisposition": "Unsupported before artifact emission",
+    "forwardMinorRule": "Allowed only when every newly introduced field is declared NonSemantic",
+    "migrationRule": "Creates a new producer identity and records the prior provenance digest as lineage",
+    "profileRule": "ProfitabilityOnly; excluded from semantic cache keys and rejected from semantic legality/evidence locations",
+    "capabilityValidationBoundaries": ["frontend-core", "final-lowering"]
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "targetArchitectureRevision": "HybridCPU-W8-native-v1",
+    "targetIdentitySha256": "908c5ca4b66829f5384f79862a27bc00094d0b93a550cb55dbf61c000d66fc0e",
+    "machineDescriptionDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+    "machineTopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+    "nativeFeatureSetDigest": "778058035f5ae87605e68f04b9e77bd8bf74b42a70e16f7a5cfe21f7cff12860",
+    "capabilitySchemaDigest": "1a7a960edac88594aa7c08436894c987e70f709418817072dc361e5c008ff9fc",
+    "envelopeSchemaDigest": "9309db33ffe41c9a7c43918db81bf0d53c0d1e1f78795edcbdbe9485e89a6bf3",
+    "provenanceSchemaDigest": "fe1c6c56153f74379d3064ff0b4be6f4cba554e4c76200a181f8591fea789ebf",
+    "implementationSourceManifestSha256": "25294e0063e68573c7c77a0365d0178ea038beaa63bff90b64c0547fd1f5d61f",
+    "qualificationOptionsSha256": "6d82733d69ed94a77210f7bfae8be9cdbacde5b5c318c0ac2b62086bcb1140cd",
+    "dataLayoutVersion": "hybridcpu-native-datalayout/v1",
+    "abiVersion": "hybridcpu-native-abi/v1",
+    "profileHash": null,
+    "profileAbsence": "Explicit"
+  },
+  "cacheInvalidation": {
+    "targetArchitectureRevision": true,
+    "machineDigest": true,
+    "topologyDigest": true,
+    "abiSchemaVersion": true,
+    "compilerFeatureSetDigest": true,
+    "deterministicOptionsDigest": true,
+    "dataLayoutVersion": true,
+    "inputDigest": true
+  },
+  "qualification": {
+    "phase05Focused": {"passed": 18, "failed": 0, "skipped": 0},
+    "phase04And05FocusedRegression": {"passed": 26, "failed": 0, "skipped": 0},
+    "phase00Through05": {"passed": 93, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 788, "failed": 0, "skipped": 0},
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43},
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "llvmSharpIncludedInPhase05": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false
+  },
+  "releaseDisposition": {
+    "defaultEnabled": true,
+    "defaultEnabledScope": "Native frontend schema/capability validation and versioned compiler provenance only",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Qualified for Phase 06 consumption; final release authorization remains owned by Phase 27.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": []
+}

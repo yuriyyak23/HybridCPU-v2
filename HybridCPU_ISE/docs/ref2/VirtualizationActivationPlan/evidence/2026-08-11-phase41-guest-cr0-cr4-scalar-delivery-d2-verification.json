@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "phase": 41,
+  "record_kind": "post_acceptance_clean_source_verification",
+  "status_date": "2026-08-11",
+  "decision_id": "D2-HV-VMREAD-SCALAR-DELIVERY-V1-GUEST-CR0-CR4-0001",
+  "spec_provenance": {
+    "commit_sha": "bb2125226425eb341fd94cc67cc6bb26abf918fe",
+    "tree_sha": "e1c89c0132a3dbac8a20c3c5d4f385d27ba31322",
+    "digest_sha256": "ccda8698dbeb3f6eef1b4f13e22a3fb7607e939f493138fb7e3373674e234309"
+  },
+  "acceptance_provenance": {
+    "commit_sha": "44fc1c3daf7d9359ffb5e4b00ccfa35953670515",
+    "tree_sha": "202d937dda1d65789d2fe18fbc619ab52231a022",
+    "digest_sha256": "465a887c2918a762af6bf2039f98c294b2f601b1bb7b71512df3f95a9141b5d5",
+    "spec_commit_is_earlier": true,
+    "acceptance_record_contains_own_commit_sha": false
+  },
+  "toolchain": {
+    "dotnet_sdk": "10.0.204",
+    "git": "2.55.0.windows.3",
+    "powershell": "5.1.26100.8972"
+  },
+  "commands_and_results": [
+    {
+      "command": "isolated Release governance harness over pre-acceptance working sources",
+      "result": "passed 23/23"
+    },
+    {
+      "command": "isolated xUnit Release spec harness",
+      "result": "passed 5/5"
+    },
+    {
+      "command": "detached clean subject harness at bb2125226425eb341fd94cc67cc6bb26abf918fe",
+      "result": "passed 7/7; clean after harness removal"
+    },
+    {
+      "command": "isolated canonical acceptance harness",
+      "result": "passed 6/6"
+    },
+    {
+      "command": "isolated xUnit pre-commit acceptance harness",
+      "result": "passed 3/3"
+    },
+    {
+      "command": "detached clean post-acceptance xUnit harness at 44fc1c3daf7d9359ffb5e4b00ccfa35953670515",
+      "result": "passed 9/9; repository provenance resolved; clean after harness removal"
+    },
+    {
+      "command": "git diff --check over each staged Phase 41 commit",
+      "result": "passed"
+    },
+    {
+      "command": "governance authority and reuse forbidden scans",
+      "result": "no direct architectural/PRF write, runtime RetireCoordinator call, VMCS writeback, VMCALL E5/E6 reuse, trap completion, broad VMREAD enable or positive runtime authority marker"
+    }
+  ],
+  "baseline_provenance_note": {
+    "full_repository_clean_checkout_build": "not_claimed",
+    "reason": "two pre-existing SecureCompute Policies/Debug sources remain ignored and absent from committed history",
+    "phase41_governance_verification_dependency": "none; exact committed governance sources and tests were compiled in isolated clean harnesses without those files"
+  },
+  "closure": {
+    "e0": "Closed",
+    "d2": "MachineAcceptedGovernanceOnly",
+    "old_phase40_projection_d2_modified": false,
+    "exact_fields": ["GuestCr0", "GuestCr4"],
+    "result_abi": "ScalarU64ToDestinationRegister",
+    "effect_class": "ArchitecturalRegisterResultOnly",
+    "source_owner": "PrivilegedExecutionStateOwnerPolicy",
+    "receipt_policy": "OpaqueSingleUseAttemptBoundNoReplayReuse",
+    "speculative_transport_policy": "CanonicalPRFRenameEXMEMWBOnly",
+    "retire_policy": "CanonicalRetireCoordinatorArchitecturalRegisterCommit",
+    "migration_policy": "DrainOnly",
+    "squash_before_retire": "ZeroArchitecturalEffect",
+    "runtime_authority_granted": false,
+    "result_receipt_issued": false,
+    "production_scalar_delivery_activated": false,
+    "direct_architectural_write_authorized": false,
+    "vmcs_writeback_authorized": false,
+    "vmcall_e5_e6_reused": false,
+    "trap_completion_authorized": false,
+    "underlying_virtualization_mutation_authorized": false
+  },
+  "next_pool": "separately authorized production VmReadScalarResultReceipt issuance, canonical scalar-carrier composition and precise-retire consumption implementation after clean-source baseline remediation"
+}

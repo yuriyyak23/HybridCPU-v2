@@ -1,0 +1,104 @@
+{
+  "schema": "hybridcpu.phase54-canonical-neutral-cpu-instruction-translation-evidence/v1",
+  "record_kind": "later_non_self_referential_implementation_evidence",
+  "status_date": "2026-08-13",
+  "phase": "P54",
+  "local_only": true,
+  "runtime_authority": "NeutralCpuInstructionTranslationAndExistingCompletionOwnersOnly",
+  "non_self_referential": true,
+  "implementation_subject": {
+    "commit_sha": "284ed3e6454bdbc8eabb93e97db97122da13a9da",
+    "tree_sha": "2b9d6c94d19bb41e23337461f8bfab10745be236",
+    "parent_commit_sha": "4e6666c1ca06801a39d58996907c0db31a6c3e1f",
+    "status_at_verification": "exact_clean_detached_subject_tree",
+    "untracked_csharp_under_close_to_hsl": 0,
+    "ignored_source_csharp_under_close_to_hsl": 0
+  },
+  "production_callers": {
+    "construction": "CpuCorePlatformContext -> CPU_Core -> Processor.ReplaceCore",
+    "instruction_fetch": "PipelineStage_Fetch -> TranslateInstructionFetch",
+    "scalar_load": "LoadMicroOp.Execute -> TranslateScalarInstructionMemoryAddress",
+    "scalar_store": "StoreMicroOp.Execute -> TranslateScalarInstructionMemoryAddress",
+    "completion": "stage-aware precise winner -> CommitAtCanonicalPreciseFaultBoundary"
+  },
+  "owner_and_arbitration_model": {
+    "translation_owner": "CpuInstructionTranslationOwner",
+    "activation_default": "Identity",
+    "mapped_activation": "explicit immutable CpuInstructionTranslationPolicy only",
+    "precise_fault_owner": "existing TryResolveStageAwareExceptionWinnerMetadata",
+    "winner_order": "WB before MEM before EX; established ordered lane within one stage",
+    "completion_owner": "existing ArchitecturalCompletionCommitOwner",
+    "producer_count": 1,
+    "commit_denial": "fail fast before architectural fault delivery",
+    "speculative_fault": "squash without completion publication"
+  },
+  "provenance_and_facts": {
+    "identity": "domain/context/VT/attempt/event/memory-operation/access-kind/virtual-address/access-size/owner-epoch",
+    "reason": "neutral typed CPU translation reason",
+    "qualification": "neutral access/reason/size qualification",
+    "address": "explicitly present VirtualAddress; zero distinct from absent",
+    "auxiliary": "neutral TranslationFault auxiliary",
+    "restore_and_rebind": "Phase 52 observation/receipt/replay invalidation; pending fetch fault cleared"
+  },
+  "exact_completion_field_coverage_reaudit": {
+    "exit_reason_mapping": "not accepted in this phase",
+    "exit_qualification": "neutral qualification exists but no compatibility projection is authorized",
+    "guest_physical_address": "not proven; producer address semantic is VirtualAddress",
+    "ept_violation_qualification": "not proven and not produced",
+    "four_field_vmread": "blocked incomplete exact semantic coverage"
+  },
+  "source_hashes_sha256_clean_subject_bytes": {
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Memory/Translation/CpuInstructionTranslationContour.cs": "88dddfd54ff942c75f829d6f2fa8e48a749644831141f72f4225ebfd8a647b69",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/Faults/CPU_Core.PipelineExecution.CpuTranslation.cs": "5bc7ee027f20a0acc78b797463bc5c9aadbacb10945456687f4fc6d60129b726",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.PipelineExecution.StageFlow.cs": "a4f491bae0f33958263224eae87391c3afda9847ad8b8b60706df5c21da86229",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Memory/MicroOp.LoadStore.cs": "e8e8c43e6a9ad66fe41078475dff169f19f5f5a38f28b16315bbf74e87f401ed",
+    "HybridCPU_ISE/CloseToHSL/Core/Pipeline/ExecutionFlow/StageFlow/CPU_Core.Pipeline.Helpers.cs": "d0074073da48249981b86063facc4ae7e34cfaf40c442c783c6d40ae13618c93",
+    "HybridCPU_ISE/CloseToHSL/Core/Architecture/State/Architectural/CPU_Core.StateData.cs": "6b45a2d64635cd66d0fb52320333df96dd4681005248cc8b5c25b57e51877674",
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Commit/ArchitecturalCompletionCommitOwner.cs": "f5f22893cc18a343456dcc3fe2c279f16e20027240bd09ac8bad293066bdcc8a",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase54CanonicalCpuInstructionTranslationContourTests.cs": "272c87b97c4f8a9db05dacf519619cfe99d743185e802e4d0230f52838a047c8",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/54_canonical_neutral_cpu_instruction_translation_contour_and_producer_reaudit.md": "6bc0b03e74d4e76bda95574ae242b0da180db6f47ca1a3dc2075bdd41d8ae8d4",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/VirtualizationActivationStatusV1.json": "f8c50ea936fa2cc09c00462cb70599b4b54b3de11c7ed93426238557596e9912"
+  },
+  "commands_and_results": [
+    {
+      "command": "Phase 40-54 focused status/lifecycle/translation tests",
+      "result": "passed 68/68 in the worktree; Phase 54 focused passed 13/13"
+    },
+    {
+      "command": "restore/arbitration/observation race filters in five independent process runs",
+      "result": "passed five runs of 3/3"
+    },
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj --filter FullyQualifiedName~VmxRefactoring",
+      "result": "passed 518/518 in the preserved worktree and 500/500 on the exact clean detached subject tree"
+    },
+    {
+      "command": "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj --filter FullyQualifiedName~SecureCompute",
+      "result": "passed 404/404 in the preserved worktree and 395/395 on the exact clean detached subject tree"
+    },
+    {
+      "command": "dotnet build HybridCPU_ISE/HybridCPU_ISE.csproj -c Release -p:DefineTestSupport=false -p:EnableInternalTestHooks=false -p:WarningLevel=0",
+      "result": "passed with 0 errors and 0 reported warnings on worktree and exact clean subject tree"
+    },
+    {
+      "command": "git diff --check; staged forbidden-authority scan; canonical ignored/untracked source C# scan",
+      "result": "passed; no forbidden authority additions; zero ignored/untracked canonical source dependencies"
+    }
+  ],
+  "verified_denials": {
+    "vmx_vmcs_runtime_authority": false,
+    "compatibility_frontend_authority": false,
+    "trap_fence_surrogate_authority": false,
+    "vmcall_e5_e6_surrogate_authority": false,
+    "completion_vmread_d2_or_composition": false,
+    "vmread_specific_registry_or_receipt": false,
+    "vmwrite": false,
+    "compiler_change_in_subject": false,
+    "securecompute_semantic_change_in_subject": false,
+    "nested_iommu_dma_device_expansion": false,
+    "page_fault_exception_as_translation_authority": false
+  },
+  "next_candidate": "none until separate completion-backed VMREAD projection/read authorization and exact field-coverage decision",
+  "completion_backed_vmread_opened": false,
+  "claim": "one canonical neutral CPU instruction fetch/scalar load/store translation contour and one exact neutral completion producer only"
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "CompilerRefPlan5Phase12RegionSchedulingEvidenceV1",
+  "phase": "12",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "a1695f86bed61e533dc53128f24b32dbc50d1fb7",
+  "implementationTree": "0dd90c3a15cbf79fa48fb42c6bbbe58297fcb8e7",
+  "implementationCommits": ["a1695f86bed61e533dc53128f24b32dbc50d1fb7"],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5, local Git history and the exact Phase 09 package runtime only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 06 SchedulingRegion/mutation contracts, Phase 07 value analysis, Phase 08A target facts and Phase 01-03 dependency/resource/exact-placement foundation.",
+    "output": "A deterministic bounded region candidate and semantic-firewall layer with explicit alias/control/fault/capability witnesses plus exact W=8 shadow scheduling for the qualified two-block straight-line contour.",
+    "authorityBoundary": "Region results are evidence only. ExactBasicBlockFallbackOnly is the sole output disposition; Core target legality and exact placement remain independent, and backend/runtime/publication/commit/retire authority is unchanged.",
+    "deterministicFallback": "Default mode is disabled. Side exits, predicates, control/calls, faults, unknown or conflicting memory, volatile/atomic/fence, lane6/lane7 special contours, stale witnesses and malformed budgets/profiles preserve the exact BB schedule/bundle path.",
+    "runtimeAuthorityChanged": false,
+    "productionSchedulePolicyChanged": false,
+    "carrierBytesChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "regionContract": {
+    "schema": "hybridcpu.region-scheduling/v1",
+    "contractDigest": "3b21062ca7d3831066c9a7a39f09f6eac66f2344bef32b67a7fe680b0ec023f9",
+    "optionsContractDigest": "7adac7c38f0f1d4c2381952e945c38c93069f48fd380224ed71f9b24c1f4e230",
+    "targetContractDigest": "ae6ee979176be7f21dc396fe0ddb5d7023d8b6de1722eb4d4652647dd3e99232",
+    "defaultMode": "Disabled",
+    "outputDisposition": "ExactBasicBlockFallbackOnly",
+    "candidateBudget": 64,
+    "maximumProductionCandidates": 256,
+    "blocksPerQualifiedRegion": 2,
+    "straightLineFallthrough": "SupportedStraightLine",
+    "guardedPredication": "Unsupported",
+    "speculativeFaultSuppression": "Unknown",
+    "hyperblocks": "Unsupported",
+    "profileMayLegalizeMotion": false,
+    "shadowBenefitCycles": {"fallback": 2, "shadow": 1}
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "regionSchedulerSourceSha256": "2d49e3a3961c429111c92224130d7ab2fd8b959c8244862939e9d5dc9af68fb8",
+    "phase12TestSourceSha256": "f401751bf772e8b95e44678768575cf3f3b0a95782b03f3c3f51f658edf0d515",
+    "targetContractSourceSha256": "6f4db3f451d615c10fe2528479f6d7aeff390ad1693c59f766e588bf81842886",
+    "implementationSourceManifestSha256": "7a75b461ba970778e7651f71f3c1093d95cffbbfa5af5c14ad425522829ed768",
+    "qualificationOptionsSha256": "41fab0d7ce0bcb0f083746eaa000a344560ab3efe3506e5009bae53915d95bfd"
+  },
+  "qualification": {
+    "phase12Focused": {"passed": 10, "failed": 0, "skipped": 0},
+    "phase06Phase07Phase08AAnd12Integration": {"passed": 52, "failed": 0, "skipped": 0},
+    "phase00Through12": {"passed": 230, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 925, "failed": 0, "skipped": 0},
+    "generatedDifferentialKernels": 28,
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "llvmAdapterReleaseBuild": {"runtime": "win-x64", "errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43},
+    "coreNativeReleaseArtifactsContainLlvmReference": false,
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false
+  },
+  "releaseDisposition": {
+    "defaultEnabled": false,
+    "defaultEnabledScope": "Candidate formation and shadow evaluation are explicit; production/native emission remains on the exact BB path.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Qualified as Phase 13 input evidence only. Guarded motion, hyperblocks and production region emission remain disabled.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "13",
+    "dependenciesSatisfied": true,
+    "gate": "Canonicalize qualified loops, construct distance-annotated dependence DAGs, and compute the typed HybridCPU MII family without allowing Unknown facts or profile data to legalize scheduling."
+  }
+}

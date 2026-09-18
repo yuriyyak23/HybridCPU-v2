@@ -1,0 +1,91 @@
+{
+  "schema": "CompilerRefPlan5Phase08BPlatformEvidenceV1",
+  "phase": "08B",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "0e2f9449e108045e06d5c27c127cc23e95a07756",
+  "implementationTree": "66b03c47d62a54f6798126734fbfdd6540b537d9",
+  "implementationCommits": [
+    "0e2f9449e108045e06d5c27c127cc23e95a07756"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5 and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 05 schema/provenance, Phase 06 Canonical IR, Phase 08A TargetMachine core and Phase 07 value/liveness contracts.",
+    "output": "One versioned target-platform support contract for native ABI, stack, memory/atomics, TLS, symbols/sections/relocations, object writing, startup, helpers, debug origins, unwind and EH.",
+    "authorityBoundary": "The contract records compiler-visible architectural facts and support status only; it exposes no runtime rename/PRF/scoreboard/execution/publication/commit/retire authority.",
+    "deterministicFallback": "Unknown inputs remain Unknown; malformed metadata is Invalid; unproved ABI, stack, TLS, object, linker, startup, helper, unwind and EH capabilities remain Unsupported. No host/LLVM defaults are imported.",
+    "runtimeAuthorityChanged": false,
+    "schedulePolicyChanged": false,
+    "carrierBytesChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "platformContract": {
+    "schema": "hybridcpu.target-platform/1.0",
+    "contractDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "coreTargetContractDigest": "ae6ee979176be7f21dc396fe0ddb5d7023d8b6de1722eb4d4652647dd3e99232",
+    "nativeFunctionAbi": "Unsupported",
+    "stackFrameAbi": "Unsupported; alignment/registers are not guessed",
+    "supportedAtomics": "32/64-bit, naturally aligned, Generic address space, SequentiallyConsistent",
+    "supportedFence": "AcquireRelease",
+    "volatileSemantics": "Unsupported",
+    "tls": "Unsupported for every known model; unknown model remains Unknown",
+    "objectFormat": "None",
+    "supportedRelocation": "Compiler-internal bundle-relative signed-16 control relocation only; no object/link relocation authority",
+    "objectWriter": "Unsupported with independently versioned feature rows",
+    "comdatDuplicatePolicy": "COMDAT unsupported; ordinary duplicate definitions invalid",
+    "runtimeHelperAbi": "Unsupported with empty allowlist",
+    "startupDynamicLibraries": "Unsupported",
+    "debug": "Canonical native origin mapping Supported; object debug sections Unsupported",
+    "unwindEh": "Unsupported until Phase 25"
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "targetContractDigest": "ae6ee979176be7f21dc396fe0ddb5d7023d8b6de1722eb4d4652647dd3e99232",
+    "platformContractDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "machineDescriptionDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+    "platformContractSourceSha256": "0b2b4ef778ac20341dd0183bb764d10e130499d5e6ea22261bcb9d8a6bf9d7be",
+    "platformSchemaIdentitySha256": "03409b6e1bb167bdf61f9c585e78e30e55ab788f49ad4a067bdbca9878e07919",
+    "implementationSourceManifestSha256": "8977f8241536ee2b11f899e7de01ecba2bceb5fb48a78fcab7ffb33bd0b54a38",
+    "qualificationOptionsSha256": "331cbd2729642149e1eb03821971a288318e89679b6f2fba6b1540a206794908"
+  },
+  "qualification": {
+    "phase08BFocused": {"passed": 24, "failed": 0, "skipped": 0},
+    "phase04Through08BIntegration": {"passed": 99, "failed": 0, "skipped": 0},
+    "phase00Through08B": {"passed": 159, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 854, "failed": 0, "skipped": 0},
+    "prequalificationDiagnostic": {
+      "status": "TestCompilationFailure",
+      "cause": "The new negative debug-origin test initially named a non-existent IrSourceOriginKind.Imported enum member.",
+      "productionChangeRequired": false,
+      "disposition": "Test fixture corrected to the existing Llvm origin kind before the implementation commit."
+    },
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43},
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "llvmSharpIncludedInPhase08B": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false
+  },
+  "releaseDisposition": {
+    "defaultEnabled": true,
+    "defaultEnabledScope": "Target-platform identity, deterministic validators, proven atomic/fence/internal-relocation facts and native origin mapping; unsupported ABI/object features remain disabled.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Qualified as the Phase 09 prerequisite; no object writer or executable publication is authorized. Final release authorization remains Phase 27.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "09",
+    "dependenciesSatisfied": true,
+    "gate": "Pin an exact LLVM/LLVMSharp public-C-API toolchain in a separate optional adapter project; validate module/version/triple/DataLayout/platform compatibility and deterministic budgets before Canonical IR creation, with native Core/Native remaining package-free."
+  }
+}

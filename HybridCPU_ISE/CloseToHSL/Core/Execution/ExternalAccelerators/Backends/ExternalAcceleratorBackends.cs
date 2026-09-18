@@ -37,6 +37,21 @@ public interface IExternalAcceleratorBackend
         AcceleratorGuardEvidence? currentGuardEvidence);
 }
 
+/// <summary>
+/// Internal opt-in seam for a backend which requires provider lifecycle proof
+/// before the CPU commit coordinator may publish its staged output.
+/// </summary>
+internal interface IExternalAcceleratorPublicationEvidenceProvider
+{
+    HybridCPU.ExternalRuntime.Contracts.ExternalOperationPublicationEvidence? GetPublicationEvidence(
+        AcceleratorToken token);
+}
+
+/// <summary>Internal marker for opt-in backends whose provider lifecycle is advanced by L7 Poll.</summary>
+internal interface IExternalAcceleratorBackendPollsExternalOperation
+{
+}
+
 public enum NullExternalAcceleratorBackendPolicy : byte
 {
     RejectSubmit = 0,
@@ -49,7 +64,8 @@ public enum AcceleratorBackendResultKind : byte
     Rejected = 1,
     Faulted = 2,
     DeviceCompleted = 3,
-    Canceled = 4
+    Canceled = 4,
+    Pending = 5
 }
 
 public sealed record AcceleratorBackendResult
@@ -175,6 +191,27 @@ public sealed record AcceleratorBackendResult
             directWriteViolationDetected: false,
             backendTick,
             lookupResult.Message);
+    }
+
+    /// <summary>Non-terminal provider observation. It does not imply completion or visibility.</summary>
+    public static AcceleratorBackendResult Pending(
+        AcceleratorToken token,
+        ulong backendTick,
+        string message)
+    {
+        ArgumentNullException.ThrowIfNull(token);
+        return new AcceleratorBackendResult(
+            AcceleratorBackendResultKind.Pending,
+            token,
+            AcceleratorTokenFaultCode.None,
+            queueResult: null,
+            tokenLookupResult: null,
+            bytesRead: 0,
+            bytesStaged: 0,
+            stagedWriteCount: 0,
+            directWriteViolationDetected: false,
+            backendTick,
+            message);
     }
 
     public static AcceleratorBackendResult Rejected(

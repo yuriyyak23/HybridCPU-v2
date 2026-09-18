@@ -20,7 +20,9 @@ namespace HybridCPU.Compiler.Core.IR
             int contractVersion,
             ulong? emissionBaseAddress = null,
             IrAdmissibilityAgreement? admissibilityAgreement = null,
-            IReadOnlyList<IrBundleAnnotations>? loweredBundleAnnotations = null)
+            IReadOnlyList<IrBundleAnnotations>? loweredBundleAnnotations = null,
+            IReadOnlyList<IrExternalOperationIntent?>? externalOperationIntents = null,
+            IReadOnlyList<IrExternalOperationLoweringMetadata?>? externalOperationMetadata = null)
         {
             ArgumentNullException.ThrowIfNull(programSchedule);
             ArgumentNullException.ThrowIfNull(bundleLayout);
@@ -51,6 +53,12 @@ namespace HybridCPU.Compiler.Core.IR
             BundleLayout = bundleLayout;
             LoweredBundles = loweredBundles;
             LoweredBundleAnnotations = resolvedBundleAnnotations;
+            ExternalOperationIntents = ResolveExternalOperationIntents(
+                bundleLayout.Program.Instructions.Count,
+                externalOperationIntents);
+            ExternalOperationMetadata = ResolveExternalOperationMetadata(
+                bundleLayout.Program.Instructions.Count,
+                externalOperationMetadata);
             ProgramImage = programImage;
             AdmissibilityAgreement = resolvedAgreement;
             ContractVersion = contractVersion;
@@ -77,6 +85,12 @@ namespace HybridCPU.Compiler.Core.IR
         /// Descriptor sideband here is transport evidence only and is still revalidated by ISE decode/projector.
         /// </summary>
         public IReadOnlyList<IrBundleAnnotations> LoweredBundleAnnotations { get; }
+
+        /// <summary>Compiler-owned source-indexed semantic intents; never runtime authority or transport metadata.</summary>
+        public IReadOnlyList<IrExternalOperationIntent?> ExternalOperationIntents { get; }
+
+        /// <summary>Versioned, compiler-owned semantic correlation for existing external carriers.</summary>
+        public IReadOnlyList<IrExternalOperationLoweringMetadata?> ExternalOperationMetadata { get; }
 
         /// <summary>
         /// Gets the compiled-program-level compiler/runtime agreement summary.
@@ -122,8 +136,38 @@ namespace HybridCPU.Compiler.Core.IR
                 ContractVersion,
                 emissionBaseAddress,
                 AdmissibilityAgreement,
-                LoweredBundleAnnotations);
+                LoweredBundleAnnotations,
+                ExternalOperationIntents,
+                ExternalOperationMetadata);
         }
+
+        internal HybridCpuCompiledProgram WithExternalOperationIntents(
+            IReadOnlyList<IrExternalOperationIntent?> intents) =>
+            new(
+                ProgramSchedule,
+                BundleLayout,
+                LoweredBundles,
+                ProgramImage,
+                ContractVersion,
+                EmissionBaseAddress,
+                AdmissibilityAgreement,
+                LoweredBundleAnnotations,
+                intents,
+                ExternalOperationMetadata);
+
+        internal HybridCpuCompiledProgram WithExternalOperationMetadata(
+            IReadOnlyList<IrExternalOperationLoweringMetadata?> metadata) =>
+            new(
+                ProgramSchedule,
+                BundleLayout,
+                LoweredBundles,
+                ProgramImage,
+                ContractVersion,
+                EmissionBaseAddress,
+                AdmissibilityAgreement,
+                LoweredBundleAnnotations,
+                ResolveIntents(metadata),
+                metadata);
 
         private static IReadOnlyList<IrBundleAnnotations> ResolveLoweredBundleAnnotations(
             int loweredBundleCount,
@@ -154,6 +198,50 @@ namespace HybridCPU.Compiler.Core.IR
             }
 
             return Array.AsReadOnly(copy);
+        }
+
+        private static IReadOnlyList<IrExternalOperationIntent?> ResolveExternalOperationIntents(
+            int instructionCount,
+            IReadOnlyList<IrExternalOperationIntent?>? intents)
+        {
+            if (intents is null)
+                return Array.AsReadOnly(new IrExternalOperationIntent?[instructionCount]);
+            if (intents.Count != instructionCount)
+                throw new ArgumentException("External operation intent count must match source instruction count.", nameof(intents));
+            var copy = new IrExternalOperationIntent?[intents.Count];
+            for (int index = 0; index < copy.Length; index++) copy[index] = intents[index];
+            return Array.AsReadOnly(copy);
+        }
+
+        private static IReadOnlyList<IrExternalOperationLoweringMetadata?> ResolveExternalOperationMetadata(
+            int instructionCount,
+            IReadOnlyList<IrExternalOperationLoweringMetadata?>? metadata)
+        {
+            if (metadata is null)
+                return Array.AsReadOnly(new IrExternalOperationLoweringMetadata?[instructionCount]);
+            if (metadata.Count != instructionCount)
+                throw new ArgumentException("External operation metadata count must match source instruction count.", nameof(metadata));
+            var copy = new IrExternalOperationLoweringMetadata?[metadata.Count];
+            for (int index = 0; index < copy.Length; index++)
+            {
+                IrExternalOperationLoweringMetadata? entry = metadata[index];
+                if (entry is null)
+                    continue;
+                entry.Validate();
+                if (entry.SourceInstructionIndex != index)
+                    throw new ArgumentException("External operation metadata must be source-index aligned.", nameof(metadata));
+                copy[index] = entry;
+            }
+            return Array.AsReadOnly(copy);
+        }
+
+        private static IReadOnlyList<IrExternalOperationIntent?> ResolveIntents(
+            IReadOnlyList<IrExternalOperationLoweringMetadata?> metadata)
+        {
+            var intents = new IrExternalOperationIntent?[metadata.Count];
+            for (int index = 0; index < intents.Length; index++)
+                intents[index] = metadata[index]?.Intent;
+            return Array.AsReadOnly(intents);
         }
     }
 }

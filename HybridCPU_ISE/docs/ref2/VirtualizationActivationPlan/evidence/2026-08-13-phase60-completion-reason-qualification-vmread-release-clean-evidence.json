@@ -1,0 +1,55 @@
+{
+  "Schema": "hybridcpu.virtualization-phase60-clean-evidence/v1",
+  "RecordRole": "LaterNonSelfReferentialEvidenceOnlyNeverRuntimeAuthority",
+  "StatusDate": "2026-08-13",
+  "SubjectCommitSha": "57b2a1d805bdad547a4535e40a68316f88e0816c",
+  "SubjectTreeSha": "41fc1b9c3c8a3a43792c50480164253b66ac0f72",
+  "SubjectParentSha": "c51fa2a0adef47c357898b0a79f2896e25e9a82d",
+  "ExistingImplementationSubjectSha": "f5fbdcb16b5fe5859311448dacf7a98e17217b20",
+  "ExactProfile": "HybridCPU.VMREAD.ScalarDelivery.v1/DELIVER_COMPLETION_REASON_QUALIFICATION_SCALAR_V1",
+  "ExactFields": "ExitReasonAndReasonBoundExitQualificationOnly",
+  "Claim": "LimitedProductionReleaseOfCompletionReasonQualificationVmReadOnly",
+  "Authority": "ExistingDomainCompletionObservationOwnerAndCanonicalCpuInstructionTranslationFaultProducerOnly",
+  "ConstructionReachability": "CpuCorePlatformContextToCPUCoreConstructionToCanonicalMaterializationToExistingReceiptPrfWritebackRetire",
+  "ActivationDefault": "DisabledExplicitImmutableOptIn",
+  "Rollback": "CompositionLockDisableAndProfileGenerationAdvanceInvalidatesPreparedReceiptsWithoutReactivation",
+  "NextOpenPool": "None",
+  "NextCandidatePool": "NoneUntilSeparateNewExactVmReadFieldGroupOrVmCallOperationSelection",
+  "SubjectSourceSha256": {
+    "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/VmRead/CompletionReasonQualificationVmReadScalarDeliveryCanonicalComposition.cs": "e12a59b8c16f35823239530cb30aff223d5ff087d0d93bcf196a671c09a87fd3",
+    "HybridCPU_ISE/CloseToHSL/Core/State/CPU_Core.CompletionVmReadState.cs": "839f09dba9387c21c5ba8c1696045a8a4b8cffba208b6a01e621066a33563573",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase55CompletionReasonQualificationVmReadE0D2Tests.cs": "41d4c1930b862804ad5d8c3ab93426eb8cb425ce20d84e6d50233b05a84e477f",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxPhase60CompletionReasonQualificationVmReadReleaseTests.cs": "0797debc612cd3f781efaaa26acd2da6d5338a725f312e36a9bf83e746f8b274",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/60_completion_reason_qualification_exact_vmread_production_release.md": "119bf2bd87c5f39647f54a00cc32d4fbb6dc5912c36fafec52e5a9640f271d3e",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/CompletionReasonQualificationExactVmReadProductionReleaseRecordV1.json": "02249f6b16722f179c5ff41914760493a2a39944983688d58ac0841a1dd1f77e",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/VirtualizationActivationStatusV1.json": "4c12636f2ad0de656208d2da428bd0380b6b6269ce7197fea9c0224648ce2ed3"
+  },
+  "Verification": {
+    "Focused": "155/155",
+    "PrepareKillSwitchRace": "5RunsOf1/1",
+    "WorktreeVmx": "575/575",
+    "WorktreeSecureCompute": "406/406",
+    "CleanStagedVmx": "557/557",
+    "CleanStagedSecureCompute": "395/395",
+    "ReleaseWithoutTestingOrInternalHooks": "RealBuild43PreExistingWarnings0ErrorsThenUnchangedRepeat0Warnings0Errors",
+    "ReleaseAssemblySha256": "1e37e9e43da21074a05c03509e1c411d03e73454361d7805361205fba58aac1e",
+    "GitDiffCheck": "Clean",
+    "CanonicalCloseToHslUntrackedIgnoredCSharp": "0/0"
+  },
+  "UnreleasedExistingProfiles": [
+    "GuestCr0AndGuestCr4TestOnlyConfigured",
+    "GuestPcGuestSpGuestFlagsTestOnlyConfigured",
+    "GuestCr3EptPointerVpidCr3TargetCountTestOnlyConfigured",
+    "GuestPhysicalAddressAndEptViolationQualificationProductionReachableButNotSelected"
+  ],
+  "ForbiddenAuthority": {
+    "VmxVmcsFrontendTrapOrVmCall": false,
+    "CompletionCreation": false,
+    "VmWrite": false,
+    "AdjacentVmReadProfiles": false,
+    "NestedIommuDmaDevice": false,
+    "SecureCompute": false,
+    "Compiler": false,
+    "BroadVirtualization": false
+  }
+}

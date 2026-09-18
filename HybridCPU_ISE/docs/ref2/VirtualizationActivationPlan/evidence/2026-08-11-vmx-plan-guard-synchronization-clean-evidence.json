@@ -1,0 +1,65 @@
+{
+  "schema": "hybridcpu.virtualization-plan-guard-synchronization-evidence.v1",
+  "observed_at": "2026-08-11T22:23:43+03:00",
+  "local_only": true,
+  "release_record": false,
+  "runtime_authority": false,
+  "subject": {
+    "commit_sha": "c044763b43b2644842138b31c8ef5e7c86f94b49",
+    "tree_sha": "9690a6d006b285b5970e5cb4d07a4e00f86e4992",
+    "parent_commit_sha": "a72c53f8b8a032f5430936d1846d6f48178d73a7",
+    "git_status_at_verification": "clean"
+  },
+  "scope": {
+    "purpose": "Synchronize VMX plan documentation and guards after Phase 41 without changing runtime or compiler implementation.",
+    "runtime_files_changed": 0,
+    "compiler_files_changed": 0,
+    "activation_state_changed": false,
+    "rollback_state_changed": false,
+    "old_vmread_projection_d2_changed": false,
+    "scalar_delivery_runtime_implemented": false
+  },
+  "source_hashes_sha256": {
+    "HybridCPU_ISE.Tests/VmxRefactoring/VirtualizationActivationPlanAuditGuardTests.cs": "7e38b993d1f9ebd7879ca61d2a1fec34382a4bb21138db20b64ce5fb8915950f",
+    "HybridCPU_ISE.Tests/VmxRefactoring/VmxD2V2GovernanceNegativeSubstrateTests.cs": "189bd435b13ddbb981cb3d9d13b08b78ba387d7a2eb4e0d813c1d0857447a646",
+    "HybridCPU_ISE/docs/ref2/Old/VirtualiztionRefactoringNew/13_conformance_golden_artifacts_and_static_gates.md": "01e16e769de39462c28e4cc896123b39c6b4901594dd556580732943f9858ccc",
+    "HybridCPU_ISE/docs/ref2/Old/VirtualiztionRefactoringNew/14_documentation_migration_and_claim_hygiene.md": "82eb12c0497173e237225a6bdd94179372f378b7132645e6660b00f938e96a48",
+    "HybridCPU_ISE/docs/ref2/VirtualizationActivationPlan/41_guest_cr0_cr4_vmread_scalar_delivery_e0_d2_governance.md": "287961529ab776d6b45769bd39a6dd2145167c76800049b7943448c34fd25143"
+  },
+  "toolchain": {
+    "dotnet_sdk": "10.0.204",
+    "configuration": "Debug tests; Release production builds without TESTING/internal test hooks"
+  },
+  "verification": {
+    "focused_failed_guard_recheck": "passed 5/5",
+    "full_vmx_refactoring_matrix": "passed 327/327",
+    "full_secure_compute_refactoring_matrix": "passed 313/313",
+    "ise_release_build": "passed; 0 errors; 43 pre-existing warnings",
+    "compiler_release_build": "passed; 0 errors; 6 pre-existing warnings",
+    "git_diff_check": "passed",
+    "ignored_or_untracked_side_load": false
+  },
+  "forbidden_scans": {
+    "close_to_hsl_runtime_diff": "zero files",
+    "compiler_diff": "zero files",
+    "backend_execution_authorized_true_added": 0,
+    "broad_vmread_activation_added": 0,
+    "completion_record_construction_added": 0,
+    "invoke_hypercall_call_added": 0,
+    "vmcs_write_call_added": 0,
+    "forbidden_overclaim_phrase_added": 0,
+    "vmcs_read_retire_call_added_to_runtime": 0,
+    "note": "The sole added VmxRetireEffect.VmcsRead( text is a DoesNotContain negative test assertion; no production source changed."
+  },
+  "commands": [
+    "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-restore --filter focused-five-guards",
+    "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-restore --filter FullyQualifiedName~HybridCPU_ISE.Tests.VmxRefactoring",
+    "dotnet build HybridCPU_ISE/HybridCPU_ISE.csproj -c Release --no-restore -p:EnableInternalTestHooks=false -p:DefineTestSupport=false -p:DefineConstants=TRACE",
+    "dotnet build HybridCPU_Compiler/HybridCPU_Compiler.csproj -c Release --no-restore -p:DefineConstants=TRACE",
+    "dotnet test HybridCPU_ISE.Tests/HybridCPU_ISE.Tests.csproj -c Debug --no-restore --filter FullyQualifiedName~HybridCPU_ISE.Tests.SecureComputeRefactoring",
+    "git diff --check HEAD^ HEAD",
+    "git diff --name-only HEAD^ HEAD -- HybridCPU_ISE/CloseToHSL",
+    "git diff --name-only HEAD^ HEAD -- HybridCPU_Compiler"
+  ],
+  "verdict": "Clean-source plan/guard synchronization verified. This evidence creates no VMREAD, VMX, frontend, backend, completion, retire, compiler or SecureCompute authority."
+}

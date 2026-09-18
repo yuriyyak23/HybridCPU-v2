@@ -35,6 +35,8 @@ namespace HybridCPU.Compiler.Core.Threading
             {
                 _instructions[index] = _instructions[index - 1];
                 _instructionSlotMetadata[index] = _instructionSlotMetadata[index - 1];
+                _externalOperationIntents[index] = _externalOperationIntents[index - 1];
+                _externalOperationDescriptorIdentities[index] = _externalOperationDescriptorIdentities[index - 1];
             }
 
             _instructions[instructionIndex] = new VLIW_Instruction
@@ -51,6 +53,8 @@ namespace HybridCPU.Compiler.Core.Threading
             _instructionSlotMetadata[instructionIndex] = new InstructionSlotMetadata(
                 _virtualThreadId,
                 BuildSlotMetadata(opCode, stealabilityPolicy, _domainTag));
+            _externalOperationIntents[instructionIndex] = null;
+            _externalOperationDescriptorIdentities[instructionIndex] = null;
             _instructionCount++;
 
             ShiftIrMetadataDeclarations(instructionIndex, oldInstructionCount, 1);
@@ -83,6 +87,8 @@ namespace HybridCPU.Compiler.Core.Threading
 
             Array.Copy(_instructions, copy._instructions, _instructionCount);
             Array.Copy(_instructionSlotMetadata, copy._instructionSlotMetadata, _instructionCount);
+            Array.Copy(_externalOperationIntents, copy._externalOperationIntents, _instructionCount);
+            Array.Copy(_externalOperationDescriptorIdentities, copy._externalOperationDescriptorIdentities, _instructionCount);
             copy._instructionCount = _instructionCount;
 
             copy._labelDeclarations.AddRange(_labelDeclarations);

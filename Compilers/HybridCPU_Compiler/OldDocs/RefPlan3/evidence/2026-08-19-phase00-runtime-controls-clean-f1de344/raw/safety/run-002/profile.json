@@ -1,0 +1,12 @@
+{
+  "Id": "safety",
+  "DisplayName": "SafetyVerifier Negative Controls",
+  "WorkloadKind": 2,
+  "FrontendMode": 0,
+  "WallClockTimeoutMs": 60000,
+  "SimpleAsmMode": null,
+  "HeartbeatIntervalMs": 1000,
+  "HeartbeatCycleStride": 2048,
+  "WorkloadIterations": 1,
+  "TelemetryLogMode": 0
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HybridCPU.ExternalRuntime.Contracts;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Auth;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Backends;
 using YAKSys_Hybrid_CPU.Core.Execution.ExternalAccelerators.Capabilities;
@@ -171,9 +172,13 @@ public sealed class ExternalAcceleratorRuntime
 
     public ExternalAcceleratorRuntimeCommandResult Poll(AcceleratorTokenHandle handle)
     {
+        AcceleratorBackendResult? backendTick = _backend is IExternalAcceleratorBackendPollsExternalOperation
+            ? _backend.Tick(_queue, _memoryPortal, _stagingBuffer, ResolveGuardEvidence(handle))
+            : null;
         AcceleratorTokenLookupResult lookup =
             _tokens.Poll(handle, ResolveGuardEvidence(handle));
-        return FromLookup(SystemDeviceCommandKind.Poll, lookup);
+        ExternalAcceleratorRuntimeCommandResult result = FromLookup(SystemDeviceCommandKind.Poll, lookup);
+        return result with { BackendTickResult = backendTick };
     }
 
     public ExternalAcceleratorRuntimeCommandResult Status(AcceleratorTokenHandle handle)
@@ -232,6 +237,10 @@ public sealed class ExternalAcceleratorRuntime
     public ExternalAcceleratorRuntimeCommandResult FenceCommit(
         AcceleratorTokenHandle handle)
     {
+        Func<AcceleratorToken, ExternalOperationPublicationEvidence?>? externalPublicationEvidenceFactory =
+            _backend is IExternalAcceleratorPublicationEvidenceProvider evidenceProvider
+                ? evidenceProvider.GetPublicationEvidence
+                : null;
         AcceleratorFenceResult fence =
             _fenceCoordinator.TryFence(
                 _tokens,
@@ -243,7 +252,8 @@ public sealed class ExternalAcceleratorRuntime
                 _mainMemory,
                 _commitCoordinator,
                 AcceleratorCommitInvalidationPlan.None,
-                _conflictManager);
+                _conflictManager,
+                externalPublicationEvidenceFactory);
 
         AcceleratorCommitResult? commitResult =
             fence.CommitResults.Count == 0 ? null : fence.CommitResults[^1];

@@ -579,9 +579,22 @@ public sealed partial class RestrictedCilImporterV1
                     if (failure is not null) return failure;
                     V2Value left = Pop("HCCIL0035", "Comparison evaluation-stack underflow.", out failure);
                     if (failure is not null) return failure;
-                    if (left.Type != right.Type ||
-                        (instruction.Encoding == 0xfe01 ? !IsEqualityType(left.Type) : !IsArithmeticType(left.Type)))
-                        return Reject(RestrictedCilImportStatusV1.InvalidInput, "HCCIL0036", "Comparison operands have incompatible CIL types.", identity, provenance);
+                    bool nullObjectInequality = instruction.Encoding == 0xfe03 &&
+                        left.Type == RestrictedCilTypeV1.ObjectReference &&
+                        right.Type == RestrictedCilTypeV1.ObjectReference &&
+                        (left.Operand is { Kind: IrOperandKind.Constant, Value: 0 } ||
+                         right.Operand is { Kind: IrOperandKind.Constant, Value: 0 });
+                    bool nativeZeroEquality = instruction.Encoding == 0xfe01 &&
+                        ((left.Type is RestrictedCilTypeV1.NativeInt or RestrictedCilTypeV1.NativeUInt &&
+                          right.Type == RestrictedCilTypeV1.Int32 && right.Operand is { Kind: IrOperandKind.Constant, Value: 0 }) ||
+                         (right.Type is RestrictedCilTypeV1.NativeInt or RestrictedCilTypeV1.NativeUInt &&
+                          left.Type == RestrictedCilTypeV1.Int32 && left.Operand is { Kind: IrOperandKind.Constant, Value: 0 }));
+                    if ((left.Type != right.Type && UnsignedDivisionWidth(left.Type, right.Type) == 0 && !nativeZeroEquality) ||
+                        (instruction.Encoding == 0xfe01 ? !IsEqualityType(left.Type) :
+                            !IsArithmeticType(left.Type) && !nullObjectInequality))
+                        return Reject(RestrictedCilImportStatusV1.InvalidInput, "HCCIL0036",
+                            $"Comparison operands have incompatible CIL types: left={left.Type}, right={right.Type}.",
+                            identity, provenance);
                     state.Stack.Add(V2Value.Definition(RestrictedCilTypeV1.Int32, identity));
                     return null;
                 }
@@ -851,10 +864,18 @@ public sealed partial class RestrictedCilImporterV1
                             return Reject(RestrictedCilImportStatusV1.InvalidInput, "HCCIL1306",
                                 "newobj constructor argument type mismatch.", identity, provenance);
                     }
+                    EntityHandle constructorHandle = MetadataTokens.EntityHandle(instruction.Token);
+                    EntityHandle constructorOwner = constructorHandle.Kind == HandleKind.MethodDefinition
+                        ? metadata.GetMethodDefinition((MethodDefinitionHandle)constructorHandle).GetDeclaringType()
+                        : metadata.GetMemberReference((MemberReferenceHandle)constructorHandle).Parent;
+                    string? scalarAggregateIdentity = scalarValueProjection ? AggregateIdentity(metadata, constructorOwner) : null;
                     state.Stack.Add(V2Value.Definition(scalarValueProjection
                         ? resolution.Allocation.ScalarValueType
-                        : RestrictedCilTypeV1.ObjectReference, identity));
-                    allocations[instruction.Offset] = new(resolution.Allocation!, constructor);
+                        : RestrictedCilTypeV1.ObjectReference, identity) with
+                    {
+                        AggregateIdentity = scalarAggregateIdentity
+                    });
+                    allocations[instruction.Offset] = new(resolution.Allocation!, constructor, scalarAggregateIdentity);
                     return null;
                 }
             case 0x72:
@@ -1149,7 +1170,8 @@ public sealed partial class RestrictedCilImporterV1
                 value.ReceiverStorageSlotIdentity != values[0].ReceiverStorageSlotIdentity) ||
             type == RestrictedCilTypeV1.Aggregate && values[0].AggregateIdentity is null)
             return new(V2Value.Uninitialized, Reject(RestrictedCilImportStatusV1.InvalidInput, "HCCIL1104",
-                "Exact CIL types differ at a CFG join.", $"{BlockIdentity(provenance, target)}:{slot}", provenance));
+                $"Exact CIL types differ at a CFG join: {string.Join(';', values.Select(static value => $"{value.Type}:{value.Id}:aggregate={value.AggregateIdentity ?? "null"}:receiver={value.ReceiverIdentity ?? "null"}:slot={value.ReceiverStorageSlotIdentity ?? "null"}"))}.",
+                $"{BlockIdentity(provenance, target)}:{slot}", provenance));
         if (phis.TryGetValue((target.Id, slot), out V2Phi? existingPhi))
         {
             foreach ((V2Block predecessor, V2Value value) in predecessors.Zip(values))
@@ -1951,7 +1973,10 @@ public sealed partial class RestrictedCilImporterV1
                             if (allocation.Binding.IsScalarValueProjection)
                             {
                                 V2Value projected = V2Value.Definition(allocation.Binding.ScalarValueType,
-                                    $"{identity}:scalar-value-constructor");
+                                    $"{identity}:scalar-value-constructor") with
+                                {
+                                    AggregateIdentity = allocation.AggregateIdentity
+                                };
                                 V2Value argument = explicitArguments[0];
                                 IrOperand[] uses = argument.Operand.Kind == IrOperandKind.Constant
                                     ? [new(IrOperandKind.ArchitecturalRegister, 0, $"{identity}:zero"), argument.Operand]
@@ -3256,7 +3281,7 @@ public sealed partial class RestrictedCilImporterV1
         IReadOnlyDictionary<int, V2ReceiverCall> ReceiverCalls, bool HasAggregates);
     private sealed record V2ReceiverCall(string FrameSlotIdentity, string CalleeIdentity,
         string CalleePlanDigest, string AbiLayoutDigest);
-    private sealed record V2Allocation(RestrictedCilAllocationBindingV1 Binding, ResolvedHelper Constructor);
+    private sealed record V2Allocation(RestrictedCilAllocationBindingV1 Binding, ResolvedHelper Constructor, string? AggregateIdentity);
     private sealed record V2DataflowBuild(V2Dataflow? Dataflow, RestrictedCilImportResultV1? Failure);
     private sealed record V2LoopBuild(IReadOnlyList<ScalarControlFlowV2LoopV1>? Loops, RestrictedCilImportResultV1? Failure);
     private sealed record V2StateMerge(V2State? State, RestrictedCilImportResultV1? Failure);

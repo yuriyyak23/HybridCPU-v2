@@ -1,0 +1,126 @@
+{
+  "schema": "HybridCPU.RefPlan7.Phase00ConformanceEvidenceV1",
+  "phase": "00",
+  "status": "EvidenceClosed",
+  "qualificationDate": "2026-08-28",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baselineSha": "8a56b0707b6d7e74d7533d85a63806dba90067f6",
+  "baselineTree": "b98ccc8e890f35ceefc8c2cd2bbe557b046a460d",
+  "implementationSha": "be8879d9d4ec60b1499ca21f373c48ee0a6cfa80",
+  "implementationTree": "ef87c45b78e96beea0d25f9c084964793fcd4d91",
+  "componentRevisions": {
+    "compiler": "be8879d9d4ec60b1499ca21f373c48ee0a6cfa80",
+    "ise": "be8879d9d4ec60b1499ca21f373c48ee0a6cfa80",
+    "managedRuntime": {"revision": "be8879d9d4ec60b1499ca21f373c48ee0a6cfa80", "project": null, "classification": "Not implemented; legacy preview helper exists inside ISE only"},
+    "runtimeKernel": {"revision": "be8879d9d4ec60b1499ca21f373c48ee0a6cfa80", "project": null, "classification": "Not implemented"},
+    "platformContracts": {"revision": "be8879d9d4ec60b1499ca21f373c48ee0a6cfa80", "project": null, "classification": "Not implemented"}
+  },
+  "contracts": {
+    "profileId": "HybridCPU.DotNetAot.ScalarControlFlowV2",
+    "profileVersion": "1.0",
+    "profileDigest": "95323d5cf9726a66b0db1070a41cab33d41be8a9c3226856a3fe508d39c55759",
+    "profileSourceSha256": "7669fbf0488de412c7498d0c3faa7ffcdc288c18880e00c835cc8ab236e1c4e7",
+    "cilMatrixSourceSha256": "b22f5af19c85a77d095220dd20e6ac16655f3848cb0cb0ba94f9521f981dfa2d",
+    "managedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+    "managedAbiSourceSha256": "e101a2f7c588485d280200b80e9328d4254153435f32c66e65e6772ed4d4d8c6",
+    "nativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+    "nativeAbiSourceSha256": "56a7d8b5c1f3022877ca0bde2c9032699d08fc53b8d7a7607d475ec3e6cd93b8",
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "startupContractSourceSha256": "eaa53c6101e5629733bd3a46f9f5ce5b9c7f15e4fe8e88c8ffe383ec7a94f406",
+    "defaultEnabled": false,
+    "hostFallback": false,
+    "llvmFallback": false,
+    "runtimeAuthority": false,
+    "featureRows": 31,
+    "scalarRows": 13,
+    "diagnosticFamilies": 18,
+    "verifiedAssumptions": 16,
+    "unverifiedAssumptions": 0,
+    "phase1Blocker": false
+  },
+  "dependencyGraphs": {
+    "productionCompiler": [
+      "Core -> []",
+      "Cil -> [Core]",
+      "Native -> [Core]",
+      "NativeAot.Adapter -> [Cil, Core]",
+      "LLVM -> [Core, LLVMSharp packages] (separate optional ingress; never fallback)",
+      "ReleaseQualification -> [Core, Native, Cil, LLVM, NativeAot.Adapter, Oracle]"
+    ],
+    "runtimeAndIse": [
+      "HybridCPU_ISE -> []",
+      "ManagedRuntime project -> absent",
+      "RuntimeKernel project -> absent",
+      "HybridCPU.Platform.Contracts project -> absent",
+      "legacy HybridCPU_Compiler -> [Core, HybridCPU_ISE] (not the modular production profile path)"
+    ],
+    "artifactPath": "CIL -> Canonical IR/CFG/SSA -> shared scheduler -> shared register allocator/frame lowering -> HCO -> static linker -> restricted image -> loader/bootstrap -> ISE",
+    "nativeAotPath": "ILCompiler-presented body world -> NativeAot.Adapter -> Cil -> Core -> HCO/link/image",
+    "iseFacingContracts": "generic bundles/registers/PC/VT, load/store, JAL/JALR, translation permissions/faults, traps/retire, LR/SC/AMO/fences; no managed-specific ISA"
+  },
+  "claims": [
+    {"claim": "Backward branches, CFG, SSA and phi are available in ScalarControlFlowV2", "classification": "Proven", "evidence": ["HybridCPU_Compiler/Cil/RestrictedCilImporterV1.ControlFlowV2.cs", "CompilerRefPlan6Phase01CilCfgSsaTests"]},
+    {"claim": "RefPlan7 historical blanket backward-branch blocker describes current profile", "classification": "Contradicted", "evidence": ["ScalarControlFlowV2ProfileContractV1", "CompilerRefPlan6Phase01CilCfgSsaTests"]},
+    {"claim": "Direct calls, call-aware liveness, spills, frames and callee saves are available for admitted signatures", "classification": "Proven", "evidence": ["CompilerRefPlan6Phase02ManagedCallGraphTests", "CompilerRefPlan6Phase03NativeCallAbiTests", "CompilerRefPlan6Phase07BoundedRecursionTests"]},
+    {"claim": "All C# instance/object semantics are supported", "classification": "Contradicted", "evidence": ["RestrictedCilSupportMatrixV1 managed-references=Unsupported", "CompilerRefPlan7Phase00InstanceCarrierTests.InstanceCarrier_DoesNotClaimManagedReferenceOrVirtualDispatchSemantics"]},
+    {"claim": "Hidden receiver is an ordinary native-width ABI carrier for non-generic direct instance bodies/calls", "classification": "Proven", "evidence": ["RestrictedCilImporterV1.ParseMethodSignature", "CompilerRefPlan7Phase00InstanceCarrierTests.InstanceBodyAndDirectCallee_UseHiddenReceiverInOrdinaryAbi"]},
+    {"claim": "Instance carrier bypasses deterministic argument budgets", "classification": "Contradicted", "evidence": ["CompilerRefPlan7Phase00InstanceCarrierTests.HiddenReceiver_CountsAgainstDeterministicRegisterArgumentBudget"]},
+    {"claim": "Managed references, object identity/layout and lifetime are implemented", "classification": "Not implemented", "evidence": ["RestrictedCilSupportMatrixV1", "RefPlan7 phase 02 gate"]},
+    {"claim": "Final stack-map/code-manager records are generated after allocation/frame lowering", "classification": "Partially proven", "evidence": ["HybridCpuManagedMetadataFinalizerV1 final allocation validation", "RefPlan6 Phase03/04 tests"], "gap": "No object-reference producer exists until Phase 02; runtime consumption is not yet qualified."},
+    {"claim": "HCO/link/image and NativeAOT-presented executable path use the shared backend", "classification": "Proven", "evidence": ["CompilerRefPlan6Phase04ObjectLinkImageTests", "CompilerRefPlan6Phase05NativeAotPublishTests.AdapterPresentedImage_ExecutesNestedCallsSharedCalleeAndLoopOnIse"]},
+    {"claim": "JALR/generic indirect transfer is sufficient for later dispatch/delegates", "classification": "Hypothesis", "evidence": ["Phase09DirectFactoryUnconditionalBranchFollowThroughTests proves generic JALR mechanics"], "gap": "Later phases must prove their tables/signatures/null/type checks without a new ISA."},
+    {"claim": "Per-VT x4/thread-pointer architectural values survive active-VT and trap flush transitions", "classification": "Proven", "evidence": ["CPU_Core.ReadArch", "LiveCpuStateAdapter.ReadArchitecturalRegister", "CompilerRefPlan7Phase00InstanceCarrierTests.ThreadPointerCarrier_IsVtIsolatedAcrossActiveVtAndTrapFlushTransitions"]},
+    {"claim": "Compiler metadata is ISE execution/legality/fault/publication authority", "classification": "Contradicted", "evidence": ["ScalarControlFlowV2ProfileContractV1.HasRuntimeAuthority=false", "CompilerRefPlan6Phase05NativeAotPublishTests", "VmxPhase54CanonicalCpuInstructionTranslationContourTests"]},
+    {"claim": "Generic virtual-address translation, permissions and precise translation faults exist", "classification": "Proven", "evidence": ["VmxPhase54CanonicalCpuInstructionTranslationContourTests"]},
+    {"claim": "LR/SC/AMO and fences provide later synchronization substrate", "classification": "Proven", "evidence": ["AtomicAcquireReleaseOrderingTests", "FenceOrderingAndVisibilityTests"]},
+    {"claim": "RuntimeKernel minimal substrate exists", "classification": "Not implemented", "evidence": ["No RuntimeKernel csproj in repository"], "nextGate": "Phase 01"},
+    {"claim": "Neutral versioned HybridCPU.Platform.Contracts exists", "classification": "Not implemented", "evidence": ["No HybridCPU.Platform.Contracts csproj in repository"], "nextGate": "Phase 01"},
+    {"claim": "ECALL/WFE/SEV/timer host-transition contour is sufficient for all later phases", "classification": "Partially proven", "evidence": ["Existing generic system-event sources/tests"], "gap": "Not a Phase 01 dependency; Phase 11/13/15 must requalify exact wake/timer/host contracts."}
+  ],
+  "qualification": {
+    "focusedFrontendAndRename": {"passed": 57, "failed": 0, "skipped": 0},
+    "finalVtFacadeAndMemoryOrdering": {"passed": 79, "failed": 0, "skipped": 0},
+    "compilerRegressionFinalSource": {"filter": "FullyQualifiedName~Compiler", "passed": 1521, "failed": 0, "skipped": 0, "duration": "00:05:48"},
+    "phaseAndCumulativeExecutionContour": {"passed": 205, "failed": 0, "skipped": 0, "duration": "00:00:16"},
+    "inventoryAudit": {"passed": 26, "failed": 3, "skipped": 0, "classification": "external baseline drift; exact failures listed below"},
+    "releaseBuilds": {
+      "Core": {"errors": 0, "warnings": 0},
+      "Cil": {"errors": 0, "warnings": 1},
+      "Native": {"errors": 0, "warnings": 0},
+      "NativeAotAdapter": {"errors": 0, "warnings": 0},
+      "ReleaseQualification": {"errors": 0, "warnings": 0},
+      "ISE": {"errors": 0, "warnings": 43}
+    },
+    "determinism": {
+      "runs": 2,
+      "artifact": "HybridCPU.RefPlan7.Phase00.Conformance.Corpus.dll",
+      "firstSha256": "5e2e503d27266a845ddf62a9f48c39fc10c3016c1cda4a2471870f2db158e0b5",
+      "secondSha256": "5e2e503d27266a845ddf62a9f48c39fc10c3016c1cda4a2471870f2db158e0b5",
+      "byteIdentical": true,
+      "wallClockPathSelection": false
+    },
+    "runtimeVisibleEvidence": "NativeAOT presented image was inspected, loaded/bootstrap registers were applied, bundles executed/retired on ISE, return sentinel reached and exact result 30/SP restoration asserted.",
+    "gitDiffCheck": "Passed before implementation commit",
+    "changedPathAudit": "11 implementation paths; compiler CIL/profile/corpus/test wiring plus two generic ISE architectural read seams; no loader, ISA, managed runtime, RuntimeKernel or host fallback changes."
+  },
+  "externalBaselineFailures": [
+    {"test": "Rf110StateOwnerEntryInventoryFreezeTests.CpuCore_RemainsAValueFacadeOverTheFrozenMixedOwnerGraph", "reason": "Stale expected runtime-domain inventory: 19 expected versus 22 already present, including CompatibilityControlPolicyState, CpuInstructionTranslationState and DomainHypercallState."},
+    {"test": "Rf110StateOwnerEntryInventoryFreezeTests.PartialGraphAndCrossStageWriters_RemainAtTheInventoriedTopology", "reason": "Stale expected CPU_Core partial count: 67 expected versus 70 already present; Phase 00 did not add a CPU_Core partial file."},
+    {"test": "Rf07ArchitecturePreservationTests.ProductionCoreContainsNoNewRobPerVtRetireQueueOrPhysicalCommitIdentityOwner", "reason": "Regex rejects the already-present ArchitecturalCompletionCommitOwner source; Phase 00 introduced no owner type."},
+    {"build": "SDK resolution", "reason": "global.json requests 10.0.201; installed deterministic roll-forward resolves 10.0.204."},
+    {"build": "CIL/ISE warnings", "reason": "1 CIL obsolete-property warning and 43 ISE warnings pre-exist; all Release builds completed with zero errors."}
+  ],
+  "releaseDisposition": {
+    "phaseGateClosed": true,
+    "scalarControlFlowV2": "Explicit opt-in profile remains release-qualified by RefPlan6 evidence.",
+    "managedPlatformDefaultEnabled": false,
+    "generalCSharpSupportClaim": false,
+    "instanceCarrierScope": "Mechanical direct-call ABI carrier only; no managed reference/object/GC/dispatch claim.",
+    "newIsaOrIseExtension": false
+  },
+  "nextDependencyGate": {
+    "phase": "01",
+    "eligible": true,
+    "scope": "Evolve HybridCpuManagedAbiFamilyV1, add neutral versioned Platform.Contracts and minimal language-neutral RuntimeKernel boot/context/stack/VM/VT-carrier substrate; no managed threading/TLS semantics."
+  }
+}

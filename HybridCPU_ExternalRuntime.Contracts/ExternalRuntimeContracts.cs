@@ -27,6 +27,7 @@ public enum HybridCpuExternalFeatureFamily : byte
     ChildTrapDelivery = 10,
     ChildExecutableImage = 11,
     ChildVirtualIo = 12,
+    SecureDomains = 13,
 }
 
 public enum HybridCpuExternalFeatureAvailability : byte
@@ -34,6 +35,7 @@ public enum HybridCpuExternalFeatureAvailability : byte
     Unavailable = 0,
     RuntimeAdmission = 1,
     Executable = 2,
+    ProductionSecure = 3,
 }
 
 public readonly record struct HybridCpuExternalFeatureDescriptor(

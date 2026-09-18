@@ -1,0 +1,123 @@
+{
+  "schema": "hybridcpu.virtualization-evidence-manifest.v1",
+  "observed_at": "2026-08-06T13:29:22.4354488+03:00",
+  "repository_root": "C:/Users/Yuriy Kurnosov/Desktop/HybridCPU ISE",
+  "configured_origin": "https://github.com/yaksysdev/HybridCPU-v2.git",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "head_sha": "8bcdb637dcccd73bf3c700f2a7b09c69889aaf4f",
+  "head_subject": "ref1 rf-12",
+  "external_audit": {
+    "reported_remote": "yuriyyak23/HybridCPU-v2",
+    "reported_sha": "f794ea378779fe153a206af5fe287571884b1bc4",
+    "reported_archive_sha256": "f189685d79443100ceffb5ed30ed3e5a045d8607661544aca449c95236786d3d",
+    "local_object_available": false,
+    "relationship_to_current_head": "not-proven",
+    "note": "The reported audit SHA is absent from the local object database and the configured origin differs from the audit report. A read-only remote lookup timed out; no ancestry or equivalence claim is made."
+  },
+  "plan_provenance": {
+    "tracked_at_current_head": true,
+    "tracked_file_count_including_guard": 33,
+    "first_local_plan_commit": "6503318978b6bc6676d67408354648ce6f439118",
+    "external_side_load_allowed": false
+  },
+  "working_tree": {
+    "clean": false,
+    "evidence_class": "non-reproducible-dirty-worktree-snapshot",
+    "close_to_hsl": "untracked tree used by the current project wildcard compilation",
+    "close_to_rtl": "tracked tree has extensive pending deletions",
+    "close_to_rtl_status_entry_count": 930,
+    "limitation": "No commit SHA reproduces the observed CloseToHSL source snapshot until the relocation is committed. File hashes below bind the claims to the inspected bytes only."
+  },
+  "plan_corpus": {
+    "file_count": 32,
+    "included": "top-level Markdown files 00 through 31; this manifest is excluded",
+    "algorithm": "sha256(utf8(join(sorted filename:sha256, LF)))",
+    "aggregate_sha256": "575abd284584ca859bbefe43ad8ad7267d29879fef64b8d9c9efed5f7a4bcab0"
+  },
+  "source_anchors": [
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Execution/Dispatch/ExecutionDispatcherV4.VmxCompatibility.cs",
+      "sha256": "4b86423fac1d14231eeee515f205b8e7fe183b42173ceba9ebfcdf0e999891ab",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Pipeline/MicroOps/Types/MicroOp.IO.cs",
+      "sha256": "fb618714533da1d90634ff9ba814f0176c83d56157369a96faf52d6cc158e9fb",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Safety/SafetyVerifier.Compatibility.cs",
+      "sha256": "ff41c409c13af3653e4d3db9cf303655a2e28e502fac4b56169bd0582a7a60a3",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Pipeline/Retire/Evidence/CPU_Core.PipelineExecution.VmxRetire.cs",
+      "sha256": "9889329cd2aa70d7f1177f69fc91a14b009d850186bc24192678322c96708049",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Decode/VmxCompatDecodeBoundary.cs",
+      "sha256": "6b6ae5f97726ecc553fb86f94398f0f74c47f079e70fd320a3891baf2e627e98",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.cs",
+      "sha256": "1e562e575066d9fa19cf79bad8088799a272c4ebc123e04b26449dc7f879ac40",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Handlers/VmxCompatibilityAdmissionService.Traps.cs",
+      "sha256": "1dcd64ba57e96d129b0db0895d14de5927eb91f7b70ee10501d8da65022aa46c",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Virtualization/Compatibility/Frontend/Projection/VmcsRead/VmcsReadOnlyValueProjectionService.cs",
+      "sha256": "0e5298c18c3a0e81d89c58e0d17f2530953c23b6ca4bc06365d86481386d1b34",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Virtualization/SecureCompute/Compatibility/Projection/PrivilegedExecutionStateProjectionService.cs",
+      "sha256": "487668321da5fad4b400d8b91ec56102282e4555f1347273b0f12fe5892d8e9d",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Runtime/Events/Hypercalls/HypercallBackendAdmissionPolicy.cs",
+      "sha256": "e5789a651057d72ecae1138fe2a1c94913d4127252c355ee056cab96d59bc379",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Routing/TrapCompletionRoutePolicy.cs",
+      "sha256": "4386bb5708c3ab26e16331feeae90637bd86f3d8e9fd2ec8fd2f9e8030c1dc80",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE/CloseToHSL/Core/Runtime/Completion/Records/TrapCompletionPublicationFence.cs",
+      "sha256": "7e0057f5ad91d8a4d1bc9a98e5bd53b3c498a4b8d9c1195d65d4d598ea41b9f5",
+      "git_state": "untracked"
+    },
+    {
+      "path": "HybridCPU_ISE.Tests/VmxRefactoring/GuestCr0Cr4ReadOnlyProjectionTests.cs",
+      "sha256": "5111f29f0b27b3c2625006092cbed994d34a339de9885df592d4bb082ad34fdb",
+      "git_state": "modified"
+    }
+  ],
+  "claims": {
+    "activation": "denied",
+    "architectural_vmread": "not-proven",
+    "vmcall_backend": "absent",
+    "exact_vmcall_leaf": "not-accepted-and-not-allocated",
+    "typed_virtualization_admission_certificate": "absent",
+    "completion_publication_from_vmx_frontend": "absent",
+    "successful_vmx_retire": "absent"
+  },
+  "verification": {
+    "dotnet_sdk": "10.0.204",
+    "target_framework": "net10.0",
+    "focused_boundary_tests": "82 passed, 0 failed",
+    "activation_plan_guard_tests": "40 passed, 0 failed",
+    "vmx_refactoring_tests": "137 passed, 0 failed",
+    "broad_vmx_diagnostic": "474 passed, 1 unrelated pre-existing SecureCompute documentation assertion failed",
+    "source_anchor_hashes": "verified",
+    "diff_check": "scoped virtualization changes passed; full dirty worktree contains unrelated pre-existing whitespace findings"
+  }
+}

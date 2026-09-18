@@ -991,7 +991,7 @@ public sealed class ScalarControlFlowV2ObjectLinkerV1
         }
     }
 
-    private static ScalarControlFlowV2MethodObjectV1 CompileMethod(ManagedCompiledMethodV1 method, int ordinal) =>
+    internal static ScalarControlFlowV2MethodObjectV1 CompileMethod(ManagedCompiledMethodV1 method, int ordinal) =>
         CompileMethodWithRuntimeTargets(method, ordinal, new HashSet<string>(StringComparer.Ordinal));
 
     private static ScalarControlFlowV2MethodObjectV1 CompileMethodWithRuntimeTargets(
@@ -1071,6 +1071,7 @@ public sealed class ScalarControlFlowV2ObjectLinkerV1
                 $"'{method.Identity.StableIdentity}' from assembly '{method.Identity.AssemblyIdentity}' " +
                 $"(IR={schedule.Program.Instructions.Count}, values={schedule.Program.ValueFlow.Values.Count}): " +
                 $"{managedMetadata.Status}: {managedMetadata.Reason}");
+        TestOnlyGcCorrelationV1.TryWrite(method, allocation, managedMetadata);
         var objectSections = new List<HybridCpuObjectSectionV1>
         {
              new(".text", HybridCpuObjectSectionKind.Code, HybridCpuManagedCallRelocationContractV1.BundleSizeBytes,

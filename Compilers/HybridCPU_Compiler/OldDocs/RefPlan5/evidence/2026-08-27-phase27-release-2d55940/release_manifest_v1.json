@@ -1,0 +1,343 @@
+{
+  "Schema": "hybridcpu.release-manifest/v1",
+  "CompilerCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
+  "Phase26EvidenceSha256": "70f2e90c0039d1142407cc452e7231b6c4389d03bc0dad01840a3dedc19a6385",
+  "Profiles": [
+    {
+      "Profile": 0,
+      "Disposition": 0,
+      "DefaultEnabled": true,
+      "Identity": {
+        "CompilerCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
+        "TargetRevision": "HybridCPU-W8-native-v1",
+        "MachineDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+        "TopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+        "TargetDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+        "NativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+        "ManagedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+        "EvidenceSchema": "hybridcpu.compiler-cross-layer-envelope@1.0",
+        "CapabilitySchema": "hybridcpu.compiler-capabilities@1.0",
+        "FrontendToolchain": "native-asm-v1/native-carrier-v1",
+        "OptionsDigest": "7c33141821d36acf90d5decbbaaf88211c74abe8c8b96b89fd6bf85f87fde4ce",
+        "ProfileDataHashOrAbsence": "absent",
+        "RuntimePackAndLinkerIdentity": "hco:4f2a1c9372d7cb5c7bbd735791e1d744708a7736152a2c567ab5a5ae2cabcbc5|linker:HybridCpuStaticLinkerV1"
+      },
+      "Artifacts": [
+        "canonical-ir",
+        "schedule",
+        "bundles",
+        "asm",
+        "binary",
+        "evidence",
+        "scheduling-report",
+        "provenance"
+      ],
+      "EnabledCapabilities": [
+        "native-value-codegen",
+        "exact-w8-bundles"
+      ],
+      "UnsupportedCapabilities": [
+        "standalone-object-container"
+      ],
+      "DeterministicFallback": "Exact existing program-order fallback; unsupported object mode is reported without substituting another frontend.",
+      "QualificationEvidenceSha256": "70f2e90c0039d1142407cc452e7231b6c4389d03bc0dad01840a3dedc19a6385"
+    },
+    {
+      "Profile": 1,
+      "Disposition": 1,
+      "DefaultEnabled": false,
+      "Identity": {
+        "CompilerCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
+        "TargetRevision": "HybridCPU-W8-native-v1",
+        "MachineDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+        "TopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+        "TargetDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+        "NativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+        "ManagedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+        "EvidenceSchema": "hybridcpu.compiler-cross-layer-envelope@1.0",
+        "CapabilitySchema": "hybridcpu.compiler-capabilities@1.0",
+        "FrontendToolchain": "LLVM/LLVMSharp 20.1.2",
+        "OptionsDigest": "2677b9cb3fcc2d6955aaedf9c635ae39b82de68971811263f16941a26ec237ec",
+        "ProfileDataHashOrAbsence": "absent",
+        "RuntimePackAndLinkerIdentity": "none; optional ingress only"
+      },
+      "Artifacts": [
+        "canonical-ir",
+        "schedule",
+        "bundles",
+        "asm",
+        "binary",
+        "evidence",
+        "scheduling-report",
+        "provenance"
+      ],
+      "EnabledCapabilities": [
+        "llvm-structural-import",
+        "llvm-semantic-firewall"
+      ],
+      "UnsupportedCapabilities": [
+        "llvm-owned-scheduling",
+        "llvm-backend-emission"
+      ],
+      "DeterministicFallback": "Disable the optional LLVM ingress and use the identical Native/Core path; version or semantic skew rejects before Canonical IR.",
+      "QualificationEvidenceSha256": "70f2e90c0039d1142407cc452e7231b6c4389d03bc0dad01840a3dedc19a6385"
+    },
+    {
+      "Profile": 2,
+      "Disposition": 0,
+      "DefaultEnabled": false,
+      "Identity": {
+        "CompilerCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
+        "TargetRevision": "HybridCPU-W8-native-v1",
+        "MachineDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+        "TopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+        "TargetDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+        "NativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+        "ManagedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+        "EvidenceSchema": "hybridcpu.compiler-cross-layer-envelope@1.0",
+        "CapabilitySchema": "hybridcpu.compiler-capabilities@1.0",
+        "FrontendToolchain": "restricted-cil-v1|ILCompiler:94ea82652cdd4e0f8046b5bd5becbd11461482ca|SDK:10.0.204",
+        "OptionsDigest": "e95fb4fd01145b344638e8c74d162c060ffb14e9dc8b17fbdb64ea094638eca3",
+        "ProfileDataHashOrAbsence": "absent",
+        "RuntimePackAndLinkerIdentity": "1.0.0-phase26|ebe70f9fc8977cfef37aad30eb73fd2cf899eb8b3292d0bcbf417570d61740e4|HybridCpuStaticLinkerV1"
+      },
+      "Artifacts": [
+        "canonical-ir",
+        "schedule",
+        "bundles",
+        "object",
+        "binary",
+        "evidence",
+        "provenance"
+      ],
+      "EnabledCapabilities": [
+        "restricted-static-value-method",
+        "custom-rid-publish"
+      ],
+      "UnsupportedCapabilities": [
+        "managed-object-state",
+        "gc-publish",
+        "eh",
+        "interop",
+        "tls"
+      ],
+      "DeterministicFallback": "Unsupported CIL, feature, pack, SDK or patch input fails before image emission; no host/JIT/LLVM fallback.",
+      "QualificationEvidenceSha256": "70f2e90c0039d1142407cc452e7231b6c4389d03bc0dad01840a3dedc19a6385"
+    },
+    {
+      "Profile": 3,
+      "Disposition": 2,
+      "DefaultEnabled": false,
+      "Identity": {
+        "CompilerCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
+        "TargetRevision": "HybridCPU-W8-native-v1",
+        "MachineDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+        "TopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+        "TargetDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+        "NativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+        "ManagedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+        "EvidenceSchema": "hybridcpu.compiler-cross-layer-envelope@1.0",
+        "CapabilitySchema": "hybridcpu.compiler-capabilities@1.0",
+        "FrontendToolchain": "managed-contract-v1",
+        "OptionsDigest": "9fd9bc0ef6032e0f6a662ded09e66ceafdd3f6c7643e51690736ae9452f29bd2",
+        "ProfileDataHashOrAbsence": "absent",
+        "RuntimePackAndLinkerIdentity": "1.0.0-phase26|publish-workstreams:none"
+      },
+      "Artifacts": [
+        "contract",
+        "component-evidence"
+      ],
+      "EnabledCapabilities": [],
+      "UnsupportedCapabilities": [
+        "allocation-and-barriers",
+        "eh-unwind",
+        "managed-unmanaged-interop",
+        "tls-thread-runtime-state"
+      ],
+      "DeterministicFallback": "Reject managed requirements before codegen; component-qualified GC metadata is not publish authority.",
+      "QualificationEvidenceSha256": "70f2e90c0039d1142407cc452e7231b6c4389d03bc0dad01840a3dedc19a6385"
+    },
+    {
+      "Profile": 4,
+      "Disposition": 2,
+      "DefaultEnabled": false,
+      "Identity": {
+        "CompilerCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
+        "TargetRevision": "HybridCPU-W8-native-v1",
+        "MachineDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+        "TopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+        "TargetDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+        "NativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+        "ManagedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+        "EvidenceSchema": "hybridcpu.compiler-cross-layer-envelope@1.0",
+        "CapabilitySchema": "hybridcpu.compiler-capabilities@1.0",
+        "FrontendToolchain": "selected-components-only",
+        "OptionsDigest": "7a534595a9d849e5f81e12adf8f1b72179d1298b5a298d4a9c463527be002ad5",
+        "ProfileDataHashOrAbsence": "absent",
+        "RuntimePackAndLinkerIdentity": "no-full-runtime-pack"
+      },
+      "Artifacts": [
+        "component-evidence"
+      ],
+      "EnabledCapabilities": [],
+      "UnsupportedCapabilities": [
+        "full-managed-runtime",
+        "dynamic-fsp",
+        "runtime-vdsa"
+      ],
+      "DeterministicFallback": "Select an independently qualified profile; never merge component evidence into an umbrella capability.",
+      "QualificationEvidenceSha256": "70f2e90c0039d1142407cc452e7231b6c4389d03bc0dad01840a3dedc19a6385"
+    }
+  ],
+  "Features": [
+    {
+      "Feature": "canonical-core",
+      "Native": 0,
+      "Llvm": 1,
+      "DotNetAotRestricted": 0,
+      "DotNetAotManaged": 2,
+      "Full": 2,
+      "AuthorityOwner": "compiler-core",
+      "Fallback": "Reject incompatible schema/model/target digests."
+    },
+    {
+      "Feature": "llvm-ingress",
+      "Native": 3,
+      "Llvm": 1,
+      "DotNetAotRestricted": 3,
+      "DotNetAotManaged": 3,
+      "Full": 2,
+      "AuthorityOwner": "optional-llvm-adapter",
+      "Fallback": "Disable LLVM and preserve Native/Core byte path."
+    },
+    {
+      "Feature": "region-loop-modulo-vt",
+      "Native": 1,
+      "Llvm": 1,
+      "DotNetAotRestricted": 1,
+      "DotNetAotManaged": 2,
+      "Full": 1,
+      "AuthorityOwner": "compiler-core",
+      "Fallback": "Kill switch returns exact basic-block/native fallback and invalidates transformed facts."
+    },
+    {
+      "Feature": "fsp-vdsa",
+      "Native": 1,
+      "Llvm": 1,
+      "DotNetAotRestricted": 1,
+      "DotNetAotManaged": 3,
+      "Full": 1,
+      "AuthorityOwner": "runtime-for-dynamic-admission",
+      "Fallback": "Ignore advisory evidence; runtime independently admits or suppresses work."
+    },
+    {
+      "Feature": "gc-maps-safepoints",
+      "Native": 3,
+      "Llvm": 3,
+      "DotNetAotRestricted": 3,
+      "DotNetAotManaged": 2,
+      "Full": 2,
+      "AuthorityOwner": "runtime-gc",
+      "Fallback": "No publish-qualified managed workstream; fail before image emission."
+    },
+    {
+      "Feature": "eh-interop-tls",
+      "Native": 3,
+      "Llvm": 3,
+      "DotNetAotRestricted": 3,
+      "DotNetAotManaged": 3,
+      "Full": 3,
+      "AuthorityOwner": "runtime",
+      "Fallback": "Stable unsupported diagnostic before codegen."
+    }
+  ],
+  "CompatibilityWindows": [
+    {
+      "Schema": "hybridcpu.compiler-capabilities",
+      "Major": 1,
+      "MinimumMinor": 0,
+      "MaximumMinor": 0,
+      "LosslessMigrationAvailable": false,
+      "OutsideWindowDisposition": "reject-or-explicit-versioned-migration"
+    },
+    {
+      "Schema": "hybridcpu.compiler-cross-layer-envelope",
+      "Major": 1,
+      "MinimumMinor": 0,
+      "MaximumMinor": 0,
+      "LosslessMigrationAvailable": false,
+      "OutsideWindowDisposition": "reject-or-explicit-versioned-migration"
+    },
+    {
+      "Schema": "hybridcpu.compiler-build-provenance",
+      "Major": 1,
+      "MinimumMinor": 0,
+      "MaximumMinor": 0,
+      "LosslessMigrationAvailable": false,
+      "OutsideWindowDisposition": "reject-or-explicit-versioned-migration"
+    },
+    {
+      "Schema": "hybridcpu.native-abi",
+      "Major": 2,
+      "MinimumMinor": 0,
+      "MaximumMinor": 0,
+      "LosslessMigrationAvailable": false,
+      "OutsideWindowDisposition": "reject-before-lowering"
+    },
+    {
+      "Schema": "hybridcpu.managed-abi-family",
+      "Major": 1,
+      "MinimumMinor": 0,
+      "MaximumMinor": 0,
+      "LosslessMigrationAvailable": false,
+      "OutsideWindowDisposition": "reject-before-codegen"
+    },
+    {
+      "Schema": "hybridcpu.object/hco-v1",
+      "Major": 1,
+      "MinimumMinor": 0,
+      "MaximumMinor": 0,
+      "LosslessMigrationAvailable": false,
+      "OutsideWindowDisposition": "reject-before-link"
+    },
+    {
+      "Schema": "hybridcpu.sdk-pack/v1",
+      "Major": 1,
+      "MinimumMinor": 0,
+      "MaximumMinor": 0,
+      "LosslessMigrationAvailable": false,
+      "OutsideWindowDisposition": "reject-before-codegen"
+    }
+  ],
+  "Benchmark": {
+    "Corpus": "phase27-native-smoke-v1",
+    "Cases": 1,
+    "DeterministicRuns": 2,
+    "ScheduleFingerprint": "ce7c733f53cad33bc273f168c5f4cbfb86f77c4ebda693b9056ec17d2972c49e",
+    "BundleFingerprint": "244c7be5747fb51b9ea8453eec7c009802705e39fe21289f32eb400557dc7881",
+    "ImageFingerprint": "6e6968a69b144bbc4d2a4e297e6ec5543f0d7df8a269a063d46103c3404074eb",
+    "BundleCount": 2,
+    "DeterministicInstructionBudget": 4096,
+    "OracleComparableCases": 1,
+    "OracleUnknownCases": 0,
+    "OracleDisposition": "One bounded comparable case is carried from exact Phase15 evidence; the oracle remains CI-only and cannot select production output.",
+    "OracleContractDigest": "9e8ea234d3d6f671cb92c02908e3affa62850c63d56c4125db5463307ff917ce",
+    "OracleEvidenceSha256": "7a4f760717ffdc6654a104fa41223b744461547a3d029c9f95bd8093df9c702b"
+  },
+  "AuthorityProhibitions": [
+    "runtime-legality",
+    "runtime-freshness",
+    "runtime-execution",
+    "runtime-publication",
+    "runtime-commit",
+    "runtime-retire"
+  ],
+  "KnownUnsupported": [
+    "general-nativeaot",
+    "full-managed-runtime",
+    "multi-host-publish",
+    "dynamic-fsp-authority",
+    "runtime-vdsa-authority"
+  ],
+  "DeterministicDigest": "7b84de44702e5d5e04616ae6fcf6a94ea77a608be1569c192d18295979defe65"
+}

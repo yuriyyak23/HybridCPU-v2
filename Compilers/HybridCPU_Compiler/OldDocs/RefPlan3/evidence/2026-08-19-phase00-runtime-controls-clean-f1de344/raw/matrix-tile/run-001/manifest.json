@@ -1,0 +1,25 @@
+{
+  "SchemaVersion": "diagnostic-run-manifest/v1",
+  "RunKind": "single",
+  "CommandId": "matrix-tile",
+  "DisplayName": "MatrixTile SPEC-like Pressure Suite",
+  "Status": "Succeeded",
+  "ArtifactDirectory": "C:\\Users\\Yuriy Kurnosov\\Desktop\\HybridCPU ISE\\HybridCPU_Compiler\\RefPlan3\\evidence\\2026-08-19-phase00-runtime-controls-clean-f1de344\\raw\\matrix-tile\\run-001",
+  "WorkerProfileId": "matrix-tile",
+  "WorkloadKind": "MatrixTileSpecSuite",
+  "FrontendProfile": "NativeVLIW",
+  "ProcessId": 28248,
+  "ExitCode": 0,
+  "FailureMessage": null,
+  "CreatedUtc": "2026-08-19T11:59:31.4628437+00:00",
+  "StartedUtc": "2026-08-19T11:59:26.182081+00:00",
+  "FinishedUtc": "2026-08-19T11:59:31.46282+00:00",
+  "ElapsedSeconds": 5.2545613,
+  "GeneratedFiles": {
+    "profile": "profile.json",
+    "stdout": "stdout.log",
+    "stderr": "stderr.log",
+    "matrix_tile_spec_report": "matrix_tile_spec_report.json"
+  },
+  "ChildArtifacts": null
+}

@@ -1,0 +1,116 @@
+{
+  "schema": "CompilerRefPlan5Phase25ManagedGcEvidenceV1",
+  "phase": "25",
+  "status": "Verified",
+  "qualificationDate": "2026-08-27",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "phaseBaseSha": "5852190d4f6d24bf0b6bc26b7076614f3284e6bc",
+  "implementationSha": "111ed55d6ad2183b88560ef519e24ad8cbab7013",
+  "implementationTree": "65698cb4edeec5f58846ce862ebd62722c977129",
+  "implementationCommits": [
+    "408c35f19dc625af5af6648178d1c022cb3e8c42",
+    "ff133a8a492381f3133846efd5e11d605bce66ab",
+    "deead672ca4f8833fef727731fd7032632aa7a4c",
+    "111ed55d6ad2183b88560ef519e24ad8cbab7013"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5 and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified final allocation/frame/placement, managed ABI, restricted image and runtime execution prerequisites from Phases 20, 22, 24.",
+    "output": "Default-off exact object-reference GC/safepoint metadata, one-method code-manager records, and an independently pinned runtime root walker and deterministic moving collector.",
+    "authorityBoundary": "The compiler describes roots and code ranges. The runtime independently validates metadata and owns stack walking, reachability, movement and reclamation. CPU legality, SafetyVerifier, execution, publication, commit and retire authority are unchanged.",
+    "deterministicFallback": "Stale allocation/placement/liveness, missing or falsely typed roots, schema/digest skew, invalid heap edges and unsupported managed workstreams fail closed without partial metadata or heap mutation.",
+    "productionSchedulePolicyChanged": false,
+    "legacyProductionArtifactsChanged": false,
+    "cpuPipelineAuthorityChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "contracts": {
+    "metadataFinalizationSchema": "hybridcpu.managed-metadata-finalization/v1",
+    "metadataFinalizationDigest": "53b00b2de38dc2986f25e941b65d17a0c7f87d1783313e8d63fd16811e207fb9",
+    "runtimeGcSchema": "hybridcpu.managed-gc-runtime/v1",
+    "runtimeGcDigest": "c04535d637a8c19f022f9a6022991caa1cdb2213d7cc8114c1f9c132a3b40d11",
+    "managedFeatureSetSchema": "hybridcpu.managed-feature-set/v1",
+    "managedFeatureSetDigest": "666a6bf37671990255a9cccba31258a12130725596fa9d7cf447874c7a64cbe6",
+    "managedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "nativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+    "allocationContractDigest": "5062cc5f25a53e1b2fa8d87f8b4bb14196675ec1b3a135bf57a281aa507a2622",
+    "physicalBundleBytes": 256
+  },
+  "featureDisposition": {
+    "managedSafetyLevel": "BasicBlockObjectReferences",
+    "qualifiedDefaultOff": ["gc-maps-safepoints", "metadata-runtime-lookup"],
+    "unsupported": [
+      "allocation-and-barriers",
+      "debug-source-mapping",
+      "eh-unwind",
+      "managed-unmanaged-interop",
+      "tls-thread-runtime-state"
+    ],
+    "fspAllowed": false,
+    "vdsaAllowed": false,
+    "umbrellaManagedRuntimeBit": false,
+    "managedByRefSupported": false,
+    "interiorReferenceSupported": false
+  },
+  "runtimeQualification": {
+    "actualStackWalking": true,
+    "registerRoots": true,
+    "fixedStackRoots": true,
+    "transitiveReachability": true,
+    "deterministicMovingCollection": true,
+    "rootAndObjectFieldRewrite": true,
+    "unreachableReclamation": true,
+    "transactionalFailure": true,
+    "productionDefaultEnabled": false
+  },
+  "provenance": {
+    "repositoryDotnetSdkVersion": "10.0.204",
+    "phasePlanSha256": "900ff8422f68284adb3b6ed217a57182eaf5a374bf83c7f781fbd6c36e76c7fb",
+    "metadataFinalizerSourceSha256": "c45ac9fe5b00b3183b4a93d8c9e55079fdf402bfcc62ad9c1b9e38342d2452e2",
+    "featureSetSourceSha256": "e145499eba9d17640ea6815bbacba8e855dd4dafbb765a4195fe0d5198a68916",
+    "runtimeGcSourceSha256": "8e92dcee5d31ba44dafd1bbe341d1ec4554d7629d3506f37a7d5748038e18b70",
+    "qualificationOptions": "configuration=Debug-testsupport,Release-production|sharedCompilation=false|maxCpuCount=1|llvmRid=win-x64|nuGetAudit=false|focused=Phase25A-C|cumulative=RefPlan3Phase,RefPlan5Phase|compilerFocused=CompilerTests|managedSafety=BasicBlockObjectReferences|fsp=false|vdsa=false|movingGc=qualification-only",
+    "qualificationOptionsSha256": "bbdc6d79285ec357f4c2bbb7235cb93cb90d3b9099c4d8e499847ed47b1ad9d7"
+  },
+  "qualification": {
+    "phase25Focused": {"passed": 31, "failed": 0, "skipped": 0},
+    "phase00Through25": {"passed": 517, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 1212, "failed": 0, "skipped": 0},
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "cilAdapterReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "oracleReleaseBuild": {"errors": 0, "warnings": 0},
+    "llvmAdapterReleaseBuild": {"runtime": "win-x64", "errors": 0, "warnings": 0},
+    "nativeAotAdapterReleaseBuild": {"errors": 0, "warnings": 0},
+    "runtimeReleaseBuild": {"errors": 0, "warnings": 43},
+    "legacyCompilerReleaseRebuild": {"errors": 0, "warnings": 43},
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false,
+    "postImplementationForeignStatusEntries": 250,
+    "postImplementationForeignStatusEntriesUntrackedAll": 445
+  },
+  "releaseDisposition": {
+    "defaultEnabled": false,
+    "defaultEnabledScope": "Explicit qualification APIs for exact object-reference metadata and runtime moving collection only.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Verified restricted managed-GC/code-manager subset for Phase 26 packaging. Unsupported Phase 25 workstreams remain fail-closed and are not implied by the runtime pack.",
+    "runtimeBehaviorAuthorization": "Qualification API only"
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "26",
+    "dependenciesSatisfied": true,
+    "dependencies": ["23", "24", "25"],
+    "gate": "Define an exact HybridCPU RID/runtime-pack/toolchain layout and prove deterministic local dotnet publish for the restricted feature set without host-ISA or unsupported-workstream contamination."
+  }
+}

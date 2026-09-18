@@ -1,0 +1,90 @@
+{
+  "schema": "CompilerRefPlan5Phase08ATargetMachineEvidenceV1",
+  "phase": "08A",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "f18fbd0e9415ad1c25ff2eb040d38d9bb44b7dc0",
+  "implementationTree": "1b56b8def45a48d63b6e3981b9eeb620d0662e5d",
+  "implementationCommits": [
+    "f18fbd0e9415ad1c25ff2eb040d38d9bb44b7dc0"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5 and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 03 topology, Phase 05 schema/provenance and Phase 06 Canonical IR contracts.",
+    "output": "Versioned frontend-neutral TargetMachine core contract sufficient for Phase 07 value classes, register constraints and call-boundary liveness.",
+    "authorityBoundary": "Only architectural/compiler-visible target facts are modeled; runtime physical-register allocation, rename, occupancy, scoreboard, execution, publication, commit and retire authority are excluded.",
+    "deterministicFallback": "Unknown or mismatched schema major, triple, DataLayout, address space, scalar width or register identity deterministically returns Unsupported/Unknown; no host, LLVM or frontend default is imported.",
+    "runtimeAuthorityChanged": false,
+    "schedulePolicyChanged": false,
+    "carrierBytesChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "targetContract": {
+    "schema": "hybridcpu.target-machine-core/1.0",
+    "targetArchitectureRevision": "HybridCPU-W8-native-v1",
+    "targetTriple": "hybridcpuv2-unknown-none",
+    "dataLayoutVersion": "hybridcpu-native-datalayout/v1",
+    "endianness": "Little",
+    "pointerBitWidth": 64,
+    "pointerAbiAlignmentBytes": 8,
+    "legalScalarWidths": [8, 16, 32, 64],
+    "aggregateLayout": "Natural alignment capped at 8 bytes; unsupported alignment fails closed.",
+    "architecturalRegisters": "x0..x31, 64-bit scalar integer; x0 fixed zero, x1..x31 allocatable",
+    "registerGroupMapping": "architectural register id / 4",
+    "allocatableVectorRegisterClass": false,
+    "primitiveCallBoundary": "JAL link destination and JALR return base are explicit carrier operands; no implicit clobbers are inferred.",
+    "fullFunctionAbiSupport": "Unsupported until 08B"
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "targetContractDigest": "ae6ee979176be7f21dc396fe0ddb5d7023d8b6de1722eb4d4652647dd3e99232",
+    "dataLayoutIdentitySha256": "36a447f9bd192111b822f74a0727efbddba6a256b9ba8e48f8a6b2e671d2774b",
+    "registerInventorySha256": "fc5b2f4f131298bc5de911d6ef4c820e9e0debe33f00ac19148d9bfae23290ec",
+    "machineDescriptionDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+    "machineTopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+    "implementationSourceManifestSha256": "dfe760f2685c74d07dfbde84f438a6dce0de0a42bacd58e6c0ab0b9968d1a4e3",
+    "qualificationOptionsSha256": "b8248b884fd7a6a19f201a3c45684d9ae4e3515fc0c3207518b45a421ee32a75"
+  },
+  "qualification": {
+    "phase08AFocused": {"passed": 15, "failed": 0, "skipped": 0},
+    "phase04Phase05Phase08AIntegration": {"passed": 41, "failed": 0, "skipped": 0},
+    "phase00Through06Plus08A": {"passed": 119, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 814, "failed": 0, "skipped": 0},
+    "prequalificationDiagnostic": {
+      "passed": 13,
+      "failed": 2,
+      "skipped": 0,
+      "cause": "Test-only aggregate collection equality and target-digest placeholder assertions.",
+      "productionChangeRequired": false,
+      "disposition": "Assertions completed with the computed golden digest before implementation commit."
+    },
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43},
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "llvmSharpIncludedInPhase08A": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false
+  },
+  "releaseDisposition": {
+    "defaultEnabled": true,
+    "defaultEnabledScope": "Native TargetMachine identity/provenance and fail-closed Native ingress compatibility; full ABI and 08B features remain unsupported.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Qualified as the Phase 07 prerequisite; final release authorization remains owned by Phase 27.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "07",
+    "dependenciesSatisfied": true,
+    "gate": "Add virtual values, allocation constraints, liveness and pressure using only the verified 08A architectural register contract; final physical allocation remains Phase 20."
+  }
+}

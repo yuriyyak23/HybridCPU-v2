@@ -1,0 +1,45 @@
+{
+  "EvidenceClass": "LaterNonSelfReferentialCleanSourceEvidence",
+  "Phase": "Phase64PinBasedControlsVmReadE0D2",
+  "RecordedAt": "2026-08-13",
+  "SubjectSha": "38d8cf3e65fe4ec0a143aeaffefc82022a1dc57b",
+  "SubjectTree": "d3aa5eb64ebbad2491a8cd5d50811169162187e7",
+  "E0": {
+    "Verdict": "GreenRepeatedFromRealPhase62ProductionGraph",
+    "Construction": "CpuCorePlatformContextToCPUCore",
+    "Consumer": "CPUCoreDispatchInterruptNeutralRoutingPolicy",
+    "Freshness": "OwnerIdentityOwnerEpochDomainIdentityNonZeroPolicyGeneration",
+    "WholeFieldCoverage": "Bits0To2ExactPredicatesBits3To63UnsupportedZero",
+    "Negatives": "AbsentStaleForeignCrossDomainAndSemanticMismatchDenyNoValue"
+  },
+  "D2": {
+    "DecisionId": "D2-HV-VMREAD-PIN-BASED-CONTROLS-0005",
+    "ExactField": "VmcsField.PinBasedControls",
+    "Mapper": "Phase64PinBasedControlsVmReadProjectionD2",
+    "AbsentVsZero": "DeniedNullValueVersusGrantedPresentUlong",
+    "RuntimeAuthority": "None",
+    "ProductionComposition": "DeniedNoFrontendCaller",
+    "ScalarDelivery": "DeniedPendingSeparateAuthorization"
+  },
+  "Verification": [
+    { "gate": "FocusedE0", "result": "68/68" },
+    { "gate": "FocusedD2", "result": "71/71" },
+    { "gate": "RepeatedFreshnessRace", "result": "5 runs of 1/1" },
+    { "gate": "WorktreeVmxMatrix", "result": "593/593" },
+    { "gate": "WorktreeSecureComputeMatrix", "result": "324/324" },
+    { "gate": "CleanStagedVmxMatrix", "result": "575/575" },
+    { "gate": "CleanStagedSecureComputeMatrix", "result": "313/313" },
+    { "gate": "ReleaseWithoutTestingOrInternalHooks", "result": "0 warnings / 0 errors" },
+    { "gate": "IgnoredCloseToHslCSharpDependencies", "result": "0" },
+    { "gate": "GitDiffCheck", "result": "passed" }
+  ],
+  "Excluded": [
+    "production VMREAD composition scalar receipt PRF writeback retire delivery",
+    "activation profile rollback or release",
+    "adjacent fields VMWRITE VMCALL nested",
+    "VMX VMCS frontend trap authority",
+    "compiler SecureCompute memory IOMMU device lane stream"
+  ],
+  "NextOpenPool": "None",
+  "NextCandidatePool": "NoneUntilSeparatePinBasedControlsScalarDeliveryAuthorization"
+}

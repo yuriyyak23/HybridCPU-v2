@@ -1,0 +1,140 @@
+{
+  "schema": "CompilerRefPlan5Phase26SdkPublishEvidenceV1",
+  "phase": "26",
+  "status": "Verified",
+  "qualificationDate": "2026-08-27",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "phaseBaseSha": "a305b6b7846ea439ecbf82f21a30c957be96f70a",
+  "implementationSha": "99de655ebd91bfb4cabc5a702ce0c14b7c546a50",
+  "implementationTree": "aa95124a908cfb4976fd8dc9e62b95a00431da17",
+  "implementationCommits": [
+    "ffd3547766e4773424b6420a2d32458c536f16fd",
+    "381e3d99eb8a38110bad457df2079afb7dcd247e",
+    "99de655ebd91bfb4cabc5a702ce0c14b7c546a50"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5, pinned local dotnet/runtime source and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 23 pinned ILCompiler seam, Phase 24 restricted HCEXE image/link/runtime integration and Phase 25 managed feature descriptor.",
+    "output": "An installable custom hybridcpu SDK/runtime/compiler pack and an exact dotnet publish path through the patched ILCompiler dependency graph for the restricted value-only sample.",
+    "authorityBoundary": "The SDK/compiler emits an image and provenance only. Runtime legality, execution, SafetyVerifier, publication, commit and retire authority remain outside compiler ownership.",
+    "deterministicFallback": "RID, host, SDK, source, patch, pack-file, ABI, feature or tool skew fails closed before image emission; no JIT, host-RID, host ObjectWriter, alternate NativeAOT architecture or LLVM fallback is allowed.",
+    "productionSchedulePolicyChanged": false,
+    "legacyProductionArtifactsChanged": false,
+    "cpuPipelineAuthorityChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "packContract": {
+    "schema": "hybridcpu.runtime-pack/v1",
+    "contractDigest": "ebe70f9fc8977cfef37aad30eb73fd2cf899eb8b3292d0bcbf417570d61740e4",
+    "packVersion": "1.0.0-phase26",
+    "targetRid": "hybridcpu",
+    "targetEnvironment": "controlled-bare-metal-simulator-v1",
+    "supportedHostRids": ["win-x64"],
+    "publishSdkVersion": "10.0.204",
+    "ilCompilerHostSdkVersion": "10.0.105",
+    "installedPackFileCount": 203,
+    "installedPackFilesSha256": "ae9379675ffb75ce7fa8805e1ff377ce42cf41c544351aeb0741c292d3fe54b9",
+    "adapterSha256": "46789f07dd272e7674381cdb6e0f6fafeacf40f5a1ed800de9b08cbf637b25f3",
+    "ilCompilerSha256": "14e00a30a786cde4d76fbbeaef5050bfcefe6459ded14b475d0577a521e1365f",
+    "runtimeReferenceSetDigest": "550e53c554c64aa2eedcbdc10eb99fe10d6cb482ea1b5a096552436ea694f995",
+    "dotNetHostSha256": "b3cc37e128b832146ec3a8dd467476ffa84021c4f92684261ab035afeff2de7e"
+  },
+  "sourceAndPatchSet": {
+    "sourceCommit": "94ea82652cdd4e0f8046b5bd5becbd11461482ca",
+    "sourceArchiveSha256": "694b9134d338db6b0d31b1a73d9c89e5419432f2f0622b610ecdf5455e851b96",
+    "phase23PatchSha256": "e03a61674d5feae6bb56c19f368b44c6c3348b5798a2187f776a58f613dbdf32",
+    "phase26PatchSha256": "28567486e7287499030d70a5e42635bdf802ec64395ee273e118b10bfc5767ad",
+    "orderedPatchSetSha256": "08a6ab21735aeb76b23e5e4f14be87007320475d3aaa14a513a8a713f3dbe7de",
+    "externalSourcePatch1Applied": true,
+    "externalSourcePatch2Applied": true,
+    "cleanSourceHashesReconstructedBeforeQualification": true
+  },
+  "targetAndFeatureContracts": {
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "managedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+    "managedFeatureSetDigest": "666a6bf37671990255a9cccba31258a12130725596fa9d7cf447874c7a64cbe6",
+    "linkerIdentity": "HybridCpuStaticLinkerV1",
+    "linkOptionsDigest": "8d27a9941c2e53bd057fae1ca6633615b6a8225baa92316a290db4d09ddd79ee",
+    "publishQualifiedWorkstreams": [],
+    "componentQualifiedButNotPublishQualified": ["gc-maps-safepoints", "metadata-runtime-lookup"],
+    "unsupportedExamples": ["allocation-and-barriers", "eh-unwind", "managed-unmanaged-interop", "tls-thread-runtime-state"],
+    "llvmRequired": false,
+    "hostObjectWriterInvoked": false,
+    "traversedIlCompilerGraph": true
+  },
+  "deterministicPublishQualification": {
+    "command": "dotnet publish -c Release -r hybridcpu -p:PublishAot=true --no-restore",
+    "independentlyInstalledPacks": 2,
+    "deterministicRuns": 2,
+    "imageBytes": 4608,
+    "imageSha256": "eb5486bda5c308b78247b278a27cb152f4aa4db48120a5ae8019dd76d93859e1",
+    "imageManifestSha256": "a9be5dbccf056614694872481cf2a02f40b962516a5c32f7160a50eee726af92",
+    "provenanceSha256": "e073c694c7ecb01e22e181ada3113e9cf0134c96cc8d05e21b8327bfe5b7deda",
+    "ilCompilerBuild": {"errors": 0, "warnings": 0},
+    "packManifestsEqual": true,
+    "imagesEqual": true,
+    "imageManifestsEqual": true,
+    "provenanceEqual": true
+  },
+  "negativeQualification": {
+    "pinnedGraphBypass": {"diagnostic": "HCPUB1109", "imageCount": 0},
+    "unsupportedEhRequirement": {"diagnostic": "HCPUB1004", "processExitCode": 25, "imageCount": 0},
+    "sdkSkew": {"diagnostic": "HCPUB1007", "coveredByFocusedTest": true},
+    "packFileTamper": {"diagnostic": "HCPUB1008", "coveredByFocusedTest": true},
+    "ridOrHostMismatch": {"diagnostics": ["HCPUB1001", "HCPUB1002"], "coveredByFocusedTests": true}
+  },
+  "provenance": {
+    "repositoryDotnetSdkVersion": "10.0.204",
+    "phasePlanSha256": "e8306d6e071756a58f0820580db59415ec95631a8f86f518f8e792ea0879e976",
+    "packContractSourceSha256": "9aa8fa21167789f76c249448ad18d87a6b39e3c75b8af92aad89f302338584cb",
+    "publisherSourceSha256": "98e983a5f733332bde7cd5a73ac56b3a3b9b13fe3faccd4d47ae3978e0ec83e9",
+    "runtimePackManifestSha256": "3c024e37a9360f9af4b7d646c1a52cd1ee211f87a11fc744ff6e225e6ce1dcf3",
+    "sdkPropsSha256": "9172655e3fcfc5327fe87ff317402e4562d8cc79c6046966831787e978083663",
+    "sdkTargetsSha256": "6418ff02cb29269bbe041ddc61f656ddd09c0bddad59a56a65b0a739c9c2c314",
+    "installerSha256": "3cadc0311cc58b86ff0e89b0e4fa11ce7cf0e8e28d208798fd3548ee86a63bff",
+    "verifierSha256": "766cacfa597f6339c72335adf24844a2b36cfeee63586c91e283317b784a89e2",
+    "qualificationOptions": "configuration=Debug-testsupport,Release-production|sharedCompilation=false|maxCpuCount=1|publishSdk=10.0.204|ilCompilerHostSdk=10.0.105|hostRid=win-x64|targetRid=hybridcpu|runtimeRefs=Microsoft.NETCore.App.Runtime.win-x64/10.0.8|focused=Phase26|cumulative=RefPlan3Phase,RefPlan5Phase|compilerFocused=CompilerTests|deterministicPublishRuns=2|publishAot=true|llvm=false|hostObjectWriter=false",
+    "qualificationOptionsSha256": "e206d9eed221bb7a496d28d983ff121879ce04961e01c0ad506f55e392048111"
+  },
+  "qualification": {
+    "phase26Focused": {"passed": 16, "failed": 0, "skipped": 0},
+    "phase00Through26": {"passed": 533, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 1228, "failed": 0, "skipped": 0},
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "cilAdapterReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "oracleReleaseBuild": {"errors": 0, "warnings": 0},
+    "llvmAdapterReleaseBuild": {"runtime": "win-x64", "errors": 0, "warnings": 0},
+    "nativeAotAdapterReleaseBuild": {"errors": 0, "warnings": 0},
+    "runtimeReleaseBuild": {"errors": 0, "warnings": 43},
+    "legacyCompilerReleaseRebuild": {"errors": 0, "warnings": 43},
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false,
+    "postImplementationForeignStatusEntries": 250,
+    "postImplementationForeignStatusEntriesUntrackedAll": 445
+  },
+  "releaseDisposition": {
+    "defaultEnabled": false,
+    "defaultEnabledScope": "Explicit custom-pack installation and value-only single-method hybridcpu publish on win-x64 with SDK 10.0.204.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Verified Phase 26 custom SDK publish path for the exact restricted feature set. This is not general NativeAOT, full managed-runtime or multi-host release qualification; Phase 27 retains release authority.",
+    "runtimeBehaviorAuthorization": "Unchanged"
+  },
+  "externalBaselineFailures": [],
+  "baselineWarnings": ["Existing runtime and forced legacy compiler rebuild warnings: 43"],
+  "nextDependencyGate": {
+    "phase": "27",
+    "dependenciesSatisfied": true,
+    "dependencies": ["04", "05", "06", "07", "08A", "08B", "08B2", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"],
+    "gate": "Audit the complete dependency graph, migration and legacy overlap; run integration, determinism, benchmarking and release-qualification matrices without broadening compiler authority or overstating unsupported profiles."
+  }
+}

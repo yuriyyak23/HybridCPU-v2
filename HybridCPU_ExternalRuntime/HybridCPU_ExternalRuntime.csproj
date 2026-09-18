@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -22,9 +22,9 @@
   <ItemGroup>
     <ProjectReference Include="..\HybridCPU_ExternalRuntime.Contracts\HybridCPU_ExternalRuntime.Contracts.csproj" />
     <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj"
-                      AdditionalProperties="DefineTestSupport=false;EnableInternalTestHooks=false"
-                      PrivateAssets="all"
-                      ReferenceOutputAssembly="true" />
+                      AdditionalProperties="DefineTestSupport=false"
+                      GlobalPropertiesToRemove="DefineTestSupport;BuildRuntimeDiagnosticConsole;HybridCpuIseProjectReferenceProperties"
+                      PrivateAssets="all" />
     <ProjectReference Include="..\Compilers\HybridCPU_Compiler\Core\HybridCPU.Compiler.Core.csproj" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>

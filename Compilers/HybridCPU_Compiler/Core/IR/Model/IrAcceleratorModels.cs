@@ -54,6 +54,13 @@ public sealed record IrAcceleratorIntent
 
     public bool AllowRuntimeFallbackAfterSubmit { get; init; }
 
+    /// <summary>
+    /// Semantic intent carried through lowering. It is not a provider receipt,
+    /// capability claim, runtime guard or permission to issue ACCEL_SUBMIT.
+    /// </summary>
+    public IrExternalOperationIntent ExternalOperation { get; init; } =
+        IrExternalOperationIntent.Lane7StagedNonRetryable;
+
     public static IrAcceleratorIntent ForMatMul(
         AcceleratorCommandDescriptor descriptor,
         byte tokenDestinationRegister = 1,
@@ -68,7 +75,8 @@ public sealed record IrAcceleratorIntent
             RequestedMode = requestedMode,
             TokenDestinationRegister = tokenDestinationRegister,
             IsCoarseGrained = isCoarseGrained,
-            AllowRuntimeFallbackAfterSubmit = false
+            AllowRuntimeFallbackAfterSubmit = false,
+            ExternalOperation = IrExternalOperationIntent.Lane7StagedNonRetryable
         };
     }
 }
@@ -85,6 +93,8 @@ public sealed record IrAcceleratorCommand
     public required byte TokenDestinationRegister { get; init; }
 
     public bool AllowRuntimeFallbackAfterSubmit { get; init; }
+
+    public required IrExternalOperationIntent ExternalOperation { get; init; }
 }
 
 /// <summary>
@@ -196,6 +206,11 @@ public sealed class CompilerAcceleratorCapabilityModel
                 "L7-SDC compiler intent cannot promise runtime fallback after ACCEL_SUBMIT emission.");
         }
 
+        if (!IsValidExternalOperationIntent(intent.ExternalOperation, intent.RequestedMode, out string? intentFailure))
+        {
+            return CompilerAcceleratorLoweringDecision.Reject(intentFailure!);
+        }
+
         return intent.RequestedMode switch
         {
             AcceleratorLoweringMode.CpuOrNonAccelerator =>
@@ -212,7 +227,7 @@ public sealed class CompilerAcceleratorCapabilityModel
 
             AcceleratorLoweringMode.EmitAcceleratorSubmit when !Supports(intent) =>
                 CompilerAcceleratorLoweringDecision.UseCpuOrNonAccelerator(
-                    "Compiler accelerator capability model does not support this command; choose CPU/non-accelerator lowering before ACCEL_SUBMIT emission."),
+                    "Compiler accelerator capability model does not support this command; choose CPU/non-accelerator lowering before ACCEL_SUBMIT emission. Runtime admission policy is not evaluated here."),
 
             AcceleratorLoweringMode.EmitAcceleratorSubmit when
                 !intent.IsCoarseGrained ||
@@ -254,7 +269,8 @@ public sealed class CompilerAcceleratorCapabilityModel
             Operation = intent.Operation,
             DescriptorSideband = intent.DescriptorSideband,
             TokenDestinationRegister = intent.TokenDestinationRegister,
-            AllowRuntimeFallbackAfterSubmit = false
+            AllowRuntimeFallbackAfterSubmit = false,
+            ExternalOperation = intent.ExternalOperation
         };
     }
 
@@ -265,6 +281,93 @@ public sealed class CompilerAcceleratorCapabilityModel
             throw new InvalidOperationException(
                 "L7-SDC compiler accelerator intent requires typed descriptor sideband before ACCEL_SUBMIT emission.");
         }
+    }
+
+    private static bool IsValidExternalOperationIntent(
+        IrExternalOperationIntent? intent,
+        AcceleratorLoweringMode requestedMode,
+        out string? failure)
+    {
+        if (intent is null ||
+            !Enum.IsDefined(intent.ExecutionRequirement) ||
+            !Enum.IsDefined(intent.ExecutionContour) ||
+            !Enum.IsDefined(intent.ExecutionDomain) ||
+            !Enum.IsDefined(intent.SecureEvidence) ||
+            !Enum.IsDefined(intent.MinimumAssurance) ||
+            !Enum.IsDefined(intent.VirtualDomainBinding) ||
+            !Enum.IsDefined(intent.VirtualIo) ||
+            !Enum.IsDefined(intent.Containment) ||
+            !Enum.IsDefined(intent.Publication) ||
+            !Enum.IsDefined(intent.Coherence) ||
+            !Enum.IsDefined(intent.Effect) ||
+            !Enum.IsDefined(intent.Cancellation) ||
+            !Enum.IsDefined(intent.Ordering) ||
+            intent.MemoryRoles == IrExternalMemoryRegionRole.None ||
+            (intent.MemoryRoles & ~IrExternalMemoryRegionRole.ReadWrite) != 0 ||
+            (intent.MemoryPlacement & ~(IrExternalMemoryPlacementIntent.CapacityPreferred |
+                IrExternalMemoryPlacementIntent.LowLatencyPreferred |
+                IrExternalMemoryPlacementIntent.PersistentMemoryRequired |
+                IrExternalMemoryPlacementIntent.ExternalDeviceAccessRequired |
+                IrExternalMemoryPlacementIntent.CoherentSharedAccessPreferred)) != 0)
+        {
+            failure = "External-operation compiler intent is missing or structurally invalid.";
+            return false;
+        }
+
+        bool virtualized = intent.ExecutionDomain is
+            IrExternalExecutionDomainRequirement.Virtualized or
+            IrExternalExecutionDomainRequirement.SecureVirtualized;
+        bool secure = intent.ExecutionDomain is
+            IrExternalExecutionDomainRequirement.Secure or
+            IrExternalExecutionDomainRequirement.SecureVirtualized;
+        bool requestsDeviceAccess = intent.DeviceAccess != IrExternalDeviceAccessIntent.None;
+
+        if ((virtualized && intent.VirtualDomainBinding != IrExternalVirtualDomainBindingRequirement.Required) ||
+            (secure && intent.SecureEvidence != IrExternalSecureEvidenceRequirement.Required) ||
+            (requestsDeviceAccess && virtualized && intent.VirtualIo != IrExternalVirtualIoRequirement.BoundedRequired) ||
+            (intent.VirtualIo == IrExternalVirtualIoRequirement.BoundedRequired && !virtualized) ||
+            (intent.Effect == IrExternalEffectRequirement.NonRetryable &&
+             intent.Containment != IrExternalContainmentRequirement.CancellationOrContainmentRequired) ||
+            (intent.DeviceAccess & IrExternalDeviceAccessIntent.CoherentRequired) != 0 &&
+            (intent.DeviceAccess & IrExternalDeviceAccessIntent.CoherentOptional) != 0 ||
+            (intent.DeviceAccess & ~(IrExternalDeviceAccessIntent.DeviceReadable |
+                IrExternalDeviceAccessIntent.DeviceWritable |
+                IrExternalDeviceAccessIntent.CoherentOptional |
+                IrExternalDeviceAccessIntent.CoherentRequired)) != 0)
+        {
+            failure = "External secure/virtual, replay-containment, or device-access semantic intent is structurally inconsistent.";
+            return false;
+        }
+
+        if (intent.Publication == IrExternalPublicationIntent.DirectCoherentOutputRequested &&
+            intent.Coherence == IrExternalCoherenceRequirement.NotRequired)
+        {
+            failure = "Direct coherent external output requires an explicit coherence requirement.";
+            return false;
+        }
+
+        if (intent.Publication == IrExternalPublicationIntent.DirectCoherentOutputRequired)
+        {
+            failure = "Direct coherent output required has no compiler proof boundary and must be rejected before carrier emission.";
+            return false;
+        }
+
+        if (intent.ExecutionContour == IrExternalExecutionContour.DmaStreaming &&
+            requestedMode == AcceleratorLoweringMode.EmitAcceleratorSubmit)
+        {
+            failure = "DMA/streaming external intent cannot be lowered through lane7 ACCEL_SUBMIT.";
+            return false;
+        }
+
+        if (intent.ExecutionContour == IrExternalExecutionContour.SystemExternalAccelerator &&
+            requestedMode == AcceleratorLoweringMode.DmaStreamCompute)
+        {
+            failure = "System-external accelerator intent cannot be lowered through lane6 DmaStreamCompute.";
+            return false;
+        }
+
+        failure = null;
+        return true;
     }
 
     private static bool IsSupportedReferenceMatMulDescriptor(

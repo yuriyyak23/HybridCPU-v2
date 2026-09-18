@@ -400,6 +400,374 @@ public sealed class L7SdcCompilerEmissionTests
             slotIndex);
     }
 
+    [Fact]
+    public void ExternalOperationIntent_IsPreservedThroughLane7LoweringDecision()
+    {
+        AcceleratorCommandDescriptor descriptor =
+            L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        var semantic = new IrExternalOperationIntent
+        {
+            ExecutionRequirement = IrExternalExecutionRequirement.Required,
+            ExecutionContour = IrExternalExecutionContour.SystemExternalAccelerator,
+            MemoryRoles = IrExternalMemoryRegionRole.ReadWrite,
+            Publication = IrExternalPublicationIntent.StagedOutputPreferred,
+            Coherence = IrExternalCoherenceRequirement.Preferred,
+            Effect = IrExternalEffectRequirement.Idempotent,
+            Cancellation = IrExternalCancellationRequirement.ExactAcknowledgement,
+            Ordering = IrExternalOrderingRequirement.Ordered
+        };
+
+        CompilerAcceleratorLoweringDecision decision =
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(
+                IrAcceleratorIntent.ForMatMul(descriptor) with { ExternalOperation = semantic });
+
+        Assert.True(decision.EmitsAcceleratorSubmit);
+        Assert.NotNull(decision.Command);
+        Assert.Equal(semantic, decision.Command!.ExternalOperation);
+        Assert.Equal(IrExternalPublicationIntent.StagedOutputPreferred,
+            decision.Command.ExternalOperation.Publication);
+    }
+
+    [Fact]
+    public void ExternalOperationIntent_IsPreservedInCompiledProgramOutsideTransportAnnotations()
+    {
+        AcceleratorCommandDescriptor descriptor =
+            L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        var semantic = new IrExternalOperationIntent
+        {
+            Publication = IrExternalPublicationIntent.StagedOutputPreferred,
+            Coherence = IrExternalCoherenceRequirement.Preferred,
+            Effect = IrExternalEffectRequirement.Idempotent
+        };
+        HybridCpuThreadCompilerContext context = CreateContextForDescriptor(descriptor);
+
+        _ = context.CompileAcceleratorSubmit(
+            IrAcceleratorIntent.ForMatMul(descriptor) with { ExternalOperation = semantic },
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul);
+        HybridCpuCompiledProgram compiled = context.CompileProgram();
+
+        Assert.Single(compiled.ExternalOperationIntents);
+        Assert.Equal(semantic, compiled.ExternalOperationIntents[0]);
+        IrBundleAnnotations annotations = Assert.Single(compiled.LoweredBundleAnnotations);
+        Assert.True(annotations.TryGetInstructionSlotMetadata(7, out IrInstructionSlotMetadata slot));
+        Assert.Same(descriptor, slot.AcceleratorCommandDescriptor);
+        Assert.DoesNotContain("ExternalOperation", string.Join('|', slot.GetType().GetProperties().Select(static property => property.Name)));
+    }
+
+    [Fact]
+    public void ExternalOperationIntent_IsShiftedWithSourceInstructionInsertion()
+    {
+        AcceleratorCommandDescriptor descriptor =
+            L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        var semantic = new IrExternalOperationIntent
+        {
+            Publication = IrExternalPublicationIntent.StagedOutputPreferred
+        };
+        HybridCpuThreadCompilerContext context = CreateContextForDescriptor(descriptor);
+        _ = context.CompileAcceleratorSubmit(
+            IrAcceleratorIntent.ForMatMul(descriptor) with { ExternalOperation = semantic },
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul);
+
+        context.InsertInstruction(
+            instructionIndex: 0,
+            opCode: (uint)InstructionsEnum.ADD,
+            dataType: 0,
+            predicate: 0,
+            immediate: 0,
+            destSrc1: 0,
+            src2: 0,
+            streamLength: 0,
+            stride: 0,
+            stealabilityPolicy: StealabilityPolicy.NotStealable);
+
+        HybridCpuCompiledProgram compiled = context.CompileProgram();
+        Assert.Equal(2, compiled.ExternalOperationIntents.Count);
+        Assert.Null(compiled.ExternalOperationIntents[0]);
+        Assert.Equal(semantic, compiled.ExternalOperationIntents[1]);
+        Assert.Null(compiled.ExternalOperationMetadata[0]);
+        Assert.Equal(1, compiled.ExternalOperationMetadata[1]!.SourceInstructionIndex);
+    }
+
+    [Fact]
+    public void ExternalOperationLoweringMetadata_IsVersionedCorrelatedAndOutsideVliwPayload()
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        HybridCpuThreadCompilerContext context = CreateContextForDescriptor(descriptor);
+        _ = context.CompileAcceleratorSubmit(
+            IrAcceleratorIntent.ForMatMul(descriptor),
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul);
+
+        HybridCpuCompiledProgram compiled = context.CompileProgram();
+        IrExternalOperationLoweringMetadata metadata = Assert.IsType<IrExternalOperationLoweringMetadata>(
+            Assert.Single(compiled.ExternalOperationMetadata));
+
+        Assert.Equal(IrExternalOperationSemanticContract.Version, metadata.SemanticContractVersion);
+        Assert.Equal(0, metadata.SourceInstructionIndex);
+        Assert.Equal(descriptor.DescriptorReference.DescriptorIdentityHash, metadata.DescriptorIdentity.Value);
+        Assert.False(metadata.FallbackPolicy.AllowsCpuFallbackBeforeSubmit);
+        Assert.True(metadata.FallbackPolicy.AllowsStagedPublication);
+        Assert.False(metadata.FallbackPolicy.RequiresCoherentAccess);
+
+        IrBundleAnnotations annotations = Assert.Single(compiled.LoweredBundleAnnotations);
+        Assert.True(annotations.TryGetInstructionSlotMetadata(7, out IrInstructionSlotMetadata slot));
+        Assert.DoesNotContain("SemanticContract", string.Join('|', slot.GetType().GetProperties().Select(static property => property.Name)));
+    }
+
+    [Fact]
+    public void DirectCoherentOutputRequired_IsRejectedWithoutRuntimeProofBoundary()
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        CompilerAcceleratorLoweringDecision decision = CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(
+            IrAcceleratorIntent.ForMatMul(descriptor) with
+            {
+                ExternalOperation = new IrExternalOperationIntent
+                {
+                    Publication = IrExternalPublicationIntent.DirectCoherentOutputRequired,
+                    Coherence = IrExternalCoherenceRequirement.Required
+                }
+            });
+
+        Assert.Equal(AcceleratorLoweringMode.Reject, decision.Mode);
+        Assert.Contains("proof", decision.Reason, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void OptionalExternalExecution_EncodesCpuFallbackBeforeSubmitOnly()
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        IrExternalOperationFallbackPolicy policy = IrExternalOperationFallbackPolicy.From(
+            new IrExternalOperationIntent { ExecutionRequirement = IrExternalExecutionRequirement.Optional });
+
+        Assert.True(policy.AllowsCpuFallbackBeforeSubmit);
+        Assert.False(policy.RequiresCoherentAccess);
+        Assert.True(policy.AllowsStagedPublication);
+        Assert.Equal(
+            AcceleratorLoweringMode.CpuOrNonAccelerator,
+            CompilerAcceleratorCapabilityModel.Disabled.Decide(
+                IrAcceleratorIntent.ForMatMul(descriptor) with
+                {
+                    ExternalOperation = new IrExternalOperationIntent
+                    {
+                        ExecutionRequirement = IrExternalExecutionRequirement.Optional
+                    }
+                }).Mode);
+    }
+
+    [Fact]
+    public void ExternalOperationLoweringMetadata_RejectsUnknownSemanticVersionAndMissingIdentity()
+    {
+        var unknownVersion = new IrExternalOperationLoweringMetadata
+        {
+            SemanticContractVersion = IrExternalOperationSemanticContract.Version + 1,
+            SourceInstructionIndex = 0,
+            DescriptorIdentity = IrExternalOperationDescriptorIdentity.Require(1, "identity"),
+            Intent = IrExternalOperationIntent.Lane7StagedNonRetryable
+        };
+        Assert.Throws<NotSupportedException>(unknownVersion.Validate);
+
+        var missingIdentity = new IrExternalOperationLoweringMetadata
+        {
+            SemanticContractVersion = IrExternalOperationSemanticContract.Version,
+            SourceInstructionIndex = 0,
+            DescriptorIdentity = default,
+            Intent = IrExternalOperationIntent.Lane7StagedNonRetryable
+        };
+        Assert.Throws<InvalidOperationException>(missingIdentity.Validate);
+    }
+
+    [Fact]
+    public void SemanticMemoryPlacementHints_ArePreservedOutsideTheStableCarrierImage()
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        HybridCpuThreadCompilerContext baseline = CreateContextForDescriptor(descriptor);
+        HybridCpuThreadCompilerContext hinted = CreateContextForDescriptor(descriptor);
+        _ = baseline.CompileAcceleratorSubmit(
+            IrAcceleratorIntent.ForMatMul(descriptor), CompilerAcceleratorCapabilityModel.ReferenceMatMul);
+        var semantic = new IrExternalOperationIntent
+        {
+            MemoryPlacement = IrExternalMemoryPlacementIntent.CapacityPreferred |
+                IrExternalMemoryPlacementIntent.PersistentMemoryRequired |
+                IrExternalMemoryPlacementIntent.ExternalDeviceAccessRequired |
+                IrExternalMemoryPlacementIntent.CoherentSharedAccessPreferred
+        };
+        _ = hinted.CompileAcceleratorSubmit(
+            IrAcceleratorIntent.ForMatMul(descriptor) with { ExternalOperation = semantic },
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul);
+
+        HybridCpuCompiledProgram baselineProgram = baseline.CompileProgram();
+        HybridCpuCompiledProgram hintedProgram = hinted.CompileProgram();
+        Assert.Equal(baselineProgram.ProgramImage, hintedProgram.ProgramImage);
+        Assert.Equal(semantic.MemoryPlacement, hintedProgram.ExternalOperationMetadata[0]!.Intent.MemoryPlacement);
+        IrBundleAnnotations annotations = Assert.Single(hintedProgram.LoweredBundleAnnotations);
+        Assert.True(annotations.TryGetInstructionSlotMetadata(7, out IrInstructionSlotMetadata slot));
+        Assert.DoesNotContain("PlacementIntent", string.Join('|', slot.GetType().GetProperties().Select(static property => property.Name)));
+    }
+
+    [Fact]
+    public void UnknownSemanticMemoryPlacementHint_IsRejectedBeforeCarrierEmission()
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        CompilerAcceleratorLoweringDecision decision = CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(
+            IrAcceleratorIntent.ForMatMul(descriptor) with
+            {
+                ExternalOperation = new IrExternalOperationIntent
+                {
+                    MemoryPlacement = (IrExternalMemoryPlacementIntent)0x80
+                }
+            });
+        Assert.Equal(AcceleratorLoweringMode.Reject, decision.Mode);
+    }
+
+    [Fact]
+    public void SecureVirtualSemanticIntent_IsPreservedOutsideTheLane7Carrier()
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        var semantic = new IrExternalOperationIntent
+        {
+            ExecutionDomain = IrExternalExecutionDomainRequirement.SecureVirtualized,
+            SecureEvidence = IrExternalSecureEvidenceRequirement.Required,
+            MinimumAssurance = IrExternalAssuranceRequirement.High,
+            VirtualDomainBinding = IrExternalVirtualDomainBindingRequirement.Required,
+            VirtualIo = IrExternalVirtualIoRequirement.BoundedRequired,
+            Containment = IrExternalContainmentRequirement.CancellationOrContainmentRequired,
+            DeviceAccess = IrExternalDeviceAccessIntent.DeviceReadable |
+                IrExternalDeviceAccessIntent.DeviceWritable |
+                IrExternalDeviceAccessIntent.CoherentOptional
+        };
+        HybridCpuThreadCompilerContext baseline = CreateContextForDescriptor(descriptor);
+        HybridCpuThreadCompilerContext secured = CreateContextForDescriptor(descriptor);
+        _ = baseline.CompileAcceleratorSubmit(
+            IrAcceleratorIntent.ForMatMul(descriptor), CompilerAcceleratorCapabilityModel.ReferenceMatMul);
+        _ = secured.CompileAcceleratorSubmit(
+            IrAcceleratorIntent.ForMatMul(descriptor) with { ExternalOperation = semantic },
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul);
+
+        HybridCpuCompiledProgram baselineProgram = baseline.CompileProgram();
+        HybridCpuCompiledProgram securedProgram = secured.CompileProgram();
+
+        Assert.Equal(baselineProgram.ProgramImage, securedProgram.ProgramImage);
+        Assert.Equal(semantic, securedProgram.ExternalOperationMetadata[0]!.Intent);
+    }
+
+    [Fact]
+    public void IncompleteSecureVirtualOrContradictoryDeviceAccess_IsRejectedBeforeCarrierEmission()
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        CompilerAcceleratorLoweringDecision incomplete = CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(
+            IrAcceleratorIntent.ForMatMul(descriptor) with
+            {
+                ExternalOperation = new IrExternalOperationIntent
+                {
+                    ExecutionDomain = IrExternalExecutionDomainRequirement.SecureVirtualized
+                }
+            });
+        CompilerAcceleratorLoweringDecision contradictory = CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(
+            IrAcceleratorIntent.ForMatMul(descriptor) with
+            {
+                ExternalOperation = new IrExternalOperationIntent
+                {
+                    DeviceAccess = IrExternalDeviceAccessIntent.CoherentOptional |
+                        IrExternalDeviceAccessIntent.CoherentRequired
+                }
+            });
+
+        Assert.Equal(AcceleratorLoweringMode.Reject, incomplete.Mode);
+        Assert.Equal(AcceleratorLoweringMode.Reject, contradictory.Mode);
+    }
+
+    [Theory]
+    [InlineData(IrExternalExecutionDomainRequirement.Virtualized, IrExternalSecureEvidenceRequirement.NotRequired,
+        IrExternalVirtualDomainBindingRequirement.NotRequired, IrExternalVirtualIoRequirement.BoundedRequired,
+        IrExternalEffectRequirement.Idempotent, IrExternalContainmentRequirement.CancellationOrContainmentRequired)]
+    [InlineData(IrExternalExecutionDomainRequirement.Secure, IrExternalSecureEvidenceRequirement.NotRequired,
+        IrExternalVirtualDomainBindingRequirement.NotRequired, IrExternalVirtualIoRequirement.NotRequired,
+        IrExternalEffectRequirement.Idempotent, IrExternalContainmentRequirement.CancellationOrContainmentRequired)]
+    [InlineData(IrExternalExecutionDomainRequirement.SecureVirtualized, IrExternalSecureEvidenceRequirement.Required,
+        IrExternalVirtualDomainBindingRequirement.Required, IrExternalVirtualIoRequirement.NotRequired,
+        IrExternalEffectRequirement.Idempotent, IrExternalContainmentRequirement.CancellationOrContainmentRequired)]
+    [InlineData(IrExternalExecutionDomainRequirement.Host, IrExternalSecureEvidenceRequirement.NotRequired,
+        IrExternalVirtualDomainBindingRequirement.NotRequired, IrExternalVirtualIoRequirement.NotRequired,
+        IrExternalEffectRequirement.NonRetryable, IrExternalContainmentRequirement.None)]
+    public void IncompleteAuthorityOrContainmentIntent_IsRejectedBeforeCarrierEmission(
+        IrExternalExecutionDomainRequirement domain,
+        IrExternalSecureEvidenceRequirement evidence,
+        IrExternalVirtualDomainBindingRequirement virtualBinding,
+        IrExternalVirtualIoRequirement virtualIo,
+        IrExternalEffectRequirement effect,
+        IrExternalContainmentRequirement containment)
+    {
+        AcceleratorCommandDescriptor descriptor = L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        CompilerAcceleratorLoweringDecision decision = CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(
+            IrAcceleratorIntent.ForMatMul(descriptor) with
+            {
+                ExternalOperation = new IrExternalOperationIntent
+                {
+                    ExecutionDomain = domain,
+                    SecureEvidence = evidence,
+                    VirtualDomainBinding = virtualBinding,
+                    VirtualIo = virtualIo,
+                    Effect = effect,
+                    Containment = containment
+                }
+            });
+
+        Assert.Equal(AcceleratorLoweringMode.Reject, decision.Mode);
+        Assert.False(decision.EmitsAcceleratorSubmit);
+    }
+
+    [Fact]
+    public void ExternalOperationSemanticIntent_ExcludesTopologyProviderAndRuntimeIdentity()
+    {
+        string[] forbidden = ["Cxl", "Fabric", "Topology", "Endpoint", "Hdm", "Dpa", "Bdf", "Switch", "Port", "Address", "Provider", "Handle", "Generation"];
+        Type[] semanticTypes = [typeof(IrExternalOperationIntent), typeof(IrExternalOperationLoweringMetadata),
+            typeof(IrExternalOperationDescriptorIdentity)];
+
+        Assert.All(semanticTypes, type => Assert.DoesNotContain(type.GetProperties(), property =>
+            forbidden.Any(fragment => property.Name.Contains(fragment, StringComparison.OrdinalIgnoreCase))));
+    }
+
+    [Fact]
+    public void DirectCoherentExternalIntent_RequiresExplicitCoherenceWithoutProviderClaim()
+    {
+        AcceleratorCommandDescriptor descriptor =
+            L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        var intent = IrAcceleratorIntent.ForMatMul(descriptor) with
+        {
+            ExternalOperation = new IrExternalOperationIntent
+            {
+                Publication = IrExternalPublicationIntent.DirectCoherentOutputRequested,
+                Coherence = IrExternalCoherenceRequirement.NotRequired
+            }
+        };
+
+        CompilerAcceleratorLoweringDecision decision =
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(intent);
+
+        Assert.Equal(AcceleratorLoweringMode.Reject, decision.Mode);
+        Assert.Contains("coherence", decision.Reason, StringComparison.OrdinalIgnoreCase);
+        Assert.False(decision.EmitsAcceleratorSubmit);
+    }
+
+    [Fact]
+    public void DmaSemanticContour_CannotBeLoweredAsLane7AcceleratorSubmit()
+    {
+        AcceleratorCommandDescriptor descriptor =
+            L7SdcTestDescriptorFactory.ParseValidDescriptor();
+        var intent = IrAcceleratorIntent.ForMatMul(descriptor) with
+        {
+            ExternalOperation = new IrExternalOperationIntent
+            {
+                ExecutionContour = IrExternalExecutionContour.DmaStreaming
+            }
+        };
+
+        CompilerAcceleratorLoweringDecision decision =
+            CompilerAcceleratorCapabilityModel.ReferenceMatMul.Decide(intent);
+
+        Assert.Equal(AcceleratorLoweringMode.Reject, decision.Mode);
+        Assert.Contains("lane7", decision.Reason, StringComparison.OrdinalIgnoreCase);
+    }
+
     internal static MicroOp DecodeAndProjectSingleCarrier(
         VLIW_Bundle bundle,
         VliwBundleAnnotations annotations,

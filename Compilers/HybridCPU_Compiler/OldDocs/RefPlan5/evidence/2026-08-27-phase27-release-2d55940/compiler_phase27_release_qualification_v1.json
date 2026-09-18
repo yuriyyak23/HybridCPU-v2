@@ -1,0 +1,142 @@
+{
+  "schema": "CompilerRefPlan5Phase27ReleaseQualificationEvidenceV1",
+  "phase": "27",
+  "status": "Verified",
+  "qualificationDate": "2026-08-27",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "phaseBaseSha": "962688366dc56c6c454b7303c40b4e3e70bdb1e8",
+  "implementationSha": "2d559409462945c01573d5667f586052f3e9c3ff",
+  "implementationTree": "73926857add58082fd0dc1af9f730a5c83631749",
+  "implementationCommits": [
+    "aad3dab1cc5fbd3c9297d1f3daafec4a73c8b3f4",
+    "2d559409462945c01573d5667f586052f3e9c3ff"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5 and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified dependency graph through Phase 26, including standalone Core/native, optional isolated LLVM, restricted CIL/NativeAOT seams, exact ABI/object/image contracts and the custom hybridcpu SDK publish path.",
+    "output": "An outward-only deterministic release manifest, machine-readable feature matrix, exact compatibility windows, roadmap contract verifier, profile-scoped release dispositions and non-authoritative telemetry.",
+    "authorityBoundary": "Compiler release qualification describes IR, scheduling, bundles, metadata, certificates and provenance. Runtime legality, freshness, execution, publication, commit and retire remain runtime-owned and are explicit manifest prohibitions.",
+    "deterministicFallback": "Identity, schema, ABI, model, toolchain, pack, evidence, options or compatibility skew rejects at the owning boundary. Optional features return their exact existing-path fallback or stable Unsupported/Unknown result; wall-clock and memory telemetry never select production output.",
+    "productionSchedulePolicyChanged": false,
+    "legacyProductionArtifactsChanged": false,
+    "cpuPipelineAuthorityChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "releaseArtifacts": {
+    "manifest": "release_manifest_v1.json",
+    "manifestSha256": "eb1888a318b1ed8315c4357a57d10aeedb6908bb58449d3b427f0ee3d6aaf809",
+    "manifestDeterministicDigest": "7b84de44702e5d5e04616ae6fcf6a94ea77a608be1569c192d18295979defe65",
+    "featureMatrix": "release_manifest_v1.json.features.json",
+    "featureMatrixSha256": "8bd1e0e00b02c7c35efbe3b2cbffb6988fddc981111b9ce68b211f1f66245a5c",
+    "featureMatrixDigest": "1613c24fbf0c65dd0c2205df82a9620ed701f956a7e9c6de3252ccbfee0199af",
+    "telemetry": "release_manifest_v1.json.telemetry.json",
+    "telemetrySha256": "2a451b6c20345a54aaccc07cc4db1d8e9a4e4c008f9fc77d54409107f5007f92",
+    "telemetrySelectsProductionOutput": false,
+    "deterministicRuns": 2
+  },
+  "profileDisposition": {
+    "umbrellaReleaseAuthorized": false,
+    "native": {
+      "disposition": "ReleaseAuthorized",
+      "defaultEnabled": true,
+      "scope": "Standalone native ASM/API through Canonical IR, exact W=8 schedule/bundles, ASM/binary, evidence, scheduling report and provenance; standalone object container remains unsupported."
+    },
+    "llvm": {
+      "disposition": "VerifiedDefaultOff",
+      "defaultEnabled": false,
+      "scope": "Optional LLVM/LLVMSharp ingress and semantic firewall only; it owns neither scheduling nor backend emission."
+    },
+    "dotNetAotRestricted": {
+      "disposition": "ReleaseAuthorized",
+      "defaultEnabled": false,
+      "scope": "Exact value-only single-method custom RID hybridcpu publish on win-x64 with SDK 10.0.204 and Phase 26 pack/patch identities."
+    },
+    "dotNetAotManaged": {
+      "disposition": "Unsupported",
+      "defaultEnabled": false,
+      "scope": "Managed allocation/barriers, publish-qualified GC, EH, interop and TLS are not authorized."
+    },
+    "full": {
+      "disposition": "Unsupported",
+      "defaultEnabled": false,
+      "scope": "No full managed runtime, general NativeAOT, multi-host publish, dynamic FSP authority or runtime VDSA authority."
+    }
+  },
+  "identityAndCompatibility": {
+    "targetRevision": "HybridCPU-W8-native-v1",
+    "machineDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+    "topologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+    "targetPlatformDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "nativeAbiDigest": "3a4d4a4aebed5e5df40a3615b4e40c301181cb71bf281d958470fbee308317a4",
+    "managedAbiDigest": "22556ca7191d03c18cf75d5deb322d51bdfa332d43792b1a99e50c31d3661792",
+    "capabilitySchema": "hybridcpu.compiler-capabilities@1.0",
+    "evidenceSchema": "hybridcpu.compiler-cross-layer-envelope@1.0",
+    "runtimePackContractDigest": "ebe70f9fc8977cfef37aad30eb73fd2cf899eb8b3292d0bcbf417570d61740e4",
+    "phase26EvidenceSha256": "70f2e90c0039d1142407cc452e7231b6c4389d03bc0dad01840a3dedc19a6385",
+    "compatibilityPolicy": "Exact current major/minor windows only; outside-window inputs reject or require an explicit versioned lossless migration."
+  },
+  "benchmarkAndOracle": {
+    "corpus": "phase27-native-smoke-v1",
+    "cases": 1,
+    "deterministicRuns": 2,
+    "instructionBudget": 4096,
+    "scheduleFingerprint": "ce7c733f53cad33bc273f168c5f4cbfb86f77c4ebda693b9056ec17d2972c49e",
+    "bundleFingerprint": "244c7be5747fb51b9ea8453eec7c009802705e39fe21289f32eb400557dc7881",
+    "imageFingerprint": "6e6968a69b144bbc4d2a4e297e6ec5543f0d7df8a269a063d46103c3404074eb",
+    "oracleComparableCases": 1,
+    "oracleUnknownCases": 0,
+    "oracleContractDigest": "9e8ea234d3d6f671cb92c02908e3affa62850c63d56c4125db5463307ff917ce",
+    "oracleEvidenceSha256": "7a4f760717ffdc6654a104fa41223b744461547a3d029c9f95bd8093df9c702b",
+    "oracleProductionDependencyAllowed": false
+  },
+  "roadmapAndProvenance": {
+    "phasePlanSha256": "31ad047f38b452b0f570bbbe752b44659c42c9596e523a6dde05f0b57ab413cb",
+    "readmeSha256": "0a86cb0476500df7dbe30d101c60d9ef0bbf74f50f16c02099060874bec3c108",
+    "releaseContractSourceSha256": "6fcc01de86d0be3351398b7ac4374c5b90e1b4797b785126edba1f2e5b11bfcf",
+    "roadmapVerifierSourceSha256": "be39c9a65e2869e70fdf208d8f9dceb7dbebc364a16c4748d521677be82b3e3c",
+    "qualificationScriptSha256": "4ba1ef2682cb2392a90afa48bb0017856a1c69507f90de516ddc16a9bfa5c34e",
+    "releaseContractDocumentSha256": "e3b0ad3e5bc797741bf9e2b8aea3a28acf776b06479551043998f07da471172d",
+    "qualificationOptions": "configuration=Debug-testsupport,Release-production|focused=CompilerRefPlan5Phase27|cumulative=CompilerRefPlan|compilerFocused=HybridCPU_ISE.Tests.CompilerTests|deterministicReleaseRuns=2|nativeSmokeCases=1|oracleComparableCases=1|oracleProductionDependency=false|telemetrySelectsOutput=false|runtimePack=1.0.0-phase26|sdk=10.0.204|hostRid=win-x64|targetRid=hybridcpu",
+    "qualificationOptionsSha256": "80f36d3c5de89c1c1ba1f2884ae90145ed111480df7e7012246a10b09c0d7b37"
+  },
+  "qualification": {
+    "phase27Focused": {"passed": 14, "failed": 0, "skipped": 0},
+    "phase00Through27": {"passed": 547, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~HybridCPU_ISE.Tests.CompilerTests", "passed": 1242, "failed": 0, "skipped": 0},
+    "releaseCompilerGraphRebuild": {"errors": 0, "warnings": 0},
+    "runtimeReleaseRebuild": {"errors": 0, "warnings": 43},
+    "legacyCompilerReleaseRebuild": {"errors": 0, "warnings": 43},
+    "deterministicManifestVerification": "Passed",
+    "roadmapContractVerification": "Passed",
+    "dependencyDirectionVerification": "Passed",
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "diagnosticRunsNotCountedAsQualification": [
+    {
+      "filter": "FullyQualifiedName~Compiler",
+      "result": {"passed": 1399, "failed": 1, "skipped": 0},
+      "cause": "The initial roadmap verifier embedded a runtime-owned legality type token and was rejected by the existing compiler source boundary guard.",
+      "resolutionCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
+      "resolutionVerified": true
+    }
+  ],
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false,
+    "expectedPostEvidenceForeignStatusEntries": 250,
+    "expectedPostEvidenceForeignStatusEntriesUntrackedAll": 445
+  },
+  "externalBaselineFailures": [],
+  "baselineWarnings": ["Existing runtime and forced legacy compiler Release rebuild warnings: 43"],
+  "nextDependencyGate": {
+    "phase": null,
+    "dependenciesSatisfied": true,
+    "gate": "RefPlan5 Phase 00 through 27 complete. Any broader managed/full/runtime-authority capability requires a new explicitly dependency-ordered plan and independent evidence."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "CompilerPhase00BaselineInvocationV1",
+  "tool_version": "HybridCPU.Compiler.Phase00Baseline/v1",
+  "base_sha": "d4eeec71fa7d9e3a0efa8042dc667422f46181ac",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "subject_disposition": "DirtyAttributed",
+  "source_file_count": 1292,
+  "source_scope": [
+    "HybridCPU_Compiler compiler/build sources",
+    "HybridCPU_ISE referenced build sources (read-only)",
+    "RefPlan3 Phase 00 compiler tests",
+    "historical AsmAppTestResults3 snapshot"
+  ],
+  "deterministic_artifact": "compiler_phase00_baseline_v1.json",
+  "resource_artifact": "compiler_phase00_resources_v1.json"
+}

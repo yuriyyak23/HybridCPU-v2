@@ -1,0 +1,110 @@
+{
+  "schema": "CompilerRefPlan5Phase18FspStaticEvidenceV1",
+  "phase": "18",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "d4967237afc315413c179c377b59b889f0d4d5e5",
+  "implementationTree": "3033b3fd562041d21cf654aa9ddab109e249adc4",
+  "implementationCommits": ["d4967237afc315413c179c377b59b889f0d4d5e5"],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5 and local Git history only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 03 topology, Phase 05 versioned provenance, Phase 07 typed value/pressure, Phase 12 region, Phase 17 VT-static scheduling and already materialized schedule/bundle evidence.",
+    "output": "Core-only deterministic versioned FSP donor-quality evidence with static candidate identity, typed slots/classes, dependency horizon, resource pressure, conservative VT relationship, explicit precision/provenance and optional offline ranking.",
+    "authorityBoundary": "CompilerEvidenceOnly records are advisory static observations. Runtime owns donor admission, address validity, freshness, replay, Stage A/B behavior, execution, publication, commit and retire.",
+    "deterministicFallback": "Production evidence is disabled. Invalid/stale/unknown inputs or deterministic budget exhaustion emit an empty evidence report while preserving exact program, schedule and bundle digests; scheduling and carrier bytes are unchanged.",
+    "runtimeAuthorityChanged": false,
+    "productionSchedulePolicyChanged": false,
+    "emittedArtifactsChanged": false,
+    "wallClockSelectsCode": false,
+    "runtimeContextSerialized": false
+  },
+  "fspStaticEvidenceContract": {
+    "schema": "hybridcpu.fsp-static-evidence/v1",
+    "offlineProfileSchema": "hybridcpu.fsp-offline-ranking-profile/v1",
+    "contractDigest": "2b290787ecf521374f55a91c7a38fcd2137adc1350539019c6878d510578aeb5",
+    "productionOptionsDigest": "406f7d042aae68f80d07e1fb0d739a44a6bcf82a218d128713217d91c31b2b6e",
+    "qualificationOptionsDigest": "71cc4ec39842645a0748ae20474614672cc67fe6e419738892d05abfa953a8a2",
+    "targetContractDigest": "ae6ee979176be7f21dc396fe0ddb5d7023d8b6de1722eb4d4652647dd3e99232",
+    "machineDescriptionDigest": "ee837ac7c7bc9c81ac254ca133b6b7233c0d2a857d8c8371f25b570b65aefe0d",
+    "machineTopologyDigest": "3515a49cdd61be19bd2b259cca22ecdba2e771e20e289389d083ae8d6ce1a05c",
+    "productionBudgets": {
+      "maximumBundles": 256,
+      "maximumInstructions": 1024,
+      "maximumEvidenceRecords": 1024
+    },
+    "existingStealabilityAnalyzerReused": true,
+    "canonicalTypedSlotFactsReused": true,
+    "valuePressureFactsReused": true,
+    "topologyResourceFootprintsReused": true,
+    "profileMayChangeEligibility": false,
+    "productionOutputChanged": false
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "phasePlanSha256": "a3fe4bc0bd6e3a82158b1814e467f8d72ebcf74eb5077539012e7ee4b8ce3397",
+    "contractSourceSha256": "d2eda6d0ba700f1c568090c5e9ee93ac4959174fd2820c0d4c2b0b54e76f1240",
+    "analyzerSourceSha256": "7e54f27e719928448e7e82f1c23bb12bce8b6bf65a0a05478c70225e5b7ccdc9",
+    "phase18TestSourceSha256": "3849bc0893472121c3cabe2ba86643e8b353f5577f420d803704b1b43005f587",
+    "implementationSourceManifest": "HybridCpuFspEvidenceContractsV1.cs=d2eda6d0ba700f1c568090c5e9ee93ac4959174fd2820c0d4c2b0b54e76f1240|HybridCpuFspStaticEvidenceAnalyzerV1.cs=7e54f27e719928448e7e82f1c23bb12bce8b6bf65a0a05478c70225e5b7ccdc9|CompilerRefPlan5Phase18FspStaticEvidenceTests.cs=3849bc0893472121c3cabe2ba86643e8b353f5577f420d803704b1b43005f587",
+    "implementationSourceManifestSha256": "593de2988f002623323700b1079b7f6dcb665384172d7a2fdf9362f61b40f5b7",
+    "qualificationOptions": "configuration=Debug-testsupport,Release-production|sharedCompilation=false|maxCpuCount=1|llvmRid=win-x64|nuGetAudit=false|focused=Phase18|direct=Phase03,05,07,12,17,18|cumulative=RefPlan3Phase,RefPlan5Phase|compilerFocused=CompilerTests",
+    "qualificationOptionsSha256": "5cbb7a54a7fa376d7a4bf314d6b6d72c02757cc732573bf571ec620b32a78d7b"
+  },
+  "qualification": {
+    "phase18Focused": {"passed": 16, "failed": 0, "skipped": 0},
+    "phase03Phase05Phase07Phase12Phase17And18Integration": {"passed": 91, "failed": 0, "skipped": 0},
+    "phase00Through18": {"passed": 323, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 1018, "failed": 0, "skipped": 0},
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "oracleReleaseBuild": {"errors": 0, "warnings": 0},
+    "llvmAdapterReleaseBuild": {"runtime": "win-x64", "errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43, "codeWarnings": 43, "environmentWarnings": 0},
+    "restoreOptions": {"nuGetAudit": false, "reason": "Deterministic local qualification using pinned dependencies; vulnerability-service network state does not participate in the gate."},
+    "coreCompiledSources": 187,
+    "nativeCompiledSources": 2,
+    "oracleCompiledSources": 2,
+    "productionAnalyzerCallers": 0,
+    "coreFrontendOracleOrRuntimeReferences": false,
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "staticEvidenceControls": {
+    "positiveEligibleCandidate": true,
+    "memoryReadWriteExcluded": true,
+    "lane6Lane7SpecialContoursExcluded": true,
+    "barrierTrapControlExcludedByExistingStealability": true,
+    "unknownResourcesFailClosed": true,
+    "registerBankChannelPressureRepresented": true,
+    "staleTopologyAndInvalidProfileRejected": true,
+    "profilePerturbationChangesRankingOnly": true,
+    "cultureAndRepeatedRunDeterministic": true,
+    "scheduleBundleAndNativeBytesParity": true,
+    "runtimePermissionFieldsAbsent": true
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false,
+    "postImplementationForeignStatusEntries": 250
+  },
+  "releaseDisposition": {
+    "defaultEnabled": false,
+    "defaultEnabledScope": "Static FSP evidence remains disabled in production; explicit qualification API only.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Verified for Phase 19 advisory-planning consumption. Dynamic FSP behavior, runtime admission and emitted compiler artifacts remain unchanged.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "19",
+    "dependenciesSatisfied": true,
+    "dependencies": ["03", "05", "12", "13", "17", "18"],
+    "gate": "Add bounded, versioned, fault-neutral VDSA/donor-prefetch advisory planning from loop/region memory, topology, VT and Phase 18 evidence while preserving every architectural memory/dependence obligation and rejecting unknown safety facts."
+  }
+}

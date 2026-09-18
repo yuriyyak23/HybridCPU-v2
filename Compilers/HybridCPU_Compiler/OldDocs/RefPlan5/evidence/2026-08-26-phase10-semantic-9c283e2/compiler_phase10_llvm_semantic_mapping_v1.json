@@ -1,0 +1,86 @@
+{
+  "schema": "CompilerRefPlan5Phase10LlvmSemanticMappingEvidenceV1",
+  "phase": "10",
+  "status": "Verified",
+  "qualificationDate": "2026-08-26",
+  "branch": "refactor/compiler-core-authority-boundaries",
+  "baseSha": "bbba6028a699d8ffcd5ab0f09585b208c2afa3d2",
+  "implementationSha": "9c283e21c28f8e72d63407221dbc2c1d6e31b275",
+  "implementationTree": "344c64208c63fb93a933f85ea9c945ec04dc811c",
+  "implementationCommits": [
+    "9c283e21c28f8e72d63407221dbc2c1d6e31b275"
+  ],
+  "subjectDisposition": "DirtyAttributed",
+  "sourcePolicy": "Local working tree, tests, diagnostics, scripts, RefPlan5, local Git history and the Phase 09 exact package runtime only; no remote Git.",
+  "phaseGate": {
+    "input": "Verified Phase 09 pinned validated-module importer and Phase 06/07/08 Canonical IR, value-flow, target-machine and target-platform contracts.",
+    "output": "One explicit Phase 10 policy over the existing importer that creates an immutable handle-free semantic snapshot, table-driven lossless/reject mapping, Canonical IR virtual values and frontend-neutral analysis evidence.",
+    "authorityBoundary": "LLVM may provide validated source semantics and provenance. Core revalidates Canonical IR, virtual-value dependencies, target capabilities and evidence. LLVM has no scheduling, W=8 placement, backend, runtime legality, publication, commit or retire authority.",
+    "deterministicFallback": "Only no-argument void, single-basic-block integer add/sub/mul plus ret primitives are admitted. Every unqualified type/opcode/attribute/intrinsic/memory/metadata/CFG/analysis construct rejects deterministically before scheduling; no helper is selected implicitly.",
+    "runtimeAuthorityChanged": false,
+    "schedulePolicyChanged": false,
+    "carrierBytesChanged": false,
+    "wallClockSelectsCode": false
+  },
+  "semanticMappingContract": {
+    "schema": "hybridcpu.llvm-semantic-mapping/v1",
+    "entries": 30,
+    "contractDigest": "db8b3be69510519f5273203762056d53677ae57343097ab168424b3268c481bc",
+    "toolchainContractDigest": "0bf5776e7647271fa6723ab87d718c4e8f1cde98f17ba076acb22a86b59874b7",
+    "importOptionsDigest": "f4e7d1d4a752772081d303aa6c8bc8dfd95d288690dccdaebdd1e194aad0072b",
+    "targetContractDigest": "ae6ee979176be7f21dc396fe0ddb5d7023d8b6de1722eb4d4652647dd3e99232",
+    "platformContractDigest": "3b3714582295e0a0daa111841b2fe96aae610788ec7e27b222b7552dd5879431",
+    "nativeLibrarySha256": "1369ddbef3d965397138e892953d3b34053bd70a95d7c03ddbbda77f33199cf1",
+    "losslessActiveSubset": "i8/i16/i32/i64 add/sub/mul with exact wrap or source-poison flags; one no-argument void function; one basic block; ret void; llvm.ident provenance",
+    "unsupportedExamples": "floating/pointer lowering, PHI/select, multi-block CFG, calls, loads/stores, volatile/atomic/fence, casts/GEP, undef/poison/freeze materialization, semantic attributes, intrinsics, debug/analysis metadata",
+    "analysisTrustLattice": ["ProvenByIrSemantics", "FrontendStaticEvidence", "ProfileOnly", "Unknown"],
+    "profileMayAffectLegality": false,
+    "frontendMayStrengthenMayAliasWithoutCoreProof": false,
+    "hasTargetLegalityAuthority": false,
+    "hasRuntimeAuthority": false
+  },
+  "provenance": {
+    "dotnetSdkVersion": "10.0.204",
+    "semanticMappingSourceSha256": "47a5219fe1ebac230793f04c2c225bcfb25ea8ca84a78f8faf70da3bfc030dc7",
+    "toolchainContractSourceSha256": "87ff32d608cbe010cd939f926b089eb2f2477289dc8560e129dd1a3bd64373c8",
+    "moduleImporterSourceSha256": "3d7d2e4fc54f958dc52bc85421de7e98c1a1198741f499da05c805e84067bc7a",
+    "frontendEvidenceSourceSha256": "f822f8feec006efe79bc9bef83be17a3c6126c029e05dfd968938850722f29b8",
+    "canonicalContractSourceSha256": "2e8e92f026f9d351a3b9b81150b5acb76254da4b1bc36407723dc100154cecc3",
+    "virtualDependencySourceSha256": "3dc1db5a6309f2baaada6b179b45f5102058225624bf174d017321b2a7aeba01",
+    "implementationSourceManifestSha256": "99e1f4993474a57449049729172a2c8e87f43fb239ddc15cfbc40701a3ebf083",
+    "qualificationOptionsSha256": "44b5d1373e87c2f2426c832c6d8e146d126ecfdcb26fc95d9bdfe62c335e2bd6"
+  },
+  "qualification": {
+    "phase10Focused": {"passed": 16, "failed": 0, "skipped": 0},
+    "phase09Through10Integration": {"passed": 55, "failed": 0, "skipped": 0},
+    "phase00Through10": {"passed": 214, "failed": 0, "skipped": 0},
+    "compilerFocused": {"filter": "FullyQualifiedName~CompilerTests", "passed": 909, "failed": 0, "skipped": 0},
+    "coreReleaseBuild": {"errors": 0, "warnings": 0},
+    "nativeReleaseBuild": {"errors": 0, "warnings": 0},
+    "llvmAdapterReleaseBuild": {"runtime": "win-x64", "errors": 0, "warnings": 0},
+    "legacyCompilerReleaseBuild": {"errors": 0, "warnings": 43},
+    "coreNativeReleaseArtifactsContainLlvmReference": false,
+    "scopedFormatVerification": "Passed",
+    "gitDiffCheck": "Passed",
+    "changedPathAudit": "Passed"
+  },
+  "foreignWorkPreservation": {
+    "llvmSharpWipStashSha": "894869026b016afe3b4325d12b88df9d5ffee7de",
+    "foreignLlvmSharpWipCommitted": false,
+    "unrelatedTrackedDeletionsCommitted": false,
+    "untrackedAuditOrPlanInputsCommitted": false
+  },
+  "releaseDisposition": {
+    "defaultEnabled": false,
+    "defaultEnabledScope": "Phase 10 semantic mapping is explicit-only inside the optional LLVM adapter; native compilation remains byte-for-byte on its existing path.",
+    "releaseAuthorized": false,
+    "releaseDisposition": "Qualified as the Phase 11 prerequisite. LLVM optimization, backend emission and final release authorization remain disabled.",
+    "runtimeBehaviorAuthorization": false
+  },
+  "externalBaselineFailures": [],
+  "nextDependencyGate": {
+    "phase": "11",
+    "dependenciesSatisfied": true,
+    "gate": "Define an exact deterministic default-off LLVM optimization recipe with pre/post verification and Phase 10 remapping; invalidate pre-transform facts after CFG/memory/value changes and prove zero native-profile dependency or codegen delta."
+  }
+}

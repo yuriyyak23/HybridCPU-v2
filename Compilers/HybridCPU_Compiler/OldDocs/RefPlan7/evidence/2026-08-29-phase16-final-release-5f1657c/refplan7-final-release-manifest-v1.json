@@ -1,0 +1,304 @@
+{
+  "Schema": "hybridcpu.refplan7-final-release/v1",
+  "Components": {
+    "CompilerSha": "5f1657c925df4d657828ed7d6d8aceadd68a78e8",
+    "ManagedRuntimeSha": "5f1657c925df4d657828ed7d6d8aceadd68a78e8",
+    "RuntimeKernelSha": "5f1657c925df4d657828ed7d6d8aceadd68a78e8",
+    "IseSha": "5f1657c925df4d657828ed7d6d8aceadd68a78e8"
+  },
+  "AbiDigests": {
+    "NativeAbiDigest": "80f94f7a7a87722d4dc0d62eb505e51302f9bab9cd340d35f84514d87ee56944",
+    "ManagedAbiDigest": "3f008c3f2424d0a5ffae74a27c65cb6fed75cffdee66355386eba2be9aed8468",
+    "ImageAbiDigest": "4f04e44009dd63af552d4b6d3a5e6f52f86e3fea0bbe4aa4296bfd668bf7545a",
+    "KernelAbiDigest": "6126eff0075667f7fe9274f574dc45e32eab5bfadf02b68adbd205bc1f3b5b17",
+    "TrapAbiDigest": "a60072a6e49fd987ece8787c988fe9ccc564ef8c7709cdd506116e150dcc4dff"
+  },
+  "EnabledFeatureBits": [],
+  "QualifiedDefaultOffFeatureBits": [
+    "async-runtime-libraries",
+    "blittable-value-boxing",
+    "bounded-public-reflection",
+    "delegates-function-pointers",
+    "deterministic-allocation",
+    "eh-unwind",
+    "exact-aot-generics",
+    "fault-trap-integration",
+    "gc-maps-safepoints",
+    "managed-unmanaged-interop",
+    "metadata-runtime-lookup",
+    "static-type-initialization",
+    "synchronization-memory-model",
+    "szarray-core",
+    "tls-thread-runtime-state",
+    "type-layout-object-references",
+    "utf16-string-literals",
+    "virtual-interface-dispatch"
+  ],
+  "EvidenceArtifacts": [
+    {
+      "Phase": "00",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-28-phase00-conformance-be8879d/phase00-conformance-evidence-v1.json",
+      "Sha256": "4d7e629e559d9e09395740ec758197bbd059eb49560ce7fad924b7947c368648",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "01",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-28-phase01-bootstrap-e6fec6e/phase01-bootstrap-evidence-v1.json",
+      "Sha256": "637faa0b14bd2be2464e5b643aee7bb125a93bae5e91e16801e517b4635dce0c",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "02",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-28-phase02-managed-references-b022de6/phase02-managed-references-evidence-v1.json",
+      "Sha256": "8e173a6108f81a4d344b6fea477debf0610a952ff42ba7f10c864516b3ca7eb9",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "03",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-28-phase03-managed-allocation-5d89d6d/phase03-managed-allocation-evidence-v1.json",
+      "Sha256": "b36798dc0e12013255eb94daa8bedb51416250d8daa937dfb1e113b4ffa0ed2b",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "04",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-28-phase04-managed-core-shapes-40e630a/phase04-managed-core-shapes-evidence-v1.json",
+      "Sha256": "b5ed8966a65d897ab992f2cfcd7c885a9f506fb8c871446c77d92cb50b07325f",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "05",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase05-nonmoving-gc-287fa6d/phase05-nonmoving-gc-evidence-v1.json",
+      "Sha256": "64e45a09b699ad39074326a2b6f4abb56a1600b3d8a2baf08a5e9408e049088a",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "06",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase06-managed-dispatch-19da72e/phase06-managed-dispatch-evidence-v1.json",
+      "Sha256": "6ee692bc8ded14d5b514bd45ed97c3115d16c5b136350fa8d43e37749b714ca0",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "07",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase07-delegates-3e3c80c/phase07-delegates-evidence-v1.json",
+      "Sha256": "633a9466b2d80f6f66f3e2b704d869fa6e7023b7a1785df050895954668b5a29",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "08",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase08-exact-generics-388cb41/phase08-exact-generics-evidence-v1.json",
+      "Sha256": "cfcdd19dc797b06911dbff97dfd5d5d10038fbde232b76609b345d6405284add",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "09",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase09-managed-eh-c317724/phase09-managed-eh-evidence-v1.json",
+      "Sha256": "ebeeb1d039899b743a81e53b386c85c2504d3ce2127c1af6b19fed4c712b5bf1",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "10",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase10-fault-trap-15c1d41/phase10-fault-trap-evidence-v1.json",
+      "Sha256": "c7f67cdebba42b9bbba8e66c362cbdf3bedc98055562a6cb8fb36a3e2819eaa0",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "11",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase11-threading-tls-5075a7b/phase11-threading-tls-evidence-v1.json",
+      "Sha256": "802c8676042812649f8704f714e65ee811ab1fc79e15e7db4194e4ea2aad6b9d",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "12",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase12-synchronization-0a37547/phase12-synchronization-evidence-v1.json",
+      "Sha256": "79d618969ad1be618297469334560851bb7daff73db5c90c73f4bb67cb1b1020",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "13",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase13-interop-79808e8/phase13-interop-evidence-v1.json",
+      "Sha256": "04d5174464c19e9b1b3ccdb59f6e048395cf6f1cc870a4954542637e8679016a",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "14",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase14-reflection-f288ecf/phase14-reflection-evidence-v1.json",
+      "Sha256": "cc3e54e8bd11df591e0dccf5f8da97088c7dae133b3d3f319aac50e334bc3048",
+      "Disposition": "EvidenceClosed"
+    },
+    {
+      "Phase": "15",
+      "Path": "HybridCPU_Compiler/RefPlan7/evidence/2026-08-29-phase15-async-96a5a8b/phase15-async-evidence-v1.json",
+      "Sha256": "38138f9226490dc06b1b672b5f1a3dc74372b328d284200ef1bcfe3f677f6e36",
+      "Disposition": "EvidenceClosed"
+    }
+  ],
+  "ImageQualification": {
+    "SourceDigest": "3b271c9591edfd5cc8078f642776051825475d19da0c1d258609277a42b2b526",
+    "ToolchainDigest": "3bc960c5bf56ba321f48f2ed4a3dc4809ffde01f1238216aa0757ee40f896137",
+    "OptionsDigest": "f8449eb5599942b5b5bbc6357de47620101ceada929a4436ead7c8777b55e203",
+    "CleanBuildA": true,
+    "BuildASha256": "2fc5cf96698d403b72f3144fbdca46421731234963f8b28c2d7f42123cc9919e",
+    "CleanBuildB": true,
+    "BuildBSha256": "2fc5cf96698d403b72f3144fbdca46421731234963f8b28c2d7f42123cc9919e"
+  },
+  "RuntimeDeterminism": [
+    {
+      "Category": "deterministic-compilation",
+      "Disposition": 0,
+      "EvidencePhase": "00-16",
+      "Boundary": "identical source/toolchain/options/contracts"
+    },
+    {
+      "Category": "deterministic-image-bytes",
+      "Disposition": 0,
+      "EvidencePhase": "08,16",
+      "Boundary": "clean A/B restricted images"
+    },
+    {
+      "Category": "deterministic-single-context-runtime",
+      "Disposition": 1,
+      "EvidencePhase": "01,10",
+      "Boundary": "virtualized time and inputs"
+    },
+    {
+      "Category": "deterministic-cooperative-scheduler",
+      "Disposition": 1,
+      "EvidencePhase": "11,12,15",
+      "Boundary": "cooperative scheduler and virtual deadlines"
+    },
+    {
+      "Category": "external-input-scheduling-event-replay",
+      "Disposition": 2,
+      "EvidencePhase": "00,10",
+      "Boundary": "logged external inputs, scheduling and events"
+    }
+  ],
+  "NondeterministicInputs": [
+    "wall-clock",
+    "host-filesystem",
+    "host-network",
+    "host-randomness",
+    "host-scheduling"
+  ],
+  "AuthorityBoundaries": [
+    {
+      "Source": "Compiler",
+      "ForbiddenDependency": "ISE execution/scheduler implementation",
+      "Passed": true,
+      "NeutralBoundary": "HybridCPU.Platform.Contracts and architecture contracts"
+    },
+    {
+      "Source": "ISE",
+      "ForbiddenDependency": "ManagedRuntime/compiler metadata",
+      "Passed": true,
+      "NeutralBoundary": "architecture/ISA contracts only"
+    },
+    {
+      "Source": "RuntimeKernel",
+      "ForbiddenDependency": "compiler IR/type-system implementation",
+      "Passed": true,
+      "NeutralBoundary": "HybridCPU.Platform.Contracts"
+    },
+    {
+      "Source": "ManagedRuntime",
+      "ForbiddenDependency": "ISE pipeline/retire/MMU implementation",
+      "Passed": true,
+      "NeutralBoundary": "HybridCPU.Platform.Contracts and RuntimeKernel"
+    }
+  ],
+  "FinalMatrix": [
+    {
+      "Capability": "Compiler/CIL/CFG/SSA/phi",
+      "EvidencePhases": "00,08",
+      "Qualified": true,
+      "FinalRepresentation": "canonical CFG/SSA and linked image"
+    },
+    {
+      "Capability": "ABI/frame/stack-walk",
+      "EvidencePhases": "01,09",
+      "Qualified": true,
+      "FinalRepresentation": "post-RA frame and unwind records"
+    },
+    {
+      "Capability": "object/type/static-init",
+      "EvidencePhases": "02,04",
+      "Qualified": true,
+      "FinalRepresentation": "linked object metadata and bootstrap registrations"
+    },
+    {
+      "Capability": "stack-maps/GC",
+      "EvidencePhases": "05,11",
+      "Qualified": true,
+      "FinalRepresentation": "final-PC stack maps and rendezvous roots"
+    },
+    {
+      "Capability": "dispatch/delegates/generics",
+      "EvidencePhases": "06,07,08",
+      "Qualified": true,
+      "FinalRepresentation": "linked tables and exact method bodies"
+    },
+    {
+      "Capability": "managed-EH",
+      "EvidencePhases": "09",
+      "Qualified": true,
+      "FinalRepresentation": "final-PC EH clauses and unwind data"
+    },
+    {
+      "Capability": "trap/MMU",
+      "EvidencePhases": "10",
+      "Qualified": true,
+      "FinalRepresentation": "committed TrapAbi state"
+    },
+    {
+      "Capability": "threads/TLS",
+      "EvidencePhases": "11",
+      "Qualified": true,
+      "FinalRepresentation": "kernel context and managed thread/TLS records"
+    },
+    {
+      "Capability": "memory-order/synchronization",
+      "EvidencePhases": "12",
+      "Qualified": true,
+      "FinalRepresentation": "ISA ordering plus runtime monitor/wait records"
+    },
+    {
+      "Capability": "interop",
+      "EvidencePhases": "13",
+      "Qualified": true,
+      "FinalRepresentation": "final thunk ABI and host-transition records"
+    },
+    {
+      "Capability": "async/reflection",
+      "EvidencePhases": "14,15",
+      "Qualified": true,
+      "FinalRepresentation": "retained metadata and ordinary CIL/EH plans"
+    },
+    {
+      "Capability": "ISE execution",
+      "EvidencePhases": "00,10",
+      "Qualified": true,
+      "FinalRepresentation": "architectural execute/commit/retire observations"
+    },
+    {
+      "Capability": "positive/negative/property/fuzz",
+      "EvidencePhases": "00-15",
+      "Qualified": true,
+      "FinalRepresentation": "checked-in deterministic test corpus"
+    },
+    {
+      "Capability": "cross-layer end-to-end",
+      "EvidencePhases": "00,05,08,09,10,15",
+      "Qualified": true,
+      "FinalRepresentation": "linked image/runtime/ISE evidence"
+    }
+  ],
+  "FailureDomains": [
+    "managed-exception-or-oom",
+    "runtime-fail-fast",
+    "kernel-or-service-error",
+    "architectural-illegal-privilege-protection-page-alignment-trap",
+    "integrity-failure"
+  ],
+  "RuntimePackDigest": "b8a51798657ee28fa58709bd6a9cbd76117360d6d3241bca41d15373aeab8cd9",
+  "DeterministicDigest": "55c41c3e5233f86cc7c05cdd5d187454cc0a6321d3ed23cc716c196d95d88ed7"
+}
