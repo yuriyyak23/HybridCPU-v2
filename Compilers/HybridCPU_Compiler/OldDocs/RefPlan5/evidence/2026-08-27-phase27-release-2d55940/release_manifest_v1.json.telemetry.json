@@ -1,9 +1,0 @@
-{
-  "Schema": "hybridcpu.release-telemetry/v1",
-  "CompilerCommit": "2d559409462945c01573d5667f586052f3e9c3ff",
-  "Corpus": "phase27-native-smoke-v1",
-  "Runs": 2,
-  "CompileMilliseconds": 338.095,
-  "PeakWorkingSetBytes": 21700608,
-  "SelectsProductionOutput": false
-}
