@@ -6,6 +6,9 @@
 # Base research paper
 [https://zenodo.org/records/20137443](https://doi.org/10.5281/zenodo.20137443)
 
+# OS for HybridCPU-v2 research project
+https://github.com/yuriyyak23/SingNextOS
+
 # Now In-Progress: 
 
 **You can help with the development sponsoring project by PayPal (https://paypal.me/YAKGitHub)
