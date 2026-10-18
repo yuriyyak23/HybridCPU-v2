@@ -1,0 +1,468 @@
+using HybridCPU_ISE.Arch;
+
+using System;
+using System.Collections.Generic;
+using YAKSys_Hybrid_CPU.Core.Memory;
+using YAKSys_Hybrid_CPU.Core.Registers;
+using YAKSys_Hybrid_CPU.Core.Registers.Retire;
+
+
+namespace YAKSys_Hybrid_CPU.Core
+{
+    // ─────────────────────────────────────────────────────────────────────────
+    // TrapMicroOp — Blueprint §7 (replaces SystemNopMicroOp/NopMicroOp fallback)
+    // ─────────────────────────────────────────────────────────────────────────
+
+
+
+    /// <summary>
+    /// Trap micro-operation: encodes an unrecognised or privileged-fault instruction.
+    /// <para>
+    /// Replaces the legacy <c>SystemNopMicroOp</c>/<c>NopMicroOp</c> fallback for
+    /// unregistered opcodes. On <see cref="Execute"/> the trap is recorded; the pipeline
+    /// FSM is responsible for redirecting control flow to the trap-handler vector.
+    /// </para>
+    /// Blueprint §7: "Удалить SystemNopMicroOp класс как placeholder,
+    /// заменив его на TrapMicroOp или реальное исполнение системных инструкций."
+    /// Blueprint §5 (decoder): "legacyOp (для незарегистрированных) переделать в нормальную
+    /// ошибку/исключение, а не SystemNop."
+    /// </summary>
+    public sealed class TrapMicroOp : MicroOp
+    {
+        private const ulong IllegalInstructionCauseCode = 2;
+
+        /// <summary>The original undecoded opcode that triggered the trap.</summary>
+        public uint UndecodedOpCode { get; set; }
+
+        /// <summary>Optional human-readable reason for the trap (e.g., decode exception message).</summary>
+        public string TrapReason { get; set; }
+
+        /// <summary>
+        /// Projected memory-bank intent captured from the canonical memory materialization
+        /// attempt before the carrier fail-closed trapped. Non-memory trap contours keep -1.
+        /// </summary>
+        internal int ProjectedMemoryBankIntent { get; set; } = -1;
+
+        public TrapMicroOp()
+        {
+            // Traps redirect control flow to the exception/trap-handler vector.
+            IsStealable = false;
+            IsControlFlow = true;
+
+            ReadRegisters = Array.Empty<int>();
+            WriteRegisters = Array.Empty<int>();
+            ReadMemoryRanges = Array.Empty<(ulong, ulong)>();
+            WriteMemoryRanges = Array.Empty<(ulong, ulong)>();
+
+            // Trap consumes no compute resources but occupies the system-singleton lane.
+            ResourceMask = ResourceBitset.Zero;
+
+            InstructionClass = Arch.InstructionClass.System;
+            SerializationClass = Arch.SerializationClass.FullSerial;
+
+            // Trap is fully serialised — must be routed to the system-singleton slot.
+            SetHardPinnedPlacement(SlotClass.SystemSingleton, 7);
+
+            // Conflicts with everything: traps must not be reordered or stolen.
+            SafetyMask = SafetyMask128.All;
+        }
+
+        public override CanonicalDecodePublicationMode CanonicalDecodePublication =>
+            CanonicalDecodePublicationMode.ProjectorPublishes;
+
+        public override bool Execute(ref Processor.CPU_Core core)
+        {
+            // Trap is recorded; the pipeline FSM handles redirection to the handler vector.
+            return true;
+        }
+
+        public Pipeline.TrapEntryEvent CreatePipelineEvent(ulong bundleSerial = 0)
+        {
+            byte vtId = (byte)(VirtualThreadId & 0xFF);
+            return new Pipeline.TrapEntryEvent
+            {
+                VtId = vtId,
+                BundleSerial = bundleSerial,
+                CauseCode = IllegalInstructionCauseCode,
+                FaultAddress = 0,
+                HasFaultAddress = false,
+                FaultAddressSemantic = NeutralFaultAddressSemantic.None
+            };
+        }
+
+        public override string GetDescription() =>
+            TrapReason != null
+                ? $"TRAP: UndecodedOpCode=0x{UndecodedOpCode:X} ({TrapReason})"
+                : $"TRAP: UndecodedOpCode=0x{UndecodedOpCode:X}";
+    }
+
+    // VmxMicroOp — Blueprint Step 2 (VMX instruction plane)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// MicroOp that publishes a fail-closed typed effect for a frozen VMX opcode.
+    /// <para>
+    /// All VMX instructions are fully serialised (<see cref="Arch.SerializationClass.VmxSerial"/>)
+    /// and pinned to the system-singleton slot. They require Machine-mode privilege.
+    /// </para>
+    /// <para>
+    /// The removed legacy frontend has no replacement; opcode admission must
+    /// be restored through generic runtime descriptors in a future layer.
+    /// </para>
+    /// </summary>
+    public sealed class VmxMicroOp : MicroOp
+    {
+        private VmxRetireEffect _resolvedRetireEffect;
+        private DomainHypercallCanonicalComposition.ExecutionDispatch? _exactHypercallDispatch;
+        private VmReadScalarResultReceipt? _vmReadScalarResultReceipt;
+        private ulong _vmReadScalarResult;
+        private bool _vmReadScalarResultReady;
+
+        internal SafetyVerifier.VirtualizationAdmissionCertificate? VirtualizationAdmission
+        {
+            get;
+            private set;
+        }
+
+        internal VirtualizationOperandSnapshot? VirtualizationOperandSnapshot
+        {
+            get;
+            private set;
+        }
+
+        internal DomainHypercallExecutionResult? ExactHypercallExecutionResult
+        {
+            get;
+            private set;
+        }
+
+        internal DomainHypercallRuntimeExecutor.ExecutionReceipt? ExactHypercallExecutionReceipt =>
+            ExactHypercallExecutionResult?.Receipt;
+
+        internal DomainHypercallCompletionPublicationResult? ExactHypercallCompletionPublication
+        {
+            get;
+            private set;
+        }
+
+        internal DomainHypercallRetireOwner.VirtualizationRetireGrant? ExactHypercallRetireGrant
+        {
+            get;
+            private set;
+        }
+
+        internal ulong ExactHypercallRetireWindowIdentity { get; private set; }
+        internal ulong ExactHypercallRetireOrderEpoch { get; private set; }
+        internal bool HasVmReadScalarResultReceipt => _vmReadScalarResultReceipt is not null;
+
+        /// <summary>Decoded instruction IR forwarded to the VMX execution unit.</summary>
+        public Pipeline.MicroOps.InstructionIR? Instruction { get; set; }
+
+        /// <summary>Destination register index (Rd) — used for VMREAD result writeback.</summary>
+        public byte Rd { get; set; }
+
+        /// <summary>Source register 1 index (Rs1) — VMCS field selector / pointer register.</summary>
+        public byte Rs1 { get; set; }
+
+        /// <summary>Source register 2 index (Rs2) — VMWRITE value register.</summary>
+        public byte Rs2 { get; set; }
+
+        public VmxMicroOp()
+        {
+            Class = MicroOpClass.Other;
+            ResourceMask = ResourceBitset.Zero;
+
+            InstructionClass = Arch.InstructionClass.Vmx;
+            SerializationClass = Arch.SerializationClass.VmxSerial;
+
+            // VMX instructions are pinned to the system-singleton slot (lane 7)
+            SetHardPinnedPlacement(SlotClass.SystemSingleton, 7);
+        }
+
+        public override CanonicalDecodePublicationMode CanonicalDecodePublication =>
+            CanonicalDecodePublicationMode.SelfPublishes;
+
+        public override void RefreshWriteMetadata() => InitializeMetadata();
+
+        public override bool Execute(ref Processor.CPU_Core core)
+        {
+            var instr = Instruction ?? BuildInstructionIR();
+            if (!InstructionRegistry.TryResolvePublishedVmxOperationKind(in instr, out VmxOperationKind operation))
+            {
+                throw new InvalidOperationException(
+                    $"Unknown frozen VMX opcode {Arch.OpcodeRegistry.GetMnemonicOrHex(instr.CanonicalOpcode.Value)}.");
+            }
+
+            if (operation == VmxOperationKind.VmRead &&
+                _vmReadScalarResultReceipt is not null &&
+                _vmReadScalarResultReceipt.TryValidateSpeculative(
+                    core.CurrentVirtualizationRestoreGeneration))
+            {
+                _vmReadScalarResult = _vmReadScalarResultReceipt.Value;
+                _vmReadScalarResultReady = true;
+                _resolvedRetireEffect = default;
+                return true;
+            }
+
+            if (operation == VmxOperationKind.VmCall &&
+                _exactHypercallDispatch is not null &&
+                ExactHypercallExecutionResult is null)
+            {
+                ExactHypercallExecutionResult = _exactHypercallDispatch.Execute(
+                    this,
+                    out DomainHypercallCompletionPublicationResult? publication);
+                ExactHypercallCompletionPublication = publication;
+            }
+
+            _resolvedRetireEffect = VmxRetireEffect.Fault(
+                operation,
+                VmExitReason.SecurityPolicyViolation);
+            return true;
+        }
+
+        public override string GetDescription() =>
+            $"VMX: OpCode=0x{OpCode:X} ({Arch.OpcodeRegistry.GetMnemonicOrHex(OpCode)})";
+
+        // ── Helper ────────────────────────────────────────────────────────────
+
+        public VmxRetireEffect CreateRetireEffect() => _resolvedRetireEffect;
+
+        internal bool TryResolveFrozenOperation(out VmxOperationKind operation)
+        {
+            var instruction = Instruction ?? BuildInstructionIR();
+            if (instruction.CanonicalOpcode.Value != unchecked((ushort)OpCode))
+            {
+                operation = default;
+                return false;
+            }
+
+            return InstructionRegistry.TryResolvePublishedVmxOperationKind(
+                in instruction,
+                out operation);
+        }
+
+        internal void AttachVirtualizationAdmission(
+            SafetyVerifier.VirtualizationAdmissionCertificate certificate)
+        {
+            ArgumentNullException.ThrowIfNull(certificate);
+            if (VirtualizationAdmission is not null)
+            {
+                throw new InvalidOperationException(
+                    "A VmxMicroOp cannot receive a second virtualization admission certificate.");
+            }
+
+            VirtualizationAdmission = certificate;
+        }
+
+        internal void AttachVirtualizationOperandSnapshot(
+            VirtualizationOperandSnapshot snapshot)
+        {
+            ArgumentNullException.ThrowIfNull(snapshot);
+            if (VirtualizationAdmission is null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive operands before E1.");
+            if (VirtualizationOperandSnapshot is not null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive a second operand snapshot.");
+
+            VirtualizationOperandSnapshot = snapshot;
+        }
+
+        internal void AttachExactHypercallExecutionDispatch(
+            DomainHypercallCanonicalComposition.ExecutionDispatch dispatch)
+        {
+            ArgumentNullException.ThrowIfNull(dispatch);
+            if (VirtualizationAdmission is null || VirtualizationOperandSnapshot is null)
+                throw new InvalidOperationException("Exact hypercall dispatch requires canonical E1 and operands.");
+            if (_exactHypercallDispatch is not null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive a second exact hypercall dispatch.");
+
+            _exactHypercallDispatch = dispatch;
+        }
+
+        internal void AttachExactHypercallRetireGrant(
+            DomainHypercallRetireOwner.VirtualizationRetireGrant grant,
+            ulong retireWindowIdentity,
+            ulong orderEpoch)
+        {
+            ArgumentNullException.ThrowIfNull(grant);
+            if (ExactHypercallRetireGrant is not null)
+                throw new InvalidOperationException("A VmxMicroOp cannot receive a second E6 retire grant.");
+            ExactHypercallRetireGrant = grant;
+            ExactHypercallRetireWindowIdentity = retireWindowIdentity;
+            ExactHypercallRetireOrderEpoch = orderEpoch;
+        }
+
+        internal void AttachVmReadScalarResultReceipt(
+            VmReadScalarResultReceipt receipt,
+            ulong fieldSelector)
+        {
+            ArgumentNullException.ThrowIfNull(receipt);
+            if (_vmReadScalarResultReceipt is not null)
+                throw new InvalidOperationException("A VMREAD carrier cannot receive a second scalar-result receipt.");
+            if (!receipt.MatchesCarrier(this, fieldSelector))
+                throw new InvalidOperationException(
+                    "VMREAD scalar-result receipt mismatched the canonical attempt, VT, field, domain, or destination carrier.");
+            _vmReadScalarResultReceipt = receipt;
+        }
+
+        public override bool TryGetPrimaryWriteBackResult(out ulong value)
+        {
+            value = _vmReadScalarResult;
+            return _vmReadScalarResultReady && _vmReadScalarResultReceipt is not null;
+        }
+
+        public override void CapturePrimaryWriteBackResult(ulong value)
+        {
+            if (_vmReadScalarResultReady)
+                _vmReadScalarResult = value;
+        }
+
+        public override void EmitWriteBackRetireRecords(
+            ref Processor.CPU_Core core,
+            Span<RetireRecord> retireRecords,
+            ref int retireRecordCount)
+        {
+            if (!_vmReadScalarResultReady || _vmReadScalarResultReceipt is null)
+                return;
+            if (_vmReadScalarResult != _vmReadScalarResultReceipt.Value)
+            {
+                throw new InvalidOperationException(
+                    "VMREAD scalar writeback value no longer matches its attempt-bound projection receipt.");
+            }
+            if (!_vmReadScalarResultReceipt.TryConsumeAtRetire(
+                    core.CurrentVirtualizationRestoreGeneration))
+            {
+                throw new InvalidOperationException(
+                    "VMREAD scalar-result receipt is stale, replayed, revoked, restored, or already consumed.");
+            }
+
+            AppendWriteBackRetireRecord(
+                retireRecords,
+                ref retireRecordCount,
+                RetireRecord.RegisterWrite(
+                    NormalizeExecutionVtId(OwnerThreadId),
+                    _vmReadScalarResultReceipt.DestinationRegister,
+                    _vmReadScalarResult));
+        }
+
+        private static bool HasArchitecturalRegister(byte registerId) =>
+            registerId != 0 &&
+            registerId != VLIW_Instruction.NoArchReg;
+
+        private static byte NormalizeInstructionIrRegister(byte registerId) =>
+            registerId == VLIW_Instruction.NoArchReg
+                ? (byte)0
+                : registerId;
+
+        private void InitializeMetadata()
+        {
+            var readRegs = new List<int>();
+            ResourceMask = ResourceBitset.Zero;
+            ushort opcode = unchecked((ushort)OpCode);
+            WritesRegister =
+                (opcode is Processor.CPU_Core.IsaOpcodeValues.VMREAD
+                    or Processor.CPU_Core.IsaOpcodeValues.VMPTRST
+                    or Processor.CPU_Core.IsaOpcodeValues.VMFUNC) &&
+                HasArchitecturalRegister(Rd);
+
+            switch (opcode)
+            {
+                case Processor.CPU_Core.IsaOpcodeValues.VMREAD:
+                    if (HasArchitecturalRegister(Rs1))
+                    {
+                        readRegs.Add(Rs1);
+                        ResourceMask |= ArchRegId.TryCreate(Rs1, out ArchRegId rs1)
+                            ? ResourceMaskBuilder.ForArchitecturalRegisterRead(rs1)
+                            : ResourceMaskBuilder.ForRegisterRead(Rs1);
+                    }
+                    break;
+
+                case Processor.CPU_Core.IsaOpcodeValues.VMWRITE:
+                    if (HasArchitecturalRegister(Rs1))
+                    {
+                        readRegs.Add(Rs1);
+                        ResourceMask |= ArchRegId.TryCreate(Rs1, out ArchRegId rs1)
+                            ? ResourceMaskBuilder.ForArchitecturalRegisterRead(rs1)
+                            : ResourceMaskBuilder.ForRegisterRead(Rs1);
+                    }
+
+                    if (HasArchitecturalRegister(Rs2))
+                    {
+                        readRegs.Add(Rs2);
+                        ResourceMask |= ArchRegId.TryCreate(Rs2, out ArchRegId rs2)
+                            ? ResourceMaskBuilder.ForArchitecturalRegisterRead(rs2)
+                            : ResourceMaskBuilder.ForRegisterRead(Rs2);
+                    }
+                    break;
+
+                case Processor.CPU_Core.IsaOpcodeValues.VMCLEAR:
+                case Processor.CPU_Core.IsaOpcodeValues.VMPTRLD:
+                    if (HasArchitecturalRegister(Rs1))
+                    {
+                        readRegs.Add(Rs1);
+                        ResourceMask |= ArchRegId.TryCreate(Rs1, out ArchRegId rs1)
+                            ? ResourceMaskBuilder.ForArchitecturalRegisterRead(rs1)
+                            : ResourceMaskBuilder.ForRegisterRead(Rs1);
+                    }
+                    break;
+
+                case Processor.CPU_Core.IsaOpcodeValues.VMCALL:
+                case Processor.CPU_Core.IsaOpcodeValues.INVEPT:
+                case Processor.CPU_Core.IsaOpcodeValues.INVVPID:
+                case Processor.CPU_Core.IsaOpcodeValues.VMFUNC:
+                case Processor.CPU_Core.IsaOpcodeValues.VMSAVEX:
+                case Processor.CPU_Core.IsaOpcodeValues.VMRESTX:
+                    if (HasArchitecturalRegister(Rs1))
+                    {
+                        readRegs.Add(Rs1);
+                        ResourceMask |= ArchRegId.TryCreate(Rs1, out ArchRegId rs1)
+                            ? ResourceMaskBuilder.ForArchitecturalRegisterRead(rs1)
+                            : ResourceMaskBuilder.ForRegisterRead(Rs1);
+                    }
+
+                    if (HasArchitecturalRegister(Rs2))
+                    {
+                        readRegs.Add(Rs2);
+                        ResourceMask |= ArchRegId.TryCreate(Rs2, out ArchRegId rs2)
+                            ? ResourceMaskBuilder.ForArchitecturalRegisterRead(rs2)
+                            : ResourceMaskBuilder.ForRegisterRead(Rs2);
+                    }
+                    break;
+            }
+
+            ReadRegisters = readRegs;
+            WriteRegisters = WritesRegister
+                ? new[] { (int)Rd }
+                : Array.Empty<int>();
+
+            if (WritesRegister)
+            {
+                ResourceMask |= ArchRegId.TryCreate(Rd, out ArchRegId destinationRegister)
+                    ? ResourceMaskBuilder.ForArchitecturalRegisterWrite(destinationRegister)
+                    : ResourceMaskBuilder.ForRegisterWrite(Rd);
+            }
+
+            PublishExplicitStructuralSafetyMask();
+            RefreshAdmissionMetadata(this);
+        }
+
+        private Pipeline.MicroOps.InstructionIR BuildInstructionIR()
+        {
+            ushort opcode = unchecked((ushort)OpCode);
+            return new Pipeline.MicroOps.InstructionIR
+            {
+                CanonicalOpcode = new Processor.CPU_Core.IsaOpcode(opcode),
+                Class = Arch.InstructionClass.Vmx,
+                SerializationClass = Arch.SerializationClass.VmxSerial,
+                Rd = NormalizeInstructionIrRegister(Rd),
+                Rs1 = NormalizeInstructionIrRegister(Rs1),
+                Rs2 = NormalizeInstructionIrRegister(Rs2),
+                Imm = 0,
+                VmxPayload = VmxInstructionPayload.FromDecodedRegisters(
+                    opcode,
+                    NormalizeInstructionIrRegister(Rd),
+                    NormalizeInstructionIrRegister(Rs1),
+                    NormalizeInstructionIrRegister(Rs2)),
+            };
+        }
+    }
+}

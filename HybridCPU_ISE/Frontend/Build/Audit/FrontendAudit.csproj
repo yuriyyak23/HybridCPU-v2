@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\..\..\..\artifacts\shadow-frontend\audit-obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework><OutputType>Exe</OutputType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <DefineTestSupport>false</DefineTestSupport>
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\..\..\artifacts\shadow-frontend\audit-bin\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup><Compile Include="AuditProbes.cs" />
+    <ProjectReference Include="..\ShadowFrontend.csproj" /></ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

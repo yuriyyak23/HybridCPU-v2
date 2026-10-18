@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <DefineTestSupport Condition="'$(DefineTestSupport)' == '' and '$(Configuration)' == 'Debug'">true</DefineTestSupport>
+    <HybridCpuIseProjectReferenceProperties>DefineTestSupport=$(DefineTestSupport)</HybridCpuIseProjectReferenceProperties>
+    <HybridCpuIseProjectReferenceProperties Condition="'$(DefineTestSupport)' == 'true'">DefineTestSupport=$(DefineTestSupport);BaseIntermediateOutputPath=obj\testsupport\;MSBuildProjectExtensionsPath=obj\;OutputPath=bin\$(Configuration)\testsupport\</HybridCpuIseProjectReferenceProperties>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="$(MSBuildThisFileDirectory)Legacy\**\*.cs" />
+    <EmbeddedResource Remove="$(MSBuildThisFileDirectory)Legacy\**" />
+    <Content Remove="$(MSBuildThisFileDirectory)Legacy\**" />
+    <None Remove="$(MSBuildThisFileDirectory)Legacy\**" />
+  </ItemGroup>
+</Project>

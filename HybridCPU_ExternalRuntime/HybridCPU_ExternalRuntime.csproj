@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <AssemblyName>HybridCPU_ExternalRuntime</AssemblyName>
+    <PackageId>HybridCPU.ExternalRuntime</PackageId>
+    <Version Condition="'$(HybridCpuExternalRuntimePackageVersion)' == ''">1.25.1</Version>
+    <Version Condition="'$(HybridCpuExternalRuntimePackageVersion)' != ''">$(HybridCpuExternalRuntimePackageVersion)</Version>
+    <PackageVersion>$(Version)</PackageVersion>
+    <Authors>HybridCPU</Authors>
+    <Description>Fail-closed implementation of the HybridCPU external runtime facade.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PackageReleaseNotes>Reserves admission correlation before provider callback and retains uncertain admission outcomes for the adapter session.</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeHybridCpuRuntimeDependencies</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  <ItemGroup><None Include="README.md" Pack="true" PackagePath="\" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HybridCPU_ExternalRuntime.Contracts\HybridCPU_ExternalRuntime.Contracts.csproj" />
+    <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj"
+                      AdditionalProperties="DefineTestSupport=false"
+                      GlobalPropertiesToRemove="DefineTestSupport;BuildRuntimeDiagnosticConsole;HybridCpuIseProjectReferenceProperties"
+                      PrivateAssets="all" />
+    <ProjectReference Include="..\Compilers\HybridCPU_Compiler\Core\HybridCPU.Compiler.Core.csproj" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="HybridCPU_ExternalRuntime.Tests" />
+  </ItemGroup>
+  <Target Name="ValidateRuntimePackageConfiguration" BeforeTargets="GenerateNuspec">
+    <Error Condition="'$(Configuration)' != 'Release'"
+           Text="HybridCPU.ExternalRuntime packages require Configuration=Release, including embedded runtime dependencies. Debug builds remain available without packing." />
+  </Target>
+  <!-- A software-only runtime delta may retain the exact already-adopted machine/compiler bundle. -->
+  <Target Name="UseAdoptedRuntimeBundle" BeforeTargets="AssignProjectConfiguration"
+          Condition="'$(HybridCpuAdoptedRuntimeBundleRoot)' != ''">
+    <ItemGroup>
+      <ProjectReference Remove="..\HybridCPU_ISE\HybridCPU_ISE.csproj;..\Compilers\HybridCPU_Compiler\Core\HybridCPU.Compiler.Core.csproj" />
+      <AdoptedRuntimeDependency Include="HybridCPU_ISE;HybridCPU.Compiler.Core;HybridCPU.ManagedRuntime;HybridCPU.RuntimeKernel;HybridCPU.Platform.Contracts" />
+      <Reference Include="@(AdoptedRuntimeDependency)">
+        <HintPath>$(HybridCpuAdoptedRuntimeBundleRoot)/%(Identity).dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+    </ItemGroup>
+    <Error Condition="!Exists('$(HybridCpuAdoptedRuntimeBundleRoot)/%(AdoptedRuntimeDependency.Identity).dll')"
+           Text="Adopted runtime dependency is missing: %(AdoptedRuntimeDependency.Identity)" />
+  </Target>
+  <Target Name="IncludeHybridCpuRuntimeDependencies" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths)"
+        Condition="'$(HybridCpuAdoptedRuntimeBundleRoot)' == '' And ('%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU_ISE' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.ManagedRuntime' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.RuntimeKernel' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.Platform.Contracts' Or
+                   '%(ReferenceCopyLocalPaths.Filename)' == 'HybridCPU.Compiler.Core')">
+        <TargetPath>%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)</TargetPath>
+      </BuildOutputInPackage>
+      <BuildOutputInPackage Include="$(HybridCpuAdoptedRuntimeBundleRoot)/%(AdoptedRuntimeDependency.Identity).dll"
+                            Condition="'$(HybridCpuAdoptedRuntimeBundleRoot)' != ''">
+        <TargetPath>%(AdoptedRuntimeDependency.Identity).dll</TargetPath>
+      </BuildOutputInPackage>
+    </ItemGroup>
+  </Target>
+</Project>
+
+
+
+
+
+
+
+
+

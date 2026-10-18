@@ -1,0 +1,1176 @@
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, System.String, Int32, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch get_ArtifactEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle get_ArtifactHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch get_ChildEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle get_ChildHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Parent()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch get_MappingEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle get_MappingHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Int32 get_MaximumPipelineCycles()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | System.String get_PackageSha256()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, System.String ByRef, Int32 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_ArtifactEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_ArtifactHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_ChildEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_ChildHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_MappingEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_MappingHandle(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_MaximumPipelineCycles(Int32)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_PackageSha256(System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Method | Void set_Parent(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch ArtifactEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle ArtifactHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ChildEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ChildHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Parent
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch MappingEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle MappingHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | Int32 MaximumPipelineCycles
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | System.String PackageSha256
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease, Byte[], Int32, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Byte[] get_PackageBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease get_GuestMapping()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Int32 get_MaximumPipelineCycles()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease ByRef, Byte[] ByRef, Int32 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Void set_GuestMapping(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Void set_MaximumPipelineCycles(Int32)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Method | Void set_PackageBytes(Byte[])
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Property | Byte[] PackageBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease GuestMapping
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest | Property | Int32 MaximumPipelineCycles
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Constructor | Void .ctor(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | System.Guid get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | Void Deconstruct(System.Guid ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Method | Void set_Value(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle | Property | System.Guid Value
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority EventInjection
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority Execute
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority GuestMemory
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority None
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority TrapDelivery
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority VirtualIo
+HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority | Field | UInt32 value__
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState, Boolean, UInt32)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Boolean get_IsTerminal()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState get_ResultingState()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | UInt32 get_ClosedGuestMappings()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState ByRef, Boolean ByRef, UInt32 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void set_ClosedGuestMappings(UInt32)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void set_IsTerminal(Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Method | Void set_ResultingState(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Property | Boolean IsTerminal
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState ResultingState
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Property | UInt32 ClosedGuestMappings
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority get_GrantedAuthority()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState get_State()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | UInt64 get_GuestMemoryLimitBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void set_GrantedAuthority(HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void set_GuestMemoryLimitBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Method | Void set_State(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority GrantedAuthority
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState State
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Property | UInt64 GuestMemoryLimitBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Constructor | Void .ctor(System.Guid, HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority get_RequestedAuthority()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | System.Guid get_RequestId()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | UInt64 get_GuestMemoryLimitBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Void Deconstruct(System.Guid ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Void set_GuestMemoryLimitBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Void set_RequestId(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Method | Void set_RequestedAuthority(HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority RequestedAuthority
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Property | System.Guid RequestId
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest | Property | UInt64 GuestMemoryLimitBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Constructor | Void .ctor(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | System.Guid get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | Void Deconstruct(System.Guid ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Method | Void set_Value(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle | Property | System.Guid Value
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch get_Epoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle get_Handle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Parent()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Void set_Epoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Void set_Handle(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Method | Void set_Parent(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch Epoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle Handle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Parent
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState Closed
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState Parked
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState Ready
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState Running
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition Park
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition Resume
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition Start
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState get_ResultingState()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition get_Transition()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Void set_ResultingState(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Method | Void set_Transition(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState ResultingState
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition Transition
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind External
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind Timer
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind Wake
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind get_Kind()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | UInt64 get_Sequence()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Void set_Kind(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Method | Void set_Sequence(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind Kind
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt | Property | UInt64 Sequence
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind get_Kind()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | UInt64 get_Sequence()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Void set_Kind(HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Method | Void set_Sequence(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind Kind
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest | Property | UInt64 Sequence
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, System.String, Int32, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch get_ChildEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle get_ChildHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Parent()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Int32 get_MaximumPipelineCycles()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | System.String get_PackageSha256()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, System.String ByRef, Int32 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_ChildEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_ChildHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_MaximumPipelineCycles(Int32)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_PackageSha256(System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Method | Void set_Parent(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ChildEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ChildHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Parent
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | Int32 MaximumPipelineCycles
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | System.String PackageSha256
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Constructor | Void .ctor(Byte[], Int32, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Byte[] get_PackageBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Int32 get_MaximumPipelineCycles()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Void Deconstruct(Byte[] ByRef, Int32 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Void set_MaximumPipelineCycles(Int32)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Method | Void set_PackageBytes(Byte[])
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Property | Byte[] PackageBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest | Property | Int32 MaximumPipelineCycles
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, System.String, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration, Int32, UInt64, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Boolean get_IsTerminal()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch get_ArtifactEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle get_ArtifactHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch get_ChildEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle get_ChildHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration get_ExecutionGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Parent()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch get_MappingEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle get_MappingHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Int32 get_RetiredPipelineCycles()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | System.String get_PackageSha256()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | UInt64 get_LastRetireSequence()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | UInt64 get_LastRetiredBundleOffset()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, System.String ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration ByRef, Int32 ByRef, UInt64 ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, Boolean ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_ArtifactEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_ArtifactHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_ChildEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_ChildHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_ExecutionGeneration(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_IsTerminal(Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_LastRetireSequence(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_LastRetiredBundleOffset(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_MappingEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_MappingHandle(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_PackageSha256(System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_Parent(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Method | Void set_RetiredPipelineCycles(Int32)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | Boolean IsTerminal
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch ArtifactEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle ArtifactHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ChildEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ChildHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration ExecutionGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Parent
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch MappingEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle MappingHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | Int32 RetiredPipelineCycles
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | System.String PackageSha256
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | UInt64 LastRetireSequence
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | UInt64 LastRetiredBundleOffset
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch get_ArtifactEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle get_ArtifactHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Void set_ArtifactEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Void set_ArtifactHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch ArtifactEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle ArtifactHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome, TReceipt, System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[TReceipt])
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[TReceipt], HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[TReceipt])
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[TReceipt], HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[TReceipt])
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[TReceipt] <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome get_Outcome()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | System.String get_Reason()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | TReceipt get_Receipt()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome ByRef, TReceipt ByRef, System.String ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Void set_Outcome(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Void set_Reason(System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Method | Void set_Receipt(TReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Property | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Outcome
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Property | System.String Reason
+HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 | Property | TReceipt Receipt
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition Parked
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition ResumePermitted
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition TerminationRequired
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind DeviceOrIoFault
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind ExternalEvent
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind Hypercall
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind IllegalInstruction
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind MemoryFault
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind Preemption
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind Timer
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition get_Disposition()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind get_Kind()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | UInt64 get_Sequence()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void set_Disposition(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void set_Kind(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Method | Void set_Sequence(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition Disposition
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind Kind
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt | Property | UInt64 Sequence
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind get_Kind()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | UInt64 get_Sequence()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Void set_Kind(HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Method | Void set_Sequence(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind Kind
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest | Property | UInt64 Sequence
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch get_ChildEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle get_ChildHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch get_IoEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle get_IoHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights get_Rights()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Parent()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch get_ParentDeviceEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle get_ParentDeviceHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | UInt64 get_MaximumTransferBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_ChildEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_ChildHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_IoEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_IoHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_MaximumTransferBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_Parent(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_ParentDeviceEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_ParentDeviceHandle(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Method | Void set_Rights(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ChildEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ChildHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch IoEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle IoHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights Rights
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Parent
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch ParentDeviceEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle ParentDeviceHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt | Property | UInt64 MaximumTransferBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights get_Rights()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch get_ParentDeviceEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle get_ParentDeviceHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | UInt64 get_MaximumTransferBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Void set_MaximumTransferBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Void set_ParentDeviceEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Void set_ParentDeviceHandle(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Method | Void set_Rights(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights Rights
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch ParentDeviceEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle ParentDeviceHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest | Property | UInt64 MaximumTransferBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Boolean get_IsTerminal()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch get_ChildEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle get_ChildHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch get_IoEpoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle get_IoHandle()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Parent()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, Boolean ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_ChildEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_ChildHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_IoEpoch(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_IoHandle(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_IsTerminal(Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Method | Void set_Parent(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | Boolean IsTerminal
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch ChildEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle ChildHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch IoEpoch
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle IoHandle
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Parent
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Constructor | Void .ctor(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | System.Guid get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | Void Deconstruct(System.Guid ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Method | Void set_Value(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle | Property | System.Guid Value
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights Configure
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights None
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights Read
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights | Field | HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights Write
+HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights | Field | UInt32 value__
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState get_State()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainState ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Method | Void set_State(HybridCPU.ExternalRuntime.Contracts.ExternalDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState State
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Constructor | Void .ctor(System.Guid, HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile get_Profile()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | System.Guid get_RequestId()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Void Deconstruct(System.Guid ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Void set_Profile(HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Method | Void set_RequestId(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile Profile
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest | Property | System.Guid RequestId
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt, System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt get_Receipt()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome get_Outcome()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | System.String get_Reason()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt ByRef, System.String ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Void set_Outcome(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Void set_Reason(System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Method | Void set_Receipt(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt Receipt
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Property | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Outcome
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult | Property | System.String Reason
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalDomainState, Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Boolean get_IsTerminal()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState get_ResultingState()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainState ByRef, Boolean ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Void set_IsTerminal(Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Method | Void set_ResultingState(HybridCPU.ExternalRuntime.Contracts.ExternalDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Property | Boolean IsTerminal
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState ResultingState
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome, HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt, System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult, HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult, HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt get_Receipt()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome get_Outcome()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | System.String get_Reason()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt ByRef, System.String ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Void set_Outcome(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Void set_Reason(System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Method | Void set_Receipt(HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt Receipt
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Property | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Outcome
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult | Property | System.String Reason
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch get_Epoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle get_Handle()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Void set_Epoch(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Method | Void set_Handle(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch Epoch
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle Handle
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Constructor | Void .ctor(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle, HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | System.Guid get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | Void Deconstruct(System.Guid ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Method | Void set_Value(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle | Property | System.Guid Value
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile IsolatedDomain
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainState | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState Closed
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState Parked
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState Ready
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainState | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState Running
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition Park
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition Resume
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition | Field | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition Start
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition, HybridCPU.ExternalRuntime.Contracts.ExternalDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease get_Lease()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState get_ResultingState()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition get_Transition()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainState ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Void set_Lease(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Void set_ResultingState(HybridCPU.ExternalRuntime.Contracts.ExternalDomainState)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Method | Void set_Transition(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease Lease
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainState ResultingState
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition Transition
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt, System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt get_Receipt()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome get_Outcome()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | System.String get_Reason()
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt ByRef, System.String ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Void set_Outcome(HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Void set_Reason(System.String)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Method | Void set_Receipt(HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Property | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt Receipt
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Property | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Outcome
+HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult | Property | System.String Reason
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Constructor | Void .ctor(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | System.Guid get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | Void Deconstruct(System.Guid ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Method | Void set_Value(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle | Property | System.Guid Value
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease get_Child()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch get_Epoch()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle get_Handle()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Void set_Child(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Void set_Epoch(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Method | Void set_Handle(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease Child
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch Epoch
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle Handle
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease, UInt64, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease get_Mapping()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | UInt64 get_ChildOffsetBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | UInt64 get_LengthBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease ByRef, UInt64 ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Void set_ChildOffsetBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Void set_LengthBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Void set_Mapping(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease Mapping
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Property | UInt64 ChildOffsetBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Property | UInt64 LengthBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Constructor | Void .ctor(UInt64, UInt64, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | UInt64 get_ChildOffsetBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | UInt64 get_LengthBytes()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Void Deconstruct(UInt64 ByRef, UInt64 ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Void set_ChildOffsetBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Void set_LengthBytes(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Property | UInt64 ChildOffsetBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest | Property | UInt64 LengthBytes
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Boolean get_IsTerminal()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease get_Mapping()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt <Clone>$()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity get_Operation()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | UInt64 get_ManifestGeneration()
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ByRef, UInt64 ByRef, Boolean ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Void set_ContractVersion(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Void set_IsTerminal(Boolean)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Void set_ManifestGeneration(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Void set_Mapping(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Method | Void set_Operation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Property | Boolean IsTerminal
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease Mapping
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity Operation
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt | Property | UInt64 ManifestGeneration
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration, HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration, HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Constructor | Void .ctor(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle, HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle, HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | System.Guid get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | Void Deconstruct(System.Guid ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Method | Void set_Value(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle | Property | System.Guid Value
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle, HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration get_Generation()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle get_Handle()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle ByRef, HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Void set_Generation(HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Method | Void set_Handle(HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration Generation
+HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity | Property | HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle Handle
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Constructor | Void .ctor(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | UInt64 get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | Void Deconstruct(UInt64 ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Method | Void set_Value(UInt64)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch | Property | UInt64 Value
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Constructor | Void .ctor(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle, HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | System.Guid get_Value()
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | Void Deconstruct(System.Guid ByRef)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Method | Void set_Value(System.Guid)
+HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle | Property | System.Guid Value
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Bound
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Closed
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Denied
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Faulted
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome NotFound
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Revoked
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Stale
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Succeeded
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Unknown
+HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome | Field | HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome Unsupported
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Constructor | Void .ctor(UInt16, UInt16, UInt16)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Boolean get_IsValid()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_V1()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_V1_1()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_V1_2()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_V1_3()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | UInt16 get_Major()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | UInt16 get_Minor()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | UInt16 get_Patch()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Void Deconstruct(UInt16 ByRef, UInt16 ByRef, UInt16 ByRef)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Void set_Major(UInt16)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Void set_Minor(UInt16)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Method | Void set_Patch(UInt16)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | Boolean IsValid
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion V1
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion V1_1
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion V1_2
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion V1_3
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | UInt16 Major
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | UInt16 Minor
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion | Property | UInt16 Patch
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability Executable
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability RuntimeAdmission
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability Unavailable
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability, UInt16)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Boolean Equals(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Boolean Equals(System.Object)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Boolean op_Equality(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Boolean op_Inequality(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability get_Availability()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor Unavailable(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily get_Family()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Int32 GetHashCode()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | System.String ToString()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | UInt16 get_Version()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Void Deconstruct(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ByRef, HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability ByRef, UInt16 ByRef)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Void set_Availability(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Void set_Family(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Method | Void set_Version(UInt16)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability Availability
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily Family
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor | Property | UInt16 Version
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | Byte value__
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ChildDomainLifecycle
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ChildEventDelivery
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ChildExecutableImage
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ChildGuestMemory
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ChildTrapDelivery
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ChildVirtualIo
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily DeviceBinding
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily DmaAdmission
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily DomainLifecycle
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily ExplicitMemoryVisibility
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily InterruptBinding
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily MmioMapping
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily | Field | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily OwnedRegionMapping
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Constructor | Void .ctor(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion, UInt64, System.Collections.Generic.IEnumerable`1[HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor])
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion get_ContractVersion()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor GetFeature(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily)
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest CreateNext(HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest, UInt64, System.Collections.Generic.IEnumerable`1[HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor])
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Method | System.Collections.Generic.IReadOnlyList`1[HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor] get_Features()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Method | UInt64 get_Generation()
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Property | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion ContractVersion
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Property | System.Collections.Generic.IReadOnlyList`1[HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor] Features
+HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest | Property | UInt64 Generation
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt] CloseChildDomain(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt] CreateChildDomain(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt] TransitionChildDomain(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt] InjectChildEvent(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt] ReportChildTrap(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt] MapChildGuestMemory(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt] UnmapChildGuestMemory(HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV2 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt] LoadChildExecutableImage(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV3 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt] BindChildExecutableArtifact(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV3 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt] StartChildExecution(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV3 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt] BindChildVirtualIo(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV3 | Method | HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1[HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt] CloseChildVirtualIo(HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle, HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuExternalRuntime | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult BindDomain(HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuExternalRuntime | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult CloseDomain(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuExternalRuntime | Method | HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult TransitionDomain(HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease, HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition, HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity)
+HybridCPU.ExternalRuntime.Contracts.IHybridCpuExternalRuntime | Method | HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest QueryFeatures()
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactBindRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactEpoch : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildArtifactHandle : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildAuthority : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCloseReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainCreateRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainEpoch : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainHandle : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainLease : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainState : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransition : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildDomainTransitionReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildEventKind : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildEventReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildEventRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutableImageRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionGeneration : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildExecutionStartRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildResult`1 : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapDisposition : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapKind : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildTrapRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoBindRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoCloseReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoEpoch : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoHandle : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalChildVirtualIoRights : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainBindResult : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainCloseResult : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainLease : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseEpoch : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainLeaseHandle : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainProfile : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainState : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransition : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalDomainTransitionResult : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingEpoch : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingHandle : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalGuestMappingLease : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryMapRequest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalGuestMemoryUnmapReceipt : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalOperationGeneration : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalOperationHandle : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalOperationIdentity : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceEpoch : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalParentDeviceHandle : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.ExternalRuntimeOutcome : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalContractVersion : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureAvailability : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureDescriptor : System.ValueType
+TYPE HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureFamily : System.Enum
+TYPE HybridCPU.ExternalRuntime.Contracts.HybridCpuExternalFeatureManifest : System.Object
+TYPE HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV1 :
+TYPE HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV2 :
+TYPE HybridCPU.ExternalRuntime.Contracts.IHybridCpuChildDomainRuntimeV3 :
+TYPE HybridCPU.ExternalRuntime.Contracts.IHybridCpuExternalRuntime :

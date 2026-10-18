@@ -1,0 +1,60 @@
+{
+  "schemaName": "compat-spec-artifact-schema",
+  "schemaVersion": 1,
+  "generator": "CompatSpecArtifactSetGenerator",
+  "generatedAtBuild": true,
+  "requiresConformanceParity": true,
+  "requiresAbiFreeze": true,
+  "canonicalSourceHash": "ed33072d7706999b3baf8acbd4e13e3e7c2b8bbaddaea9baa975423cce7c1729",
+  "generatedArtifactHash": "ed33072d7706999b3baf8acbd4e13e3e7c2b8bbaddaea9baa975423cce7c1729",
+  "entries": [
+    {
+      "kind": "FrozenOpcodeAliases",
+      "name": "VmxOpcodeAliasSet",
+      "lineageSource": "FrozenOpcodeAbiVocabulary",
+      "generated": false,
+      "frozenAbi": true,
+      "lineageKind": "FrozenAbiVocabulary"
+    },
+    {
+      "kind": "FrozenCsrAliases",
+      "name": "VmxCsrAliasSet",
+      "lineageSource": "FrozenCsrAbiVocabulary",
+      "generated": false,
+      "frozenAbi": true,
+      "lineageKind": "FrozenAbiVocabulary"
+    },
+    {
+      "kind": "VmcsFieldAliases",
+      "name": "VmcsFieldAliasSet",
+      "lineageSource": "VmcsFieldProjectionSchema",
+      "generated": true,
+      "frozenAbi": true,
+      "lineageKind": "ExecutableGeneratedSource"
+    },
+    {
+      "kind": "CapabilityProjection",
+      "name": "VmxCapsProjection",
+      "lineageSource": "CapabilityDescriptorSetSchema",
+      "generated": true,
+      "frozenAbi": true,
+      "lineageKind": "ExecutableGeneratedSource"
+    },
+    {
+      "kind": "CompletionProjection",
+      "name": "CompletionProjectionService",
+      "lineageSource": "ProjectionContractOnly",
+      "generated": false,
+      "frozenAbi": true,
+      "lineageKind": "ProjectionContractOnly"
+    },
+    {
+      "kind": "CompatAliasMap",
+      "name": "CompatAliasMap",
+      "lineageSource": "CompatAliasMap",
+      "generated": true,
+      "frozenAbi": true,
+      "lineageKind": "ExecutableGeneratedSource"
+    }
+  ]
+}

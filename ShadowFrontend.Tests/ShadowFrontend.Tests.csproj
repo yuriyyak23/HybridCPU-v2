@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\artifacts\shadow-frontend\test-obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net11.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <DefineTestSupport>false</DefineTestSupport>
+    <OutputPath>$(MSBuildThisFileDirectory)..\artifacts\shadow-frontend\test-bin\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="OracleBridge.cs" /><Compile Include="Program.cs" /><Compile Include="ModelExperiments.cs" />
+    <Compile Include="ObservationExperiments.cs" />
+    <Compile Include="..\HybridCPU_ISE.Tests\TestHelpers\DmaStreamComputeTestDescriptorFactory.cs" Link="ExistingDmaFixture.cs" />
+    <ProjectReference Include="..\HybridCPU_ISE\Frontend\Build\ShadowFrontend.csproj" />
+    <!-- Read-only oracle dependency exists ONLY in this standalone test executable. -->
+    <ProjectReference Include="..\HybridCPU_ISE\HybridCPU_ISE.csproj" AdditionalProperties="DefineTestSupport=false;EnableInternalTestHooks=false" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

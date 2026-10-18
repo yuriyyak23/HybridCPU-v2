@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\..\..\artifacts\shadow-frontend\lib-obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <DefineTestSupport>false</DefineTestSupport>
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\..\artifacts\shadow-frontend\lib-bin\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Contracts\Contracts.cs" />
+    <Compile Include="..\Semantic\CompactCodec.cs" />
+    <Compile Include="..\Invalidation\FreshnessState.cs" />
+    <Compile Include="..\Cache\SemanticBundleCache.cs" />
+    <Compile Include="..\Replay\HotCompatibility.cs" />
+    <Compile Include="..\Telemetry\FrontendTelemetry.cs" />
+    <Compile Include="..\Modeling\TraceModel.cs" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

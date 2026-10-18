@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net11.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsTestProject>false</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="ActualRefactoring\**" />
+		<Compile Remove="Compilers\**" />
+		<Compile Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+		<Compile Remove="prompts\**" />
+		<Compile Remove="Refactoring\**" />
+		<EmbeddedResource Remove="ActualRefactoring\**" />
+		<EmbeddedResource Remove="Compilers\**" />
+		<EmbeddedResource Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+		<EmbeddedResource Remove="prompts\**" />
+		<EmbeddedResource Remove="Refactoring\**" />
+		<None Remove="ActualRefactoring\**" />
+		<None Remove="Compilers\**" />
+		<None Remove="Stream WhiteBook\StreamEngine DmaStreamCompute\**" />
+		<None Remove="prompts\**" />
+		<None Remove="Refactoring\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Manuals\" />
+		<Folder Include="Virtualization WhiteBook\" />
+		<Folder Include="SecureCompute WhiteBook\" />
+	</ItemGroup>
+
+</Project>
