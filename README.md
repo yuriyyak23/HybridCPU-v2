@@ -22,22 +22,21 @@ HybridCPU ISE is a fixed 8-slot VLIW emulator/runtime with 4-way SMT,
 heterogeneous lane classes, explicit legality decisions, bounded replay reuse,
 retire-visible effects, and a versioned compiler/runtime contract. 
 
-<table width="100%">
-  <tr>
-    <td width="33.3%"><img alt="7" src="https://github.com/user-attachments/assets/c14c7551-45e0-41a9-806f-003b9927eebb" width="100%"></td>
-    <td width="33.3%"><img alt="6" src="https://github.com/user-attachments/assets/a9101cdf-5d73-4e71-b56c-703956d4fe96" width="100%"></td>
-    <td width="33.3%"><img alt="5" src="https://github.com/user-attachments/assets/264876d0-1681-455c-8bf1-a01a7ce44ade" width="100%"></td>
-  </tr>
+<img alt="1" src="https://github.com/user-attachments/assets/87de96a8-2dde-4743-bc3b-a114354befcd" width="100%">
+
+<table width="100%"> 
   <tr>
     <td><img alt="4" src="https://github.com/user-attachments/assets/6cb26049-0fa0-4b90-8ebe-63f25cef2a94" width="100%"></td>
     <td><img alt="3" src="https://github.com/user-attachments/assets/a16903f7-536c-4757-91c8-6138056493c5" width="100%"></td>
     <td><img alt="2" src="https://github.com/user-attachments/assets/958f699e-948e-45a4-bc9e-a0b76f7fcd99" width="100%"></td>
   </tr>
+  
   <tr>
-    <td><img alt="1" src="https://github.com/user-attachments/assets/87de96a8-2dde-4743-bc3b-a114354befcd" width="100%"></td>
-    <td></td>
-    <td></td>
+    <td width="33.3%"><img alt="7" src="https://github.com/user-attachments/assets/c14c7551-45e0-41a9-806f-003b9927eebb" width="100%"></td>
+    <td width="33.3%"><img alt="6" src="https://github.com/user-attachments/assets/a9101cdf-5d73-4e71-b56c-703956d4fe96" width="100%"></td>
+    <td width="33.3%"><img alt="5" src="https://github.com/user-attachments/assets/264876d0-1681-455c-8bf1-a01a7ce44ade" width="100%"></td>
   </tr>
+
 </table>
 
 
